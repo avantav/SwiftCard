@@ -6,9 +6,9 @@
 - Current task: Phase 1 closure review and complete quality gate.
 - Last completed task: Implemented staff branch assignments and primary branch management.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `123b713 feat: add admin staff provisioning`.
-- Git status: assignment implementation and continuity updates are awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; branch-management and staff-provisioning commits were pushed successfully.
+- Last stable commit: `01d2c8d feat: add staff branch assignments`.
+- Git status: clean after the staff assignment commit; continuity update is awaiting commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `01d2c8d` is awaiting push.
 
 ## Completed Functionality
 
