@@ -14,6 +14,9 @@ export default function AdminPage() {
           <Link className="primary-link" href="/admin/branches">
             Sucursales
           </Link>
+          <Link className="primary-link" href="/admin/staff">
+            Personal
+          </Link>
         </div>
       </section>
     </main>

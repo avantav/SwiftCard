@@ -56,7 +56,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement temporary-password reset from Superadmin.
 - [x] [Terminada] Enforce role/status route guards and mandatory password change.
 - [x] [Terminada] Implement minimum branch management.
-- [ ] [En progreso] Implement tenant staff account provisioning.
+- [x] [Terminada] Implement tenant staff account provisioning.
 - [ ] [Pendiente] Implement staff branch assignments and primary branch management.
 
 **Acceptance Criteria**

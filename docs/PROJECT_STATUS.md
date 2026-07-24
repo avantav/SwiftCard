@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Implement tenant staff account provisioning.
-- Last completed task: Implemented minimum Admin branch management.
+- Current task: Implement staff branch assignments and primary branch management.
+- Last completed task: Implemented Admin Manager/Employee staff provisioning.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `151f289 feat: enforce password change and route access`.
-- Git status: branch-management implementation and continuity updates are awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; mandatory-change commits were pushed successfully.
+- Last stable commit: `8b0b4e9 feat: add admin branch management`.
+- Git status: staff provisioning implementation and continuity updates are awaiting commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; branch-management commits are awaiting push.
 
 ## Completed Functionality
 
@@ -42,10 +42,12 @@
 - Dynamic server-side role/status/tenant guards for all internal route trees.
 - Admin-only `/admin/branches` listing and creation flow.
 - Branch validation for coordinates, geofence radius, address, and proximity.
+- Admin-only `/admin/staff` creation for Manager and Employee accounts.
+- Server-only Auth provisioning with profile cleanup compensation.
+- Tenant and creator derived from the authenticated Admin context.
 
 ## Pending Functionality
 
-- Tenant staff account provisioning.
 - Staff branch assignments and primary-branch management.
 - All later MVP functional phases.
 
@@ -63,7 +65,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 51 tests passed.
+- `npm run test:run`: passed; 56 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -75,6 +77,7 @@
 - First-Administrator RPC integration assertions: passed.
 - Administrator password-reset integration assertions: passed.
 - Required password-change integration assertions: passed.
+- Staff provisioning validation and server-boundary tests: passed.
 
 ## Validation Results
 
@@ -85,4 +88,4 @@
 
 ## Next Exact Step
 
-Implement Admin provisioning for Manager and Employee accounts with temporary passwords, server-only Auth creation, tenant-derived profile creation, and compensation on profile failure.
+Implement Admin-only staff branch assignment management with positive and negative tenant/branch checks, including the one-primary-branch invariant.

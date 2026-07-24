@@ -96,6 +96,58 @@
 
 **Commit Generated**
 
+- `8b0b4e9 feat: add admin branch management`
+
+## 2026-07-24 00:17 MST - Phase 1 - Tenant Staff Provisioning
+
+**Objective:** Allow an Admin to create Manager and Employee accounts inside the authenticated tenant.
+
+**Files Created Or Modified**
+
+- Created `src/lib/admin/staff.ts`.
+- Created `src/lib/admin/staff.test.ts`.
+- Created `src/app/admin/staff/actions.ts`.
+- Created `src/app/admin/staff/page.tsx`.
+- Modified `src/app/admin/page.tsx`.
+- Updated continuity documentation.
+
+**Changes Made**
+
+- Added Admin-only `/admin/staff` listing and creation form.
+- Limited selectable roles to `MANAGER` and `EMPLOYEE`.
+- Added validation for name, normalized email, temporary password, and confirmation.
+- Derived `tenant_id` and `created_by` from `requireInternalArea("ADMIN")`; no tenant id is accepted from the form.
+- Created Auth users only through the server-only admin client.
+- Inserted tenant staff profiles through the authenticated Admin's RLS context with `PASSWORD_RESET_REQUIRED`.
+- Deleted the newly created Auth user when profile creation fails and surfaced an explicit cleanup error if deletion also fails.
+
+**Migrations Added**
+
+- None. Existing Phase 1 staff policies support the tenant-scoped insert.
+
+**Tests Added Or Modified**
+
+- Added five staff validation and server-boundary tests.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed through migration `0004`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 56 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- None.
+
+**Solution Applied**
+
+- Not applicable.
+
+**Commit Generated**
+
 - Pending.
 
 ## 2026-07-23 23:45 MST - Phase 1 - Repeatable RLS Verification
