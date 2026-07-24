@@ -125,6 +125,53 @@
 
 - `git push`: passed; pushed migration and continuity commits to `origin/codex/swiftwallet-mvp`.
 
+## 2026-07-23 23:16 MST - Phase 1 - Application Permission Helpers
+
+**Objective:** Add typed role and permission helpers for Phase 1 UI and route decisions while keeping backend/RLS as the source of enforcement.
+
+**Files Created Or Modified**
+
+- Created `src/lib/auth/permissions.ts`.
+- Created `src/lib/auth/permissions.test.ts`.
+- Updated `docs/IMPLEMENTATION_PLAN.md`.
+- Updated `docs/PROJECT_STATUS.md`.
+- Updated `docs/WORK_LOG.md`.
+- Updated `docs/NEXT_SESSION.md`.
+- Updated `docs/TRACEABILITY.md`.
+
+**Changes Made**
+
+- Added typed staff roles, staff statuses, tenant statuses, and staff access context.
+- Added helpers for Superadmin panel, tenant creation, admin panel, branch/staff management, employee PWA access, branch access, branch operation, password reset state, and audit visibility.
+- Added tests for Superadmin-only operations, Admin management permissions, Manager/Employee assigned-branch PWA access, suspended tenant denial, inactive staff denial, password-reset-required denial of operations, and audit visibility.
+
+**Migrations Added**
+
+- None.
+
+**Tests Added Or Modified**
+
+- Added `src/lib/auth/permissions.test.ts`.
+
+**Commands Executed**
+
+- `npm run test:run`: passed; 11 tests passed.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed.
+
+**Problems Encountered**
+
+- None.
+
+**Solution Applied**
+
+- Not applicable.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 
 **Objective:** Initialize the SwiftWallet application foundation and validate the base toolchain.
