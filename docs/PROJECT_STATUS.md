@@ -6,7 +6,7 @@
 - Current task: Implement immutable audit log schema and write paths.
 - Last completed task: Implemented geolocation modes and double-submit protection.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `4f119f9 feat: add online reward redemption`.
+- Last stable commit: `59717d2 feat: add geolocation enforcement`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
