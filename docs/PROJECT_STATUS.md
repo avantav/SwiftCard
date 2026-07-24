@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement CSV exports.
-- Last completed task: Implemented dashboard views and branch comparisons.
+- Current task: Implement XLSX exports.
+- Last completed task: Implemented permission-scoped CSV exports.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `29b46a2 feat: add dashboard branch comparisons`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- CSV exports.
+- XLSX exports.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -107,6 +107,7 @@
 - Reward cancellation, Administrator-only authorization, no-stamp-refund, and audit assertions: passed.
 - Dashboard metrics scope, role filtering, minor-unit totals, and route build: passed.
 - Branch comparison scope, date filters, and dashboard view build: passed.
+- CSV export route allowlist, RLS scope, filters, and build: passed.
 
 ## Validation Results
 
@@ -117,4 +118,4 @@
 
 ## Next Exact Step
 
-Implement permission-scoped CSV exports for customers, purchases, rewards, redemptions, adjustments, and summary metrics.
+Implement permission-scoped XLSX exports without bypassing the CSV/RLS scope boundary or adding unapproved dependencies.

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:58 MST - Phase 6 - CSV Exports
+
+**Objective:** Add permission-scoped CSV exports for operational data.
+
+**Files Created Or Modified:** `src/app/api/admin/exports/route.ts`, `src/app/admin/exports/page.tsx`, `src/lib/dashboard/export.test.ts`, Admin navigation, and continuity docs.
+
+**Changes Made:** Added allowlisted server-side exports for customers, purchases, rewards, redemptions, adjustments, and summary metrics with date/sucursal filters. Tenant authority remains derived from the authenticated context and RLS.
+
+**Commands Executed:** `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** 90 Vitest tests passed; typecheck and build passed; lint passed with one existing Next.js external image warning. Build exposes `/admin/exports` and `/api/admin/exports`.
+
+**Next Action:** Implement XLSX exports or document a dependency blocker.
+
 ## 2026-07-24 01:54 MST - Phase 6 - Branch Dashboard Comparison
 
 **Objective:** Add branch comparison metrics to the scoped dashboard.
@@ -12,7 +26,7 @@
 
 **Results:** RLS passed through migration 0023; 89 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
 
-**Next Action:** Implement permission-scoped CSV exports.
+**Next Action:** Implement XLSX exports or document a dependency blocker.
 
 ## 2026-07-24 01:51 MST - Phase 6 - Scoped Dashboard Metrics
 

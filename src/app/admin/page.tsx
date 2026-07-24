@@ -20,6 +20,9 @@ export default function AdminPage() {
           <Link className="primary-link" href="/admin/dashboard">
             Dashboard
           </Link>
+          <Link className="primary-link" href="/admin/exports">
+            Exportaciones
+          </Link>
         </div>
       </section>
     </main>
