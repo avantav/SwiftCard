@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:12 MST - Phase 4 - PWA Manifest
+
+**Objective:** Add install metadata for the employee PWA.
+
+**Files Created Or Modified:** `src/app/manifest.ts`, `src/app/layout.tsx`, `public/icon.svg`, `src/lib/pwa/manifest.test.ts`, and continuity docs.
+
+**Changes Made:** Added a generated standalone manifest with Spanish locale, `/app` start URL, theme/background colors, responsive viewport metadata, and a local SVG install icon. No credentials or tenant secrets are included.
+
+**Commands Executed:** `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** 81 Vitest tests passed; typecheck and build passed; build exposes `/manifest.webmanifest`. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement the scanner route and QR parsing boundary.
+
 ## 2026-07-24 01:09 MST - Phase 3 - Loyalty Edge Cases
 
 **Objective:** Complete multiple reward generation, pause behavior, and versioned rule changes.

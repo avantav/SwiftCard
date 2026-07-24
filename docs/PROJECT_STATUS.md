@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Add PWA manifest and install metadata.
-- Last completed task: Implemented multiple reward generation, pause behavior, and versioned rule changes.
+- Current task: Implement scanner route and QR parsing.
+- Last completed task: Added PWA manifest, viewport metadata, and install icon.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `e1e426f feat: add loyalty edge case coverage`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- PWA manifest and install metadata.
+- Scanner route and QR parsing.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -96,6 +96,7 @@
 - Loyalty schema, active-program uniqueness, nonnegative balance, ticket uniqueness, and RLS assertions: passed.
 - Purchase preview/confirmation, balance locking, duplicate ticket, ledger, and reward-generation assertions: passed.
 - Multiple-reward, versioned-rule, preserved-balance, and paused-program assertions: passed.
+- PWA manifest unit test and generated manifest route: passed.
 
 ## Validation Results
 
@@ -106,4 +107,4 @@
 
 ## Next Exact Step
 
-Begin Phase 4 by adding the employee PWA manifest and install metadata, then continue with scanner and online operation flows.
+Implement the employee scanner route and QR parsing using a maintained QR decoding library or a narrow parser boundary, without trusting scanned tokens until backend validation.
