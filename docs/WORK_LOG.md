@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:05 MST - Phase 3 - Purchase Operations
+
+**Objective:** Implement backend-only purchase preview and atomic confirmation.
+
+**Files Created Or Modified:** `supabase/migrations/0013_purchase_operations.sql`, `supabase/tests/0013_purchase_operations.sql`, `src/lib/loyalty/purchase.test.ts`, and continuity docs.
+
+**Changes Made:** Added preview and confirmation RPCs that derive staff/tenant/branch access, lock customer balances, calculate per-purchase or per-amount stamps and remainder, enforce duplicate tickets, insert purchases and ledger entries, and generate one or more rewards atomically.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0013; 79 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Test and implement multiple rewards, paused programs, and rule-change behavior.
+
 ## 2026-07-24 01:02 MST - Phase 3 - Loyalty Schema
 
 **Objective:** Establish the Phase 3 data contract for programs, balances, purchases, ledger entries, and rewards.

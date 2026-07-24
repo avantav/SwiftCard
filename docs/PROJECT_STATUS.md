@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement purchase preview and confirm backend logic.
-- Last completed task: Added the loyalty program, balance, ledger, purchase, and reward schema.
+- Current task: Implement multiple reward generation, program pause behavior, and rule-change handling.
+- Last completed task: Implemented atomic purchase preview and confirmation with ledger and reward generation.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `7de97ac feat: add loyalty schema`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Purchase preview and confirm backend logic.
+- Multiple reward generation, program pause behavior, and rule-change handling.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -94,6 +94,7 @@
 - Customer profile management migration and cross-tenant assertions: passed.
 - Public Web Card projection and unknown/revoked token assertions: passed.
 - Loyalty schema, active-program uniqueness, nonnegative balance, ticket uniqueness, and RLS assertions: passed.
+- Purchase preview/confirmation, balance locking, duplicate ticket, ledger, and reward-generation assertions: passed.
 
 ## Validation Results
 
@@ -104,4 +105,4 @@
 
 ## Next Exact Step
 
-Implement purchase preview and confirmation as backend-only calculations, including per-purchase/per-amount rules, remainder handling, ledger entries, and generated rewards.
+Implement additional Phase 3 behavior: multiple reward generation, paused-program handling, rule changes with preserved customer progress, and focused invariants.
