@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Implement staff branch assignments and primary branch management.
-- Last completed task: Implemented Admin Manager/Employee staff provisioning.
+- Current task: Phase 1 closure review and complete quality gate.
+- Last completed task: Implemented staff branch assignments and primary branch management.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `123b713 feat: add admin staff provisioning`.
-- Git status: clean after the staff provisioning continuity commit.
+- Git status: assignment implementation and continuity updates are awaiting commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; branch-management and staff-provisioning commits were pushed successfully.
 
 ## Completed Functionality
@@ -45,10 +45,12 @@
 - Admin-only `/admin/staff` creation for Manager and Employee accounts.
 - Server-only Auth provisioning with profile cleanup compensation.
 - Tenant and creator derived from the authenticated Admin context.
+- Atomic staff-to-branch assignment RPC with primary-branch promotion.
+- Admin-only branch assignment controls on `/admin/staff`.
 
 ## Pending Functionality
 
-- Staff branch assignments and primary-branch management.
+- Phase 1 closure review and final gate.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -65,7 +67,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 56 tests passed.
+- `npm run test:run`: passed; 59 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -78,6 +80,7 @@
 - Administrator password-reset integration assertions: passed.
 - Required password-change integration assertions: passed.
 - Staff provisioning validation and server-boundary tests: passed.
+- Staff branch assignment RPC integration assertions: passed.
 
 ## Validation Results
 
@@ -88,4 +91,4 @@
 
 ## Next Exact Step
 
-Implement Admin-only staff branch assignment management with positive and negative tenant/branch checks, including the one-primary-branch invariant.
+Review all Phase 1 checkboxes and run the final lint, typecheck, tests, build, RLS, security, and traceability gate before moving to Phase 2.

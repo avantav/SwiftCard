@@ -150,6 +150,58 @@
 
 - `123b713 feat: add admin staff provisioning`
 
+## 2026-07-24 00:24 MST - Phase 1 - Staff Branch Assignments
+
+**Objective:** Let tenant Administrators assign Manager and Employee profiles to active branches while preserving a single primary branch.
+
+**Files Created Or Modified**
+
+- Created `supabase/migrations/0005_staff_branch_assignments.sql`.
+- Created `supabase/tests/0005_staff_branch_assignments.sql`.
+- Created `src/app/admin/staff/assignments.ts`.
+- Created `src/lib/admin/assignments.test.ts`.
+- Modified `src/app/admin/staff/page.tsx`, `src/app/globals.css`, and migration tests.
+- Updated continuity docs.
+
+**Changes Made**
+
+- Added a security-definer RPC callable only by authenticated sessions.
+- Derived the acting tenant and Admin role from `auth.uid()`.
+- Rejected cross-tenant staff, non-assignable roles, inactive branches, and non-Admin callers.
+- Added a per-staff advisory transaction lock.
+- Promoted the selected branch atomically and removed the previous primary flag.
+- Added Admin UI to view assignments and assign active branches.
+
+**Migrations Added**
+
+- `supabase/migrations/0005_staff_branch_assignments.sql`.
+
+**Tests Added Or Modified**
+
+- Added positive and negative PostgreSQL assignment assertions.
+- Added static RPC/server-boundary tests.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed through migration `0005`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 59 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- The first SQL assertion used unsupported `min(uuid)` aggregation.
+
+**Solution Applied**
+
+- Replaced it with a direct primary-assignment lookup; the RPC itself passed unchanged.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-23 23:45 MST - Phase 1 - Repeatable RLS Verification
 
 **Objective:** Replace manual Phase 1 RLS checks with a deterministic local command.

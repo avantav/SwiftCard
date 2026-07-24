@@ -259,6 +259,32 @@ a {
   overflow-wrap: anywhere;
 }
 
+.staff-row {
+  display: grid;
+  gap: 6px;
+}
+
+.inline-assignment-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+  border-top: 1px solid hsl(var(--border));
+  padding-top: 10px;
+}
+
+.secondary-button {
+  min-height: 40px;
+  width: fit-content;
+  border: 1px solid hsl(var(--primary));
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: white;
+  color: hsl(var(--primary));
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
 .section-title {
   margin: 32px 0 16px;
   font-size: 1.25rem;

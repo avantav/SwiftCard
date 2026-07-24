@@ -57,7 +57,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Enforce role/status route guards and mandatory password change.
 - [x] [Terminada] Implement minimum branch management.
 - [x] [Terminada] Implement tenant staff account provisioning.
-- [ ] [Pendiente] Implement staff branch assignments and primary branch management.
+- [x] [Terminada] Implement staff branch assignments and primary branch management.
 
 **Acceptance Criteria**
 
@@ -68,7 +68,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - Superadmin can create the first Administrator with a temporary password.
 - Temporary passwords require a password change before operational access.
 
-**Validation Result:** Through migration `0004`, `npm run db:verify-rls` applies the Phase 1 database to disposable PostgreSQL 16 and passes tenant/branch isolation, status denial, Superadmin boundaries, first-Administrator provisioning, password reset, and mandatory-change completion checks.
+**Validation Result:** Through migration `0005`, `npm run db:verify-rls` applies the Phase 1 database to disposable PostgreSQL 16 and passes tenant/branch isolation, status denial, Superadmin boundaries, first-Administrator provisioning, password reset, mandatory-change completion, and staff branch assignment checks.
 
 ## Phase 2 - Clientes And Web Card
 

@@ -24,6 +24,10 @@ const administratorPasswordResetMigration = readFileSync(
   ),
   "utf8"
 );
+const staffBranchAssignmentMigration = readFileSync(
+  join(process.cwd(), "supabase/migrations/0005_staff_branch_assignments.sql"),
+  "utf8"
+);
 const requiredPasswordChangeMigration = readFileSync(
   join(
     process.cwd(),
@@ -141,6 +145,21 @@ describe("initial auth tenancy migration", () => {
     expect(requiredPasswordChangeMigration).toContain("to service_role");
     expect(requiredPasswordChangeMigration).toContain(
       "last_password_change_at = now()"
+    );
+  });
+
+  it("keeps staff branch assignment mutations behind an atomic RPC", () => {
+    expect(staffBranchAssignmentMigration).toContain(
+      "function app.set_staff_branch_assignment"
+    );
+    expect(staffBranchAssignmentMigration).toContain(
+      "target_staff_profile_id"
+    );
+    expect(staffBranchAssignmentMigration).toContain(
+      "target_branch_id"
+    );
+    expect(staffBranchAssignmentMigration).toContain(
+      "make_primary"
     );
   });
 });
