@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current phase: Phase 6 - Dashboard And Exportaciones.
-- Current task: Phase 6 validation and transition to Phase 7.
-- Last completed task: Implemented and validated permission-scoped CSV and XLSX exports.
+- Current phase: Phase 7 - Superadmin And Importaciones.
+- Current task: Implement column mapping and validation preview.
+- Last completed task: Implemented Superadmin customer import schema and upload flow.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- All later MVP functional phases.
+- Column mapping and validation preview; import confirmation; tenant suspension; branding controls; all later MVP functional phases.
 
 ## Active Blockers
 
@@ -71,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 91 tests passed.
+- `npm run test:run`: passed; 93 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Begin Phase 7 by converting the Superadmin import requirements from `docs/PRODUCT.md` into executable tasks and auditing existing tenant-control code.
+Implement server-side parsing for CSV/XLSX imports, column mapping, and a validation preview without creating customer records yet.

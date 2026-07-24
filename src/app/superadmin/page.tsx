@@ -29,6 +29,9 @@ export default async function SuperadminPage({
           <Link className="primary-link" href="/superadmin/tenants/new">
             Nuevo tenant
           </Link>
+          <Link className="secondary-link" href="/superadmin/imports">
+            Importar clientes
+          </Link>
         </div>
       </section>
     </main>

@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 02:18 MST - Phase 7 - Customer Import Upload
+
+**Objective:** Add the Superadmin customer import schema and upload flow.
+
+**Files Created Or Modified:** `supabase/migrations/0024_customer_imports.sql`, `supabase/tests/0024_customer_imports.sql`, `src/lib/superadmin/imports.ts`, `src/lib/superadmin/imports.test.ts`, Superadmin import pages/actions, and continuity docs.
+
+**Changes Made:** Added Superadmin-only import history with file metadata, raw-row storage, counters, status, actor, tenant, and RLS. Added CSV/XLS/XLSX file validation, a 10 MB limit, tenant selection, upload registration, and a mapping continuation page.
+
+**Commands Executed:** `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run db:verify-rls`, and `npm run build`.
+
+**Results:** 93 tests passed; RLS passed through migration 0024; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Next Action:** Parse uploads and implement server-side column mapping and validation preview without inserting customers.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:05 MST - Phase 6 - XLSX Export Blocker
 
 **Objective:** Verify whether XLSX export can be implemented with an existing approved dependency.
