@@ -7,8 +7,8 @@
 - Last completed task: Implemented Admin Manager/Employee staff provisioning.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `123b713 feat: add admin staff provisioning`.
-- Git status: clean after the staff provisioning commit; continuity update is awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; branch-management and staff-provisioning commits are awaiting push.
+- Git status: clean after the staff provisioning continuity commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; branch-management and staff-provisioning commits were pushed successfully.
 
 ## Completed Functionality
 
