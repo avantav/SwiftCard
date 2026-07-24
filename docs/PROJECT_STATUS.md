@@ -6,7 +6,7 @@
 - Current task: Add strict/flexible geolocation handling and double-submit protection.
 - Last completed task: Implemented online purchase and reward redemption mobile flows.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `398a6eb feat: add online employee purchase flow`.
+- Last stable commit: `4f119f9 feat: add online reward redemption`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
