@@ -12,7 +12,16 @@ export function getPublicSupabaseConfig() {
   };
 }
 
+export function getRequiredPublicSupabaseConfig() {
+  const config = getPublicSupabaseConfig();
+
+  if (!config) {
+    throw new Error("Missing public Supabase configuration");
+  }
+
+  return config;
+}
+
 export function getServerSupabaseServiceRoleKey() {
   return process.env.SUPABASE_SERVICE_ROLE_KEY ?? null;
 }
-

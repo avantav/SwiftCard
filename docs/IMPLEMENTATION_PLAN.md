@@ -49,8 +49,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Create initial Supabase migration for tenant, branch, staff, and assignment schema.
 - [x] [Terminada] Enable RLS and add tenant/branch isolation policies.
 - [x] [Terminada] Add application role and permission helpers.
-- [ ] [En progreso] Implement login and protected route structure.
-- [ ] [Pendiente] Implement minimal Superadmin tenant creation flow.
+- [x] [Terminada] Implement login and protected route structure.
+- [ ] [En progreso] Implement minimal Superadmin tenant creation flow.
 - [ ] [Pendiente] Add positive and negative RLS tests.
 
 **Acceptance Criteria**

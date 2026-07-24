@@ -95,3 +95,72 @@ a {
   line-height: 1.45;
 }
 
+.auth-shell {
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(100%, 420px);
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 28px;
+  background: white;
+}
+
+.auth-title {
+  margin: 0 0 24px;
+  font-size: 2rem;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.field input {
+  min-height: 44px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: hsl(var(--foreground));
+  font: inherit;
+}
+
+.field input:focus {
+  border-color: hsl(var(--primary));
+  outline: 2px solid hsl(var(--primary) / 20%);
+  outline-offset: 2px;
+}
+
+.primary-button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.auth-alert {
+  margin: 0 0 16px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff5f5;
+  color: #9b1c1c;
+  line-height: 1.45;
+}

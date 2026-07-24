@@ -172,6 +172,63 @@
 
 - `b6e62a0 feat: add role permission helpers`
 
+## 2026-07-23 23:29 MST - Phase 1 - Login And Protected Route Foundation
+
+**Objective:** Add Supabase SSR auth clients, login form/action, and middleware protection for internal routes.
+
+**Files Created Or Modified**
+
+- Modified `package.json` and `package-lock.json`.
+- Modified `src/lib/supabase/config.ts`.
+- Created `src/lib/supabase/browser.ts`.
+- Created `src/lib/supabase/server.ts`.
+- Created `src/lib/supabase/middleware.ts`.
+- Created `src/lib/auth/redirects.ts`.
+- Created `src/lib/auth/redirects.test.ts`.
+- Created `src/app/login/actions.ts`.
+- Created `src/app/login/page.tsx`.
+- Created `middleware.ts`.
+- Modified `src/app/globals.css`.
+- Updated continuity docs.
+
+**Changes Made**
+
+- Installed `@supabase/ssr`.
+- Added browser and server Supabase client factories using the public URL and anon key only.
+- Added middleware session refresh using `getAll`/`setAll` cookies.
+- Protected `/superadmin`, `/admin`, and `/app` paths behind Supabase user authentication.
+- Added `/login` with a server action for email/password sign-in.
+- Added safe redirect handling to avoid open redirects.
+- Added login form styling.
+
+**Migrations Added**
+
+- None.
+
+**Tests Added Or Modified**
+
+- Added `src/lib/auth/redirects.test.ts`.
+
+**Commands Executed**
+
+- `npm install @supabase/ssr@latest`: initially failed in sandbox with DNS `ENOTFOUND`; passed after network escalation.
+- `npm run test:run`: passed; 14 tests passed.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed.
+
+**Problems Encountered**
+
+- Sandbox DNS blocked the first npm install attempt.
+
+**Solution Applied**
+
+- Re-ran npm install with network escalation.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 
 **Objective:** Initialize the SwiftWallet application foundation and validate the base toolchain.
