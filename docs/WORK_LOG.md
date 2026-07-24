@@ -57,6 +57,69 @@
 - `git push -u origin codex/swiftwallet-mvp`: initially failed in sandbox with DNS resolution error for `github.com`; passed after network escalation and pushed through `1327c47`.
 - Follow-up documentation commits were pushed to the same tracking branch; verify the exact latest hash with `git log --oneline -1`.
 
+## 2026-07-23 23:10 MST - Phase 1 - Initial Tenancy/Auth Migration
+
+**Objective:** Create and validate the first Supabase migration for tenant, branch, staff profile, branch assignment, role/status primitives, helper functions, triggers, grants, and RLS policies.
+
+**Files Created Or Modified**
+
+- Created `supabase/migrations/0001_initial_auth_tenancy.sql`.
+- Created `src/lib/supabase/migrations.test.ts`.
+- Updated `docs/IMPLEMENTATION_PLAN.md`.
+- Updated `docs/PROJECT_STATUS.md`.
+- Updated `docs/WORK_LOG.md`.
+- Updated `docs/NEXT_SESSION.md`.
+- Updated `docs/TRACEABILITY.md`.
+
+**Changes Made**
+
+- Added enums for tenant status, branding mode, branch status, staff role, and staff status.
+- Added `tenants`, `branches`, `staff_profiles`, and `staff_branch_assignments`.
+- Added timestamp trigger helper and assignment tenant-consistency trigger.
+- Added `app.*` security-definer helpers for current staff tenant, role, active status, tenant access, tenant management, and branch access.
+- Enabled and forced RLS on all Phase 1 tables.
+- Added policies for Superadmin global access, tenant staff own-tenant access, admin own-tenant management, and assigned-branch access.
+- Added explicit grants for `authenticated` while keeping `anon` out of app helper functions.
+- Added Vitest static checks for migration structure, RLS enablement, helper functions, and negative isolation primitives.
+
+**Migrations Added**
+
+- `supabase/migrations/0001_initial_auth_tenancy.sql`.
+
+**Tests Added Or Modified**
+
+- Added `src/lib/supabase/migrations.test.ts`.
+
+**Commands Executed**
+
+- `npm run test:run`: passed; 5 tests passed.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed.
+- `docker run --name swiftwallet-migration-check -e POSTGRES_PASSWORD=postgres -d postgres:16-alpine`: passed.
+- `docker exec swiftwallet-migration-check psql ... -f /tmp/0001_initial_auth_tenancy.sql`: passed.
+- PostgreSQL RLS checks with `SET ROLE authenticated` and `request.jwt.claim.sub`: passed for admin tenant isolation, admin own-branch visibility, employee assigned-branch visibility, suspended tenant denial, and superadmin global tenant visibility.
+- PostgreSQL negative checks: passed for admin cross-tenant branch insert denial and cross-tenant staff/branch assignment trigger denial.
+- `docker rm -f swiftwallet-migration-check`: passed.
+
+**Problems Encountered**
+
+- Supabase CLI is not installed locally.
+- PostgreSQL local socket was not active.
+- Docker required escalation to access the daemon.
+- First PostgreSQL validation found that standard PostgreSQL does not support `encode(..., 'base64url')`.
+- A seed command initially omitted `tenant_id` values for branches; it rolled back cleanly.
+
+**Solution Applied**
+
+- Used local `postgres:16-alpine` Docker image with a minimal Supabase Auth prelude.
+- Replaced `encode(..., 'base64url')` with base64 transformed to URL-safe text.
+- Re-ran migration and RLS behavior checks from a clean temporary database.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 
 **Objective:** Initialize the SwiftWallet application foundation and validate the base toolchain.

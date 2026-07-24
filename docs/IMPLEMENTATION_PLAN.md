@@ -46,9 +46,9 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 **Tasks**
 
-- [ ] [En progreso] Create initial Supabase migration for tenant, branch, staff, and assignment schema.
-- [ ] [Pendiente] Enable RLS and add tenant/branch isolation policies.
-- [ ] [Pendiente] Add role and permission helpers.
+- [x] [Terminada] Create initial Supabase migration for tenant, branch, staff, and assignment schema.
+- [x] [Terminada] Enable RLS and add tenant/branch isolation policies.
+- [ ] [En progreso] Add application role and permission helpers.
 - [ ] [Pendiente] Implement login and protected route structure.
 - [ ] [Pendiente] Implement minimal Superadmin tenant creation flow.
 - [ ] [Pendiente] Add positive and negative RLS tests.
@@ -59,6 +59,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - Staff access is limited to assigned branches.
 - Inactive users and suspended tenants cannot operate.
 - Service role is never exposed to browser code.
+
+**Validation Result:** Initial schema/RLS migration completed on 2026-07-23. Applied successfully in a temporary PostgreSQL 16 container with a minimal Supabase Auth prelude. RLS checks passed for admin tenant isolation, employee branch assignment isolation, suspended tenant denial, superadmin visibility, admin cross-tenant insert denial, and cross-tenant assignment trigger denial.
 
 ## Phase 2 - Clientes And Web Card
 

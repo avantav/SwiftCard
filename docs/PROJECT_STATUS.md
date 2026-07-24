@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Create the initial Supabase migration for tenants, branches, staff profiles, and branch assignments.
-- Last completed task: Completed Phase 0 scaffold with Next.js App Router, TypeScript, Tailwind, Supabase config placeholders, routes, health check, and validation scripts.
+- Current task: Add application role and permission helpers.
+- Last completed task: Created and validated the initial Supabase tenancy/auth migration with RLS policies.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last recorded stable commit before final handoff docs updates: `1327c47 docs: record scaffold status`.
 - Git status: clean after the continuity documentation commit.
@@ -20,11 +20,13 @@
 - Health endpoint: `/api/health`.
 - Vitest health endpoint test.
 - Supabase environment template and config helpers without secrets.
+- Initial tenancy/auth migration for tenants, branches, staff profiles, staff branch assignments, helper functions, triggers, grants, and RLS policies.
+- Static migration coverage in Vitest.
 
 ## Pending Functionality
 
-- All MVP functional phases.
-- Initial Supabase schema and RLS policies.
+- Remaining Phase 1 application auth helpers, login, protected routes, minimal Superadmin tenant creation flow, and formal RLS test suite integration.
+- All later MVP functional phases.
 
 ## Active Blockers
 
@@ -43,6 +45,8 @@
 - `npm run test:run`: passed; 1 test passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
+- Temporary PostgreSQL 16 migration validation via Docker: passed.
+- RLS behavior checks via `SET ROLE authenticated` and `request.jwt.claim.sub`: passed.
 
 ## Validation Results
 
@@ -53,4 +57,4 @@
 
 ## Next Exact Step
 
-Create `supabase/migrations/0001_initial_auth_tenancy.sql` for tenants, branches, staff profiles, staff branch assignments, enums, RLS enablement, and initial isolation policy scaffolding.
+Create TypeScript role/permission helpers for `SUPERADMIN`, `ADMIN`, `MANAGER`, and `EMPLOYEE`, add focused unit tests for allowed actions in Phase 1, and keep backend authorization as the source of enforcement.

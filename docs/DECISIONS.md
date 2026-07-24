@@ -19,3 +19,13 @@
 - Reason: Webpack build passes in the current environment while preserving current Next.js and React versions.
 - Consequences: Production build uses webpack until Turbopack can run reliably in the project environment.
 - Status: Accepted.
+
+## DEC-0003 - Public Tables With App Schema RLS Helpers
+
+- Date: 2026-07-23
+- Context: Supabase defaults expose `public` tables through PostgREST, while RLS policies need reusable session-derived tenant and branch checks without trusting frontend-provided `tenant_id`.
+- Decision: Keep MVP data tables in `public` and place reusable authorization helpers in the `app` schema as `security definer` functions.
+- Alternatives considered: Put all tables in a private schema, duplicate policy expressions inline, or defer RLS helper design until application routes exist.
+- Reason: Public tables match Supabase conventions, while app-scoped helpers reduce RLS recursion risk and keep tenant/branch checks consistent.
+- Consequences: Future migrations must grant helper execution intentionally and keep app helper functions free of frontend-controlled authority.
+- Status: Accepted.
