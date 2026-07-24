@@ -3,7 +3,7 @@
 ## Current State
 
 - Current phase: Phase 8 - Wallet.
-- Current task: Phase 8 Apple/Google pass generation, blocked by external credentials.
+- Current task: Phase 9 pilot readiness; external information and Wallet credentials pending.
 - Last completed task: Updated Web Card fallback with current loyalty state.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
@@ -55,11 +55,12 @@
 
 ## Pending Functionality
 
-- Apple/Google pass generation and updates, blocked by external credentials; pilot readiness and operational information.
+- Apple/Google pass generation and updates, pilot tenant, privacy, and operational sign-off.
 
 ## Active Blockers
 
 - WALLET-001: Apple Developer and Google Wallet credentials are unavailable.
+- PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks
 
@@ -117,4 +118,4 @@
 
 ## Next Exact Step
 
-Provide authorized Apple/Google test credentials through the secret manager, then implement and test provider-specific generation and updates without committing secrets.
+Provide pilot information and authorized Wallet test credentials through the secret manager, then execute the E2E and production sign-off checklist.
