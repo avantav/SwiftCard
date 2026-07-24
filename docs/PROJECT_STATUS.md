@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement purchase and redemption mobile flows.
-- Last completed task: Implemented scanner route, bounded QR parsing, and tenant validation.
+- Current task: Implement redemption mobile flow.
+- Last completed task: Implemented online purchase preview and confirmation flow.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `e0ff886 feat: add tenant validated card scanner`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Purchase and redemption mobile flows.
+- Redemption mobile flow.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -98,6 +98,7 @@
 - Multiple-reward, versioned-rule, preserved-balance, and paused-program assertions: passed.
 - PWA manifest unit test and generated manifest route: passed.
 - Scanner parser unit tests and cross-tenant card scan assertions: passed.
+- Purchase route build and full application validation: passed.
 
 ## Validation Results
 
@@ -108,4 +109,4 @@
 
 ## Next Exact Step
 
-Implement the online employee purchase and redemption mobile flows on top of the validated scanner and atomic Phase 3 RPCs.
+Implement the online employee redemption flow for AVAILABLE rewards, with backend authorization and one-reward-per-confirmation behavior.

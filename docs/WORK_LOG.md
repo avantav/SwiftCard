@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:32 MST - Phase 4 - Employee Purchase Flow
+
+**Objective:** Connect scanner results to online purchase preview and confirmation.
+
+**Files Created Or Modified:** `src/app/app/purchase/page.tsx`, `src/app/app/purchase/actions.ts`, `src/app/app/scan/actions.ts`, the employee app link, and continuity docs.
+
+**Changes Made:** Added amount validation, online preview, ticket capture, confirmation, duplicate-ticket messaging, and backend-only stamp/reward results using the existing atomic RPCs.
+
+**Commands Executed:** `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** 83 Vitest tests passed; typecheck and build passed; lint passed with one existing Next.js external image warning. Build exposes `/app/purchase`.
+
+**Next Action:** Implement online reward redemption.
+
 ## 2026-07-24 01:15 MST - Phase 4 - Employee Scanner
 
 **Objective:** Add bounded QR parsing and tenant-validated card scanning to the employee PWA.

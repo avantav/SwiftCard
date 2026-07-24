@@ -13,5 +13,5 @@ export async function resolveScannedCard(formData: FormData) {
   if (error || !result || result.result !== "FOUND") {
     redirect(`/app/scan?error=${encodeURIComponent("Esta tarjeta no pertenece a este negocio.")}`);
   }
-  redirect(`/app/customers?q=${encodeURIComponent(result.customer_name)}`);
+  redirect(`/app/purchase?customerId=${encodeURIComponent(result.customer_id)}`);
 }
