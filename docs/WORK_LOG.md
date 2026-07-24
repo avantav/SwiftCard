@@ -148,7 +148,7 @@
 
 **Commit Generated**
 
-- Pending.
+- `123b713 feat: add admin staff provisioning`
 
 ## 2026-07-23 23:45 MST - Phase 1 - Repeatable RLS Verification
 
