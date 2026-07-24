@@ -6,7 +6,7 @@
 - Current task: Implement metrics queries and permission filters.
 - Last completed task: Implemented Administrator-only reward cancellation.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `0ac07f8 feat: add redemption reversals and adjustments`.
+- Last stable commit: `c86dddf feat: add reward cancellation`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
