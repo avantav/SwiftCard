@@ -1,7 +1,7 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit: `d8bfc7d feat: add employee customer registration`.
+2. Last stable commit: `7105b3b feat: add customer search and editing`.
 3. Git status: continuity update pending commit.
 4. Current phase: Phase 2 - Clientes And Web Card.
 5. Last completed task: Implemented customer search, editing, and deactivation.

@@ -6,7 +6,7 @@
 - Current task: Implement public web card by card token.
 - Last completed task: Implemented customer search, editing, and deactivation.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `d8bfc7d feat: add employee customer registration`.
+- Last stable commit: `7105b3b feat: add customer search and editing`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
