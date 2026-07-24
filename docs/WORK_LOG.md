@@ -211,6 +211,64 @@
 **Commit Generated**
 
 - `c423fc8 feat: add administrator temporary password reset`
+
+## 2026-07-24 00:09 MST - Phase 1 - Mandatory Password Change And Route Guards
+
+**Objective:** Complete the temporary-password lifecycle and enforce internal-route authorization from current database state.
+
+**Files Created Or Modified**
+
+- Created `src/app/change-password/actions.ts` and `page.tsx`.
+- Created dynamic layouts for `/superadmin`, `/admin`, and `/app`.
+- Created `src/lib/auth/passwords.ts`, `routes.ts`, and focused tests.
+- Created `src/lib/auth/server-boundaries.test.ts`.
+- Created `supabase/migrations/0004_complete_required_password_change.sql`.
+- Created `supabase/tests/0004_complete_required_password_change.sql`.
+- Modified login, middleware, server auth context, migration tests, and continuity docs.
+
+**Changes Made**
+
+- Redirected `PASSWORD_RESET_REQUIRED` staff from login and protected areas to `/change-password`.
+- Required current-password verification, a distinct 12-72 character new password, and matching confirmation.
+- Updated Supabase Auth before activating the staff profile.
+- Restricted profile completion to a service-role-only RPC so browser clients cannot bypass the password change.
+- Rejected completion for active profiles and suspended tenants.
+- Added dynamic server layouts enforcing Superadmin, Admin/Manager, and Manager/Employee area permissions.
+- Signed out unavailable profiles after login and denied inactive or suspended contexts.
+
+**Migrations Added**
+
+- `supabase/migrations/0004_complete_required_password_change.sql`.
+
+**Tests Added Or Modified**
+
+- Added password validation, role-route mapping, server-boundary, and migration tests.
+- Added PostgreSQL checks for successful completion, direct authenticated-RPC denial, duplicate completion denial, and suspended-tenant denial.
+
+**Commands Executed**
+
+- Baseline `npm run typecheck`: passed.
+- Baseline `npm run test:run`: passed; 36 tests passed.
+- `npm run db:verify-rls`: passed with migrations `0001` through `0004`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 47 tests passed.
+- `npm run build`: initially failed because protected layouts were prerendered without Supabase config; passed after marking them force-dynamic.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- The first RPC design granted authenticated users enough permission to bypass the UI and activate a profile directly.
+- Next.js initially attempted to prerender protected routes during build.
+
+**Solution Applied**
+
+- Restricted completion to `service_role` and added a direct-call denial regression test.
+- Marked all protected route layouts and the change-password page as force-dynamic.
+
+**Commit Generated**
+
+- Pending.
 - `1327c47 docs: record scaffold status`
 
 **Push**

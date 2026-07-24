@@ -5,7 +5,7 @@ import {
   updateSupabaseSession
 } from "@/lib/supabase/middleware";
 
-const protectedPrefixes = ["/superadmin", "/admin", "/app"];
+const protectedPrefixes = ["/superadmin", "/admin", "/app", "/change-password"];
 
 function isProtectedPath(pathname: string) {
   return protectedPrefixes.some(
@@ -41,4 +41,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"
   ]
 };
-

@@ -54,8 +54,10 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add positive and negative RLS tests.
 - [x] [Terminada] Implement first Administrator creation from Superadmin.
 - [x] [Terminada] Implement temporary-password reset from Superadmin.
-- [ ] [En progreso] Enforce role/status route guards and mandatory password change.
-- [ ] [Pendiente] Implement minimum branch, staff, and branch-assignment management.
+- [x] [Terminada] Enforce role/status route guards and mandatory password change.
+- [ ] [En progreso] Implement minimum branch management.
+- [ ] [Pendiente] Implement tenant staff account provisioning.
+- [ ] [Pendiente] Implement staff branch assignments and primary branch management.
 
 **Acceptance Criteria**
 
@@ -66,7 +68,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - Superadmin can create the first Administrator with a temporary password.
 - Temporary passwords require a password change before operational access.
 
-**Validation Result:** Initial schema/RLS migration completed on 2026-07-23. `npm run db:verify-rls` applies it to a disposable PostgreSQL 16 container and passes checks for admin tenant isolation, manager/employee branch assignment isolation, inactive/reset-required staff denial, suspended tenant denial, superadmin visibility, admin cross-tenant writes, and cross-tenant assignment rejection.
+**Validation Result:** Through migration `0004`, `npm run db:verify-rls` applies the Phase 1 database to disposable PostgreSQL 16 and passes tenant/branch isolation, status denial, Superadmin boundaries, first-Administrator provisioning, password reset, and mandatory-change completion checks.
 
 ## Phase 2 - Clientes And Web Card
 

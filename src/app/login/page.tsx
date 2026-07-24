@@ -2,6 +2,7 @@ import { getSafeRedirectPath } from "@/lib/auth/redirects";
 import { signInWithPassword } from "./actions";
 
 const errorMessages: Record<string, string> = {
+  account_unavailable: "La cuenta está inactiva o el tenant está suspendido.",
   auth_not_configured: "La autenticación todavía no está configurada.",
   invalid_credentials: "Correo o contraseña inválidos.",
   missing_credentials: "Ingresa correo y contraseña."
@@ -54,4 +55,3 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     </main>
   );
 }
-

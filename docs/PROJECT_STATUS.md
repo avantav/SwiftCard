@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Enforce role/status route guards and mandatory password change.
-- Last completed task: Implemented safe Superadmin temporary-password reset.
+- Current task: Implement minimum branch management.
+- Last completed task: Implemented mandatory password change and server-side route guards.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `c423fc8 feat: add administrator temporary password reset`.
-- Git status: clean after the Administrator password-reset continuity commit.
+- Git status: mandatory-change and route-guard implementation is awaiting commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; password-reset implementation and continuity commits were pushed successfully.
 
 ## Completed Functionality
@@ -37,11 +37,15 @@
 - Atomic first-Administrator profile RPC with concurrent duplicate protection.
 - Superadmin password-reset form for the existing tenant Administrator.
 - Profile-first password reset RPC that rejects cross-tenant, unauthorized, and inactive targets.
+- `/change-password` flow with current-password verification and distinct new password validation.
+- Service-role-only profile activation after Auth password update.
+- Dynamic server-side role/status/tenant guards for all internal route trees.
 
 ## Pending Functionality
 
-- Role/status route guards and mandatory password change.
-- Minimum branch, staff, and branch-assignment management.
+- Minimum branch management.
+- Tenant staff account provisioning.
+- Staff branch assignments and primary-branch management.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -58,7 +62,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 36 tests passed.
+- `npm run test:run`: passed; 47 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -69,6 +73,7 @@
 - `npm run db:verify-rls`: passed against disposable PostgreSQL 16.
 - First-Administrator RPC integration assertions: passed.
 - Administrator password-reset integration assertions: passed.
+- Required password-change integration assertions: passed.
 
 ## Validation Results
 
@@ -79,4 +84,4 @@
 
 ## Next Exact Step
 
-Implement the mandatory password-change route and server action, then add server-side role/status guards for `/superadmin`, `/admin`, and `/app`.
+Implement Admin branch listing and creation using the authenticated profile's tenant, with validation and positive/negative tests that never accept client-provided tenant authority.

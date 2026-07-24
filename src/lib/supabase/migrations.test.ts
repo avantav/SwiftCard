@@ -24,6 +24,13 @@ const administratorPasswordResetMigration = readFileSync(
   ),
   "utf8"
 );
+const requiredPasswordChangeMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/0004_complete_required_password_change.sql"
+  ),
+  "utf8"
+);
 
 describe("initial auth tenancy migration", () => {
   it("creates the phase 1 tenancy tables", () => {
@@ -118,6 +125,22 @@ describe("initial auth tenancy migration", () => {
     );
     expect(administratorPasswordResetMigration).toContain(
       "from public, anon, authenticated"
+    );
+  });
+
+  it("keeps password-change completion behind the service role boundary", () => {
+    expect(requiredPasswordChangeMigration).toContain(
+      "function app.complete_required_password_change"
+    );
+    expect(requiredPasswordChangeMigration).toContain(
+      "sp.status = 'PASSWORD_RESET_REQUIRED'"
+    );
+    expect(requiredPasswordChangeMigration).toContain(
+      "from public, anon, authenticated"
+    );
+    expect(requiredPasswordChangeMigration).toContain("to service_role");
+    expect(requiredPasswordChangeMigration).toContain(
+      "last_password_change_at = now()"
     );
   });
 });
