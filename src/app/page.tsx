@@ -1,54 +1,27 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getStaffSessionContext } from "@/lib/auth/server";
+import { getDefaultInternalRoute } from "@/lib/auth/routes";
 
-const routes = [
-  {
-    href: "/superadmin",
-    label: "Superadmin",
-    description: "Tenants, suspensión, importaciones y auditoría global."
-  },
-  {
-    href: "/admin",
-    label: "Administrador",
-    description: "Sucursales, empleados, programa, clientes y reportes."
-  },
-  {
-    href: "/app",
-    label: "PWA empleados",
-    description: "Escaneo, registro de clientes, compras y canjes."
-  },
-  {
-    href: "/register/example-branch-token",
-    label: "Registro público",
-    description: "Autoservicio por token público de sucursal."
-  },
-  {
-    href: "/card/example-card-token",
-    label: "Web Card",
-    description: "Tarjeta pública por token seguro."
+export default async function HomePage() {
+  let context = null;
+  try {
+    context = await getStaffSessionContext();
+  } catch {
+    context = null;
   }
-];
+  if (context?.access.staffStatus === "PASSWORD_RESET_REQUIRED") redirect("/change-password");
+  if (context?.access.staffStatus === "ACTIVE") redirect(getDefaultInternalRoute(context.access.role));
 
-export default function HomePage() {
   return (
-    <main className="shell">
-      <section className="panel">
-        <p className="eyebrow">SwiftWallet MVP</p>
-        <h1 className="title">Operación base para fidelidad digital multi-tenant.</h1>
-        <p className="body-copy">
-          Base inicial de rutas para construir el panel Superadmin, panel
-          administrativo, PWA de empleados, registro público y Web Card según
-          `docs/PRODUCT.md`.
-        </p>
-        <nav className="route-grid" aria-label="Rutas iniciales">
-          {routes.map((route) => (
-            <Link className="route-link" href={route.href} key={route.href}>
-              <strong>{route.label}</strong>
-              <span>{route.description}</span>
-            </Link>
-          ))}
-        </nav>
+    <main className="shell auth-shell">
+      <section className="auth-card" aria-labelledby="home-title">
+        <p className="eyebrow">SwiftWallet</p>
+        <h1 id="home-title" className="auth-title">Operación de fidelidad digital</h1>
+        <p className="body-copy">Inicia sesión para acceder al área autorizada de tu rol.</p>
+        <div className="action-row"><Link className="primary-link" href="/login">Iniciar sesión</Link></div>
+        <nav className="action-row" aria-label="Rutas públicas"><Link className="text-link" href="/register/example-branch-token">Registro público</Link><Link className="text-link" href="/card/example-card-token">Web Card</Link></nav>
       </section>
     </main>
   );
 }
-

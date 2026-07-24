@@ -1,5 +1,23 @@
 # Work Log
 
+## 2026-07-24 08:52 MST - Authenticated Root And Development Seed
+
+**Objective:** Replace the root development menu with role-based navigation and add example users for a disposable Supabase project.
+
+**Files Created Or Modified:** `src/app/page.tsx`, `supabase/seed.sql`, `src/lib/auth/home.test.ts`, and continuity docs.
+
+**Changes Made:** Authenticated users now redirect to `/superadmin`, `/admin`, or `/app` from their role; password-reset-required users go to `/change-password`; anonymous users see login plus public routes. Added development-only Superadmin, Admin, Manager, and Employee seed accounts, demo tenant, branch, and assignments.
+
+**Commands Executed:** `npm run typecheck`, focused home tests, `npm run lint`, `npm run build`, and `npm run test:run`.
+
+**Results:** 106 tests passed; typecheck and build passed; lint passed with one pre-existing Next image warning. Build also passes without Supabase environment variables.
+
+**Security Note:** Seed credentials are disposable development credentials only. Do not run `supabase/seed.sql` in production or reuse its password.
+
+**Next Action:** Configure the local/Supabase environment, apply the development seed in a disposable project, and verify each seeded role reaches only its protected area.
+
+**Commit:** Pending.
+
 ## 2026-07-24 03:31 MST - Phase 9 - Security Regression Suite
 
 **Objective:** Add automated regression checks for secret and tenant-authority boundaries.
