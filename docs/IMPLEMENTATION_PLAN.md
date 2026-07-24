@@ -109,7 +109,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Add manifest and install metadata.
 - [x] [Terminada] Implement scanner route and QR parsing.
-- [ ] [Pendiente] Implement purchase and redemption mobile flows.
+- [x] [Terminada] Implement purchase and redemption mobile flows.
 - [ ] [Pendiente] Add strict/flexible geolocation handling.
 - [ ] [Pendiente] Add double-submit protection.
 

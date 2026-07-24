@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:35 MST - Phase 4 - Employee Redemption Flow
+
+**Objective:** Implement online reward redemption in the employee PWA.
+
+**Files Created Or Modified:** `supabase/migrations/0016_reward_redemption.sql`, `supabase/tests/0016_reward_redemption.sql`, `src/app/app/redeem/page.tsx`, `src/app/app/redeem/actions.ts`, the employee app link, and continuity docs.
+
+**Changes Made:** Added reward redemption history, an authenticated atomic redemption RPC, AVAILABLE-state locking, tenant/branch authorization, one-redemption uniqueness, and the `/app/redeem` interface.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0016; 83 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning. Build exposes `/app/redeem`.
+
+**Next Action:** Implement geolocation modes and double-submit protection.
+
 ## 2026-07-24 01:32 MST - Phase 4 - Employee Purchase Flow
 
 **Objective:** Connect scanner results to online purchase preview and confirmation.

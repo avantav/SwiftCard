@@ -18,7 +18,7 @@ export default async function EmployeeAppPage({ searchParams }: EmployeeAppPageP
       <section className="panel">
         <p className="eyebrow">PWA empleados</p>
         <h1 className="title">Registrar cliente.</h1>
-        <p className="body-copy"><a className="text-link" href="/app/scan">Escanear tarjeta</a> · <a className="text-link" href="/app/purchase">Registrar compra</a> · <a className="text-link" href="/app/customers">Buscar clientes</a></p>
+        <p className="body-copy"><a className="text-link" href="/app/scan">Escanear tarjeta</a> · <a className="text-link" href="/app/purchase">Registrar compra</a> · <a className="text-link" href="/app/redeem">Canjear recompensa</a> · <a className="text-link" href="/app/customers">Buscar clientes</a></p>
         {created && cardToken ? <p className="success-alert" role="status">Cliente registrado. <a className="text-link" href={`/card/${encodeURIComponent(cardToken)}`}>Abrir tarjeta</a></p> : null}
         {duplicate ? <p className="auth-alert" role="alert">Este teléfono ya está registrado en este tenant.</p> : null}
         {error ? <p className="auth-alert" role="alert">{error}</p> : null}

@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement redemption mobile flow.
-- Last completed task: Implemented online purchase preview and confirmation flow.
+- Current task: Add strict/flexible geolocation handling and double-submit protection.
+- Last completed task: Implemented online purchase and reward redemption mobile flows.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `398a6eb feat: add online employee purchase flow`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Redemption mobile flow.
+- Strict/flexible geolocation handling and double-submit protection.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -99,6 +99,7 @@
 - PWA manifest unit test and generated manifest route: passed.
 - Scanner parser unit tests and cross-tenant card scan assertions: passed.
 - Purchase route build and full application validation: passed.
+- Reward redemption migration, tenant authorization, and one-time redemption assertions: passed.
 
 ## Validation Results
 
@@ -109,4 +110,4 @@
 
 ## Next Exact Step
 
-Implement the online employee redemption flow for AVAILABLE rewards, with backend authorization and one-reward-per-confirmation behavior.
+Implement Phase 4 geolocation modes and double-submit protection for online purchase/redemption operations.
