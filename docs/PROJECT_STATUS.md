@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement immutable audit log schema and write paths.
-- Last completed task: Implemented geolocation modes and double-submit protection.
+- Current task: Implement purchase cancellation with consistency checks.
+- Last completed task: Implemented immutable audit log schema and sensitive-operation write paths.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `59717d2 feat: add geolocation enforcement`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Immutable audit log schema and write paths.
+- Purchase cancellation with consistency checks.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -101,6 +101,7 @@
 - Purchase route build and full application validation: passed.
 - Reward redemption migration, tenant authorization, and one-time redemption assertions: passed.
 - Strict geolocation trigger and pending-submit UI validations: passed.
+- Audit trigger, append-only mutation denial, and actor attribution assertions: passed.
 
 ## Validation Results
 
@@ -111,4 +112,4 @@
 
 ## Next Exact Step
 
-Begin Phase 5 with immutable audit log schema and backend write paths for sensitive operations.
+Implement purchase cancellation without editing the original purchase, restoring balance/ledger consistently, and recording the action in audit history.

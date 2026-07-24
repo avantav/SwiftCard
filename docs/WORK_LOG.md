@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:41 MST - Phase 5 - Immutable Audit Logs
+
+**Objective:** Add append-only audit history and automatic sensitive-operation write paths.
+
+**Files Created Or Modified:** `supabase/migrations/0018_audit_logs.sql`, `supabase/tests/0018_audit_logs.sql`, `src/lib/audit/audit.test.ts`, and continuity docs.
+
+**Changes Made:** Added tenant/action/entity/actor audit records, mutation-blocking triggers, forced RLS, revoked direct inserts/updates/deletes, and automatic records for customer changes, purchases, and reward redemptions.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0018; 84 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement purchase cancellation with ledger and audit consistency.
+
 ## 2026-07-24 01:38 MST - Phase 4 - Geolocation And Submit Protection
 
 **Objective:** Enforce strict/flexible location modes and prevent repeated mobile submissions.
