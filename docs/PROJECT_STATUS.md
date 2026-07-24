@@ -2,12 +2,12 @@
 
 ## Current State
 
-- Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement XLSX exports.
-- Last completed task: Implemented permission-scoped CSV exports.
+- Current phase: Phase 6 - Dashboard And Exportaciones.
+- Current task: XLSX exports blocked on dependency approval.
+- Last completed task: Implemented and validated permission-scoped CSV exports.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
-- Git status: continuity update pending commit.
+- Git status: documentation update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
 ## Completed Functionality
@@ -55,12 +55,12 @@
 
 ## Pending Functionality
 
-- XLSX exports.
+- XLSX exports, blocked by XLSX dependency approval.
 - All later MVP functional phases.
 
 ## Active Blockers
 
-- None.
+- XLSX-001: no approved XLSX dependency is installed or available in `package.json`.
 
 ## Known Risks
 
@@ -72,7 +72,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 73 tests passed.
+- `npm run test:run`: passed; 90 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -118,4 +118,4 @@
 
 ## Next Exact Step
 
-Implement permission-scoped XLSX exports without bypassing the CSV/RLS scope boundary or adding unapproved dependencies.
+Obtain approval for a specific XLSX dependency, then implement XLSX exports by reusing the existing server-side allowlist and CSV/RLS scope boundary.

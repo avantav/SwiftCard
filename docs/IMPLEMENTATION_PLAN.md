@@ -138,7 +138,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement metrics queries and permission filters.
 - [x] [Terminada] Implement dashboard views.
 - [x] [Terminada] Implement CSV exports.
-- [ ] [Pendiente] Implement XLSX exports.
+- [ ] [Bloqueada] Implement XLSX exports; requiere una dependencia XLSX aprobada o autorización explícita para agregar una.
 
 ## Phase 7 - Superadmin And Importaciones
 
