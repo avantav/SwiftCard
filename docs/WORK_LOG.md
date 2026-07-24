@@ -170,7 +170,7 @@
 
 **Commit Generated**
 
-- Pending.
+- `b6e62a0 feat: add role permission helpers`
 
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 

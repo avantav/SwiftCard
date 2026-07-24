@@ -6,9 +6,9 @@
 - Current task: Implement login and protected route structure.
 - Last completed task: Added TypeScript role/permission helpers with focused unit tests.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `b2a9742 feat: add initial tenancy rls migration`.
+- Last stable commit: `b6e62a0 feat: add role permission helpers`.
 - Git status: clean after the continuity documentation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; latest push succeeded.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest permission helper commit.
 
 ## Completed Functionality
 
