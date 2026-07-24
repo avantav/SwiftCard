@@ -6,7 +6,7 @@
 - Current task: Implement redemption reversal and manual stamp adjustments.
 - Last completed task: Implemented purchase cancellation with ledger and audit consistency.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `1b958c2 feat: add immutable audit logs`.
+- Last stable commit: `3dfc1d4 feat: add purchase cancellation`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
