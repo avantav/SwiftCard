@@ -6,9 +6,9 @@
 - Current task: Add positive and negative RLS tests.
 - Last completed task: Implemented minimal Superadmin tenant creation flow.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `22495ff feat: add supabase login foundation`.
+- Last stable commit: `e6e71f5 feat: add superadmin tenant creation`.
 - Git status: clean after the continuity documentation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest login foundation commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest Superadmin tenant creation commit.
 
 ## Completed Functionality
 
