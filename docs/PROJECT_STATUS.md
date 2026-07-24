@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement scanner route and QR parsing.
-- Last completed task: Added PWA manifest, viewport metadata, and install icon.
+- Current task: Implement purchase and redemption mobile flows.
+- Last completed task: Implemented scanner route, bounded QR parsing, and tenant validation.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `8a0523c feat: add employee pwa manifest`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Scanner route and QR parsing.
+- Purchase and redemption mobile flows.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -97,6 +97,7 @@
 - Purchase preview/confirmation, balance locking, duplicate ticket, ledger, and reward-generation assertions: passed.
 - Multiple-reward, versioned-rule, preserved-balance, and paused-program assertions: passed.
 - PWA manifest unit test and generated manifest route: passed.
+- Scanner parser unit tests and cross-tenant card scan assertions: passed.
 
 ## Validation Results
 
@@ -107,4 +108,4 @@
 
 ## Next Exact Step
 
-Implement the employee scanner route and QR parsing using a maintained QR decoding library or a narrow parser boundary, without trusting scanned tokens until backend validation.
+Implement the online employee purchase and redemption mobile flows on top of the validated scanner and atomic Phase 3 RPCs.

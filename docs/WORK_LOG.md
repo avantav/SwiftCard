@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:15 MST - Phase 4 - Employee Scanner
+
+**Objective:** Add bounded QR parsing and tenant-validated card scanning to the employee PWA.
+
+**Files Created Or Modified:** `src/app/app/scan/page.tsx`, `src/app/app/scan/actions.ts`, `src/lib/scanner/qr.ts`, scanner tests, `supabase/migrations/0015_staff_card_scan.sql`, `supabase/tests/0015_staff_card_scan.sql`, the employee app link, and continuity docs.
+
+**Changes Made:** Added `/app/scan`, accepted only raw safe card tokens or `/card/...` URLs, and added an authenticated RPC that returns no customer data for unknown cards or cards belonging to another tenant.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0015; 83 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement online purchase and redemption mobile flows.
+
 ## 2026-07-24 01:12 MST - Phase 4 - PWA Manifest
 
 **Objective:** Add install metadata for the employee PWA.
