@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:46 MST - Phase 5 - Redemption Reversal And Adjustments
+
+**Objective:** Add reward redemption reversal and manual stamp adjustments.
+
+**Files Created Or Modified:** `supabase/migrations/0020_reversals_and_adjustments.sql`, `supabase/tests/0020_reversals_and_adjustments.sql`, `src/lib/loyalty/reversal.test.ts`, and continuity docs.
+
+**Changes Made:** Added redemption lifecycle status and reversal metadata, Admin/Manager reversal authorization, reward re-availability, manual adjustment records with mandatory reason, balance locking, negative-balance rejection, ledger entries, and audit events.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0020; 86 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement Administrator-only reward cancellation without returning stamps.
+
 ## 2026-07-24 01:43 MST - Phase 5 - Purchase Cancellation
 
 **Objective:** Add consistent purchase cancellation without editing financial history.

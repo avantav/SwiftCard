@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement redemption reversal and manual stamp adjustments.
-- Last completed task: Implemented purchase cancellation with ledger and audit consistency.
+- Current task: Implement reward cancellation rules.
+- Last completed task: Implemented redemption reversal and manual stamp adjustments.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `3dfc1d4 feat: add purchase cancellation`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Redemption reversal and manual stamp adjustments.
+- Reward cancellation rules.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -103,6 +103,7 @@
 - Strict geolocation trigger and pending-submit UI validations: passed.
 - Audit trigger, append-only mutation denial, and actor attribution assertions: passed.
 - Purchase cancellation, later-activity guard, reward consistency, and ledger restoration assertions: passed.
+- Redemption reversal, reward re-availability, adjustment reason, role checks, and nonnegative balance assertions: passed.
 
 ## Validation Results
 
@@ -113,4 +114,4 @@
 
 ## Next Exact Step
 
-Implement reward redemption reversal and manual stamp adjustments with role checks, balance locks, nonnegative balances, ledger entries, and audit history.
+Implement reward cancellation rules for Administrador, preserving stamps and recording the action in audit history.

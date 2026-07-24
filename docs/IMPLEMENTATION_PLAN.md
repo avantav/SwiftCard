@@ -123,8 +123,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Implement immutable audit log schema and write paths.
 - [x] [Terminada] Implement purchase cancellation with consistency checks.
-- [ ] [Pendiente] Implement redemption reversal.
-- [ ] [Pendiente] Implement stamp adjustments with mandatory reason.
+- [x] [Terminada] Implement redemption reversal.
+- [x] [Terminada] Implement stamp adjustments with mandatory reason.
 - [ ] [Pendiente] Implement reward cancellation rules.
 
 ## Phase 6 - Dashboard And Exportaciones
