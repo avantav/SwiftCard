@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Implement temporary-password reset from Superadmin.
-- Last completed task: Implemented first tenant Administrator creation with temporary-password state.
+- Current task: Enforce role/status route guards and mandatory password change.
+- Last completed task: Implemented safe Superadmin temporary-password reset.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `63fb8e0 feat: add first tenant administrator provisioning`.
-- Git status: clean after the first-Administrator implementation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `63fb8e0` is awaiting push.
+- Git status: temporary-password reset implementation and continuity updates are awaiting commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; first-Administrator commits were pushed successfully.
 
 ## Completed Functionality
 
@@ -35,10 +35,11 @@
 - Superadmin first-Administrator form after tenant creation.
 - Server-only Auth user provisioning with profile compensation.
 - Atomic first-Administrator profile RPC with concurrent duplicate protection.
+- Superadmin password-reset form for the existing tenant Administrator.
+- Profile-first password reset RPC that rejects cross-tenant, unauthorized, and inactive targets.
 
 ## Pending Functionality
 
-- Temporary-password reset for tenant Administrators.
 - Role/status route guards and mandatory password change.
 - Minimum branch, staff, and branch-assignment management.
 - All later MVP functional phases.
@@ -57,7 +58,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 29 tests passed.
+- `npm run test:run`: passed; 36 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -67,6 +68,7 @@
 - Tenant validation and server-only admin boundary tests: passed.
 - `npm run db:verify-rls`: passed against disposable PostgreSQL 16.
 - First-Administrator RPC integration assertions: passed.
+- Administrator password-reset integration assertions: passed.
 
 ## Validation Results
 
@@ -77,4 +79,4 @@
 
 ## Next Exact Step
 
-Implement a Superadmin-only temporary-password reset action for an existing tenant Administrator. Mark the profile `PASSWORD_RESET_REQUIRED` before changing Auth credentials so a partial failure denies operational access safely.
+Implement the mandatory password-change route and server action, then add server-side role/status guards for `/superadmin`, `/admin`, and `/app`.

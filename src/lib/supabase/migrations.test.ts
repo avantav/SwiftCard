@@ -17,6 +17,13 @@ const firstAdministratorMigration = readFileSync(
   ),
   "utf8"
 );
+const administratorPasswordResetMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/0003_tenant_administrator_password_reset.sql"
+  ),
+  "utf8"
+);
 
 describe("initial auth tenancy migration", () => {
   it("creates the phase 1 tenancy tables", () => {
@@ -91,5 +98,26 @@ describe("initial auth tenancy migration", () => {
       "from public, anon, authenticated"
     );
     expect(firstAdministratorMigration).toContain("to service_role");
+  });
+
+  it("marks only the selected tenant Administrator for password reset", () => {
+    expect(administratorPasswordResetMigration).toContain(
+      "function app.mark_tenant_administrator_password_reset"
+    );
+    expect(administratorPasswordResetMigration).toContain(
+      "sp.tenant_id = target_tenant_id"
+    );
+    expect(administratorPasswordResetMigration).toContain(
+      "sp.role = 'ADMIN'"
+    );
+    expect(administratorPasswordResetMigration).toContain(
+      "sp.status in ('ACTIVE', 'PASSWORD_RESET_REQUIRED')"
+    );
+    expect(administratorPasswordResetMigration).toContain(
+      "status = 'PASSWORD_RESET_REQUIRED'"
+    );
+    expect(administratorPasswordResetMigration).toContain(
+      "from public, anon, authenticated"
+    );
   });
 });

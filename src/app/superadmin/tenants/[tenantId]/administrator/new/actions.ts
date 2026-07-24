@@ -5,7 +5,9 @@ import { getActiveSuperadminContext } from "@/lib/auth/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   provisionFirstAdministrator,
+  resetAdministratorTemporaryPassword,
   validateFirstAdministratorForm,
+  validateTemporaryPasswordForm,
   type AdministratorProvisioningResult
 } from "@/lib/superadmin/administrators";
 
@@ -126,4 +128,83 @@ export async function createFirstAdministrator(
   }
 
   redirect(route(tenantId, "administratorCreated", result.userId));
+}
+
+export async function resetAdministratorPassword(
+  tenantId: string,
+  administratorId: string,
+  formData: FormData
+) {
+  const validation = validateTemporaryPasswordForm(formData);
+
+  if (!validation.ok) {
+    redirect(
+      route(
+        tenantId,
+        "error",
+        validation.errors[0] ?? "Contraseña temporal inválida."
+      )
+    );
+  }
+
+  const superadmin = await getActiveSuperadminContext();
+
+  if (!superadmin) {
+    redirect(
+      route(
+        tenantId,
+        "error",
+        "No tienes permisos para restablecer contraseñas."
+      )
+    );
+  }
+
+  let adminClient;
+
+  try {
+    adminClient = createSupabaseAdminClient();
+  } catch {
+    redirect(route(tenantId, "error", "La service role no está configurada."));
+  }
+
+  const result = await resetAdministratorTemporaryPassword(
+    tenantId,
+    administratorId,
+    validation.data.temporaryPassword,
+    {
+      async markPasswordResetRequired(targetTenantId, targetAdministratorId) {
+        const { error } = await adminClient.rpc(
+          "mark_tenant_administrator_password_reset",
+          {
+            target_tenant_id: targetTenantId,
+            target_administrator_id: targetAdministratorId,
+            requested_by_superadmin_id: superadmin.userId
+          }
+        );
+
+        return !error;
+      },
+      async updateAuthPassword(targetAdministratorId, temporaryPassword) {
+        const { error } = await adminClient.auth.admin.updateUserById(
+          targetAdministratorId,
+          {
+            password: temporaryPassword
+          }
+        );
+
+        return !error;
+      }
+    }
+  );
+
+  if (!result.ok) {
+    const message =
+      result.reason === "PROFILE_MARK_FAILED"
+        ? "No se pudo bloquear el perfil para el cambio de contraseña."
+        : "El perfil quedó bloqueado, pero Auth no aceptó la contraseña. Vuelve a intentarlo.";
+
+    redirect(route(tenantId, "error", message));
+  }
+
+  redirect(route(tenantId, "passwordReset", "1"));
 }

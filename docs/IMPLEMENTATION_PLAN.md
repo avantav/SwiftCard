@@ -53,8 +53,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement minimal Superadmin tenant creation flow.
 - [x] [Terminada] Add positive and negative RLS tests.
 - [x] [Terminada] Implement first Administrator creation from Superadmin.
-- [ ] [En progreso] Implement temporary-password reset from Superadmin.
-- [ ] [Pendiente] Enforce role/status route guards and mandatory password change.
+- [x] [Terminada] Implement temporary-password reset from Superadmin.
+- [ ] [En progreso] Enforce role/status route guards and mandatory password change.
 - [ ] [Pendiente] Implement minimum branch, staff, and branch-assignment management.
 
 **Acceptance Criteria**

@@ -36,4 +36,16 @@ describe("Supabase admin client boundary", () => {
     );
     expect(firstAdministratorActionSource).toContain("email_confirm: true");
   });
+
+  it("blocks the profile before updating an Administrator Auth password", () => {
+    const profileUpdate = firstAdministratorActionSource.indexOf(
+      '"mark_tenant_administrator_password_reset"'
+    );
+    const authUpdate = firstAdministratorActionSource.indexOf(
+      "adminClient.auth.admin.updateUserById"
+    );
+
+    expect(profileUpdate).toBeGreaterThan(-1);
+    expect(authUpdate).toBeGreaterThan(profileUpdate);
+  });
 });

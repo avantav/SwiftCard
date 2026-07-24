@@ -14,6 +14,18 @@ export type FirstAdministratorValidationResult =
       errors: string[];
     };
 
+export type TemporaryPasswordValidationResult =
+  | {
+      ok: true;
+      data: {
+        temporaryPassword: string;
+      };
+    }
+  | {
+      ok: false;
+      errors: string[];
+    };
+
 export type AdministratorProvisioningDependencies = {
   administratorExists: (tenantId: string) => Promise<boolean | null>;
   createAuthUser: (
@@ -44,6 +56,28 @@ export type AdministratorProvisioningResult =
         | "PROFILE_CREATE_FAILED_CLEANUP_FAILED";
     };
 
+export type AdministratorPasswordResetDependencies = {
+  markPasswordResetRequired: (
+    tenantId: string,
+    administratorId: string
+  ) => Promise<boolean>;
+  updateAuthPassword: (
+    administratorId: string,
+    temporaryPassword: string
+  ) => Promise<boolean>;
+};
+
+export type AdministratorPasswordResetResult =
+  | {
+      ok: true;
+    }
+  | {
+      ok: false;
+      reason:
+        | "PROFILE_MARK_FAILED"
+        | "AUTH_PASSWORD_UPDATE_FAILED_PROFILE_BLOCKED";
+    };
+
 function textValue(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -52,26 +86,14 @@ function passwordValue(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value : "";
 }
 
-export function validateFirstAdministratorForm(
-  formData: FormData
-): FirstAdministratorValidationResult {
-  const errors: string[] = [];
-  const fullName = textValue(formData.get("fullName"));
-  const email = textValue(formData.get("email")).toLowerCase();
+function validateTemporaryPassword(
+  formData: FormData,
+  errors: string[]
+) {
   const temporaryPassword = passwordValue(formData.get("temporaryPassword"));
   const passwordConfirmation = passwordValue(
     formData.get("passwordConfirmation")
   );
-
-  if (!fullName) {
-    errors.push("Nombre es obligatorio.");
-  }
-
-  if (!email) {
-    errors.push("Correo es obligatorio.");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.push("El correo no es válido.");
-  }
 
   if (temporaryPassword.length < 12) {
     errors.push("La contraseña temporal debe tener al menos 12 caracteres.");
@@ -85,6 +107,28 @@ export function validateFirstAdministratorForm(
     errors.push("La confirmación de contraseña no coincide.");
   }
 
+  return temporaryPassword;
+}
+
+export function validateFirstAdministratorForm(
+  formData: FormData
+): FirstAdministratorValidationResult {
+  const errors: string[] = [];
+  const fullName = textValue(formData.get("fullName"));
+  const email = textValue(formData.get("email")).toLowerCase();
+
+  if (!fullName) {
+    errors.push("Nombre es obligatorio.");
+  }
+
+  if (!email) {
+    errors.push("Correo es obligatorio.");
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.push("El correo no es válido.");
+  }
+
+  const temporaryPassword = validateTemporaryPassword(formData, errors);
+
   if (errors.length > 0) {
     return {
       ok: false,
@@ -97,6 +141,27 @@ export function validateFirstAdministratorForm(
     data: {
       fullName,
       email,
+      temporaryPassword
+    }
+  };
+}
+
+export function validateTemporaryPasswordForm(
+  formData: FormData
+): TemporaryPasswordValidationResult {
+  const errors: string[] = [];
+  const temporaryPassword = validateTemporaryPassword(formData, errors);
+
+  if (errors.length > 0) {
+    return {
+      ok: false,
+      errors
+    };
+  }
+
+  return {
+    ok: true,
+    data: {
       temporaryPassword
     }
   };
@@ -156,5 +221,40 @@ export async function provisionFirstAdministrator(
     reason: authUserDeleted
       ? "PROFILE_CREATE_FAILED"
       : "PROFILE_CREATE_FAILED_CLEANUP_FAILED"
+  };
+}
+
+export async function resetAdministratorTemporaryPassword(
+  tenantId: string,
+  administratorId: string,
+  temporaryPassword: string,
+  dependencies: AdministratorPasswordResetDependencies
+): Promise<AdministratorPasswordResetResult> {
+  const profileMarked = await dependencies.markPasswordResetRequired(
+    tenantId,
+    administratorId
+  );
+
+  if (!profileMarked) {
+    return {
+      ok: false,
+      reason: "PROFILE_MARK_FAILED"
+    };
+  }
+
+  const passwordUpdated = await dependencies.updateAuthPassword(
+    administratorId,
+    temporaryPassword
+  );
+
+  if (!passwordUpdated) {
+    return {
+      ok: false,
+      reason: "AUTH_PASSWORD_UPDATE_FAILED_PROFILE_BLOCKED"
+    };
+  }
+
+  return {
+    ok: true
   };
 }

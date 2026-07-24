@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getActiveSuperadminContext } from "@/lib/auth/server";
-import { createFirstAdministrator } from "./actions";
+import {
+  createFirstAdministrator,
+  resetAdministratorPassword
+} from "./actions";
 
 type NewAdministratorPageProps = {
   params: Promise<{
@@ -10,6 +13,7 @@ type NewAdministratorPageProps = {
   searchParams: Promise<{
     administratorCreated?: string;
     error?: string;
+    passwordReset?: string;
     tenantCreated?: string;
   }>;
 };
@@ -19,7 +23,8 @@ export default async function NewAdministratorPage({
   searchParams
 }: NewAdministratorPageProps) {
   const { tenantId } = await params;
-  const { administratorCreated, error, tenantCreated } = await searchParams;
+  const { administratorCreated, error, passwordReset, tenantCreated } =
+    await searchParams;
   const superadmin = await getActiveSuperadminContext();
 
   if (!superadmin) {
@@ -38,7 +43,7 @@ export default async function NewAdministratorPage({
 
   const { data: existingAdministrator } = await superadmin.supabase
     .from("staff_profiles")
-    .select("email,full_name,status")
+    .select("id,email,full_name,status")
     .eq("tenant_id", tenantId)
     .eq("role", "ADMIN")
     .limit(1)
@@ -65,26 +70,76 @@ export default async function NewAdministratorPage({
             iniciar sesión.
           </p>
         ) : null}
+        {passwordReset ? (
+          <p className="success-alert" role="status">
+            Contraseña temporal restablecida. El Administrador deberá cambiarla
+            al iniciar sesión.
+          </p>
+        ) : null}
         {error ? (
           <p className="auth-alert" role="alert">
             {error}
           </p>
         ) : null}
         {existingAdministrator ? (
-          <dl className="summary-list">
-            <div>
-              <dt>Nombre</dt>
-              <dd>{existingAdministrator.full_name}</dd>
-            </div>
-            <div>
-              <dt>Correo</dt>
-              <dd>{existingAdministrator.email}</dd>
-            </div>
-            <div>
-              <dt>Estado</dt>
-              <dd>{existingAdministrator.status}</dd>
-            </div>
-          </dl>
+          <>
+            <dl className="summary-list">
+              <div>
+                <dt>Nombre</dt>
+                <dd>{existingAdministrator.full_name}</dd>
+              </div>
+              <div>
+                <dt>Correo</dt>
+                <dd>{existingAdministrator.email}</dd>
+              </div>
+              <div>
+                <dt>Estado</dt>
+                <dd>{existingAdministrator.status}</dd>
+              </div>
+            </dl>
+            <h2 className="section-title">Restablecer contraseña</h2>
+            {existingAdministrator.status === "INACTIVE" ? (
+              <p className="auth-alert" role="status">
+                El Administrador está inactivo. Reactívalo antes de restablecer
+                su contraseña.
+              </p>
+            ) : (
+              <form
+                className="form-grid"
+                action={resetAdministratorPassword.bind(
+                  null,
+                  tenantId,
+                  existingAdministrator.id
+                )}
+              >
+                <label className="field">
+                  <span>Nueva contraseña temporal</span>
+                  <input
+                    name="temporaryPassword"
+                    type="password"
+                    minLength={12}
+                    maxLength={72}
+                    autoComplete="new-password"
+                    required
+                  />
+                </label>
+                <label className="field">
+                  <span>Confirmar contraseña</span>
+                  <input
+                    name="passwordConfirmation"
+                    type="password"
+                    minLength={12}
+                    maxLength={72}
+                    autoComplete="new-password"
+                    required
+                  />
+                </label>
+                <button className="primary-button form-submit" type="submit">
+                  Restablecer contraseña
+                </button>
+              </form>
+            )}
+          </>
         ) : (
           <form
             className="form-grid"

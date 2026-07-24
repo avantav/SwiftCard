@@ -259,6 +259,12 @@ a {
   overflow-wrap: anywhere;
 }
 
+.section-title {
+  margin: 32px 0 16px;
+  font-size: 1.25rem;
+  letter-spacing: 0;
+}
+
 @media (max-width: 720px) {
   .form-grid {
     grid-template-columns: 1fr;

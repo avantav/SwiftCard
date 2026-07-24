@@ -159,6 +159,58 @@
 **Commit Generated**
 
 - `63fb8e0 feat: add first tenant administrator provisioning`
+
+## 2026-07-23 23:58 MST - Phase 1 - Administrator Password Reset
+
+**Objective:** Let Superadmin issue a new temporary password without allowing partial failures or inactive-user reactivation.
+
+**Files Created Or Modified**
+
+- Created `supabase/migrations/0003_tenant_administrator_password_reset.sql`.
+- Created `supabase/tests/0003_tenant_administrator_password_reset.sql`.
+- Modified the tenant Administrator action, page, validation/orchestration helpers, tests, styles, and continuity docs.
+
+**Changes Made**
+
+- Added a server-only reset form for the existing tenant Administrator.
+- Added shared 12-72 character temporary-password validation.
+- Added a service-role-only RPC that verifies an active Superadmin, locks the exact tenant Administrator row, rejects cross-tenant targets, and marks the profile `PASSWORD_RESET_REQUIRED`.
+- Ordered reset operations so the profile is blocked before the Auth password changes.
+- Left the profile blocked if the Auth update fails and return a retryable operational error.
+- Prevented resets from changing an `INACTIVE` Administrator's status.
+
+**Migrations Added**
+
+- `supabase/migrations/0003_tenant_administrator_password_reset.sql`.
+
+**Tests Added Or Modified**
+
+- Added validation and orchestration tests proving profile-first ordering and partial-failure behavior.
+- Added PostgreSQL integration checks for valid reset, cross-tenant denial, non-Superadmin denial, and inactive-status preservation.
+- Extended server-only boundary and migration static tests.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed with migrations `0001` through `0003`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 36 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- Refactoring shared password validation initially changed error ordering.
+- Resetting an inactive Administrator would have overwritten the inactive state.
+
+**Solution Applied**
+
+- Preserved the previous validation order.
+- Restricted the reset RPC to `ACTIVE` and `PASSWORD_RESET_REQUIRED` Administrators and added a regression test.
+
+**Commit Generated**
+
+- Pending.
 - `1327c47 docs: record scaffold status`
 
 **Push**
