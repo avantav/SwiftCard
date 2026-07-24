@@ -21,8 +21,8 @@ npm run build
 ## RLS Verification
 
 Docker and the local `postgres:16-alpine` image are required. The command starts
-an isolated PostgreSQL container, applies the Phase 1 migration, runs positive
-and negative tenant/branch access assertions, and removes the container.
+an isolated PostgreSQL container, applies all migrations, runs the database
+integration assertions, and removes the container.
 
 ```bash
 npm run db:verify-rls

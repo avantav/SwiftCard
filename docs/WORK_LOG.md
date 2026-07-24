@@ -103,6 +103,62 @@
 **Commit Generated**
 
 - `e6d95f7 test: add repeatable tenancy rls verification`
+
+## 2026-07-23 23:53 MST - Phase 1 - First Tenant Administrator
+
+**Objective:** Let an active Superadmin create the first tenant Administrator with a temporary password and mandatory-change state.
+
+**Files Created Or Modified**
+
+- Created `src/lib/auth/server.ts`.
+- Created `src/lib/superadmin/administrators.ts`.
+- Created `src/lib/superadmin/administrators.test.ts`.
+- Created `src/app/superadmin/tenants/[tenantId]/administrator/new/actions.ts`.
+- Created `src/app/superadmin/tenants/[tenantId]/administrator/new/page.tsx`.
+- Created `supabase/migrations/0002_first_tenant_administrator.sql`.
+- Created `supabase/tests/0002_first_tenant_administrator.sql`.
+- Modified tenant creation redirect, admin boundary tests, migration tests, RLS runner, Auth bootstrap, global styles, README, and continuity docs.
+
+**Changes Made**
+
+- Redirected successful tenant creation directly to first-Administrator setup.
+- Added server-side validation for name, normalized email, and 12-72 character temporary password confirmation.
+- Added server-only Supabase Auth provisioning with confirmed email and no browser exposure of credentials.
+- Added a service-role-only PostgreSQL RPC that verifies the creating Superadmin, locks per tenant, rejects a concurrent second first Administrator, and inserts `PASSWORD_RESET_REQUIRED`.
+- Added Auth user deletion compensation when profile creation fails.
+- Made existing-Administrator checks fail closed on database errors.
+- Updated the database verifier to apply every versioned migration and SQL integration test in order.
+
+**Migrations Added**
+
+- `supabase/migrations/0002_first_tenant_administrator.sql`.
+
+**Tests Added Or Modified**
+
+- Added seven validation/provisioning tests in `src/lib/superadmin/administrators.test.ts`.
+- Added PostgreSQL integration coverage for successful creation, email normalization, duplicate rejection, and unauthorized actor rejection.
+- Extended server-only boundary and migration static tests.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed with migrations `0001` and `0002`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 29 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- Initial application-only duplicate check was vulnerable to concurrent requests.
+
+**Solution Applied**
+
+- Added an advisory-lock-protected PostgreSQL RPC as the atomic authority and retained Auth cleanup compensation.
+
+**Commit Generated**
+
+- Pending.
 - `1327c47 docs: record scaffold status`
 
 **Push**

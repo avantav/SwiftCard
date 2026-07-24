@@ -1,31 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getActiveSuperadminContext } from "@/lib/auth/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { validateTenantCreateForm } from "@/lib/superadmin/tenants";
 
 function redirectWithError(error: string): never {
   redirect(`/superadmin/tenants/new?error=${encodeURIComponent(error)}`);
-}
-
-async function requireActiveSuperadmin() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return false;
-  }
-
-  const { data: profile } = await supabase
-    .from("staff_profiles")
-    .select("role,status")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  return profile?.role === "SUPERADMIN" && profile.status === "ACTIVE";
 }
 
 export async function createTenant(formData: FormData) {
@@ -35,9 +16,9 @@ export async function createTenant(formData: FormData) {
     redirectWithError(validation.errors[0] ?? "Datos inválidos.");
   }
 
-  const isSuperadmin = await requireActiveSuperadmin();
+  const superadmin = await getActiveSuperadminContext();
 
-  if (!isSuperadmin) {
+  if (!superadmin) {
     redirectWithError("No tienes permisos para crear tenants.");
   }
 
@@ -70,6 +51,5 @@ export async function createTenant(formData: FormData) {
     redirectWithError("No se pudo crear el tenant.");
   }
 
-  redirect(`/superadmin?tenantCreated=${data.id}`);
+  redirect(`/superadmin/tenants/${data.id}/administrator/new?tenantCreated=1`);
 }
-

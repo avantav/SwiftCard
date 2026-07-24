@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -7,10 +7,18 @@ const databaseName = "swiftwallet_rls_test";
 const postgresImage = process.env.POSTGRES_TEST_IMAGE ?? "postgres:16-alpine";
 const projectRoot = resolve(import.meta.dirname, "..");
 
+const migrationFiles = readdirSync(resolve(projectRoot, "supabase/migrations"))
+  .filter((file) => file.endsWith(".sql"))
+  .sort()
+  .map((file) => `supabase/migrations/${file}`);
+const verificationFiles = readdirSync(resolve(projectRoot, "supabase/tests"))
+  .filter((file) => file.endsWith(".sql") && file !== "auth_bootstrap.sql")
+  .sort()
+  .map((file) => `supabase/tests/${file}`);
 const sqlFiles = [
   "supabase/tests/auth_bootstrap.sql",
-  "supabase/migrations/0001_initial_auth_tenancy.sql",
-  "supabase/tests/0001_initial_auth_tenancy_rls.sql"
+  ...migrationFiles,
+  ...verificationFiles
 ];
 
 function runDocker(args, options = {}) {

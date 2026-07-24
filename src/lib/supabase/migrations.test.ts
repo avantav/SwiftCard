@@ -10,6 +10,13 @@ const rlsVerification = readFileSync(
   join(process.cwd(), "supabase/tests/0001_initial_auth_tenancy_rls.sql"),
   "utf8"
 );
+const firstAdministratorMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/0002_first_tenant_administrator.sql"
+  ),
+  "utf8"
+);
 
 describe("initial auth tenancy migration", () => {
   it("creates the phase 1 tenancy tables", () => {
@@ -70,5 +77,19 @@ describe("initial auth tenancy migration", () => {
     ]) {
       expect(rlsVerification).toContain(scenario);
     }
+  });
+
+  it("creates the first Administrator profile atomically and server-only", () => {
+    expect(firstAdministratorMigration).toContain(
+      "function app.create_first_tenant_administrator"
+    );
+    expect(firstAdministratorMigration).toContain("pg_advisory_xact_lock");
+    expect(firstAdministratorMigration).toContain(
+      "'PASSWORD_RESET_REQUIRED'"
+    );
+    expect(firstAdministratorMigration).toContain(
+      "from public, anon, authenticated"
+    );
+    expect(firstAdministratorMigration).toContain("to service_role");
   });
 });

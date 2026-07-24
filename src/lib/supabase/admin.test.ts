@@ -6,6 +6,13 @@ const adminClientSource = readFileSync(
   join(process.cwd(), "src/lib/supabase/admin.ts"),
   "utf8"
 );
+const firstAdministratorActionSource = readFileSync(
+  join(
+    process.cwd(),
+    "src/app/superadmin/tenants/[tenantId]/administrator/new/actions.ts"
+  ),
+  "utf8"
+);
 
 describe("Supabase admin client boundary", () => {
   it("is marked server-only", () => {
@@ -16,5 +23,17 @@ describe("Supabase admin client boundary", () => {
     expect(adminClientSource).toContain("getServerSupabaseServiceRoleKey");
     expect(adminClientSource).toContain("persistSession: false");
   });
-});
 
+  it("provisions first Administrators through server-only Auth and RPC calls", () => {
+    expect(firstAdministratorActionSource).toContain(
+      "adminClient.auth.admin.createUser"
+    );
+    expect(firstAdministratorActionSource).toContain(
+      '"create_first_tenant_administrator"'
+    );
+    expect(firstAdministratorActionSource).toContain(
+      "adminClient.auth.admin.deleteUser"
+    );
+    expect(firstAdministratorActionSource).toContain("email_confirm: true");
+  });
+});
