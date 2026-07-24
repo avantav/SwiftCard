@@ -6,7 +6,7 @@
 - Current task: Implement multiple reward generation, program pause behavior, and rule-change handling.
 - Last completed task: Implemented atomic purchase preview and confirmation with ledger and reward generation.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `7de97ac feat: add loyalty schema`.
+- Last stable commit: `ea0f7a6 feat: add atomic purchase operations`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
