@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { importFileType, validateImportFile } from "./imports";
+import { importFileType, parseImportFile, validateImportFile } from "./imports";
 
 const migration = readFileSync(new URL("../../../supabase/migrations/0024_customer_imports.sql", import.meta.url), "utf8");
 
@@ -17,5 +17,15 @@ describe("customer imports", () => {
     expect(migration).toContain("using (app.is_superadmin())");
     expect(migration).toContain("file_size_bytes");
     expect(migration).toContain("raw_rows jsonb");
+  });
+
+  it("parses CSV rows into normalized records", async () => {
+    const file = new File(["Nombre,Teléfono\nAna,+5215512345678\nLuis,+5215587654321"], "customers.csv", { type: "text/csv" });
+    const parsed = await parseImportFile(file);
+    expect(parsed.headers).toEqual(["Nombre", "Teléfono"]);
+    expect(parsed.rows).toEqual([
+      { Nombre: "Ana", "Teléfono": "+5215512345678" },
+      { Nombre: "Luis", "Teléfono": "+5215587654321" }
+    ]);
   });
 });

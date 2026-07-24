@@ -1,5 +1,23 @@
 # Work Log
 
+## 2026-07-24 02:24 MST - Phase 7 - Import Parsing And Mapping
+
+**Objective:** Parse uploaded CSV/XLSX files and expose detected columns for mapping.
+
+**Files Created Or Modified:** `src/lib/superadmin/imports.ts`, `src/lib/superadmin/imports.test.ts`, `src/app/superadmin/imports/actions.ts`, `src/app/superadmin/imports/[importId]/mapping/page.tsx`, and continuity docs.
+
+**Changes Made:** Added SheetJS parsing for CSV/XLS/XLSX, UTF-8 CSV handling, empty-row filtering, normalized object rows, a 5,000-row limit, persistence of parsed rows, and mapping selectors for name, phone, and optional email.
+
+**Commands Executed:** `npm run typecheck`, focused import tests, `npm run lint`, `npm run test:run`, and `npm run build`.
+
+**Results:** 94 tests passed; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Problems Found:** Initial CSV parsing corrupted accented headers; fixed by setting SheetJS codepage 65001 and added a regression test.
+
+**Next Action:** Implement mapped validation preview without creating customer records.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:18 MST - Phase 7 - Customer Import Upload
 
 **Objective:** Add the Superadmin customer import schema and upload flow.

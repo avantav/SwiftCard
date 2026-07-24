@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getActiveSuperadminContext } from "@/lib/auth/server";
-import { validateImportFile, importFileType } from "@/lib/superadmin/imports";
+import { importFileType, parseImportFile, validateImportFile } from "@/lib/superadmin/imports";
 
 function redirectWithError(error: string): never {
   redirect(`/superadmin/imports?error=${encodeURIComponent(error)}`);
@@ -17,6 +17,15 @@ export async function uploadCustomerImport(formData: FormData) {
   const validation = validateImportFile(file);
   if (!validation.ok) redirectWithError(validation.error);
 
+  let parsed;
+  try {
+    parsed = await parseImportFile(file);
+  } catch (error) {
+    redirectWithError(error instanceof Error ? error.message : "No se pudo leer el archivo.");
+  }
+
+  if (parsed.rows.length > 5000) redirectWithError("El archivo supera el máximo de 5,000 filas.");
+
   const { data, error } = await superadmin.supabase
     .from("customer_imports")
     .insert({
@@ -24,7 +33,8 @@ export async function uploadCustomerImport(formData: FormData) {
       file_name: file.name,
       file_type: importFileType(file),
       file_size_bytes: file.size,
-      raw_rows: [],
+      raw_rows: parsed.rows,
+      total_rows: parsed.rows.length,
       uploaded_by: superadmin.userId
     })
     .select("id")

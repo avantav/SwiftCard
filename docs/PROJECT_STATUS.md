@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 7 - Superadmin And Importaciones.
-- Current task: Implement column mapping and validation preview.
-- Last completed task: Implemented Superadmin customer import schema and upload flow.
+- Current task: Complete server-side validation preview for mapped imports.
+- Last completed task: Implemented CSV/XLSX parsing and detected-column mapping UI.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -71,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 93 tests passed.
+- `npm run test:run`: passed; 94 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Implement server-side parsing for CSV/XLSX imports, column mapping, and a validation preview without creating customer records yet.
+Add a server action that receives mapped columns, validates required name/phone fields and optional birth date/stamps, stores preview errors, and does not create customers.
