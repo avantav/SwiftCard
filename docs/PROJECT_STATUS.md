@@ -6,9 +6,9 @@
 - Current task: Implement first Administrator creation and temporary-password reset from Superadmin.
 - Last completed task: Added repeatable positive and negative PostgreSQL RLS verification.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `e6e71f5 feat: add superadmin tenant creation`.
-- Git status: RLS harness and continuity updates are awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; latest push succeeded.
+- Last stable commit: `e6d95f7 test: add repeatable tenancy rls verification`.
+- Git status: clean after the RLS verification commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `e6d95f7` is awaiting push.
 
 ## Completed Functionality
 
