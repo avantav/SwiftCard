@@ -6,9 +6,9 @@
 - Current task: Implement minimal Superadmin tenant creation flow.
 - Last completed task: Added Supabase SSR login and protected route foundation.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `b6e62a0 feat: add role permission helpers`.
+- Last stable commit: `22495ff feat: add supabase login foundation`.
 - Git status: clean after the continuity documentation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest permission helper commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest login foundation commit.
 
 ## Completed Functionality
 
