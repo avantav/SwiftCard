@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement public web card by card token.
-- Last completed task: Implemented customer search, editing, and deactivation.
+- Current task: Add loyalty program, balance, ledger, purchase, and reward schema.
+- Last completed task: Implemented the public Web Card projection by card token.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `7105b3b feat: add customer search and editing`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Public web card by card token.
+- Loyalty program, balance, ledger, purchase, and reward schema.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -92,6 +92,7 @@
 - Public registration validation and migration static tests: passed; 3 tests.
 - Employee registration migration and assigned-branch assertions: passed.
 - Customer profile management migration and cross-tenant assertions: passed.
+- Public Web Card projection and unknown/revoked token assertions: passed.
 
 ## Validation Results
 
@@ -102,4 +103,4 @@
 
 ## Next Exact Step
 
-Implement the public web card route by card token, exposing only intended card/customer information and rejecting revoked or unknown tokens.
+Begin Phase 3 with the loyalty program, balance, ledger, purchase, and reward schema, keeping all monetary values in minor units and operations atomic.

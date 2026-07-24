@@ -178,6 +178,32 @@ a {
   line-height: 1.45;
 }
 
+.card-logo {
+  display: block;
+  max-width: 160px;
+  max-height: 64px;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
+
+.card-customer {
+  margin: 0 0 20px;
+  color: hsl(var(--foreground));
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.card-qr-placeholder {
+  display: grid;
+  width: 180px;
+  aspect-ratio: 1;
+  place-items: center;
+  margin: 0 auto 20px;
+  border: 2px dashed hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-weight: 800;
+}
+
 .action-row {
   display: flex;
   flex-wrap: wrap;

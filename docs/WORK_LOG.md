@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 00:59 MST - Phase 2 - Public Web Card
+
+**Objective:** Implement the public Web Card route using a safe card-token projection.
+
+**Files Created Or Modified:** `supabase/migrations/0011_public_web_card.sql`, `supabase/tests/0011_public_web_card.sql`, `src/app/card/[cardToken]/page.tsx`, `src/lib/customers/public-card.test.ts`, styles, and continuity docs.
+
+**Changes Made:** Added an anonymous security-definer projection that requires an active card and tenant, returns only customer name and approved branding fields, and denies unknown or revoked tokens. Connected the route without displaying the raw token or database row.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0011; 77 Vitest tests passed; typecheck and build passed. Lint passed with one Next.js warning for the external logo `<img>` element.
+
+**Next Action:** Begin Phase 3 loyalty schema and invariant tests.
+
 ## 2026-07-24 00:52 MST - Phase 2 - Customer Search And Profile Management
 
 **Objective:** Add internal customer search plus protected editing and deactivation.

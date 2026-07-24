@@ -83,7 +83,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement self-service registration by branch token.
 - [x] [Terminada] Implement employee registration.
 - [x] [Terminada] Implement customer search and profile editing.
-- [ ] [Pendiente] Implement public web card by card token.
+- [x] [Terminada] Implement public web card by card token.
 
 ## Phase 3 - Motor De Fidelidad
 
