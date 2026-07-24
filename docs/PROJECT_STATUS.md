@@ -6,7 +6,7 @@
 - Current task: Implement XLSX exports.
 - Last completed task: Implemented permission-scoped CSV exports.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `29b46a2 feat: add dashboard branch comparisons`.
+- Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
