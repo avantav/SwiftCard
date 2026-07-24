@@ -6,7 +6,7 @@
 - Current task: Implement purchase and redemption mobile flows.
 - Last completed task: Implemented scanner route, bounded QR parsing, and tenant validation.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `8a0523c feat: add employee pwa manifest`.
+- Last stable commit: `e0ff886 feat: add tenant validated card scanner`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
