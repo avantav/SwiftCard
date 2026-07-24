@@ -6,7 +6,7 @@
 - Current task: Add PWA manifest and install metadata.
 - Last completed task: Implemented multiple reward generation, pause behavior, and versioned rule changes.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `ea0f7a6 feat: add atomic purchase operations`.
+- Last stable commit: `e1e426f feat: add loyalty edge case coverage`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
