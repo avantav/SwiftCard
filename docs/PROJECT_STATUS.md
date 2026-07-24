@@ -6,7 +6,7 @@
 - Current task: Implement redemption mobile flow.
 - Last completed task: Implemented online purchase preview and confirmation flow.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `e0ff886 feat: add tenant validated card scanner`.
+- Last stable commit: `398a6eb feat: add online employee purchase flow`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
