@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 7 - Superadmin And Importaciones.
-- Current task: Complete server-side validation preview for mapped imports.
-- Last completed task: Implemented CSV/XLSX parsing and detected-column mapping UI.
+- Current task: Implement import confirmation with duplicate and error summary.
+- Last completed task: Implemented server-side mapped validation preview without customer mutation.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Add a server action that receives mapped columns, validates required name/phone fields and optional birth date/stamps, stores preview errors, and does not create customers.
+Implement confirmation using the stored mapping and validated rows, with duplicate detection and an import summary before moving to tenant controls.

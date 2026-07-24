@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 02:31 MST - Phase 7 - Import Validation Preview
+
+**Objective:** Validate mapped import rows without creating customer records.
+
+**Files Created Or Modified:** `supabase/migrations/0025_customer_import_preview.sql`, `supabase/tests/0025_customer_import_preview.sql`, `src/lib/superadmin/imports.ts`, `src/lib/superadmin/imports.test.ts`, import actions and mapping page, and continuity docs.
+
+**Changes Made:** Added persisted mapped columns and preview errors, server-side validation for name, normalized phone, email, ISO birth date, and nonnegative initial stamps, plus preview result rendering. Validation uses the existing phone normalization helper and does not mutate customers.
+
+**Commands Executed:** `npm run typecheck`, focused import tests, `npm run lint`, `npm run build`, `npm run db:verify-rls`, and `npm run test:run`.
+
+**Results:** 95 tests passed; RLS passed through migration 0025; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Next Action:** Implement atomic import confirmation with duplicate and error summary.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:24 MST - Phase 7 - Import Parsing And Mapping
 
 **Objective:** Parse uploaded CSV/XLSX files and expose detected columns for mapping.

@@ -34,4 +34,28 @@ export async function parseImportFile(file: File) {
 
   return { headers, rows };
 }
+
+export type ImportColumnMapping = {
+  fullName: string;
+  phone: string;
+  email?: string;
+  birthDate?: string;
+  initialStamps?: string;
+};
+
+export function validateMappedRows(rows: Array<Record<string, string>>, mapping: ImportColumnMapping) {
+  const errors: Array<{ row: number; messages: string[] }> = [];
+  rows.forEach((row, index) => {
+    const messages: string[] = [];
+    if (!row[mapping.fullName]?.trim()) messages.push("El nombre es obligatorio.");
+    const phone = normalizePhone(row[mapping.phone] ?? "");
+    if (!phone.ok) messages.push(phone.error);
+    if (mapping.email && row[mapping.email]?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row[mapping.email].trim())) messages.push("El correo no es válido.");
+    if (mapping.birthDate && row[mapping.birthDate]?.trim() && !/^\d{4}-\d{2}-\d{2}$/.test(row[mapping.birthDate].trim())) messages.push("La fecha debe usar formato AAAA-MM-DD.");
+    if (mapping.initialStamps && row[mapping.initialStamps]?.trim() && !/^\d+$/.test(row[mapping.initialStamps].trim())) messages.push("Los sellos iniciales deben ser un entero no negativo.");
+    if (messages.length) errors.push({ row: index + 2, messages });
+  });
+  return errors;
+}
 import * as XLSX from "xlsx";
+import { normalizePhone } from "@/lib/customers/phone";
