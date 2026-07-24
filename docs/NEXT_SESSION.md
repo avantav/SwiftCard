@@ -1,8 +1,8 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit: `9a2a2aa feat: add customer phone normalization`.
-3. Git status: clean after the phone normalization continuity commit.
+2. Last stable commit: `26eb913 feat: add public customer registration`.
+3. Git status: continuity update pending commit.
 4. Current phase: Phase 2 - Clientes And Web Card.
 5. Last completed task: Implemented public self-service registration by active branch token.
 6. Task in progress: Implement employee registration.

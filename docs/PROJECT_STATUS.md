@@ -6,8 +6,8 @@
 - Current task: Implement employee registration.
 - Last completed task: Implemented public self-service registration by active branch token.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `9a2a2aa feat: add customer phone normalization`.
-- Git status: clean after the phone normalization continuity commit.
+- Last stable commit: `26eb913 feat: add public customer registration`.
+- Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
 ## Completed Functionality
