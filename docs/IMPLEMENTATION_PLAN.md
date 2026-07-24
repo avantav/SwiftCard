@@ -93,7 +93,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 **Tasks**
 
-- [ ] [Pendiente] Add loyalty program, balance, ledger, purchase, and reward schema.
+- [x] [Terminada] Add loyalty program, balance, ledger, purchase, and reward schema.
 - [ ] [Pendiente] Implement purchase preview and confirm backend logic.
 - [ ] [Pendiente] Implement multiple reward generation.
 - [ ] [Pendiente] Implement program pause behavior.

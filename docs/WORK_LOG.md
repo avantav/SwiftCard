@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:02 MST - Phase 3 - Loyalty Schema
+
+**Objective:** Establish the Phase 3 data contract for programs, balances, purchases, ledger entries, and rewards.
+
+**Files Created Or Modified:** `supabase/migrations/0012_loyalty_schema.sql`, `supabase/tests/0012_loyalty_schema.sql`, `src/lib/loyalty/schema.test.ts`, and continuity docs.
+
+**Changes Made:** Added active-program uniqueness, per-purchase/per-amount rule configuration, minor-unit monetary columns, nonnegative stamp/remainder constraints, immutable purchase identity fields, ledger and reward structures, tenant consistency triggers, and forced RLS policies.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0012; 78 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement atomic purchase preview and confirmation RPCs.
+
 ## 2026-07-24 00:59 MST - Phase 2 - Public Web Card
 
 **Objective:** Implement the public Web Card route using a safe card-token projection.
