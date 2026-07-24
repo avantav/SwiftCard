@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Implement minimal Superadmin tenant creation flow.
-- Last completed task: Added Supabase SSR login and protected route foundation.
+- Current task: Add positive and negative RLS tests.
+- Last completed task: Implemented minimal Superadmin tenant creation flow.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `22495ff feat: add supabase login foundation`.
 - Git status: clean after the continuity documentation commit.
@@ -27,10 +27,13 @@
 - `/login` page with email/password server action.
 - Middleware session refresh and protection for `/superadmin`, `/admin`, and `/app`.
 - Open redirect protection for auth redirects.
+- Server-only Supabase admin client guarded by `server-only`.
+- Minimal `/superadmin/tenants/new` form and server action for tenant creation.
+- Tenant creation input validation tests.
 
 ## Pending Functionality
 
-- Remaining Phase 1 minimal Superadmin tenant creation flow and formal RLS test suite integration.
+- Remaining Phase 1 formal RLS test suite integration.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -54,6 +57,7 @@
 - RLS behavior checks via `SET ROLE authenticated` and `request.jwt.claim.sub`: passed.
 - Role/permission helper unit tests: passed.
 - Auth redirect helper tests: passed.
+- Tenant validation and server-only admin boundary tests: passed.
 
 ## Validation Results
 
@@ -64,4 +68,4 @@
 
 ## Next Exact Step
 
-Implement a minimal Superadmin tenant creation path backed by a server-only action/API boundary, using service role only on the server and validating inputs.
+Add a repeatable RLS verification script or test harness for the tenancy migration so positive/negative isolation checks can run without manual SQL steps.

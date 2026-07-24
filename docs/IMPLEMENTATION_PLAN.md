@@ -50,8 +50,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Enable RLS and add tenant/branch isolation policies.
 - [x] [Terminada] Add application role and permission helpers.
 - [x] [Terminada] Implement login and protected route structure.
-- [ ] [En progreso] Implement minimal Superadmin tenant creation flow.
-- [ ] [Pendiente] Add positive and negative RLS tests.
+- [x] [Terminada] Implement minimal Superadmin tenant creation flow.
+- [ ] [En progreso] Add positive and negative RLS tests.
 
 **Acceptance Criteria**
 

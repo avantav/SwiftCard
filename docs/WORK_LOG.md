@@ -229,6 +229,62 @@
 
 - `22495ff feat: add supabase login foundation`
 
+## 2026-07-23 23:36 MST - Phase 1 - Minimal Superadmin Tenant Creation
+
+**Objective:** Add a minimal Superadmin path for creating tenants with server-side validation and a server-only service role boundary.
+
+**Files Created Or Modified**
+
+- Modified `package.json` and `package-lock.json`.
+- Created `src/lib/supabase/admin.ts`.
+- Created `src/lib/supabase/admin.test.ts`.
+- Created `src/lib/superadmin/tenants.ts`.
+- Created `src/lib/superadmin/tenants.test.ts`.
+- Created `src/app/superadmin/tenants/new/actions.ts`.
+- Created `src/app/superadmin/tenants/new/page.tsx`.
+- Modified `src/app/superadmin/page.tsx`.
+- Modified `src/app/globals.css`.
+- Updated continuity docs.
+
+**Changes Made**
+
+- Installed `server-only`.
+- Added a server-only Supabase admin client factory that reads `SUPABASE_SERVICE_ROLE_KEY` only on the server and disables session persistence.
+- Added tenant create form validation for name, currency, timezone, contact email, branding mode, status, and colors.
+- Added Superadmin-only server action that verifies the current authenticated profile before using the admin client.
+- Added `/superadmin/tenants/new` form and a success state on `/superadmin`.
+
+**Migrations Added**
+
+- None.
+
+**Tests Added Or Modified**
+
+- Added `src/lib/supabase/admin.test.ts`.
+- Added `src/lib/superadmin/tenants.test.ts`.
+
+**Commands Executed**
+
+- `npm install server-only@latest`: passed.
+- `npm run test:run`: initially failed because missing currency produced a duplicate validation error; passed after correction with 19 tests.
+- `npm run lint`: passed.
+- `npm run typecheck`: initially failed because TypeScript did not narrow normalized enum strings; passed after correction.
+- `npm run build`: passed.
+
+**Problems Encountered**
+
+- Tenant validation emitted an extra currency length error when currency was missing.
+- TypeScript needed an explicit cast for normalized enum values.
+
+**Solution Applied**
+
+- Only run currency length validation when the currency field has a value.
+- Cast validated enum values to `T[number]` after `allowed.includes`.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 
 **Objective:** Initialize the SwiftWallet application foundation and validate the base toolchain.
