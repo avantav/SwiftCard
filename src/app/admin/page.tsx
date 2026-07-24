@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AdminPage() {
   return (
     <main className="shell">
@@ -8,8 +10,12 @@ export default function AdminPage() {
           Ruta reservada para sucursales, empleados, programa, branding,
           clientes, estadísticas, exportaciones y auditoría del tenant.
         </p>
+        <div className="action-row">
+          <Link className="primary-link" href="/admin/branches">
+            Sucursales
+          </Link>
+        </div>
       </section>
     </main>
   );
 }
-

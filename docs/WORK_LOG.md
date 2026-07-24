@@ -51,6 +51,53 @@
 
 - `3eb962b chore: initialize swiftwallet scaffold`
 
+## 2026-07-24 00:13 MST - Phase 1 - Minimum Branch Management
+
+**Objective:** Let active tenant Administrators list and create branches without accepting tenant authority from the browser.
+
+**Files Created Or Modified**
+
+- Created `src/app/admin/branches/actions.ts` and `page.tsx`.
+- Created `src/lib/admin/branches.ts` and `branches.test.ts`.
+- Modified the Admin page, global styles, and continuity docs.
+
+**Changes Made**
+
+- Added Admin-only branch listing and creation under `/admin/branches`.
+- Derived every insert's `tenant_id` from the authenticated server context.
+- Rejected Manager branch mutations even though Managers may access the Admin area.
+- Validated required name, paired optional coordinates, coordinate ranges, integer geofence radius, address, and proximity setting.
+- Added explicit branch-query error handling.
+
+**Migrations Added**
+
+- None.
+
+**Tests Added Or Modified**
+
+- Added four branch validation and tenant-authority boundary tests.
+- Existing PostgreSQL RLS suite continues to cover cross-tenant branch insert denial.
+
+**Commands Executed**
+
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 51 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- None.
+
+**Solution Applied**
+
+- Not applicable.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-23 23:45 MST - Phase 1 - Repeatable RLS Verification
 
 **Objective:** Replace manual Phase 1 RLS checks with a deterministic local command.

@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Implement minimum branch management.
-- Last completed task: Implemented mandatory password change and server-side route guards.
+- Current task: Implement tenant staff account provisioning.
+- Last completed task: Implemented minimum Admin branch management.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `151f289 feat: enforce password change and route access`.
-- Git status: clean after the mandatory-change implementation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `151f289` is awaiting push.
+- Git status: branch-management implementation and continuity updates are awaiting commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; mandatory-change commits were pushed successfully.
 
 ## Completed Functionality
 
@@ -40,10 +40,11 @@
 - `/change-password` flow with current-password verification and distinct new password validation.
 - Service-role-only profile activation after Auth password update.
 - Dynamic server-side role/status/tenant guards for all internal route trees.
+- Admin-only `/admin/branches` listing and creation flow.
+- Branch validation for coordinates, geofence radius, address, and proximity.
 
 ## Pending Functionality
 
-- Minimum branch management.
 - Tenant staff account provisioning.
 - Staff branch assignments and primary-branch management.
 - All later MVP functional phases.
@@ -62,7 +63,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 47 tests passed.
+- `npm run test:run`: passed; 51 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -84,4 +85,4 @@
 
 ## Next Exact Step
 
-Implement Admin branch listing and creation using the authenticated profile's tenant, with validation and positive/negative tests that never accept client-provided tenant authority.
+Implement Admin provisioning for Manager and Employee accounts with temporary passwords, server-only Auth creation, tenant-derived profile creation, and compensation on profile failure.
