@@ -152,7 +152,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement column mapping and validation preview without customer mutation.
 - [x] [Terminada] Implement atomic import confirmation with duplicate/error summary.
 - [x] [Terminada] Implement tenant suspension and reactivation controls.
-- [ ] [Pendiente] Implement branding mode controls.
+- [x] [Terminada] Implement branding mode controls.
 
 ## Phase 8 - Wallet
 

@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 02:49 MST - Phase 7 - Tenant Branding Controls
+
+**Objective:** Add Superadmin tenant branding mode and asset controls.
+
+**Files Created Or Modified:** `supabase/migrations/0028_tenant_branding.sql`, `supabase/tests/0028_tenant_branding.sql`, tenant validation, Superadmin branding route/action, tenant navigation, tests, and continuity docs.
+
+**Changes Made:** Added validated STANDARD/WHITE_LABEL mode, HTTPS-only logo and banner URLs, normalized hex colors, Superadmin-only branding RPC, and immutable audit event `TENANT_BRANDING_UPDATED`.
+
+**Commands Executed:** `npm run typecheck`, focused tenant tests, `npm run db:verify-rls`, `npm run lint`, `npm run test:run`, and `npm run build`.
+
+**Results:** 99 tests passed; RLS passed through migration 0028; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Next Action:** Close Phase 7 traceability and begin a credential-free Phase 8 Wallet foundation task.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:42 MST - Phase 7 - Tenant Suspension Controls
 
 **Objective:** Add Superadmin tenant listing, suspension, and reactivation controls.

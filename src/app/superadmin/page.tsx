@@ -44,7 +44,7 @@ export default async function SuperadminPage({
       </section>
       <section className="panel" aria-labelledby="tenants-title">
         <h2 id="tenants-title" className="section-title">Tenants</h2>
-        <div className="table-wrap"><table><thead><tr><th>Nombre</th><th>Estado</th><th>Branding</th><th>Acción</th></tr></thead><tbody>{tenants?.map((tenant) => <tr key={tenant.id}><td>{tenant.name}</td><td>{tenant.status}</td><td>{tenant.branding_mode}</td><td><form action={setTenantStatus}><input type="hidden" name="tenantId" value={tenant.id} /><input type="hidden" name="status" value={tenant.status === "ACTIVE" ? "SUSPENDED" : "ACTIVE"} /><button className="secondary-button" type="submit">{tenant.status === "ACTIVE" ? "Suspender" : "Reactivar"}</button></form></td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table><thead><tr><th>Nombre</th><th>Estado</th><th>Branding</th><th>Acciones</th></tr></thead><tbody>{tenants?.map((tenant) => <tr key={tenant.id}><td>{tenant.name}</td><td>{tenant.status}</td><td>{tenant.branding_mode}</td><td><Link className="text-link" href={`/superadmin/tenants/${tenant.id}/branding`}>Branding</Link> <form action={setTenantStatus}><input type="hidden" name="tenantId" value={tenant.id} /><input type="hidden" name="status" value={tenant.status === "ACTIVE" ? "SUSPENDED" : "ACTIVE"} /><button className="secondary-button" type="submit">{tenant.status === "ACTIVE" ? "Suspender" : "Reactivar"}</button></form></td></tr>)}</tbody></table></div>
       </section>
     </main>
   );

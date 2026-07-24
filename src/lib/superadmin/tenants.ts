@@ -4,6 +4,20 @@ export const brandingModes = ["STANDARD", "WHITE_LABEL"] as const;
 export type TenantStatusInput = (typeof tenantStatuses)[number];
 export type BrandingModeInput = (typeof brandingModes)[number];
 
+export function validateBrandingForm(formData: FormData) {
+  const mode = formData.get("brandingMode");
+  const primaryColor = String(formData.get("primaryColor") ?? "").trim();
+  const secondaryColor = String(formData.get("secondaryColor") ?? "").trim();
+  const logoUrl = optionalText(formData.get("logoUrl"));
+  const bannerUrl = optionalText(formData.get("bannerUrl"));
+  const errors: string[] = [];
+  if (!brandingModes.includes(mode as BrandingModeInput)) errors.push("El modo de branding no es válido.");
+  if (!/^#[0-9a-fA-F]{6}$/.test(primaryColor)) errors.push("El color primario no es válido.");
+  if (!/^#[0-9a-fA-F]{6}$/.test(secondaryColor)) errors.push("El color secundario no es válido.");
+  for (const url of [logoUrl, bannerUrl]) if (url && !/^https:\/\//i.test(url)) errors.push("Las imágenes deben usar URLs HTTPS.");
+  return errors.length ? { ok: false as const, errors } : { ok: true as const, data: { brandingMode: mode as BrandingModeInput, primaryColor: primaryColor.toUpperCase(), secondaryColor: secondaryColor.toUpperCase(), logoUrl, bannerUrl } };
+}
+
 export type TenantCreateInput = {
   name: string;
   contactName: string | null;

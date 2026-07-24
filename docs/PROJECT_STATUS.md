@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 7 - Superadmin And Importaciones.
-- Current task: Implement branding mode controls.
-- Last completed task: Implemented Superadmin tenant suspension and reactivation controls.
+- Current task: Phase 7 closeout; prepare Phase 8 Wallet prerequisites.
+- Last completed task: Implemented Superadmin tenant branding controls.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Branding controls; all later MVP functional phases.
+- Phase 8 Wallet integrations; pilot readiness; external credentials and operational information.
 
 ## Active Blockers
 
@@ -71,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 97 tests passed.
+- `npm run test:run`: passed; 99 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Implement Superadmin branding mode controls with explicit tenant-scoped fields and audit coverage.
+Review Phase 7 acceptance and traceability, then identify the first Phase 8 Wallet task that can proceed without Apple/Google credentials.

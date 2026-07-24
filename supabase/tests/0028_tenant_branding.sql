@@ -1,0 +1,1 @@
+-- Branding authorization and validation are covered by src/lib/superadmin/tenants.test.ts.
