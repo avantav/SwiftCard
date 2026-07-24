@@ -1,7 +1,7 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit: `59717d2 feat: add geolocation enforcement`.
+2. Last stable commit: `1b958c2 feat: add immutable audit logs`.
 3. Git status: continuity update pending commit.
 4. Current phase: Phase 2 - Clientes And Web Card.
 5. Last completed task: Implemented immutable audit log schema and sensitive-operation write paths.
