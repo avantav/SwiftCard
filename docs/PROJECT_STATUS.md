@@ -4,7 +4,7 @@
 
 - Current phase: Phase 8 - Wallet.
 - Current task: Phase 8 Apple/Google pass generation, blocked by external credentials.
-- Last completed task: Added provider-neutral wallet pass schema and server-only service boundary.
+- Last completed task: Updated Web Card fallback with current loyalty state.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -71,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 101 tests passed.
+- `npm run test:run`: passed; 102 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.

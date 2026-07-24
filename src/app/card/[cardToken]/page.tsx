@@ -15,6 +15,10 @@ export default async function CardPage({ params }: CardPageProps) {
     primary_color: string;
     secondary_color: string;
     customer_name: string;
+    program_name: string | null;
+    stamp_balance: number;
+    reward_goal: number | null;
+    available_rewards: Array<{ name: string; description: string; expires_at: string | null }>;
   } | null = null;
 
   try {
@@ -34,6 +38,9 @@ export default async function CardPage({ params }: CardPageProps) {
         {card ? (
           <>
             <p className="card-customer">{card.customer_name}</p>
+            {card.program_name ? <p className="body-copy">{card.program_name}</p> : null}
+            {card.reward_goal ? <p className="body-copy">Sellos: {card.stamp_balance} / {card.reward_goal}</p> : null}
+            {card.available_rewards.length > 0 ? <section aria-labelledby="rewards-title"><h2 id="rewards-title" className="section-title">Recompensas disponibles</h2><ul>{card.available_rewards.map((reward) => <li key={`${reward.name}-${reward.expires_at ?? "never"}`}>{reward.name}: {reward.description}</li>)}</ul></section> : null}
             <div className="card-qr-placeholder" aria-label="QR de la tarjeta">QR</div>
             <p className="body-copy">Presenta esta tarjeta en las sucursales participantes.</p>
           </>

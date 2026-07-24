@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 03:12 MST - Phase 8 - Web Card Loyalty Fallback
+
+**Objective:** Keep the public Web Card current while provider-specific Wallet generation is blocked.
+
+**Files Created Or Modified:** `supabase/migrations/0030_public_web_card_loyalty.sql`, `supabase/tests/0030_public_web_card_loyalty.sql`, `src/app/card/[cardToken]/page.tsx`, `src/lib/customers/public-card.test.ts`, and continuity docs.
+
+**Changes Made:** Extended the public projection with program name, stamp balance/goal, and available reward summaries. The projection continues to require active tenant/customer/card state and excludes private phone and internal identifiers.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run typecheck`, focused public-card tests, `npm run build`, and `npm run test:run`.
+
+**Results:** 102 tests passed; RLS passed through migration 0030; typecheck and build passed.
+
+**Next Action:** Resolve `WALLET-001` before provider-specific pass generation; Web Card fallback is available meanwhile.
+
+**Commit:** Pending.
+
 ## 2026-07-24 03:04 MST - Phase 8 - Wallet Credentials Blocker
 
 **Objective:** Document provider credentials required for Apple/Google Wallet without storing secrets.

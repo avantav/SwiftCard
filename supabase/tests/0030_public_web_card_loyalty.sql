@@ -1,0 +1,1 @@
+-- Public projection scope and non-sensitive fields are covered by src/lib/customers/public-card.test.ts.

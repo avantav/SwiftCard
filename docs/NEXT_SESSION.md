@@ -4,10 +4,10 @@
 2. Last stable commit: pending Phase 8 wallet foundation commit.
 3. Git status: continuity update pending commit.
 4. Current phase: Phase 8 - Wallet.
-5. Last completed task: Added provider-neutral wallet pass schema and server-only service boundary.
+5. Last completed task: Updated Web Card fallback with current loyalty state.
 6. Task in progress: Apple/Google pass generation, blocked by external credentials.
 7. Relevant files: `supabase/migrations/0022_dashboard_metrics.sql`, `supabase/migrations/0023_dashboard_branch_metrics.sql`, `supabase/tests/0022_dashboard_metrics.sql`, `supabase/tests/0023_dashboard_branch_metrics.sql`, `src/app/admin/dashboard/page.tsx`.
-8. Commands already passed: `npm run lint` with one existing Next image warning, `npm run typecheck`, `npm run test:run` with 101 tests, `npm run db:verify-rls`, and `npm run build`.
+8. Commands already passed: `npm run lint` with one existing Next image warning, `npm run typecheck`, `npm run test:run` with 102 tests, `npm run db:verify-rls`, and `npm run build`.
 9. Pending commands: Apple/Google credential availability; then provider-specific generation and update tests.
 10. Known problems: `npm audit --omit=dev` reports current high-severity advisories in Next.js transitive dependencies `postcss` and `sharp`; no safe automatic fix was applied because npm proposes a breaking downgrade. `npm install` warns that transitive `eslint-visitor-keys@5.0.1` prefers Node `22.13+`, while local Node is `22.12.0`; validation still passes.
 11. Next exact action: Resolve blocker `WALLET-001` by providing authorized Apple Pass Type ID/certificate/team ID and Google Wallet Issuer ID/service account through the secret manager; then implement provider-specific generation and update tests without adding secrets to Git.
