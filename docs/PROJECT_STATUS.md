@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement metrics queries and permission filters.
-- Last completed task: Implemented Administrator-only reward cancellation.
+- Current task: Implement dashboard views and trends.
+- Last completed task: Implemented scoped dashboard metrics and permission filters.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `c86dddf feat: add reward cancellation`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Metrics queries and permission filters.
+- Dashboard views and trends.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -105,6 +105,7 @@
 - Purchase cancellation, later-activity guard, reward consistency, and ledger restoration assertions: passed.
 - Redemption reversal, reward re-availability, adjustment reason, role checks, and nonnegative balance assertions: passed.
 - Reward cancellation, Administrator-only authorization, no-stamp-refund, and audit assertions: passed.
+- Dashboard metrics scope, role filtering, minor-unit totals, and route build: passed.
 
 ## Validation Results
 
@@ -115,4 +116,4 @@
 
 ## Next Exact Step
 
-Begin Phase 6 with tenant/sucursal-scoped metrics queries and permission filters for dashboard data.
+Expand the dashboard with trends, branch comparisons, and role-appropriate views using the scoped metrics boundary.

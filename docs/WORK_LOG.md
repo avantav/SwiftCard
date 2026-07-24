@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:51 MST - Phase 6 - Scoped Dashboard Metrics
+
+**Objective:** Add dashboard metrics with tenant and assigned-branch permission filters.
+
+**Files Created Or Modified:** `supabase/migrations/0022_dashboard_metrics.sql`, `supabase/tests/0022_dashboard_metrics.sql`, `src/lib/dashboard/metrics.test.ts`, `src/app/admin/dashboard/page.tsx`, the Admin navigation, and continuity docs.
+
+**Changes Made:** Added role-scoped aggregate metrics for customers, purchases, minor-unit amounts, stamps, generated rewards, and redeemed rewards, with branch/date filters and a basic dashboard view.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0022; 88 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning. Build exposes `/admin/dashboard`.
+
+**Next Action:** Add dashboard trends/branch comparisons and export boundaries.
+
 ## 2026-07-24 01:48 MST - Phase 5 - Reward Cancellation
 
 **Objective:** Add Administrator-only cancellation of available rewards.
