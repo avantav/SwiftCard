@@ -55,6 +55,7 @@
 **Push**
 
 - `git push -u origin codex/swiftwallet-mvp`: initially failed in sandbox with DNS resolution error for `github.com`; passed after network escalation and pushed through `1327c47`.
+- Follow-up documentation commits were pushed to the same tracking branch; verify the exact latest hash with `git log --oneline -1`.
 
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 
