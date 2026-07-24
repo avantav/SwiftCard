@@ -51,7 +51,10 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add application role and permission helpers.
 - [x] [Terminada] Implement login and protected route structure.
 - [x] [Terminada] Implement minimal Superadmin tenant creation flow.
-- [ ] [En progreso] Add positive and negative RLS tests.
+- [x] [Terminada] Add positive and negative RLS tests.
+- [ ] [Pendiente] Implement first Administrator creation and temporary-password reset from Superadmin.
+- [ ] [Pendiente] Enforce role/status route guards and mandatory password change.
+- [ ] [Pendiente] Implement minimum branch, staff, and branch-assignment management.
 
 **Acceptance Criteria**
 
@@ -59,8 +62,10 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - Staff access is limited to assigned branches.
 - Inactive users and suspended tenants cannot operate.
 - Service role is never exposed to browser code.
+- Superadmin can create the first Administrator with a temporary password.
+- Temporary passwords require a password change before operational access.
 
-**Validation Result:** Initial schema/RLS migration completed on 2026-07-23. Applied successfully in a temporary PostgreSQL 16 container with a minimal Supabase Auth prelude. RLS checks passed for admin tenant isolation, employee branch assignment isolation, suspended tenant denial, superadmin visibility, admin cross-tenant insert denial, and cross-tenant assignment trigger denial.
+**Validation Result:** Initial schema/RLS migration completed on 2026-07-23. `npm run db:verify-rls` applies it to a disposable PostgreSQL 16 container and passes checks for admin tenant isolation, manager/employee branch assignment isolation, inactive/reset-required staff denial, suspended tenant denial, superadmin visibility, admin cross-tenant writes, and cross-tenant assignment rejection.
 
 ## Phase 2 - Clientes And Web Card
 

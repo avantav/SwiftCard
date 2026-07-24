@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Add positive and negative RLS tests.
-- Last completed task: Implemented minimal Superadmin tenant creation flow.
+- Current task: Implement first Administrator creation and temporary-password reset from Superadmin.
+- Last completed task: Added repeatable positive and negative PostgreSQL RLS verification.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `e6e71f5 feat: add superadmin tenant creation`.
-- Git status: clean after the continuity documentation commit.
+- Git status: RLS harness and continuity updates are awaiting commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; latest push succeeded.
 
 ## Completed Functionality
@@ -30,10 +30,14 @@
 - Server-only Supabase admin client guarded by `server-only`.
 - Minimal `/superadmin/tenants/new` form and server action for tenant creation.
 - Tenant creation input validation tests.
+- Disposable PostgreSQL RLS harness available through `npm run db:verify-rls`.
+- Positive and negative RLS assertions for tenant, branch, status, and role boundaries.
 
 ## Pending Functionality
 
-- Remaining Phase 1 formal RLS test suite integration.
+- First Administrator creation and temporary-password reset.
+- Role/status route guards and mandatory password change.
+- Minimum branch, staff, and branch-assignment management.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -50,7 +54,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 1 test passed.
+- `npm run test:run`: passed; 20 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -58,6 +62,7 @@
 - Role/permission helper unit tests: passed.
 - Auth redirect helper tests: passed.
 - Tenant validation and server-only admin boundary tests: passed.
+- `npm run db:verify-rls`: passed against disposable PostgreSQL 16.
 
 ## Validation Results
 
@@ -68,4 +73,4 @@
 
 ## Next Exact Step
 
-Add a repeatable RLS verification script or test harness for the tenancy migration so positive/negative isolation checks can run without manual SQL steps.
+Implement a Superadmin-only server action and form for creating the first tenant Administrator with a temporary password, compensating auth-user creation if the staff profile cannot be persisted.

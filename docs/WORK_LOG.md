@@ -50,6 +50,59 @@
 **Commit Generated**
 
 - `3eb962b chore: initialize swiftwallet scaffold`
+
+## 2026-07-23 23:45 MST - Phase 1 - Repeatable RLS Verification
+
+**Objective:** Replace manual Phase 1 RLS checks with a deterministic local command.
+
+**Files Created Or Modified**
+
+- Created `scripts/verify-rls.mjs`.
+- Created `supabase/tests/auth_bootstrap.sql`.
+- Created `supabase/tests/0001_initial_auth_tenancy_rls.sql`.
+- Modified `package.json`.
+- Modified `src/lib/supabase/migrations.test.ts`.
+- Modified `README.md`.
+- Updated continuity docs.
+
+**Changes Made**
+
+- Added `npm run db:verify-rls`.
+- Added a disposable PostgreSQL 16 test runner with guaranteed container cleanup.
+- Added a minimal local Supabase Auth schema and `auth.uid()` substitute.
+- Seeded active and suspended tenants plus Superadmin, Admin, Manager, Employee, inactive, and password-reset-required profiles.
+- Added positive and negative assertions for tenant reads, branch assignments, cross-tenant updates/inserts, cross-tenant staff assignments, status restrictions, and Superadmin access.
+- Audited the Phase 1 backlog and recorded omitted first-Administrator, password lifecycle, route guard, and staff-management tasks.
+
+**Migrations Added**
+
+- None. The harness applies the existing immutable `0001_initial_auth_tenancy.sql`.
+
+**Tests Added Or Modified**
+
+- Added the PostgreSQL integration suite in `supabase/tests/0001_initial_auth_tenancy_rls.sql`.
+- Extended `src/lib/supabase/migrations.test.ts` to require all Phase 1 RLS scenarios.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 20 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- None.
+
+**Solution Applied**
+
+- Not applicable.
+
+**Commit Generated**
+
+- Pending.
 - `1327c47 docs: record scaffold status`
 
 **Push**
