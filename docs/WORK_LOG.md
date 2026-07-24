@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 00:48 MST - Phase 2 - Employee Customer Registration
+
+**Objective:** Implement employee customer registration with tenant and assigned-branch enforcement.
+
+**Files Created Or Modified:** `supabase/migrations/0009_employee_customer_registration.sql`, `supabase/tests/0009_employee_customer_registration.sql`, `src/app/app/page.tsx`, `src/app/app/register/actions.ts`, `src/lib/customers/employee-registration.ts`, focused tests, and continuity docs.
+
+**Changes Made:** Added an authenticated security-definer RPC deriving staff identity and tenant from `auth.uid()`, requiring an active assigned branch, and atomically creating the employee customer and card. Added the PWA registration form and duplicate/denied-branch handling.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** All passed. RLS suite passed through migration 0009; Vitest passed with 76 tests; build completed with webpack.
+
+**Next Action:** Implement customer search and profile editing for Administrator and Encargado.
+
 ## 2026-07-24 00:43 MST - Phase 2 - Public Customer Registration
 
 **Objective:** Implement secure self-service customer registration from an active branch token.

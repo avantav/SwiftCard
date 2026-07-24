@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement employee registration.
-- Last completed task: Implemented public self-service registration by active branch token.
+- Current task: Implement customer search and profile editing.
+- Last completed task: Implemented employee registration with assigned-branch authorization.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `26eb913 feat: add public customer registration`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Employee registration.
+- Customer search and profile editing.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -90,6 +90,7 @@
 - Phone normalization unit tests: passed; 11 cases.
 - Public registration migration and anonymous RLS assertions: passed.
 - Public registration validation and migration static tests: passed; 3 tests.
+- Employee registration migration and assigned-branch assertions: passed.
 
 ## Validation Results
 
@@ -100,4 +101,4 @@
 
 ## Next Exact Step
 
-Implement employee registration from the authenticated tenant and assigned branch, with duplicate-phone handling and focused RLS tests.
+Implement customer search and profile editing for Administrator and Encargado, with tenant/assigned-branch filters and inactive-customer handling.
