@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Add strict/flexible geolocation handling and double-submit protection.
-- Last completed task: Implemented online purchase and reward redemption mobile flows.
+- Current task: Implement immutable audit log schema and write paths.
+- Last completed task: Implemented geolocation modes and double-submit protection.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `4f119f9 feat: add online reward redemption`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Strict/flexible geolocation handling and double-submit protection.
+- Immutable audit log schema and write paths.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -100,6 +100,7 @@
 - Scanner parser unit tests and cross-tenant card scan assertions: passed.
 - Purchase route build and full application validation: passed.
 - Reward redemption migration, tenant authorization, and one-time redemption assertions: passed.
+- Strict geolocation trigger and pending-submit UI validations: passed.
 
 ## Validation Results
 
@@ -110,4 +111,4 @@
 
 ## Next Exact Step
 
-Implement Phase 4 geolocation modes and double-submit protection for online purchase/redemption operations.
+Begin Phase 5 with immutable audit log schema and backend write paths for sensitive operations.

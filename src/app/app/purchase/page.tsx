@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireInternalArea } from "@/lib/auth/server";
 import { confirmPurchase, previewPurchase } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 
 type PurchasePageProps = {
   searchParams: Promise<Record<string, string | undefined>>;
@@ -26,14 +27,14 @@ export default async function PurchasePage({ searchParams }: PurchasePageProps) 
           <label className="field"><span>Cliente</span><input name="customerId" value={customerId} readOnly required /></label>
           <label className="field"><span>Sucursal</span><select name="branchId" defaultValue={params.branchId ?? ""} required><option value="">Selecciona</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label>
           <label className="field"><span>Monto en centavos</span><input name="amountMinor" type="number" min="1" step="1" defaultValue={params.amountMinor ?? ""} required /></label>
-          <button className="primary-button" type="submit">Previsualizar compra</button>
+          <SubmitButton>Previsualizar compra</SubmitButton>
         </form>
         {hasPreview ? <form className="auth-form purchase-confirm-form" action={confirmPurchase}>
           <input type="hidden" name="customerId" value={customerId} />
           <input type="hidden" name="branchId" value={params.branchId ?? ""} />
           <input type="hidden" name="amountMinor" value={params.amountMinor ?? ""} />
           <label className="field"><span>Número de ticket</span><input name="ticketNumber" required /></label>
-          <button className="secondary-button" type="submit">Confirmar compra</button>
+          <SubmitButton className="secondary-button">Confirmar compra</SubmitButton>
         </form> : null}
       </section>
     </main>

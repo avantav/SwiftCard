@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireInternalArea } from "@/lib/auth/server";
 import { redeemReward } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 
 type RedeemPageProps = { searchParams: Promise<{ error?: string; redeemed?: string }> };
 
@@ -20,7 +21,7 @@ export default async function RedeemPage({ searchParams }: RedeemPageProps) {
         <form className="auth-form" action={redeemReward}>
           <label className="field"><span>Recompensa</span><select name="rewardId" required defaultValue=""><option value="">Selecciona</option>{rewards?.map((reward) => <option key={reward.id} value={reward.id}>{reward.name} · Cliente {reward.customer_id.slice(0, 8)}</option>)}</select></label>
           <label className="field"><span>Sucursal</span><select name="branchId" required defaultValue=""><option value="">Selecciona</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label>
-          <button className="primary-button" type="submit">Confirmar canje</button>
+          <SubmitButton>Confirmar canje</SubmitButton>
         </form>
       </section>
     </main>
