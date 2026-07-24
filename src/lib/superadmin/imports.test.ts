@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { importFileType, parseImportFile, validateImportFile, validateMappedRows } from "./imports";
 
 const migration = readFileSync(new URL("../../../supabase/migrations/0024_customer_imports.sql", import.meta.url), "utf8");
+const confirmationMigration = readFileSync(new URL("../../../supabase/migrations/0026_customer_import_confirmation.sql", import.meta.url), "utf8");
 
 describe("customer imports", () => {
   it("validates supported upload types and size", () => {
@@ -32,5 +33,13 @@ describe("customer imports", () => {
   it("validates mapped required and optional fields without mutating rows", () => {
     const errors = validateMappedRows([{ name: "Ana", phone: "123", email: "bad" }, { name: "", phone: "+5215512345678", email: "ana@example.com" }], { fullName: "name", phone: "phone", email: "email" });
     expect(errors).toEqual([{ row: 2, messages: ["El teléfono debe tener entre 8 y 15 dígitos internacionales.", "El correo no es válido."] }, { row: 3, messages: ["El nombre es obligatorio."] }]);
+  });
+
+  it("keeps confirmation atomic and Superadmin-only", () => {
+    expect(confirmationMigration).toContain("create or replace function public.confirm_customer_import");
+    expect(confirmationMigration).toContain("for update");
+    expect(confirmationMigration).toContain("customer_cards");
+    expect(confirmationMigration).toContain("stamp_ledger");
+    expect(confirmationMigration).toContain("revoke all on function");
   });
 });

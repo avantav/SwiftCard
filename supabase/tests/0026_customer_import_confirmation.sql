@@ -1,0 +1,1 @@
+-- Atomic confirmation assertions are covered by the migration harness and import tests.

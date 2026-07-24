@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 7 - Superadmin And Importaciones.
-- Current task: Implement import confirmation with duplicate and error summary.
-- Last completed task: Implemented server-side mapped validation preview without customer mutation.
+- Current task: Implement tenant suspension controls.
+- Last completed task: Implemented atomic customer import confirmation with duplicate and error summary.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Implement confirmation using the stored mapping and validated rows, with duplicate detection and an import summary before moving to tenant controls.
+Implement Superadmin tenant listing and suspension controls with explicit status transitions and audit coverage.

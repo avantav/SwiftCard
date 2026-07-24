@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getActiveSuperadminContext } from "@/lib/auth/server";
 import { importFileType, parseImportFile, type ImportColumnMapping, validateImportFile, validateMappedRows } from "@/lib/superadmin/imports";
+import { normalizePhone } from "@/lib/customers/phone";
 
 function redirectWithError(error: string): never {
   redirect(`/superadmin/imports?error=${encodeURIComponent(error)}`);
@@ -63,4 +64,26 @@ export async function previewCustomerImport(formData: FormData) {
   const { error } = await superadmin.supabase.from("customer_imports").update({ mapped_columns: mapping, preview_errors: errors, error_rows: errors.length, status: "PREVIEWED" }).eq("id", importId);
   if (error) redirectWithError("No se pudo guardar la previsualización.");
   redirect(`/superadmin/imports/${importId}/mapping?preview=1`);
+}
+
+export async function confirmCustomerImport(formData: FormData) {
+  const superadmin = await getActiveSuperadminContext();
+  if (!superadmin) redirectWithError("No tienes permisos para confirmar importaciones.");
+  const importId = String(formData.get("importId") ?? "");
+  const branchId = String(formData.get("branchId") ?? "");
+  const { data: record } = await superadmin.supabase.from("customer_imports").select("raw_rows,mapped_columns,preview_errors").eq("id", importId).maybeSingle();
+  if (!record || !branchId) redirectWithError("La importación y sucursal son obligatorias.");
+  const mapping = record.mapped_columns as ImportColumnMapping;
+  const rows = Array.isArray(record.raw_rows) ? record.raw_rows as Array<Record<string, string>> : [];
+  const errors = Array.isArray(record.preview_errors) ? record.preview_errors as Array<{ row: number }> : [];
+  const invalidRows = new Set(errors.map((error) => error.row));
+  const validRows = rows.flatMap((row, index) => {
+    if (invalidRows.has(index + 2)) return [];
+    const phone = normalizePhone(row[mapping.phone] ?? "");
+    if (!phone.ok) return [];
+    return [{ full_name: row[mapping.fullName]?.trim(), normalized_phone: phone.value, email: mapping.email ? row[mapping.email]?.trim() : "", birth_date: mapping.birthDate ? row[mapping.birthDate]?.trim() : "", initial_stamps: mapping.initialStamps ? row[mapping.initialStamps]?.trim() || "0" : "0" }];
+  });
+  const { data, error } = await superadmin.supabase.rpc("confirm_customer_import", { target_import_id: importId, target_branch_id: branchId, valid_rows: validRows });
+  if (error || !data) redirectWithError("No se pudo confirmar la importación.");
+  redirect(`/superadmin/imports/${importId}/mapping?confirmed=1&imported=${data.imported}&duplicates=${data.duplicates}&errors=${data.errors}`);
 }

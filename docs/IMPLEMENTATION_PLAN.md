@@ -150,7 +150,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Implement import schema and Superadmin upload flow.
 - [x] [Terminada] Implement column mapping and validation preview without customer mutation.
-- [ ] [Pendiente] Implement confirm import with duplicate/error summary.
+- [x] [Terminada] Implement atomic import confirmation with duplicate/error summary.
 - [ ] [Pendiente] Implement tenant suspension controls.
 - [ ] [Pendiente] Implement branding mode controls.
 
