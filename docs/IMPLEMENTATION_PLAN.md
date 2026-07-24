@@ -82,7 +82,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement phone normalization with tests.
 - [x] [Terminada] Implement self-service registration by branch token.
 - [x] [Terminada] Implement employee registration.
-- [ ] [Pendiente] Implement customer search and profile editing.
+- [x] [Terminada] Implement customer search and profile editing.
 - [ ] [Pendiente] Implement public web card by card token.
 
 ## Phase 3 - Motor De Fidelidad

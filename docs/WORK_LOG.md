@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 00:52 MST - Phase 2 - Customer Search And Profile Management
+
+**Objective:** Add internal customer search plus protected editing and deactivation.
+
+**Files Created Or Modified:** `supabase/migrations/0010_customer_profile_management.sql`, `supabase/tests/0010_customer_profile_management.sql`, `src/app/app/customers/page.tsx`, `src/app/app/customers/actions.ts`, the employee app link, and continuity docs.
+
+**Changes Made:** Added search by partial name or exact normalized phone, an Administrator/Manager-only backend update RPC, duplicate-phone handling, and active/inactive status changes. RLS and tenant/branch checks remain authoritative in the database.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** All passed. RLS suite passed through migration 0010; Vitest passed with 76 tests; build completed with webpack.
+
+**Next Action:** Implement the public web card route by card token with unknown/revoked-token denial tests.
+
 ## 2026-07-24 00:48 MST - Phase 2 - Employee Customer Registration
 
 **Objective:** Implement employee customer registration with tenant and assigned-branch enforcement.

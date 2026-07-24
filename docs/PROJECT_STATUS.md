@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement customer search and profile editing.
-- Last completed task: Implemented employee registration with assigned-branch authorization.
+- Current task: Implement public web card by card token.
+- Last completed task: Implemented customer search, editing, and deactivation.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `d8bfc7d feat: add employee customer registration`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Customer search and profile editing.
+- Public web card by card token.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -91,6 +91,7 @@
 - Public registration migration and anonymous RLS assertions: passed.
 - Public registration validation and migration static tests: passed; 3 tests.
 - Employee registration migration and assigned-branch assertions: passed.
+- Customer profile management migration and cross-tenant assertions: passed.
 
 ## Validation Results
 
@@ -101,4 +102,4 @@
 
 ## Next Exact Step
 
-Implement customer search and profile editing for Administrator and Encargado, with tenant/assigned-branch filters and inactive-customer handling.
+Implement the public web card route by card token, exposing only intended card/customer information and rejecting revoked or unknown tokens.
