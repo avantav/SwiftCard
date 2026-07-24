@@ -9,6 +9,13 @@
   - **Work that can continue:** Web Card fallback, provider-neutral payload tests, documentation, and security review.
   - **Status:** Active.
 
+- **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.
+  - **Affected phase:** Phase 9 - Piloto.
+  - **Consequence:** No se puede ejecutar ni aprobar el flujo E2E de piloto ni marcar el MVP como listo para producción.
+  - **Recommendation:** Proporcionar esos datos y completar el checklist de `docs/PRODUCTION_CHECKLIST.md`.
+  - **Work that can continue:** Automated tests, RLS verification, security review, and documentation.
+  - **Status:** Active.
+
 ## Historical Blockers
 
 ### XLSX-001 - Resolved
