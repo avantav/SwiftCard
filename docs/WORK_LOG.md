@@ -16,6 +16,24 @@
 
 **Commit:** Pending.
 
+## 2026-07-24 02:12 MST - Phase 6 - XLSX Exports
+
+**Objective:** Add permission-scoped XLSX exports alongside CSV.
+
+**Files Created Or Modified:** `package.json`, `package-lock.json`, `src/app/api/admin/exports/route.ts`, `src/app/admin/exports/page.tsx`, `src/lib/dashboard/export.test.ts`, and continuity docs.
+
+**Changes Made:** Added `xlsx@0.18.5`, format validation, workbook generation, XLSX download headers, and an XLSX option in the Admin export form. XLSX reuses the existing allowlist, RLS-backed queries, branch filters, and date filters.
+
+**Commands Executed:** `npm run lint`, `npm run typecheck`, `npm run test:run`, and `npm run build`.
+
+**Results:** 91 tests passed; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Problems Found:** The first build exposed an invalid default import for `xlsx`; corrected to a namespace import and reran the full validation successfully.
+
+**Solution Applied:** Closed blocker `XLSX-001` and marked Phase 6 exports complete.
+
+**Commit:** Pending.
+
 ## 2026-07-24 01:58 MST - Phase 6 - CSV Exports
 
 **Objective:** Add permission-scoped CSV exports for operational data.

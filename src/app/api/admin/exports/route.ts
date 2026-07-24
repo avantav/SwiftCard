@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as XLSX from "xlsx";
 import { requireInternalArea } from "@/lib/auth/server";
 
 const exportTypes = ["customers", "purchases", "rewards", "redemptions", "adjustments", "summary"] as const;
@@ -15,11 +16,20 @@ function csv(rows: Array<Record<string, unknown>>, columns: string[]) {
     .join("\r\n") + "\r\n";
 }
 
+function xlsx(rows: Array<Record<string, unknown>>, columns: string[]) {
+  const sheet = XLSX.utils.json_to_sheet(rows, { header: columns });
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, sheet, "SwiftWallet");
+  return XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+}
+
 export async function GET(request: Request) {
   const context = await requireInternalArea("ADMIN");
   const url = new URL(request.url);
   const type = url.searchParams.get("type") as ExportType | null;
   if (!type || !exportTypes.includes(type)) return NextResponse.json({ error: "Tipo de exportación inválido." }, { status: 400 });
+  const format = url.searchParams.get("format") ?? "csv";
+  if (format !== "csv" && format !== "xlsx") return NextResponse.json({ error: "Formato de exportación inválido." }, { status: 400 });
   const branchId = url.searchParams.get("branchId");
   const from = url.searchParams.get("from");
   const to = url.searchParams.get("to");
@@ -62,6 +72,15 @@ export async function GET(request: Request) {
     const response = await context.supabase.rpc("get_dashboard_metrics", { target_branch_id: branchId || null, from_date: from ? `${from}T00:00:00Z` : null, to_date: to ? `${to}T00:00:00Z` : null });
     rows = (response.data ?? []) as Array<Record<string, unknown>>;
     columns = ["customer_count", "new_customer_count", "purchase_count", "purchase_amount_minor", "stamps_awarded", "rewards_generated", "rewards_redeemed"];
+  }
+
+  if (format === "xlsx") {
+    return new NextResponse(xlsx(rows, columns), {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": `attachment; filename="swiftwallet-${type}.xlsx"`
+      }
+    });
   }
 
   return new NextResponse(csv(rows, columns), {

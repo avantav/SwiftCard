@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 6 - Dashboard And Exportaciones.
-- Current task: XLSX exports blocked on dependency approval.
-- Last completed task: Implemented and validated permission-scoped CSV exports.
+- Current task: Phase 6 validation and transition to Phase 7.
+- Last completed task: Implemented and validated permission-scoped CSV and XLSX exports.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -55,12 +55,11 @@
 
 ## Pending Functionality
 
-- XLSX exports, blocked by XLSX dependency approval.
 - All later MVP functional phases.
 
 ## Active Blockers
 
-- XLSX-001: no approved XLSX dependency is installed or available in `package.json`.
+- None.
 
 ## Known Risks
 
@@ -72,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 90 tests passed.
+- `npm run test:run`: passed; 91 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -118,4 +117,4 @@
 
 ## Next Exact Step
 
-Obtain approval for a specific XLSX dependency, then implement XLSX exports by reusing the existing server-side allowlist and CSV/RLS scope boundary.
+Begin Phase 7 by converting the Superadmin import requirements from `docs/PRODUCT.md` into executable tasks and auditing existing tenant-control code.

@@ -18,12 +18,13 @@ export default async function ExportsPage() {
       <section className="panel" aria-labelledby="exports-title">
         <Link className="text-link" href="/admin">Volver</Link>
         <p className="eyebrow">Exportaciones</p>
-        <h1 id="exports-title" className="form-title">Descargar CSV</h1>
+        <h1 id="exports-title" className="form-title">Descargar exportación</h1>
         <form className="auth-form" method="get" action="/api/admin/exports">
           <label className="field"><span>Tipo</span><select name="type" defaultValue="customers">{exportsList.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
           <label className="field"><span>Sucursal (opcional)</span><select name="branchId" defaultValue=""><option value="">Todas las permitidas</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label>
           <div className="form-grid"><label className="field"><span>Desde</span><input name="from" type="date" /></label><label className="field"><span>Hasta</span><input name="to" type="date" /></label></div>
-          <button className="primary-button" type="submit">Descargar CSV</button>
+          <label className="field"><span>Formato</span><select name="format" defaultValue="csv"><option value="csv">CSV</option><option value="xlsx">XLSX</option></select></label>
+          <button className="primary-button" type="submit">Descargar archivo</button>
         </form>
       </section>
     </main>

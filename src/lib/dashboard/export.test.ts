@@ -8,6 +8,13 @@ describe("dashboard exports", () => {
     expect(route).toContain("requireInternalArea(\"ADMIN\")");
     expect(route).toContain("exportTypes");
     expect(route).toContain("Content-Disposition");
+    expect(route).toContain('format === "xlsx"');
+    expect(route).toContain("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    expect(route).toContain("XLSX.utils.json_to_sheet");
     expect(route).not.toContain("tenant_id = url.searchParams");
+  });
+
+  it("rejects formats outside CSV and XLSX", () => {
+    expect(route).toContain('format !== "csv" && format !== "xlsx"');
   });
 });
