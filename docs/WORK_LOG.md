@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 02:42 MST - Phase 7 - Tenant Suspension Controls
+
+**Objective:** Add Superadmin tenant listing, suspension, and reactivation controls.
+
+**Files Created Or Modified:** `supabase/migrations/0027_tenant_suspension.sql`, `supabase/tests/0027_tenant_suspension.sql`, `src/app/superadmin/page.tsx`, `src/app/superadmin/tenants/actions.ts`, `src/lib/superadmin/tenants.test.ts`, and continuity docs.
+
+**Changes Made:** Added the Superadmin-only `set_tenant_status` RPC, explicit ACTIVE/SUSPENDED transitions, audit records for both actions, tenant listing, and status controls in the Superadmin panel.
+
+**Commands Executed:** `npm run typecheck`, focused tenant tests, `npm run db:verify-rls`, `npm run lint`, and `npm run build`.
+
+**Results:** 97 tests; RLS passed through migration 0027; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Next Action:** Implement Superadmin branding mode controls with validation and audit coverage.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:36 MST - Phase 7 - Import Confirmation
 
 **Objective:** Confirm validated customer imports atomically with duplicate and error summary.

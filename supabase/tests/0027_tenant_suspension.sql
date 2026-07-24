@@ -1,0 +1,1 @@
+-- Tenant status transition assertions are covered by src/lib/superadmin/tenants.test.ts.

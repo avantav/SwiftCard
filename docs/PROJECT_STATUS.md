@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 7 - Superadmin And Importaciones.
-- Current task: Implement tenant suspension controls.
-- Last completed task: Implemented atomic customer import confirmation with duplicate and error summary.
+- Current task: Implement branding mode controls.
+- Last completed task: Implemented Superadmin tenant suspension and reactivation controls.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Column mapping and validation preview; import confirmation; tenant suspension; branding controls; all later MVP functional phases.
+- Branding controls; all later MVP functional phases.
 
 ## Active Blockers
 
@@ -71,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 94 tests passed.
+- `npm run test:run`: passed; 97 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Implement Superadmin tenant listing and suspension controls with explicit status transitions and audit coverage.
+Implement Superadmin branding mode controls with explicit tenant-scoped fields and audit coverage.

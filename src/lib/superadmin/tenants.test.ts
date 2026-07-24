@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { validateTenantCreateForm } from "./tenants";
+import { readFileSync } from "node:fs";
+
+const suspensionMigration = readFileSync(new URL("../../../supabase/migrations/0027_tenant_suspension.sql", import.meta.url), "utf8");
 
 function form(values: Record<string, string>) {
   const formData = new FormData();
@@ -12,6 +15,13 @@ function form(values: Record<string, string>) {
 }
 
 describe("validateTenantCreateForm", () => {
+  it("restricts tenant status changes to Superadmin and audits transitions", () => {
+    expect(suspensionMigration).toContain("create or replace function public.set_tenant_status");
+    expect(suspensionMigration).toContain("app.is_superadmin()");
+    expect(suspensionMigration).toContain("TENANT_SUSPENDED");
+    expect(suspensionMigration).toContain("TENANT_REACTIVATED");
+    expect(suspensionMigration).toContain("revoke all on function");
+  });
   it("normalizes valid tenant input", () => {
     const result = validateTenantCreateForm(
       form({
@@ -74,4 +84,3 @@ describe("validateTenantCreateForm", () => {
     });
   });
 });
-
