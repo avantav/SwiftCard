@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement phone normalization with tests.
-- Last completed task: Added tenant-scoped customer and customer-card schema.
+- Current task: Implement self-service registration by branch token.
+- Last completed task: Implemented deterministic phone normalization and database format constraint.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `a381066 feat: add customer and card schema`.
-- Git status: clean after the customer/card schema continuity commit.
+- Git status: phone normalization migration, tests, and continuity updates are awaiting commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; customer/card schema and continuity commits were pushed successfully.
 
 ## Completed Functionality
@@ -50,10 +50,12 @@
 - Tenant-scoped `customers` and `customer_cards` schema with one card per customer.
 - Per-tenant phone uniqueness and random rotatable public card token.
 - Anonymous role denied direct access to customer/card tables.
+- Shared phone normalization for Mexican and international formats.
+- Database constraint requiring normalized E.164 phone values.
 
 ## Pending Functionality
 
-- Phone normalization and duplicate handling.
+- Self-service registration by branch token.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -85,6 +87,7 @@
 - Staff provisioning validation and server-boundary tests: passed.
 - Staff branch assignment RPC integration assertions: passed.
 - Customer/card migration and RLS integration assertions: passed.
+- Phone normalization unit tests: passed; 11 cases.
 
 ## Validation Results
 
@@ -95,4 +98,4 @@
 
 ## Next Exact Step
 
-Implement shared phone normalization with deterministic tests for Mexican and international inputs.
+Implement self-service registration by branch token through a secure server/RPC flow.

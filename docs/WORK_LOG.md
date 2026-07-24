@@ -51,6 +51,54 @@
 
 - `3eb962b chore: initialize swiftwallet scaffold`
 
+## 2026-07-24 00:32 MST - Phase 2 - Phone Normalization
+
+**Objective:** Normalize customer phone numbers before duplicate checks and enforce the stored format in PostgreSQL.
+
+**Files Created Or Modified**
+
+- Created `src/lib/customers/phone.ts`.
+- Created `src/lib/customers/phone.test.ts`.
+- Created `supabase/migrations/0007_normalized_phone_constraint.sql`.
+- Created `supabase/tests/0007_normalized_phone_constraint.sql`.
+- Updated continuity docs.
+
+**Changes Made**
+
+- Added deterministic normalization for Mexican local, `+52`, legacy `+521`, `00` international, and generic international inputs.
+- Rejected empty, alphabetic, short, invalid-country, and non-E.164 values.
+- Added database validation requiring `normalized_phone` to match `+<country><digits>` with 8-15 digits.
+
+**Migrations Added**
+
+- `supabase/migrations/0007_normalized_phone_constraint.sql`.
+
+**Tests Added Or Modified**
+
+- Added 11 phone normalization unit cases.
+- Added PostgreSQL constraint assertions.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed through migration `0007`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 70 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- None after the database constraint was added.
+
+**Solution Applied**
+
+- Not applicable.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-24 00:28 MST - Phase 2 - Customer And Card Schema
 
 **Objective:** Create tenant-scoped customers and one secure digital card per customer.
