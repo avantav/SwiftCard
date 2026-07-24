@@ -7,8 +7,8 @@
 - Last completed task: Added repeatable positive and negative PostgreSQL RLS verification.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `e6d95f7 test: add repeatable tenancy rls verification`.
-- Git status: clean after the RLS verification commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `e6d95f7` is awaiting push.
+- Git status: clean after the RLS verification continuity commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; RLS verification and continuity commits were pushed successfully.
 
 ## Completed Functionality
 
