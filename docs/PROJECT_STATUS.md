@@ -6,7 +6,7 @@
 - Current task: Implement purchase preview and confirm backend logic.
 - Last completed task: Added the loyalty program, balance, ledger, purchase, and reward schema.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `9a7b331 feat: add public web card`.
+- Last stable commit: `7de97ac feat: add loyalty schema`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
