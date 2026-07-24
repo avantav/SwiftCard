@@ -6,7 +6,7 @@
 - Current task: Implement customer search and profile editing.
 - Last completed task: Implemented employee registration with assigned-branch authorization.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `26eb913 feat: add public customer registration`.
+- Last stable commit: `d8bfc7d feat: add employee customer registration`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
