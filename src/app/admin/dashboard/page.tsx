@@ -12,6 +12,11 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     from_date: params.from ? `${params.from}T00:00:00Z` : null,
     to_date: params.to ? `${params.to}T00:00:00Z` : null
   });
+  const { data: rawBranchMetrics } = await context.supabase.rpc("get_dashboard_branch_metrics", {
+    from_date: params.from ? `${params.from}T00:00:00Z` : null,
+    to_date: params.to ? `${params.to}T00:00:00Z` : null
+  });
+  const branchMetrics = (rawBranchMetrics ?? []) as Array<{ branch_id: string; branch_name: string; customer_count: number; purchase_count: number; purchase_amount_minor: number; stamps_awarded: number }>;
   const metrics = Array.isArray(data) ? data[0] : null;
   return (
     <main className="shell">
@@ -31,6 +36,16 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           <div className="route-link"><strong>Sellos</strong><span>{metrics?.stamps_awarded ?? 0}</span></div>
           <div className="route-link"><strong>Recompensas generadas</strong><span>{metrics?.rewards_generated ?? 0}</span></div>
           <div className="route-link"><strong>Recompensas canjeadas</strong><span>{metrics?.rewards_redeemed ?? 0}</span></div>
+        </div>
+        <h2 className="section-title">Comparación por sucursal</h2>
+        <div className="data-list">
+          {branchMetrics?.map((branch) => (
+            <div key={branch.branch_id}>
+              <strong>{branch.branch_name}</strong>
+              <span>Clientes: {branch.customer_count} · Compras: {branch.purchase_count}</span>
+              <span>Monto: {branch.purchase_amount_minor} centavos · Sellos: {branch.stamps_awarded}</span>
+            </div>
+          ))}
         </div>
       </section>
     </main>

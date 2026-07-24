@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement dashboard views and trends.
-- Last completed task: Implemented scoped dashboard metrics and permission filters.
+- Current task: Implement CSV exports.
+- Last completed task: Implemented dashboard views and branch comparisons.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `c70bc1d feat: add scoped dashboard metrics`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Dashboard views and trends.
+- CSV exports.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -106,6 +106,7 @@
 - Redemption reversal, reward re-availability, adjustment reason, role checks, and nonnegative balance assertions: passed.
 - Reward cancellation, Administrator-only authorization, no-stamp-refund, and audit assertions: passed.
 - Dashboard metrics scope, role filtering, minor-unit totals, and route build: passed.
+- Branch comparison scope, date filters, and dashboard view build: passed.
 
 ## Validation Results
 
@@ -116,4 +117,4 @@
 
 ## Next Exact Step
 
-Expand the dashboard with trends, branch comparisons, and role-appropriate views using the scoped metrics boundary.
+Implement permission-scoped CSV exports for customers, purchases, rewards, redemptions, adjustments, and summary metrics.

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:54 MST - Phase 6 - Branch Dashboard Comparison
+
+**Objective:** Add branch comparison metrics to the scoped dashboard.
+
+**Files Created Or Modified:** `supabase/migrations/0023_dashboard_branch_metrics.sql`, `supabase/tests/0023_dashboard_branch_metrics.sql`, `src/app/admin/dashboard/page.tsx`, `src/lib/dashboard/branch-metrics.test.ts`, and continuity docs.
+
+**Changes Made:** Added branch-level customer, purchase, minor-unit amount, and stamp aggregates, constrained to Admin tenant scope or Manager assigned branches, with dashboard date filters.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0023; 89 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement permission-scoped CSV exports.
+
 ## 2026-07-24 01:51 MST - Phase 6 - Scoped Dashboard Metrics
 
 **Objective:** Add dashboard metrics with tenant and assigned-branch permission filters.
