@@ -6,9 +6,9 @@
 - Current task: Implement phone normalization with tests.
 - Last completed task: Added tenant-scoped customer and customer-card schema.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `01d2c8d feat: add staff branch assignments`.
-- Git status: customer/card migration and continuity updates are awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; Phase 1 assignment commits were pushed successfully.
+- Last stable commit: `a381066 feat: add customer and card schema`.
+- Git status: clean after the customer/card schema commit; continuity update is awaiting commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `a381066` is awaiting push.
 
 ## Completed Functionality
 
