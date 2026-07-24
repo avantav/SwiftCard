@@ -6,7 +6,7 @@
 - Current task: Implement reward cancellation rules.
 - Last completed task: Implemented redemption reversal and manual stamp adjustments.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `3dfc1d4 feat: add purchase cancellation`.
+- Last stable commit: `0ac07f8 feat: add redemption reversals and adjustments`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
