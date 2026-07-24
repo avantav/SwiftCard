@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement self-service registration by branch token.
-- Last completed task: Implemented deterministic phone normalization and database format constraint.
+- Current task: Implement employee registration.
+- Last completed task: Implemented public self-service registration by active branch token.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `9a2a2aa feat: add customer phone normalization`.
 - Git status: clean after the phone normalization continuity commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Self-service registration by branch token.
+- Employee registration.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -72,7 +72,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 59 tests passed.
+- `npm run test:run`: passed; 73 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -88,6 +88,8 @@
 - Staff branch assignment RPC integration assertions: passed.
 - Customer/card migration and RLS integration assertions: passed.
 - Phone normalization unit tests: passed; 11 cases.
+- Public registration migration and anonymous RLS assertions: passed.
+- Public registration validation and migration static tests: passed; 3 tests.
 
 ## Validation Results
 
@@ -98,4 +100,4 @@
 
 ## Next Exact Step
 
-Implement self-service registration by branch token through a secure server/RPC flow.
+Implement employee registration from the authenticated tenant and assigned branch, with duplicate-phone handling and focused RLS tests.

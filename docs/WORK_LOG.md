@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 00:43 MST - Phase 2 - Public Customer Registration
+
+**Objective:** Implement secure self-service customer registration from an active branch token.
+
+**Files Created Or Modified:** `supabase/migrations/0008_public_customer_registration.sql`, `supabase/tests/0008_public_customer_registration.sql`, `src/app/register/[branchToken]/actions.ts`, `src/app/register/[branchToken]/page.tsx`, `src/lib/customers/registration.test.ts`, `src/lib/customers/migrations.test.ts`, and continuity docs.
+
+**Changes Made:** Added a security-definer RPC restricted to active branches and tenants, enforced consent and normalized-phone input, created customer/card records atomically, handled duplicate phones generically, and connected the public form to a server action using the anonymous Supabase client.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** All passed. RLS suite passed through migration 0008; Vitest passed with 73 tests; build completed with webpack.
+
+**Next Action:** Implement employee registration with authenticated tenant and assigned-branch derivation.
+
 ## 2026-07-23 00:00 - Phase 0 - Repository Audit And Continuity Setup
 
 **Objective:** Start autonomous SwiftWallet development from the provided MVP document and make the repository resumable.
