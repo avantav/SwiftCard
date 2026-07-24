@@ -6,7 +6,7 @@
 - Current task: Implement CSV exports.
 - Last completed task: Implemented dashboard views and branch comparisons.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `c70bc1d feat: add scoped dashboard metrics`.
+- Last stable commit: `29b46a2 feat: add dashboard branch comparisons`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
