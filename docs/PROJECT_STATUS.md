@@ -8,7 +8,7 @@
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `b2a9742 feat: add initial tenancy rls migration`.
 - Git status: clean after the continuity documentation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest migration commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; latest push succeeded.
 
 ## Completed Functionality
 
