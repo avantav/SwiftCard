@@ -7,8 +7,8 @@
 - Last completed task: Implemented deterministic phone normalization and database format constraint.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `9a2a2aa feat: add customer phone normalization`.
-- Git status: clean after the phone normalization commit; continuity update is awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `9a2a2aa` is awaiting push.
+- Git status: clean after the phone normalization continuity commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
 ## Completed Functionality
 
