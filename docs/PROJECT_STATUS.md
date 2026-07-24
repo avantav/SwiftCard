@@ -6,8 +6,8 @@
 - Current task: Create the initial Supabase migration for tenants, branches, staff profiles, and branch assignments.
 - Last completed task: Completed Phase 0 scaffold with Next.js App Router, TypeScript, Tailwind, Supabase config placeholders, routes, health check, and validation scripts.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `5a45102 first commit`.
-- Git status: scaffold and documentation pending commit.
+- Last stable commit: `3eb962b chore: initialize swiftwallet scaffold`.
+- Git status: clean after the continuity documentation commit.
 
 ## Completed Functionality
 

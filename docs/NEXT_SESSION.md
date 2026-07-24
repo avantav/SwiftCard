@@ -1,8 +1,8 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit: `5a45102 first commit`.
-3. Git status: Phase 0 scaffold and documentation pending commit.
+2. Last stable commit: `3eb962b chore: initialize swiftwallet scaffold`.
+3. Git status: clean after the continuity documentation commit.
 4. Current phase: Phase 1 - Multi-Tenant And Authentication.
 5. Last completed task: Completed Phase 0 scaffold and validation.
 6. Task in progress: Create the initial Supabase migration for tenant, branch, staff profile, staff branch assignment, roles, and status primitives.
