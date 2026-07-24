@@ -1,8 +1,8 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit: `a381066 feat: add customer and card schema`.
-3. Git status: phone normalization migration, tests, and continuity updates are uncommitted while this unit is finalized.
+2. Last stable commit: `9a2a2aa feat: add customer phone normalization`.
+3. Git status: clean after the phone normalization commit; this continuity update is awaiting commit.
 4. Current phase: Phase 2 - Clientes And Web Card.
 5. Last completed task: Implemented deterministic phone normalization and database format constraint.
 6. Task in progress: Implement self-service registration by branch token.
@@ -12,4 +12,4 @@
 10. Known problems: `npm audit --omit=dev` reports current high-severity advisories in Next.js transitive dependencies `postcss` and `sharp`; no safe automatic fix was applied because npm proposes a breaking downgrade. `npm install` warns that transitive `eslint-visitor-keys@5.0.1` prefers Node `22.13+`, while local Node is `22.12.0`; validation still passes.
 11. Next exact action: Add the public branch-token registration route and secure RPC that normalizes submitted phones, handles duplicate phones generically, and creates customer/card records atomically for active branches.
 12. Files to read when resuming: `AGENTS.md`, `docs/PRODUCT.md`, `docs/PROJECT_STATUS.md`, `docs/NEXT_SESSION.md`, latest entry in `docs/WORK_LOG.md`, `docs/DECISIONS.md`, `docs/BLOCKERS.md`, and `docs/IMPLEMENTATION_PLAN.md`.
-13. Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization work is awaiting push.
+13. Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `9a2a2aa` is awaiting push.
