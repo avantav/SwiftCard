@@ -1,0 +1,632 @@
+# SwiftWallet
+
+## Documento Maestro del MVP
+
+**Tipo:** Product Requirements Document + Plan de implementación    
+**Estado:** Alcance funcional confirmado    
+**Stack:** Next.js + Supabase/PostgreSQL    
+**Idioma:** Español    
+**Fechas:** El cronograma original no forma parte de este alcance.
+
+## 1. Resumen ejecutivo
+
+SwiftWallet será una plataforma SaaS multi-tenant para crear y operar programas de fidelidad digitales. Cada negocio podrá administrar sucursales, empleados, clientes, reglas de acumulación, recompensas, tarjetas digitales, estadísticas y exportaciones.
+
+El cliente final no tendrá un portal ni una cuenta con contraseña. Después de registrar sus datos recibirá una tarjeta de recompensas disponible como Web Card, Apple Wallet y Google Wallet. Los empleados utilizarán una PWA instalada en un teléfono del negocio para escanear la tarjeta, registrar compras y canjear recompensas.
+
+El backend será la única fuente de verdad para calcular sellos, remanentes y recompensas.
+
+## 2. Objetivos del MVP
+
+- Crear y administrar tenants manualmente desde un panel Superadmin.  
+- Operar múltiples sucursales con una sola tarjeta por cliente y tenant.  
+- Registrar clientes por autoservicio o por empleado.  
+- Registrar compras con número de ticket y monto.  
+- Calcular sellos automáticamente según reglas configurables.  
+- Generar y acumular recompensas.  
+- Canjear recompensas sin asociarlas a una compra.  
+- Mantener auditoría, estadísticas y exportaciones.  
+- Integrar Web Card, Apple Wallet y Google Wallet.  
+- Asociar ubicaciones de sucursales para recordatorios de proximidad cuando Wallet lo permita.
+
+## 3. Alcance incluido
+
+- Plataforma multi-tenant.  
+- Panel Superadmin.  
+- Panel administrativo del tenant.  
+- PWA para empleados.  
+- Registro público por sucursal.  
+- Registro manual por empleado.  
+- Web Card, Apple Wallet y Google Wallet.  
+- QR seguro por tarjeta.  
+- Una tarjeta por cliente y tenant, válida en todas sus sucursales.  
+- Una moneda configurable por tenant.  
+- Un programa activo y una recompensa principal por tenant.  
+- Regla por compra o por monto.  
+- Remanente configurable.  
+- Recompensas acumulables y expiración configurable.  
+- Geolocalización flexible o estricta.  
+- Ajustes manuales de sellos.  
+- Cancelaciones y reversiones auditables.  
+- Importación de clientes por Superadmin.  
+- Branding estándar o white-label.  
+- Pausa del programa y suspensión del tenant.  
+- Dashboard, CSV y XLSX.
+
+## 4. Fuera del MVP
+
+- Portal y login del cliente.  
+- OTP o validación SMS.  
+- Recuperación automática de contraseña.  
+- Modo offline.  
+- Integración directa con POS.  
+- Foto u OCR del ticket.  
+- Promociones temporales y reglas por producto.  
+- Varios niveles de recompensa.  
+- Cobro automático de planes.  
+- Registro público de tenants.  
+- Acceso de soporte o impersonación.  
+- Campañas de marketing y avisos de expiración.  
+- Apps móviles nativas.
+
+## 5. Roles
+
+### Superadmin
+
+- Crear, editar, activar y suspender tenants.  
+- Configurar branding estándar o white-label.  
+- Crear el primer Administrador.  
+- Restablecer contraseñas de Administradores.  
+- Ver información básica de tenants.  
+- Importar clientes y sellos iniciales.  
+- Consultar importaciones y auditoría global.
+
+### Administrador
+
+- Gestionar sucursales, empleados y asignaciones.  
+- Configurar programa, recompensa, branding y geolocalización.  
+- Consultar y editar clientes.  
+- Cancelar compras.  
+- Ajustar sellos.  
+- Cancelar recompensas y revertir canjes.  
+- Consultar estadísticas, exportaciones y auditoría.  
+- Pausar o reactivar el programa.
+
+### Encargado
+
+- Operar y supervisar sucursales asignadas.  
+- Registrar compras y clientes.  
+- Editar o desactivar clientes.  
+- Canjear recompensas.  
+- Cancelar compras, ajustar sellos y revertir canjes.  
+- Consultar estadísticas, exportaciones y auditoría de sus sucursales.
+
+### Empleado
+
+- Escanear tarjetas.  
+- Buscar clientes por teléfono o nombre.  
+- Registrar clientes y compras.  
+- Canjear una recompensa por confirmación.  
+- Ver sellos, recompensas y actividad reciente.
+
+### Cliente
+
+No se autentica. Solo registra sus datos, abre su tarjeta, la agrega a Wallet y muestra su QR.
+
+## 6. Multi-tenancy y seguridad
+
+Todas las tablas operativas incluirán tenant_id. Supabase Row Level Security deberá impedir acceso cruzado entre negocios. El tenant se resolverá desde la sesión autenticada y nunca se confiará en un tenant_id enviado libremente por el frontend.
+
+Si un empleado escanea un QR de otro tenant, el sistema no mostrará datos y responderá: **Esta tarjeta no pertenece a este negocio.**
+
+Principios:
+
+- Service role solo en backend.  
+- Ningún secreto en el navegador.  
+- Tokens públicos aleatorios, rotables y revocables.  
+- Montos almacenados en unidades mínimas.  
+- Operaciones críticas dentro de transacciones PostgreSQL o RPC seguras.  
+- Logs de auditoría inmutables desde la aplicación.
+
+## 7. Tenants y sucursales
+
+Cada tenant tendrá nombre, contacto, estado, moneda, zona horaria, branding mode, logo, banner, colores y programa.
+
+Cada sucursal tendrá nombre, dirección, coordenadas, radio de geofence, estado, token público de registro y configuración de proximidad.
+
+Las ubicaciones servirán para:
+
+- Recordatorios de tarjeta cerca del negocio.  
+- Validación de ubicación del empleado.  
+- Identificar origen de clientes.  
+- Estadísticas por sucursal.
+
+### Suspensión
+
+Cuando un tenant está suspendido:
+
+- Los usuarios internos no pueden iniciar sesión ni operar.  
+- No se registran compras, clientes ni canjes.  
+- Las tarjetas siguen visibles en modo informativo.  
+- No se elimina información.
+
+## 8. Acceso de empleados
+
+Los empleados usarán correo y contraseña con sesión persistente. La PWA se instalará en teléfonos del negocio y tendrá botones visibles para cerrar sesión o cambiar empleado.
+
+El Administrador podrá asignar una o varias sucursales y una sucursal principal a cada Encargado o Empleado.
+
+Las contraseñas se restablecerán manualmente mediante contraseña temporal y cambio obligatorio en el siguiente acceso.
+
+## 9. Clientes
+
+Datos:
+
+- UUID interno.  
+- Nombre obligatorio.  
+- Teléfono obligatorio y normalizado.  
+- Correo opcional.  
+- Fecha de nacimiento opcional.  
+- Consentimiento de privacidad.  
+- Método y sucursal de registro.  
+- Empleado creador cuando aplique.  
+- Estado activo o inactivo.
+
+Restricción de duplicados:
+
+`UNIQUE (tenant_id, normalized_phone)`
+
+El mismo teléfono puede existir en tenants diferentes.
+
+Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.** No se mostrará la tarjeta automáticamente.
+
+Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
+
+## 10. Registro de clientes
+
+### Autoservicio
+
+Cada sucursal tendrá su propio QR público. El cliente captura sus datos, el sistema valida formato y duplicados, crea el cliente y genera la tarjeta. Se guarda la sucursal de origen y el método SELF_SERVICE.
+
+### Por empleado
+
+Desde la PWA, el empleado captura los datos y el sistema genera la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
+
+No habrá OTP, verificación por correo ni contraseña del cliente.
+
+## 11. Tarjeta digital
+
+Cada cliente tendrá una sola tarjeta activa por tenant, válida en todas las sucursales.
+
+Canales:
+
+- Web Card.  
+- Apple Wallet.  
+- Google Wallet.
+
+Contenido mínimo:
+
+- Branding del tenant.  
+- Nombre del programa.  
+- Nombre del cliente.  
+- QR seguro.  
+- Sellos actuales y meta.  
+- Recompensas disponibles.  
+- Descripción de la recompensa.  
+- Marca de agua Powered by SwiftWallet cuando el tenant no sea white-label.
+
+El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
+
+## 12. Programa de fidelidad
+
+Cada tenant tendrá un programa activo y una recompensa principal.
+
+Estados:
+
+- ACTIVE.  
+- PAUSED.
+
+Cuando el programa está pausado no se generan sellos ni nuevas recompensas, pero las recompensas existentes sí pueden canjearse.
+
+### Regla por compra
+
+Configuración:
+
+- Monto mínimo.  
+- Sellos por compra válida.
+
+Las compras debajo del mínimo se registran con cero sellos.
+
+### Regla por monto
+
+Configuración:
+
+- Monto por sello.  
+- Acumular remanente: sí o no.
+
+Ejemplo: un sello cada $100; compra de $250; resultado de dos sellos y $50 de remanente si está habilitado.
+
+### Cambios de reglas
+
+Los clientes conservan su progreso. La nueva regla aplica inmediatamente. Si la nueva meta genera recompensas, se crean automáticamente y se conserva el sobrante. El cambio queda auditado.
+
+## 13. Compras
+
+Datos obligatorios:
+
+- Cliente.  
+- Sucursal.  
+- Empleado.  
+- Número de ticket.  
+- Monto.  
+- Fecha y hora.  
+- Geolocalización.  
+- Regla aplicada.  
+- Sellos otorgados.  
+- Remanente antes y después.  
+- Recompensas generadas.
+
+El ticket será único por sucursal:
+
+`UNIQUE (branch_id, ticket_number)`
+
+No se solicitará fotografía.
+
+Flujo:
+
+1. Escanear o buscar cliente.  
+2. Capturar ticket y monto.  
+3. Solicitar previsualización al backend.  
+4. Mostrar sellos solo de forma visual.  
+5. Confirmar.  
+6. El backend recalcula y registra la operación.  
+7. Se actualizan tarjeta y Wallet.
+
+El frontend nunca enviará una cantidad de sellos como autoridad.
+
+## 14. Geolocalización
+
+### Modo flexible
+
+Solicita y registra ubicación, pero no bloquea por distancia.
+
+### Modo estricto
+
+Requiere permiso de ubicación, compara contra la sucursal y bloquea operaciones fuera del radio o sin ubicación.
+
+La regla se aplicará a compras y canjes.
+
+## 15. Recompensas
+
+Al completar la meta:
+
+- Se genera una recompensa AVAILABLE.  
+- El progreso vuelve a iniciar con sellos sobrantes.  
+- El cliente puede seguir acumulando.  
+- Puede tener varias recompensas disponibles.
+
+Configuración:
+
+- Nombre.  
+- Descripción.  
+- Meta de sellos.  
+- Sin expiración o expiración después de N días.
+
+Estados:
+
+- AVAILABLE.  
+- REDEEMED.  
+- EXPIRED.  
+- CANCELLED.
+
+El canje no requiere ticket ni compra. Cada confirmación canjea una sola recompensa y registra cliente, sucursal, empleado, fecha, hora y ubicación.
+
+Administrador puede cancelar una recompensa disponible y revertir un canje. Encargado solo puede revertir canjes. Empleado solo puede canjear.
+
+Cancelar una recompensa no devuelve sellos.
+
+## 16. Ajustes manuales
+
+Administrador y Encargado podrán agregar o retirar sellos con motivo obligatorio.
+
+- No se permite saldo negativo.  
+- Un ajuste positivo puede generar recompensas.  
+- Un ajuste negativo no elimina recompensas ya generadas.  
+- Toda acción queda en historial y auditoría.
+
+## 17. Corrección y cancelación de compras
+
+Las compras confirmadas no se editan. Para corregir se cancela la compra original y se registra una nueva.
+
+La cancelación revierte sellos, remanente, progreso y recompensas generadas cuando corresponda.
+
+Si una recompensa generada por la compra ya fue canjeada, la cancelación se bloquea. Primero se debe revertir el canje relacionado.
+
+Toda cancelación requiere motivo y conserva la compra original con estado CANCELLED.
+
+## 18. Importación de clientes
+
+Solo el Superadmin podrá importar CSV o Excel durante el MVP.
+
+Campos:
+
+- Nombre.  
+- Teléfono.  
+- Correo opcional.  
+- Fecha de nacimiento opcional.  
+- Sellos iniciales opcionales.
+
+Flujo: subir, mapear columnas, validar, previsualizar, confirmar y mostrar resumen. Se guardará historial con archivo, usuario, fecha, importados, duplicados y errores.
+
+## 19. Dashboard y exportaciones
+
+Filtros:
+
+- Rango de fechas.  
+- Sucursal.  
+- Agrupación diaria, semanal o mensual.
+
+Métricas:
+
+- Total y nuevos clientes.  
+- Compras y monto total.  
+- Sellos otorgados.  
+- Recompensas generadas y canjeadas.  
+- Tasa de canje.  
+- Compras y monto por sucursal.  
+- Actividad por empleado.  
+- Clientes con más compras y mayor monto.  
+- Origen de registros.  
+- Tendencias.
+
+Administrador ve todo el tenant. Encargado solo sucursales asignadas. Empleado no ve estadísticas.
+
+Exportaciones CSV y XLSX para clientes, compras, canjes, recompensas, ajustes y resumen de estadísticas.
+
+## 20. Auditoría
+
+Registrar, como mínimo:
+
+- Usuario y rol.  
+- Tenant y sucursal.  
+- Acción.  
+- Entidad e ID.  
+- Valores anteriores y nuevos.  
+- Fecha y hora.  
+- Metadatos disponibles.
+
+Acciones auditables: tenants, branding, programa, reglas, usuarios, clientes, compras, cancelaciones, ajustes, recompensas, canjes, reversiones, importaciones, contraseñas y geolocalización.
+
+Superadmin ve auditoría global; Administrador la del tenant; Encargado la de sus sucursales; Empleado no accede.
+
+## 21. PWA
+
+Rutas operativas:
+
+- Inicio.  
+- Escanear.  
+- Buscar cliente.  
+- Nuevo cliente.  
+- Registrar compra.  
+- Canjear.  
+- Historial reciente.  
+- Perfil y cambio de empleado.
+
+Requisitos:
+
+- Instalable.  
+- Optimizada para teléfono.  
+- Cámara y QR.  
+- Indicador de conexión.  
+- Solo operaciones online.  
+- Confirmaciones para compras y canjes.  
+- Protección contra doble envío.  
+- Manejo claro de permisos de cámara y ubicación.
+
+## 22. Apple Wallet y Google Wallet
+
+Apple Wallet requerirá cuenta Apple Developer, Pass Type ID, certificados, generación firmada y servicio de actualización.
+
+Google Wallet requerirá proyecto, Issuer ID, service account, clase y objeto de pase.
+
+La Web Card será el respaldo universal.
+
+Las sucursales activas se asociarán a la tarjeta para que el sistema operativo pueda sugerirla cerca del negocio. Esta función depende de permisos, dispositivo, límites y políticas del proveedor; no se garantizará una notificación en todos los teléfonos.
+
+La tarjeta se actualizará al recibir sellos o generar/canjear recompensas. Se incluirá notificación compatible de nueva recompensa. Los avisos de expiración quedan para una fase posterior.
+
+## 23. Arquitectura técnica
+
+Stack:
+
+- Next.js App Router.  
+- TypeScript.  
+- Supabase Auth.  
+- Supabase PostgreSQL.  
+- Row Level Security.  
+- Supabase Storage.  
+- Tailwind CSS y shadcn/ui.  
+- Vercel.
+
+Un solo repositorio y aplicación:
+
+- /superadmin  
+- /admin  
+- /app  
+- /register/[branchToken]  
+- /card/[cardToken]  
+- /api
+
+Tablas principales:
+
+- tenants.  
+- branches.  
+- staff_profiles.  
+- staff_branch_assignments.  
+- customers.  
+- customer_cards.  
+- loyalty_programs.  
+- customer_loyalty_balances.  
+- purchases.  
+- stamp_ledger.  
+- rewards.  
+- reward_redemptions.  
+- stamp_adjustments.  
+- customer_imports.  
+- customer_import_rows.  
+- wallet_passes.  
+- audit_logs.
+
+Operaciones de compra, cancelación, canje, ajuste y cambio de reglas deberán ejecutarse de forma atómica.
+
+## 24. Plan de implementación
+
+### Fase 0 - Preparación
+
+Repositorio, Next.js, Supabase, Vercel, variables, CI, lint, typecheck, pruebas y health check.
+
+### Fase 1 - Multi-tenant y autenticación
+
+Tenants, sucursales, usuarios, roles, asignaciones, RLS, login, contraseña temporal y Superadmin mínimo.
+
+### Fase 2 - Clientes y Web Card
+
+Registro por ambos métodos, normalización, duplicados, búsqueda, QR, edición, desactivación y tarjeta web.
+
+### Fase 3 - Motor de fidelidad
+
+Reglas por compra y monto, remanente, ledger, recompensas, expiración, pausa y cambios de regla.
+
+### Fase 4 - PWA
+
+Instalación, cámara, escáner, compras, previsualización, geolocalización, canjes, conexión y cambio de empleado.
+
+### Fase 5 - Operaciones administrativas
+
+Cancelaciones, reversiones, ajustes, cancelación de recompensas, auditoría e historiales.
+
+### Fase 6 - Dashboard y exportaciones
+
+KPIs, filtros, tendencias, rankings, CSV y XLSX.
+
+### Fase 7 - Superadmin e importaciones
+
+Importación, mapeo, historial, métricas de tenants, suspensión y branding mode.
+
+### Fase 8 - Wallet
+
+Apple Wallet, Google Wallet, actualizaciones, ubicaciones, errores y pruebas en dispositivos reales.
+
+### Fase 9 - Piloto
+
+E2E, seguridad, RLS, monitoreo, backups, privacidad, tenant piloto y checklist de producción.
+
+## 25. Pruebas
+
+Unitarias:
+
+- Normalización de teléfono.  
+- Reglas y remanente.  
+- Recompensas múltiples.  
+- Expiración.  
+- Ajustes.  
+- Geofence.
+
+Integración:
+
+- Compra atómica.  
+- Cancelación.  
+- Reversión.  
+- Tickets.  
+- Importación.  
+- Wallet.  
+- RLS.
+
+E2E:
+
+- Crear tenant.  
+- Configurar programa.  
+- Registrar cliente.  
+- Escanear tarjeta.  
+- Registrar compra.  
+- Generar y canjear recompensa.  
+- Cancelar compra.  
+- Exportar.  
+- Suspender tenant.
+
+## 26. Información necesaria antes del piloto
+
+- Logo de SwiftWallet.  
+- Dominio.  
+- Tenant piloto.  
+- Branding y reglas reales.  
+- Cuenta Apple Developer y certificados.  
+- Google Wallet Issuer ID.  
+- Aviso de privacidad y consentimientos.  
+- Correo operativo.  
+- Política de soporte.
+
+## 27. Backlog posterior
+
+- Acceso de soporte con impersonación auditada.  
+- Alta pública de tenants.  
+- Suscripciones.  
+- OTP.  
+- Recuperación automática.  
+- Portal del cliente.  
+- Promociones.  
+- Varios niveles de recompensa.  
+- Reglas por producto.  
+- POS y webhooks.  
+- Modo offline.  
+- Apps nativas.  
+- Campañas y avisos de expiración.  
+- Referidos, cupones, API pública y CRM.
+
+## 28. Flujo con Codex
+
+Codex trabajará por fases, no con un único prompt para construir toda la plataforma.
+
+Cada tarea incluirá:
+
+1. Contexto.  
+2. Objetivo.  
+3. Archivos permitidos.  
+4. Requisitos funcionales.  
+5. Requisitos técnicos.  
+6. Migraciones.  
+7. Pruebas.  
+8. Criterios de aceptación.  
+9. Comandos de verificación.  
+10. Resumen de cambios.
+
+Reglas:
+
+- No implementar alcance de fases posteriores.  
+- No confiar en cálculos del cliente.  
+- No desactivar RLS para resolver errores.  
+- No usar service role en navegador.  
+- No modificar migraciones aplicadas.  
+- Mantener transacciones en operaciones críticas.  
+- Agregar pruebas a cada corrección.  
+- No guardar secretos.
+
+El primer prompt de Codex se limitará a inicializar Next.js, TypeScript, Tailwind, shadcn/ui, Supabase, estructura de rutas, variables, lint, typecheck, pruebas, health check y documentación local. Todavía no implementará reglas de fidelidad ni Wallet.
+
+## 29. Definición de terminado
+
+El MVP estará terminado cuando:
+
+- Superadmin crea y suspende tenants.  
+- Admin configura sucursales, usuarios y programa.  
+- Cliente se registra por ambos métodos.  
+- Se genera tarjeta web y wallet.  
+- Empleado registra compras desde teléfono real.  
+- Backend calcula sellos y recompensas.  
+- Recompensas se acumulan y canjean.  
+- Cancelaciones y ajustes conservan consistencia.  
+- Geolocalización funciona según modo.  
+- Dashboards y exportaciones respetan permisos.  
+- Auditoría está disponible.  
+- RLS impide acceso cruzado.  
+- Un tenant piloto opera en producción controlada.  

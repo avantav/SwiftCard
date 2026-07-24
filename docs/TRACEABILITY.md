@@ -1,0 +1,16 @@
+# Traceability Matrix
+
+| Requirement | PRODUCT Section | Phase | Status | Related Code | Related Migration | Related Test | Acceptance Criteria | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Project foundation with Next.js, Supabase, lint, typecheck, tests, health check | 23, 24, 28 | Phase 0 | Terminada | `package.json`, `src/app/**`, `src/lib/supabase/config.ts` | N/A | `src/app/api/health/route.test.ts` | App builds and quality scripts pass | Build uses webpack due sandbox Turbopack limitation |
+| Multi-tenant platform and RLS isolation | 2, 3, 6, 23, 24 | Phase 1 | En progreso | Pending | Pending | Pending | Tenant A cannot access Tenant B | Next task is initial Supabase migration |
+| Staff roles and branch assignments | 5, 8, 23, 24 | Phase 1 | En progreso | Pending | Pending | Pending | Staff only access authorized tenant/branches | Included in next migration |
+| Customer registration and duplicate handling | 9, 10, 24 | Phase 2 | Pendiente | Pending | Pending | Pending | One customer per tenant/phone; duplicate public registration is blocked | Phone normalization required |
+| Secure digital card and QR token | 11, 24 | Phase 2 | Pendiente | Pending | Pending | Pending | QR exposes only public token | Token must be rotatable/revocable |
+| Loyalty rule engine | 12, 13, 15, 24 | Phase 3 | Pendiente | Pending | Pending | Pending | Backend calculates stamps, remainders, rewards atomically | Frontend is never authority |
+| Employee PWA purchase and redemption flows | 13, 14, 15, 21, 24 | Phase 4 | Pendiente | Pending | Pending | Pending | Mobile online operations with camera/location handling | No offline mode |
+| Administrative corrections and audit | 16, 17, 20, 24 | Phase 5 | Pendiente | Pending | Pending | Pending | Cancellations/reversals/adjustments are auditable and consistent | Audit logs immutable from app |
+| Dashboard and exports | 19, 24 | Phase 6 | Pendiente | Pending | Pending | Pending | Metrics and exports respect permissions | CSV and XLSX |
+| Superadmin imports and tenant controls | 5, 18, 24 | Phase 7 | Pendiente | Pending | Pending | Pending | Import validation/history and tenant suspension work | Superadmin only |
+| Apple Wallet and Google Wallet | 11, 22, 24 | Phase 8 | Pendiente | Pending | Pending | Pending | Passes update after loyalty changes | Requires external credentials |
+| Pilot readiness | 25, 26, 29 | Phase 9 | Pendiente | Pending | Pending | Pending | E2E, security, RLS, monitoring, backups, privacy checklist pass | Needs pilot information |
