@@ -6,9 +6,9 @@
 - Current task: Add application role and permission helpers.
 - Last completed task: Created and validated the initial Supabase tenancy/auth migration with RLS policies.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last recorded stable commit before final handoff docs updates: `1327c47 docs: record scaffold status`.
+- Last stable commit: `b2a9742 feat: add initial tenancy rls migration`.
 - Git status: clean after the continuity documentation commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; last push succeeded.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; push pending for latest migration commit.
 
 ## Completed Functionality
 

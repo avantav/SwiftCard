@@ -118,7 +118,7 @@
 
 **Commit Generated**
 
-- Pending.
+- `b2a9742 feat: add initial tenancy rls migration`
 
 ## 2026-07-23 22:20 MST - Phase 0 - Application Scaffold
 
