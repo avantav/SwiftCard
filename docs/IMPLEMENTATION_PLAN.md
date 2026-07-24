@@ -177,7 +177,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 **Tasks**
 
 - [ ] [Pendiente] Add E2E happy path.
-- [ ] [Pendiente] Add security/RLS regression suite.
+- [x] [Terminada] Add security/RLS regression suite.
 - [x] [Terminada] Add production checklist.
 - [x] [Terminada] Document monitoring and backup plan.
 - [ ] [Pendiente] Validate pilot tenant readiness.

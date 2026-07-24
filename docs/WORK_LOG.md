@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 03:31 MST - Phase 9 - Security Regression Suite
+
+**Objective:** Add automated regression checks for secret and tenant-authority boundaries.
+
+**Files Created Or Modified:** `src/lib/security/security-regression.test.ts` and continuity docs.
+
+**Changes Made:** Added tests confirming service-role access remains server-only, the browser client does not reference the service key, `.env.example` contains no populated secret, and export tenant scope is derived from authenticated context.
+
+**Commands Executed:** `npm run test:run`, `npm run lint`, `npm run typecheck`, and `npm run build`.
+
+**Results:** 104 tests passed; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Next Action:** Execute the E2E pilot path when pilot information is available.
+
+**Commit:** Pending.
+
 ## 2026-07-24 03:20 MST - Phase 9 - Production Readiness Documents
 
 **Objective:** Add credential-free production checklist and monitoring/backup plan.
