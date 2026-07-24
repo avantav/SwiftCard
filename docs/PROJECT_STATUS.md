@@ -6,7 +6,7 @@
 - Current task: Implement scanner route and QR parsing.
 - Last completed task: Added PWA manifest, viewport metadata, and install icon.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `e1e426f feat: add loyalty edge case coverage`.
+- Last stable commit: `8a0523c feat: add employee pwa manifest`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
