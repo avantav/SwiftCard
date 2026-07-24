@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement multiple reward generation, program pause behavior, and rule-change handling.
-- Last completed task: Implemented atomic purchase preview and confirmation with ledger and reward generation.
+- Current task: Add PWA manifest and install metadata.
+- Last completed task: Implemented multiple reward generation, pause behavior, and versioned rule changes.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `ea0f7a6 feat: add atomic purchase operations`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Multiple reward generation, program pause behavior, and rule-change handling.
+- PWA manifest and install metadata.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -95,6 +95,7 @@
 - Public Web Card projection and unknown/revoked token assertions: passed.
 - Loyalty schema, active-program uniqueness, nonnegative balance, ticket uniqueness, and RLS assertions: passed.
 - Purchase preview/confirmation, balance locking, duplicate ticket, ledger, and reward-generation assertions: passed.
+- Multiple-reward, versioned-rule, preserved-balance, and paused-program assertions: passed.
 
 ## Validation Results
 
@@ -105,4 +106,4 @@
 
 ## Next Exact Step
 
-Implement additional Phase 3 behavior: multiple reward generation, paused-program handling, rule changes with preserved customer progress, and focused invariants.
+Begin Phase 4 by adding the employee PWA manifest and install metadata, then continue with scanner and online operation flows.

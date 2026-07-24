@@ -158,5 +158,51 @@ exception when unique_violation then
 end;
 $$;
 
-revoke all on function app.preview_purchase(uuid, uuid, bigint), app.confirm_purchase(uuid, uuid, text, bigint, numeric, numeric) from public, anon;
+create or replace function app.update_loyalty_program(
+  target_program_id uuid,
+  target_status public.loyalty_program_status,
+  target_rule_type public.loyalty_rule_type,
+  target_minimum_purchase_minor bigint,
+  target_stamps_per_purchase integer,
+  target_amount_per_stamp_minor bigint,
+  target_carry_remainder boolean,
+  target_reward_stamp_goal integer,
+  target_reward_name text,
+  target_reward_description text,
+  target_reward_expiration_days integer
+)
+returns text
+language plpgsql security definer
+set search_path = public, app, auth, extensions
+as $$
+declare program_record record;
+begin
+  select lp.id, lp.tenant_id into program_record
+  from public.loyalty_programs lp where lp.id = target_program_id;
+  if not found or not app.current_staff_can_manage_tenant(program_record.tenant_id) then
+    return 'UNAVAILABLE';
+  end if;
+
+  update public.loyalty_programs
+  set status = target_status,
+      rule_type = target_rule_type,
+      minimum_purchase_minor = target_minimum_purchase_minor,
+      stamps_per_purchase = target_stamps_per_purchase,
+      amount_per_stamp_minor = target_amount_per_stamp_minor,
+      carry_remainder = target_carry_remainder,
+      reward_stamp_goal = target_reward_stamp_goal,
+      reward_name = btrim(target_reward_name),
+      reward_description = target_reward_description,
+      reward_expiration_days = target_reward_expiration_days,
+      version = version + 1,
+      updated_at = now()
+  where id = target_program_id;
+  return 'UPDATED';
+exception when check_violation or unique_violation then
+  return 'INVALID';
+end;
+$$;
+
+revoke all on function app.preview_purchase(uuid, uuid, bigint), app.confirm_purchase(uuid, uuid, text, bigint, numeric, numeric), app.update_loyalty_program(uuid, public.loyalty_program_status, public.loyalty_rule_type, bigint, integer, bigint, boolean, integer, text, text, integer) from public, anon;
 grant execute on function app.preview_purchase(uuid, uuid, bigint), app.confirm_purchase(uuid, uuid, text, bigint, numeric, numeric) to authenticated;
+grant execute on function app.update_loyalty_program(uuid, public.loyalty_program_status, public.loyalty_rule_type, bigint, integer, bigint, boolean, integer, text, text, integer) to authenticated;

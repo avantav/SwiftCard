@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:09 MST - Phase 3 - Loyalty Edge Cases
+
+**Objective:** Complete multiple reward generation, pause behavior, and versioned rule changes.
+
+**Files Created Or Modified:** `supabase/migrations/0013_purchase_operations.sql`, `supabase/tests/0013_purchase_operations.sql`, `supabase/tests/0014_program_changes.sql`, `src/lib/loyalty/program-changes.test.ts`, and continuity docs.
+
+**Changes Made:** Added an Admin-only program update RPC that increments rule versions without resetting customer balances, verified amount-rule recalculation, verified multiple rewards from a single purchase, and blocked previews while the program is paused.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0014; 80 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Begin Phase 4 with PWA manifest and install metadata.
+
 ## 2026-07-24 01:05 MST - Phase 3 - Purchase Operations
 
 **Objective:** Implement backend-only purchase preview and atomic confirmation.

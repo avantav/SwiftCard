@@ -95,9 +95,9 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Add loyalty program, balance, ledger, purchase, and reward schema.
 - [x] [Terminada] Implement purchase preview and confirm backend logic.
-- [ ] [Pendiente] Implement multiple reward generation.
-- [ ] [Pendiente] Implement program pause behavior.
-- [ ] [Pendiente] Add unit and integration tests for rules, remainders, ledger, and rewards.
+- [x] [Terminada] Implement multiple reward generation.
+- [x] [Terminada] Implement program pause behavior.
+- [x] [Terminada] Add unit and integration tests for rules, remainders, ledger, and rewards.
 
 ## Phase 4 - PWA
 
