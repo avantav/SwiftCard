@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 03:04 MST - Phase 8 - Wallet Credentials Blocker
+
+**Objective:** Document provider credentials required for Apple/Google Wallet without storing secrets.
+
+**Files Created Or Modified:** `.env.example`, `docs/IMPLEMENTATION_PLAN.md`, `docs/PROJECT_STATUS.md`, `docs/NEXT_SESSION.md`, `docs/BLOCKERS.md`, and continuity docs.
+
+**Changes Made:** Added empty server-only environment names for Apple Pass Type ID, Team ID, certificate/password, Google Wallet Issuer ID, and service-account JSON. Marked credential documentation complete and recorded blocker `WALLET-001`.
+
+**Commands Executed:** Repository environment-template inspection and `git diff --check`.
+
+**Results:** No wallet secrets exist in the repository; provider generation remains blocked by missing authorized credentials.
+
+**Next Action:** Resolve `WALLET-001` through the deployment secret manager, then implement provider-specific generation and update tests.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:57 MST - Phase 8 - Wallet Foundation
 
 **Objective:** Add a provider-neutral wallet pass schema and server-only service boundary without external credentials.

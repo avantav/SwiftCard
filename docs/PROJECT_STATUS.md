@@ -59,7 +59,7 @@
 
 ## Active Blockers
 
-- None.
+- WALLET-001: Apple Developer and Google Wallet credentials are unavailable.
 
 ## Known Risks
 
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Apple Wallet generation requires Apple Developer credentials and Google Wallet generation requires Issuer ID/service account; record these as external prerequisites before implementation.
+Provide authorized Apple/Google test credentials through the secret manager, then implement and test provider-specific generation and updates without committing secrets.

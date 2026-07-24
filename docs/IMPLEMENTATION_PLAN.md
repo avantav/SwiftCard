@@ -166,7 +166,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement Web Card fallback updates through the dynamic public projection.
 - [ ] [Pendiente] Implement Apple Wallet generation behind server-only config.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
-- [ ] [Pendiente] Document required external credentials.
+- [x] [Terminada] Document required external credentials without storing secrets.
 
 ## Phase 9 - Piloto
 
