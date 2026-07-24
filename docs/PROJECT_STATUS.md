@@ -2,13 +2,13 @@
 
 ## Current State
 
-- Current phase: Phase 1 - Multi-Tenant And Authentication.
-- Current task: Phase 1 closure review and complete quality gate.
-- Last completed task: Implemented staff branch assignments and primary branch management.
+- Current phase: Phase 2 - Clientes And Web Card.
+- Current task: Add customer and card schema.
+- Last completed task: Closed Phase 1 staff branch assignments and primary branch management.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `01d2c8d feat: add staff branch assignments`.
-- Git status: clean after the staff assignment commit; continuity update is awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `01d2c8d` is awaiting push.
+- Git status: clean after the staff assignment continuity commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; Phase 1 assignment commits were pushed successfully.
 
 ## Completed Functionality
 
@@ -50,7 +50,7 @@
 
 ## Pending Functionality
 
-- Phase 1 closure review and final gate.
+- Phase 2 customer and card schema.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -91,4 +91,4 @@
 
 ## Next Exact Step
 
-Review all Phase 1 checkboxes and run the final lint, typecheck, tests, build, RLS, security, and traceability gate before moving to Phase 2.
+Implement the Phase 2 customer and customer-card migration with tenant-scoped phone uniqueness, secure rotatable public tokens, and migration/RLS tests.
