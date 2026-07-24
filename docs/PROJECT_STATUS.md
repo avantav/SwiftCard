@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement purchase cancellation with consistency checks.
-- Last completed task: Implemented immutable audit log schema and sensitive-operation write paths.
+- Current task: Implement redemption reversal and manual stamp adjustments.
+- Last completed task: Implemented purchase cancellation with ledger and audit consistency.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `1b958c2 feat: add immutable audit logs`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Purchase cancellation with consistency checks.
+- Redemption reversal and manual stamp adjustments.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -102,6 +102,7 @@
 - Reward redemption migration, tenant authorization, and one-time redemption assertions: passed.
 - Strict geolocation trigger and pending-submit UI validations: passed.
 - Audit trigger, append-only mutation denial, and actor attribution assertions: passed.
+- Purchase cancellation, later-activity guard, reward consistency, and ledger restoration assertions: passed.
 
 ## Validation Results
 
@@ -112,4 +113,4 @@
 
 ## Next Exact Step
 
-Implement purchase cancellation without editing the original purchase, restoring balance/ledger consistently, and recording the action in audit history.
+Implement reward redemption reversal and manual stamp adjustments with role checks, balance locks, nonnegative balances, ledger entries, and audit history.

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:43 MST - Phase 5 - Purchase Cancellation
+
+**Objective:** Add consistent purchase cancellation without editing financial history.
+
+**Files Created Or Modified:** `supabase/migrations/0019_purchase_cancellation.sql`, `supabase/tests/0019_purchase_cancellation.sql`, `src/lib/loyalty/cancellation.test.ts`, and continuity docs.
+
+**Changes Made:** Added Admin/Manager cancellation authorization, customer balance locking, later-activity protection, redeemed-reward protection, restoration of balance/remainder, cancellation ledger entry, available-reward cancellation, and audit trigger coverage.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0019; 85 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Implement redemption reversal and manual stamp adjustments.
+
 ## 2026-07-24 01:41 MST - Phase 5 - Immutable Audit Logs
 
 **Objective:** Add append-only audit history and automatic sensitive-operation write paths.
