@@ -7,8 +7,8 @@
 - Last completed task: Added tenant-scoped customer and customer-card schema.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `a381066 feat: add customer and card schema`.
-- Git status: clean after the customer/card schema commit; continuity update is awaiting commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; commit `a381066` is awaiting push.
+- Git status: clean after the customer/card schema continuity commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; customer/card schema and continuity commits were pushed successfully.
 
 ## Completed Functionality
 
