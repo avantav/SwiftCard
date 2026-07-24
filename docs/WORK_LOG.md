@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-07-24 01:48 MST - Phase 5 - Reward Cancellation
+
+**Objective:** Add Administrator-only cancellation of available rewards.
+
+**Files Created Or Modified:** `supabase/migrations/0021_reward_cancellation.sql`, `supabase/tests/0021_reward_cancellation.sql`, `src/lib/loyalty/reward-cancellation.test.ts`, and continuity docs.
+
+**Changes Made:** Added `cancel_reward` with Admin-only tenant authorization, AVAILABLE-state locking, no balance refund, and automatic audit event for cancellation.
+
+**Commands Executed:** `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`.
+
+**Results:** RLS passed through migration 0021; 87 Vitest tests passed; typecheck and build passed. Lint passed with one existing Next.js external image warning.
+
+**Next Action:** Begin Phase 6 scoped dashboard metrics and permission filters.
+
 ## 2026-07-24 01:46 MST - Phase 5 - Redemption Reversal And Adjustments
 
 **Objective:** Add reward redemption reversal and manual stamp adjustments.

@@ -125,7 +125,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement purchase cancellation with consistency checks.
 - [x] [Terminada] Implement redemption reversal.
 - [x] [Terminada] Implement stamp adjustments with mandatory reason.
-- [ ] [Pendiente] Implement reward cancellation rules.
+- [x] [Terminada] Implement reward cancellation rules.
 
 ## Phase 6 - Dashboard And Exportaciones
 

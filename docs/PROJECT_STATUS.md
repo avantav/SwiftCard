@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Implement reward cancellation rules.
-- Last completed task: Implemented redemption reversal and manual stamp adjustments.
+- Current task: Implement metrics queries and permission filters.
+- Last completed task: Implemented Administrator-only reward cancellation.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `0ac07f8 feat: add redemption reversals and adjustments`.
 - Git status: continuity update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Reward cancellation rules.
+- Metrics queries and permission filters.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -104,6 +104,7 @@
 - Audit trigger, append-only mutation denial, and actor attribution assertions: passed.
 - Purchase cancellation, later-activity guard, reward consistency, and ledger restoration assertions: passed.
 - Redemption reversal, reward re-availability, adjustment reason, role checks, and nonnegative balance assertions: passed.
+- Reward cancellation, Administrator-only authorization, no-stamp-refund, and audit assertions: passed.
 
 ## Validation Results
 
@@ -114,4 +115,4 @@
 
 ## Next Exact Step
 
-Implement reward cancellation rules for Administrador, preserving stamps and recording the action in audit history.
+Begin Phase 6 with tenant/sucursal-scoped metrics queries and permission filters for dashboard data.
