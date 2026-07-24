@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Phase 2 - Clientes And Web Card.
-- Current task: Add customer and card schema.
-- Last completed task: Closed Phase 1 staff branch assignments and primary branch management.
+- Current task: Implement phone normalization with tests.
+- Last completed task: Added tenant-scoped customer and customer-card schema.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `01d2c8d feat: add staff branch assignments`.
-- Git status: clean after the staff assignment continuity commit.
+- Git status: customer/card migration and continuity updates are awaiting commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; Phase 1 assignment commits were pushed successfully.
 
 ## Completed Functionality
@@ -47,10 +47,13 @@
 - Tenant and creator derived from the authenticated Admin context.
 - Atomic staff-to-branch assignment RPC with primary-branch promotion.
 - Admin-only branch assignment controls on `/admin/staff`.
+- Tenant-scoped `customers` and `customer_cards` schema with one card per customer.
+- Per-tenant phone uniqueness and random rotatable public card token.
+- Anonymous role denied direct access to customer/card tables.
 
 ## Pending Functionality
 
-- Phase 2 customer and card schema.
+- Phone normalization and duplicate handling.
 - All later MVP functional phases.
 
 ## Active Blockers
@@ -81,6 +84,7 @@
 - Required password-change integration assertions: passed.
 - Staff provisioning validation and server-boundary tests: passed.
 - Staff branch assignment RPC integration assertions: passed.
+- Customer/card migration and RLS integration assertions: passed.
 
 ## Validation Results
 
@@ -91,4 +95,4 @@
 
 ## Next Exact Step
 
-Implement the Phase 2 customer and customer-card migration with tenant-scoped phone uniqueness, secure rotatable public tokens, and migration/RLS tests.
+Implement shared phone normalization with deterministic tests for Mexican and international inputs.

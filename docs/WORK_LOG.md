@@ -51,6 +51,56 @@
 
 - `3eb962b chore: initialize swiftwallet scaffold`
 
+## 2026-07-24 00:28 MST - Phase 2 - Customer And Card Schema
+
+**Objective:** Create tenant-scoped customers and one secure digital card per customer.
+
+**Files Created Or Modified**
+
+- Created `supabase/migrations/0006_customers_and_cards.sql`.
+- Created `supabase/tests/0006_customers_and_cards.sql`.
+- Modified `scripts/verify-rls.mjs` and migration tests.
+- Updated continuity docs.
+
+**Changes Made**
+
+- Added customer status and registration method enums.
+- Added `customers` with per-tenant normalized-phone uniqueness, source branch, privacy consent, registration method, and creator fields.
+- Added `customer_cards` with one-card-per-customer constraint, random URL-safe token, token version, revocation status, and timestamps.
+- Added tenant consistency triggers for customer source branch/creator and card ownership.
+- Added RLS for Superadmin, Admin, and staff source-branch reads; anonymous direct access is revoked.
+- Updated the PostgreSQL runner to wait for the configured database, not only server readiness.
+
+**Migrations Added**
+
+- `supabase/migrations/0006_customers_and_cards.sql`.
+
+**Tests Added Or Modified**
+
+- Added customer/card RLS, token safety, cross-tenant denial, and anonymous-access assertions.
+- Extended migration tests.
+
+**Commands Executed**
+
+- `npm run db:verify-rls`: passed through migration `0006`.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 59 tests passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+
+**Problems Encountered**
+
+- PostgreSQL initialization could report readiness before the configured database existed.
+
+**Solution Applied**
+
+- Added an explicit `select 1` database readiness check.
+
+**Commit Generated**
+
+- Pending.
+
 ## 2026-07-24 00:13 MST - Phase 1 - Minimum Branch Management
 
 **Objective:** Let active tenant Administrators list and create branches without accepting tenant authority from the browser.

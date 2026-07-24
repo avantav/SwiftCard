@@ -84,7 +84,26 @@ async function waitForPostgres() {
     );
 
     if (result.status === 0) {
-      return;
+      const databaseCheck = spawnSync(
+        "docker",
+        [
+          "exec",
+          containerName,
+          "psql",
+          "--username",
+          "postgres",
+          "--dbname",
+          databaseName,
+          "--command",
+          "select 1",
+          "--no-psqlrc"
+        ],
+        { cwd: projectRoot, encoding: "utf8" }
+      );
+
+      if (databaseCheck.status === 0) {
+        return;
+      }
     }
 
     await new Promise((resolvePromise) => setTimeout(resolvePromise, 500));

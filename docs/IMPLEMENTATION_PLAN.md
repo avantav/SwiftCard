@@ -78,8 +78,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 **Tasks**
 
-- [ ] [Pendiente] Add customer and card schema.
-- [ ] [Pendiente] Implement phone normalization with tests.
+- [x] [Terminada] Add customer and card schema.
+- [ ] [En progreso] Implement phone normalization with tests.
 - [ ] [Pendiente] Implement self-service registration by branch token.
 - [ ] [Pendiente] Implement employee registration.
 - [ ] [Pendiente] Implement customer search and profile editing.
