@@ -1,7 +1,7 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit: `c86dddf feat: add reward cancellation`.
+2. Last stable commit: `c70bc1d feat: add scoped dashboard metrics`.
 3. Git status: continuity update pending commit.
 4. Current phase: Phase 2 - Clientes And Web Card.
 5. Last completed task: Implemented scoped dashboard metrics and permission filters.

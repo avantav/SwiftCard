@@ -6,7 +6,7 @@
 - Current task: Implement dashboard views and trends.
 - Last completed task: Implemented scoped dashboard metrics and permission filters.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `c86dddf feat: add reward cancellation`.
+- Last stable commit: `c70bc1d feat: add scoped dashboard metrics`.
 - Git status: continuity update pending commit.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
 
