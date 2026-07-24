@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current phase: Phase 7 - Superadmin And Importaciones.
-- Current task: Phase 7 closeout; prepare Phase 8 Wallet prerequisites.
-- Last completed task: Implemented Superadmin tenant branding controls.
+- Current phase: Phase 8 - Wallet.
+- Current task: Phase 8 Apple/Google pass generation, blocked by external credentials.
+- Last completed task: Added provider-neutral wallet pass schema and server-only service boundary.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable commit: `710cfea feat: add permission scoped csv exports`.
 - Git status: documentation update pending commit.
@@ -55,7 +55,7 @@
 
 ## Pending Functionality
 
-- Phase 8 Wallet integrations; pilot readiness; external credentials and operational information.
+- Apple/Google pass generation and updates, blocked by external credentials; pilot readiness and operational information.
 
 ## Active Blockers
 
@@ -71,7 +71,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 99 tests passed.
+- `npm run test:run`: passed; 101 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -117,4 +117,4 @@
 
 ## Next Exact Step
 
-Review Phase 7 acceptance and traceability, then identify the first Phase 8 Wallet task that can proceed without Apple/Google credentials.
+Apple Wallet generation requires Apple Developer credentials and Google Wallet generation requires Issuer ID/service account; record these as external prerequisites before implementation.

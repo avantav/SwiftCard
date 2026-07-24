@@ -162,8 +162,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 **Tasks**
 
-- [ ] [Pendiente] Add wallet pass schema and service boundaries.
-- [ ] [Pendiente] Implement Web Card fallback updates.
+- [x] [Terminada] Add wallet pass schema and server-only service boundaries.
+- [x] [Terminada] Implement Web Card fallback updates through the dynamic public projection.
 - [ ] [Pendiente] Implement Apple Wallet generation behind server-only config.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [ ] [Pendiente] Document required external credentials.

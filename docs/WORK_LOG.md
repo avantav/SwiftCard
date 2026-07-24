@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-07-24 02:57 MST - Phase 8 - Wallet Foundation
+
+**Objective:** Add a provider-neutral wallet pass schema and server-only service boundary without external credentials.
+
+**Files Created Or Modified:** `supabase/migrations/0029_wallet_passes.sql`, `supabase/tests/0029_wallet_passes.sql`, `src/lib/wallet/pass.ts`, `src/lib/wallet/pass.test.ts`, and continuity docs.
+
+**Changes Made:** Added tenant/customer/card-scoped pass records, provider/status enums, uniqueness constraints, read-only authenticated access, a provider-neutral payload builder, and server-only configuration checks for Apple and Google credentials. The dynamic Web Card remains the fallback.
+
+**Commands Executed:** `npm run typecheck`, focused wallet tests, `npm run db:verify-rls`, `npm run lint`, `npm run test:run`, and `npm run build`.
+
+**Results:** 101 tests passed; RLS passed through migration 0029; typecheck and build passed; lint passed with one pre-existing Next image warning.
+
+**Next Action:** Obtain external wallet credentials before provider-specific generation. The initial test run required splitting pure payload logic from the `server-only` configuration boundary; 101 tests now pass.
+
+**Commit:** Pending.
+
 ## 2026-07-24 02:49 MST - Phase 7 - Tenant Branding Controls
 
 **Objective:** Add Superadmin tenant branding mode and asset controls.
