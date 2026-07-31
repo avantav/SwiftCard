@@ -6,8 +6,8 @@
 - Current task: Loyalty correctness hardening completed; Admin operational UI is the first incomplete internal task.
 - Last completed task: Reward expiration, adjustment/goal-change reward generation, concurrency boundaries, and reward audit correction.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit before this work: `a70236b feat: add role based root navigation and dev seed`.
-- Git status: loyalty correctness implementation and continuity update pending commit.
+- Last stable feature commit: `218d592 fix: harden loyalty reward lifecycle`.
+- Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
 ## Completed Functionality

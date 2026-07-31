@@ -18,7 +18,7 @@
 
 **Next Action:** Implement Admin loyalty-program configuration and pause/resume controls, then expose the existing correction/history RPCs to authorized Admin and Manager users.
 
-**Commit:** Pending.
+**Commit:** `218d592 fix: harden loyalty reward lifecycle`
 
 ## 2026-07-24 08:52 MST - Authenticated Root And Development Seed
 

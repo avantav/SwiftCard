@@ -1,8 +1,8 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable commit before the current work: `a70236b feat: add role based root navigation and dev seed`.
-3. Git status: loyalty correctness migration, tests, redemption filtering, and continuity docs pending commit.
+2. Last stable feature commit: `218d592 fix: harden loyalty reward lifecycle`.
+3. Git status: working tree expected clean after the continuity commit; local branch is ahead of `origin/codex/swiftwallet-mvp`.
 4. Current focus: close earlier-phase operational gaps before the E2E pilot path.
 5. Last completed task: migration `0031_loyalty_correctness.sql`.
 6. Completed behavior: overdue rewards cannot be redeemed or displayed; positive adjustments and lower goals generate multiple rewards with remainders; program conversions create a ledger boundary; reward/program audit actions are accurate.
