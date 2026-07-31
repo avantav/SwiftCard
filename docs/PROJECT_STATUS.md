@@ -3,10 +3,10 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Loyalty correctness hardening completed; Admin operational UI is the first incomplete internal task.
-- Last completed task: Reward expiration, adjustment/goal-change reward generation, concurrency boundaries, and reward audit correction.
+- Current task: Loyalty program Admin UI completed; administrative correction/history UI is the first incomplete internal task.
+- Last completed task: Tenant-derived program creation, configuration, pause/resume, currency-aware validation, initial-balance conversion, and full configuration audit metadata.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature commit: `218d592 fix: harden loyalty reward lifecycle`.
+- Last stable feature commit: `73bdb9b feat: add admin loyalty program controls`.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
@@ -56,10 +56,12 @@
 - Activating a lower reward goal converts qualifying balances into rewards and records a `PROGRAM_CHANGE` ledger boundary.
 - Expired rewards are blocked at redemption, swept from staff reward views, and excluded independently from the public Web Card.
 - Reward generation, expiration, cancellation reasons, and loyalty program changes produce accurate audit events.
+- Admin can create the tenant's first loyalty program and edit, pause, or reactivate it from `/admin/program`.
+- Program money inputs use the tenant currency's minor-unit precision and never accept `tenant_id` from the form.
+- Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
 
 ## Pending Functionality
 
-- Admin loyalty-program configuration UI.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
 - Apple/Google pass generation and updates, pilot tenant, privacy, and operational sign-off.
@@ -79,7 +81,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 109 tests passed.
+- `npm run test:run`: passed; 114 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -117,6 +119,8 @@
 - CSV export route allowlist, RLS scope, filters, and build: passed.
 - Loyalty correctness migration through `0031`: passed against disposable PostgreSQL 16.
 - Expiration, Web Card filtering, positive-adjustment rewards, lower-goal conversion, pause behavior, program-change ledger, and audit metadata assertions: passed.
+- Loyalty program creation/configuration migration through `0032`: passed against disposable PostgreSQL 16.
+- Currency precision, form validation, first-program creation, initial-balance conversion, pause/edit, audit metadata, cross-tenant denial, and role denial assertions: passed.
 
 ## Validation Results
 
@@ -127,4 +131,4 @@
 
 ## Next Exact Step
 
-Implement the Admin loyalty-program configuration and pause/resume UI, then expose the authorized correction/history workflows before adding the E2E happy path.
+Expose purchase cancellation, redemption reversal, stamp adjustment, and reward cancellation to authorized Admin/Manager users, then add scoped operational and audit history views.

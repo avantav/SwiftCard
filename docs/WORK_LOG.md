@@ -1,5 +1,25 @@
 # Work Log
 
+## 2026-07-30 - Admin Loyalty Program Configuration
+
+**Objective:** Let a tenant Administrator create, configure, pause, and reactivate the MVP loyalty program without trusting tenant or stamp authority from the browser.
+
+**Files Created Or Modified:** Added migration/test `0032_loyalty_program_creation.sql`, `src/lib/admin/program.ts` with focused tests, `/admin/program` page/action, Admin navigation, form styles, and continuity updates.
+
+**Changes Made:** Added Admin-only, tenant-derived creation/configuration RPCs; one-program application guard; tenant-program and customer-balance locks; initial conversion of imported/pre-existing balances; program versioning; complete old/new audit metadata; currency-aware decimal-to-minor-unit validation; rule-specific normalization; safe failure when tenant/program reads fail; creation/edit/pause/reactivation UI; and pending-submit protection.
+
+**Security And Consistency Review:** No `tenant_id` is accepted from the form or RPC. Both security-definer functions derive an active Admin and active tenant from `auth.uid()`, enforce the form's length/numeric/rule bounds again inside PostgreSQL, reject cross-tenant program IDs, revoke `public`/`anon`, serialize against balance mutations, and keep all reward generation inside the database transaction. The prior update RPC now delegates to the same secure path instead of remaining an alternate validation surface.
+
+**Corrections During Review:** Focused validation initially exposed unsupported BigInt literal syntax, optional `Intl` precision typing, and a formatting-sensitive static assertion; all were corrected. The first SQL run exposed that an earlier test intentionally left Tenant B's Admin inactive, so this test now establishes its own active fixture. Final review added atomic conversion for balances imported before first-program creation, made the page fail closed when currency or program state cannot be loaded safely, enforced all input bounds in PostgreSQL, and routed the legacy update RPC through the hardened implementation.
+
+**Commands Executed:** Focused program tests, `npm run db:verify-rls`, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run build`, and `git diff --check`.
+
+**Results:** Disposable PostgreSQL 16 passed all migrations/assertions through `0032`; 114 Vitest tests passed; typecheck and production build passed; lint passed with the pre-existing Next `<img>` warning.
+
+**Next Action:** Expose purchase cancellation, redemption reversal, stamp adjustment, and reward cancellation controls to authorized Admin/Manager users, followed by scoped operational/audit history views.
+
+**Commit:** `73bdb9b feat: add admin loyalty program controls`.
+
 ## 2026-07-30 - Loyalty Correctness Hardening
 
 **Objective:** Close backend loyalty gaps before building the operational Admin UI and E2E pilot path.

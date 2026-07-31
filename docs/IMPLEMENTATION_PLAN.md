@@ -99,7 +99,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement program pause behavior.
 - [x] [Terminada] Add unit and integration tests for rules, remainders, ledger, and rewards.
 - [x] [Terminada] Enforce reward expiration, generate rewards from positive adjustments, and convert balances when a lower goal is activated.
-- [ ] [Pendiente] Expose loyalty program configuration and pause/resume controls in the Admin UI.
+- [x] [Terminada] Expose loyalty program creation, configuration, and pause/resume controls in the Admin UI.
 
 ## Phase 4 - PWA
 
