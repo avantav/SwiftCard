@@ -98,6 +98,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement multiple reward generation.
 - [x] [Terminada] Implement program pause behavior.
 - [x] [Terminada] Add unit and integration tests for rules, remainders, ledger, and rewards.
+- [x] [Terminada] Enforce reward expiration, generate rewards from positive adjustments, and convert balances when a lower goal is activated.
+- [ ] [Pendiente] Expose loyalty program configuration and pause/resume controls in the Admin UI.
 
 ## Phase 4 - PWA
 
@@ -126,6 +128,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement redemption reversal.
 - [x] [Terminada] Implement stamp adjustments with mandatory reason.
 - [x] [Terminada] Implement reward cancellation rules.
+- [ ] [Pendiente] Expose purchase cancellation, redemption reversal, stamp adjustment, and reward cancellation controls to authorized Admin/Manager users.
+- [ ] [Pendiente] Add permission-scoped operational history and audit-log views.
 
 ## Phase 6 - Dashboard And Exportaciones
 

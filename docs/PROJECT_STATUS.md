@@ -2,13 +2,13 @@
 
 ## Current State
 
-- Current phase: Phase 8 - Wallet.
-- Current task: Phase 9 pilot readiness; external information and Wallet credentials pending.
-- Last completed task: Updated Web Card fallback with current loyalty state.
+- Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
+- Current task: Loyalty correctness hardening completed; Admin operational UI is the first incomplete internal task.
+- Last completed task: Reward expiration, adjustment/goal-change reward generation, concurrency boundaries, and reward audit correction.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable commit: `710cfea feat: add permission scoped csv exports`.
-- Git status: documentation update pending commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; phone normalization and continuity commits were pushed successfully.
+- Last stable commit before this work: `a70236b feat: add role based root navigation and dev seed`.
+- Git status: loyalty correctness implementation and continuity update pending commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
 ## Completed Functionality
 
@@ -52,9 +52,16 @@
 - Anonymous role denied direct access to customer/card tables.
 - Shared phone normalization for Mexican and international formats.
 - Database constraint requiring normalized E.164 phone values.
+- Atomic positive stamp adjustments generate multiple rewards and preserve the stamp remainder.
+- Activating a lower reward goal converts qualifying balances into rewards and records a `PROGRAM_CHANGE` ledger boundary.
+- Expired rewards are blocked at redemption, swept from staff reward views, and excluded independently from the public Web Card.
+- Reward generation, expiration, cancellation reasons, and loyalty program changes produce accurate audit events.
 
 ## Pending Functionality
 
+- Admin loyalty-program configuration UI.
+- Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
+- Automated E2E happy path and seeded-role integration validation.
 - Apple/Google pass generation and updates, pilot tenant, privacy, and operational sign-off.
 
 ## Active Blockers
@@ -72,7 +79,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 106 tests passed.
+- `npm run test:run`: passed; 109 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -108,6 +115,8 @@
 - Dashboard metrics scope, role filtering, minor-unit totals, and route build: passed.
 - Branch comparison scope, date filters, and dashboard view build: passed.
 - CSV export route allowlist, RLS scope, filters, and build: passed.
+- Loyalty correctness migration through `0031`: passed against disposable PostgreSQL 16.
+- Expiration, Web Card filtering, positive-adjustment rewards, lower-goal conversion, pause behavior, program-change ledger, and audit metadata assertions: passed.
 
 ## Validation Results
 
@@ -118,4 +127,4 @@
 
 ## Next Exact Step
 
-Provide pilot information and authorized Wallet test credentials through the secret manager, then execute the E2E and production sign-off checklist.
+Implement the Admin loyalty-program configuration and pause/resume UI, then expose the authorized correction/history workflows before adding the E2E happy path.

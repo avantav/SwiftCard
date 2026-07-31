@@ -1,5 +1,25 @@
 # Work Log
 
+## 2026-07-30 - Loyalty Correctness Hardening
+
+**Objective:** Close backend loyalty gaps before building the operational Admin UI and E2E pilot path.
+
+**Files Created Or Modified:** Added `supabase/migrations/0031_loyalty_correctness.sql`, `supabase/tests/0031_loyalty_correctness.sql`, and `src/lib/loyalty/correctness.test.ts`; updated the staff redemption page and continuity documents.
+
+**Changes Made:** Enforced reward expiration at redemption, added a tenant-scoped expiration sweep, excluded overdue rewards from the public Web Card and staff selector, generated multiple rewards from positive adjustments, converted qualifying balances when an active reward goal is lowered, preserved remainders, persisted adjustment reward sources/counts, added program-change ledger boundaries, serialized program changes against balance mutations, stored reward cancellation reasons, and corrected reward/program audit actions.
+
+**Security And Consistency Review:** All new RPC authority is derived from `auth.uid()` and the authenticated staff profile. Anonymous access remains limited to the public card projection. Security-definer functions explicitly revoke `public`/`anon` execution, tenant scope is derived server-side, customer balances remain advisory-locked, and no applied migration was edited.
+
+**Corrections During Review:** The first integration-test revision declared one assertion variable in the wrong block; it was corrected and the full database suite rerun. A second review found that rejected paused-program purchases/positive adjustments could create empty balance rows after the concurrency reordering; program-state checks were moved before balance creation and a no-partial-persistence assertion was added.
+
+**Commands Executed:** Focused Vitest correctness tests; `npm run db:verify-rls` repeatedly while refining the migration; `npm run lint`; `npm run typecheck`; `npm run test:run`; `npm run build`; and `git diff --check`.
+
+**Results:** Disposable PostgreSQL 16 passed all migrations and SQL assertions through `0031`; 109 Vitest tests passed; typecheck and production build passed; lint passed with one pre-existing Next `<img>` warning.
+
+**Next Action:** Implement Admin loyalty-program configuration and pause/resume controls, then expose the existing correction/history RPCs to authorized Admin and Manager users.
+
+**Commit:** Pending.
+
 ## 2026-07-24 08:52 MST - Authenticated Root And Development Seed
 
 **Objective:** Replace the root development menu with role-based navigation and add example users for a disposable Supabase project.
