@@ -17,6 +17,9 @@ export default function AdminPage() {
           <Link className="primary-link" href="/admin/staff">
             Personal
           </Link>
+          <Link className="primary-link" href="/admin/program">
+            Programa
+          </Link>
           <Link className="primary-link" href="/admin/dashboard">
             Dashboard
           </Link>

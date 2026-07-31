@@ -129,7 +129,8 @@ a {
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   min-height: 44px;
   border: 1px solid hsl(var(--border));
   border-radius: 8px;
@@ -140,7 +141,8 @@ a {
 }
 
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.field textarea:focus {
   border-color: hsl(var(--primary));
   outline: 2px solid hsl(var(--primary) / 20%);
   outline-offset: 2px;
@@ -315,6 +317,12 @@ a {
   margin: 32px 0 16px;
   font-size: 1.25rem;
   letter-spacing: 0;
+}
+
+.field-hint {
+  margin: -8px 0 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
 }
 
 .management-grid {
