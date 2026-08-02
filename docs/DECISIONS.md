@@ -79,3 +79,13 @@
 - Reason: Explicit schema routing preserves the existing database boundary, avoids duplicating the API surface, and keeps ordinary table access in `public`.
 - Consequences: Hosted environments must apply migration `0033`; all new `app` RPC call sites must select the schema explicitly, while function grants remain the authority boundary.
 - Status: Accepted.
+
+## DEC-0009 - Mandatory Enterprise Design System
+
+- Date: 2026-08-02
+- Context: Existing screens were implemented incrementally and do not yet share a sufficiently rigorous enterprise visual and interaction standard.
+- Decision: Adopt `docs/DESIGN_SYSTEM.md` as the mandatory UI source of truth and require it in session startup, implementation review, and completion criteria through `AGENTS.md`.
+- Alternatives considered: Keep visual guidance informal, redesign only the Superadmin page, or copy a third-party interface directly.
+- Reason: A repository-owned system creates consistent navigation, hierarchy, density, accessibility, responsive behavior, and interaction states across future work without relying on chat history.
+- Consequences: Every modified interface must move toward the shared system, applicable checklist items must be verified, and exceptions require explicit user authorization plus a recorded decision. Verkada remains conceptual inspiration only; SwiftWallet retains its own identity.
+- Status: Accepted.

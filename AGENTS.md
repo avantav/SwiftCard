@@ -5,10 +5,11 @@
 1. Current explicit user instruction.
 2. This `AGENTS.md`.
 3. `docs/PRODUCT.md`.
-4. `docs/DECISIONS.md`.
-5. `docs/IMPLEMENTATION_PLAN.md`.
-6. Existing code and tests.
-7. Documented assumptions.
+4. `docs/DESIGN_SYSTEM.md` for every UI, UX, frontend, content, or visual decision.
+5. `docs/DECISIONS.md`.
+6. `docs/IMPLEMENTATION_PLAN.md`.
+7. Existing code and tests.
+8. Documented assumptions.
 
 `docs/PRODUCT.md` is the primary product source for the MVP. Do not rely on chat history for requirements or continuity.
 
@@ -18,11 +19,12 @@ At the start of every session:
 
 1. Read this file.
 2. Read `docs/PRODUCT.md` completely.
-3. Read `docs/IMPLEMENTATION_PLAN.md`, `docs/PROJECT_STATUS.md`, `docs/NEXT_SESSION.md`, `docs/DECISIONS.md`, and `docs/BLOCKERS.md` when present.
-4. Run `git status`, `git branch --show-current`, and `git log --oneline -10`.
-5. Inspect repository structure and package scripts.
-6. Verify the real code state before continuing.
-7. Resume from the first incomplete task.
+3. Read `docs/DESIGN_SYSTEM.md` completely.
+4. Read `docs/IMPLEMENTATION_PLAN.md`, `docs/PROJECT_STATUS.md`, `docs/NEXT_SESSION.md`, `docs/DECISIONS.md`, and `docs/BLOCKERS.md` when present.
+5. Run `git status`, `git branch --show-current`, and `git log --oneline -10`.
+6. Inspect repository structure and package scripts.
+7. Verify the real code state before continuing.
+8. Resume from the first incomplete task.
 
 ## Work Cycle
 
@@ -33,9 +35,21 @@ For each unit of work:
 3. Implement incrementally.
 4. Add or update focused tests.
 5. Run relevant validation commands.
-6. Review `git diff` for scope, security, and consistency.
-7. Update continuity docs.
-8. Commit stable work on a non-main branch.
+6. For UI work, verify every applicable item in the mandatory checklist in `docs/DESIGN_SYSTEM.md`.
+7. Review `git diff` for scope, security, design-system compliance, and consistency.
+8. Update continuity docs.
+9. Commit stable work on a non-main branch.
+
+## Design
+
+`docs/DESIGN_SYSTEM.md` is mandatory for all interface work.
+
+- Read it before modifying routes, layouts, components, styles, visual assets, interface copy, or interaction states.
+- Follow its tokens, hierarchy, responsive behavior, accessibility requirements, component rules, and prohibited patterns strictly.
+- Reuse established shells and components instead of creating page-specific visual languages.
+- Do not copy Verkada branding or proprietary UI; use only the documented enterprise design principles while preserving SwiftWallet identity.
+- Do not mark UI work complete until the applicable design checklist has been reviewed.
+- Any intentional exception requires explicit user authorization and a recorded entry in `docs/DECISIONS.md`.
 
 ## Git
 
@@ -60,4 +74,3 @@ SwiftWallet is multi-tenant.
 ## Scope
 
 Do not add post-MVP features unless explicitly authorized. Excluded examples include customer portal/login, OTP, offline mode, POS integration, subscriptions, native mobile apps, marketing campaigns, support impersonation, and promotions.
-

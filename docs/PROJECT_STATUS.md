@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Hosted development UI review; the bootstrap Superadmin is ready and the first tenant/Administrator should now be created through the UI.
-- Last completed task: Created and verified the first hosted Supabase Auth Superadmin with an active tenantless staff profile.
+- Current task: Apply the new mandatory enterprise design system to the Superadmin experience before continuing feature development.
+- Last completed task: Established `docs/DESIGN_SYSTEM.md` as the strict UI/UX source of truth and integrated it into repository operating instructions.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature commit: `73bdb9b feat: add admin loyalty program controls`.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
@@ -64,6 +64,7 @@
 - Repeatable `npm run db:push:remote` migration runner refuses untracked existing SwiftWallet schemas and records canonical Supabase migration history.
 - Compensating `npm run db:bootstrap:superadmin` flow creates an Auth user and active Superadmin profile without storing credentials in Git.
 - Hosted development project has one confirmed active Superadmin and zero tenants; the login page is available from the running development server.
+- Mandatory enterprise design rules now cover layout, navigation, tokens, components, states, responsive behavior, accessibility, content, implementation, prohibited patterns, and completion review.
 
 ## Pending Functionality
 

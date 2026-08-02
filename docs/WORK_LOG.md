@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-02 - Mandatory Enterprise Design System
+
+**Objective:** Establish a professional, repository-owned UI standard inspired by the clarity and operational restraint of Verkada while preserving SwiftWallet's identity.
+
+**Files Created Or Modified:** Added `docs/DESIGN_SYSTEM.md`; updated `AGENTS.md`, `docs/DECISIONS.md`, `docs/PROJECT_STATUS.md`, `docs/NEXT_SESSION.md`, and this work log.
+
+**Changes Made:** Defined mandatory principles, application shells, spacing, colors, typography, borders, navigation, page headers, buttons, forms, tables, metrics, remote states, iconography, motion, responsive behavior, accessibility, content, implementation constraints, prohibited patterns, and a completion checklist. Added the design system to session startup, source-of-truth precedence, UI work cycles, and exception governance.
+
+**Design Boundary:** Verkada is used only as conceptual inspiration for enterprise clarity, hierarchy, restraint, and efficiency. The rules explicitly prohibit copying Verkada branding, proprietary UI, text, logos, or visual assets.
+
+**Validation:** Documentation structure and diff formatting reviewed with `git diff --check`.
+
+**Next Action:** Redesign the Superadmin shell and overview using the new mandatory rules, then review it at the required responsive widths.
+
 ## 2026-08-02 - Hosted Supabase Development Setup
 
 **Objective:** Bring up a safe hosted development database and prepare the first real UI review without running the direct-`auth.users` development seed.
