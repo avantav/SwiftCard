@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
 import { confirmCustomerImport, previewCustomerImport } from "../../actions";
 
@@ -21,12 +22,16 @@ export default async function ImportMappingPage({ params, searchParams }: Mappin
   const { data: branches } = await context.supabase.from("branches").select("id,name").eq("tenant_id", importRecord.tenant_id).eq("status", "ACTIVE").order("name");
 
   return (
-    <main className="shell">
-      <section className="panel" aria-labelledby="mapping-title">
-        <Link className="text-link" href="/superadmin/imports">Volver</Link>
-        <p className="eyebrow">Importación recibida</p>
-        <h1 id="mapping-title" className="form-title">Mapear columnas</h1>
-        <p className="body-copy">{importRecord.file_name} quedó registrado. Selecciona qué columna corresponde a cada campo requerido.</p>
+    <main className="enterprise-page">
+      <header className="enterprise-page-header">
+        <div>
+          <p className="enterprise-breadcrumb">Importación recibida</p>
+          <h1 id="mapping-title">Mapear columnas</h1>
+          <p>{importRecord.file_name} quedó registrado. Asigna cada columna requerida.</p>
+        </div>
+        <Link className="enterprise-secondary-action" href="/superadmin/imports">Volver</Link>
+      </header>
+      <section className="enterprise-content-card" aria-labelledby="mapping-title">
         <form className="auth-form" action={previewCustomerImport}>
           <input type="hidden" name="importId" value={importId} />
           <label className="field"><span>Nombre</span><select name="fullName" required><option value="">Selecciona una columna</option>{headers.map((header) => <option key={header} value={header}>{header}</option>)}</select></label>
@@ -34,11 +39,11 @@ export default async function ImportMappingPage({ params, searchParams }: Mappin
           <label className="field"><span>Correo (opcional)</span><select name="email"><option value="">Sin correo</option>{headers.map((header) => <option key={header} value={header}>{header}</option>)}</select></label>
           <label className="field"><span>Fecha de nacimiento (opcional)</span><select name="birthDate"><option value="">Sin fecha</option>{headers.map((header) => <option key={header} value={header}>{header}</option>)}</select></label>
           <label className="field"><span>Sellos iniciales (opcional)</span><select name="initialStamps"><option value="">Sin sellos</option>{headers.map((header) => <option key={header} value={header}>{header}</option>)}</select></label>
-          <button className="primary-button" type="submit">Previsualizar validación</button>
+          <SubmitButton>Previsualizar validación</SubmitButton>
         </form>
         {query.preview ? <section id="preview" className="notice-panel" aria-labelledby="preview-title"><h2 id="preview-title" className="section-title">Resultado de validación</h2><p>{Array.isArray(importRecord.preview_errors) ? importRecord.preview_errors.length : 0} filas con errores. Ningún cliente fue creado.</p></section> : null}
         {query.confirmed ? <p className="success-alert" role="status">Importados: {query.imported ?? "0"}. Duplicados: {query.duplicates ?? "0"}. Errores: {query.errors ?? "0"}.</p> : null}
-        {query.preview && importRecord.status === "PREVIEWED" ? <form className="auth-form" action={confirmCustomerImport}><input type="hidden" name="importId" value={importId} /><label className="field"><span>Sucursal de origen</span><select name="branchId" required defaultValue=""><option value="" disabled>Selecciona una sucursal</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label><button className="primary-button" type="submit">Confirmar importación</button></form> : null}
+        {query.preview && importRecord.status === "PREVIEWED" ? <form className="auth-form" action={confirmCustomerImport}><input type="hidden" name="importId" value={importId} /><label className="field"><span>Sucursal de origen</span><select name="branchId" required defaultValue=""><option value="" disabled>Selecciona una sucursal</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label><SubmitButton>Confirmar importación</SubmitButton></form> : null}
         <dl className="summary-list">
           <div><dt>Estado</dt><dd>{importRecord.status}</dd></div>
           <div><dt>Tipo</dt><dd>{importRecord.file_type}</dd></div>

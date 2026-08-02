@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 import { createTenant } from "./actions";
 
 type NewTenantPageProps = {
@@ -13,15 +14,16 @@ export default async function NewTenantPage({
   const { error } = await searchParams;
 
   return (
-    <main className="shell">
-      <section className="panel form-panel" aria-labelledby="new-tenant-title">
-        <Link className="text-link" href="/superadmin">
-          Volver
-        </Link>
-        <p className="eyebrow">Superadmin</p>
-        <h1 id="new-tenant-title" className="form-title">
-          Nuevo tenant
-        </h1>
+    <main className="enterprise-page">
+      <header className="enterprise-page-header">
+        <div>
+          <p className="enterprise-breadcrumb">Tenants</p>
+          <h1 id="new-tenant-title">Nuevo tenant</h1>
+          <p>Crea el espacio operativo y define su configuración inicial.</p>
+        </div>
+        <Link className="enterprise-secondary-action" href="/superadmin">Cancelar</Link>
+      </header>
+      <section className="enterprise-content-card" aria-labelledby="new-tenant-title">
         {error ? (
           <p className="auth-alert" role="alert">
             {error}
@@ -74,12 +76,9 @@ export default async function NewTenantPage({
             <span>Color secundario</span>
             <input name="secondaryColor" type="color" defaultValue="#17202A" />
           </label>
-          <button className="primary-button form-submit" type="submit">
-            Crear tenant
-          </button>
+          <SubmitButton className="primary-button form-submit">Crear tenant</SubmitButton>
         </form>
       </section>
     </main>
   );
 }
-

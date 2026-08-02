@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SubmitButton } from "@/components/submit-button";
 import { getActiveSuperadminContext } from "@/lib/auth/server";
 import {
   createFirstAdministrator,
@@ -50,15 +51,16 @@ export default async function NewAdministratorPage({
     .maybeSingle();
 
   return (
-    <main className="shell">
-      <section className="panel form-panel" aria-labelledby="new-admin-title">
-        <Link className="text-link" href="/superadmin">
-          Volver
-        </Link>
-        <p className="eyebrow">Superadmin · {tenant.name}</p>
-        <h1 id="new-admin-title" className="form-title">
-          Primer Administrador
-        </h1>
+    <main className="enterprise-page">
+      <header className="enterprise-page-header">
+        <div>
+          <p className="enterprise-breadcrumb">Tenants · {tenant.name}</p>
+          <h1 id="new-admin-title">Primer Administrador</h1>
+          <p>Configura la cuenta responsable de la operación del tenant.</p>
+        </div>
+        <Link className="enterprise-secondary-action" href="/superadmin">Volver a tenants</Link>
+      </header>
+      <section className="enterprise-content-card" aria-labelledby="new-admin-title">
         {tenantCreated ? (
           <p className="success-alert" role="status">
             Tenant creado. Agrega su primer Administrador.
@@ -134,9 +136,7 @@ export default async function NewAdministratorPage({
                     required
                   />
                 </label>
-                <button className="primary-button form-submit" type="submit">
-                  Restablecer contraseña
-                </button>
+                <SubmitButton className="primary-button form-submit">Restablecer contraseña</SubmitButton>
               </form>
             )}
           </>
@@ -175,9 +175,7 @@ export default async function NewAdministratorPage({
                 required
               />
             </label>
-            <button className="primary-button form-submit" type="submit">
-              Crear Administrador
-            </button>
+            <SubmitButton className="primary-button form-submit">Crear Administrador</SubmitButton>
           </form>
         )}
       </section>
