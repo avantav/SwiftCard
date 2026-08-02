@@ -16,9 +16,9 @@
 
 **Commands Executed:** Hosted read-only PostgreSQL checks, `npm run db:push:remote`, live Data API checks, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run db:verify-rls`, `npm run build`, `node --check`, and `git diff --check`.
 
-**Results:** Remote database has 32 tracked migrations, 16 public application tables, 32 RLS policies, and zero tenants pending bootstrap. Hosted Data API checks pass. Disposable PostgreSQL RLS verification passes through `0033`; 118 Vitest tests, typecheck, and production build pass; lint has only the pre-existing Next `<img>` warning.
+**Results:** Remote database has 32 tracked migrations, 16 public application tables, 32 RLS policies, one confirmed active Superadmin, and zero tenants pending the first UI flow. Hosted Data API and `/api/health` checks pass, and `/login` returns HTTP 200. Disposable PostgreSQL RLS verification passes through `0033`; 118 Vitest tests, typecheck, and production build pass; lint has only the pre-existing Next `<img>` warning.
 
-**Next Action:** Bootstrap the development Superadmin from local-only environment values, then create the first tenant and Administrator through the live UI.
+**Next Action:** Sign in to the live development UI with the generated Superadmin credentials, then create the first tenant and Administrator.
 
 ## 2026-07-30 - Admin Loyalty Program Configuration
 

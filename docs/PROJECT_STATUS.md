@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Hosted development environment setup; database and Data API are ready, and the bootstrap Superadmin/first tenant remain to be created.
-- Last completed task: Applied migrations through `0033` to the hosted Supabase project, exposed permission-scoped `app` RPCs correctly, and added repeatable remote migration and Superadmin bootstrap commands.
+- Current task: Hosted development UI review; the bootstrap Superadmin is ready and the first tenant/Administrator should now be created through the UI.
+- Last completed task: Created and verified the first hosted Supabase Auth Superadmin with an active tenantless staff profile.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature commit: `73bdb9b feat: add admin loyalty program controls`.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
@@ -63,6 +63,7 @@
 - Application RPC calls explicitly target the exposed `app` schema while public administrative RPCs remain in `public`.
 - Repeatable `npm run db:push:remote` migration runner refuses untracked existing SwiftWallet schemas and records canonical Supabase migration history.
 - Compensating `npm run db:bootstrap:superadmin` flow creates an Auth user and active Superadmin profile without storing credentials in Git.
+- Hosted development project has one confirmed active Superadmin and zero tenants; the login page is available from the running development server.
 
 ## Pending Functionality
 
@@ -127,7 +128,7 @@
 - Currency precision, form validation, first-program creation, initial-balance conversion, pause/edit, audit metadata, cross-tenant denial, and role denial assertions: passed.
 - Hosted migration application through `0033`: passed; 32 migration files are tracked remotely.
 - Hosted Data API `app` schema RPC and server-key database checks: passed.
-- Remote database remains empty of tenants pending the one-time Superadmin bootstrap and first-tenant UI flow.
+- Remote database remains empty of tenants pending the first-tenant UI flow.
 
 ## Validation Results
 
@@ -138,4 +139,4 @@
 
 ## Next Exact Step
 
-Bootstrap the development Superadmin from local-only environment values, create the first tenant and Administrator through the real Superadmin UI, and verify role routing before returning to administrative correction/history UI.
+Log in as the development Superadmin, create the first tenant and Administrator through the real Superadmin UI, and verify role routing before returning to administrative correction/history UI.
