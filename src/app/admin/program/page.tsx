@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
@@ -61,16 +60,10 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
 
   if (tenantError || !tenant?.currency_code || programError) {
     return (
-      <main className="shell">
-        <section className="panel form-panel" aria-labelledby="program-title">
-          <Link className="text-link" href="/admin">
-            Volver
-          </Link>
-          <p className="eyebrow">Administrador</p>
-          <h1 id="program-title" className="form-title">
-            Programa de lealtad
-          </h1>
-          <p className="auth-alert" role="alert">
+      <main className="enterprise-page">
+        <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración</p><h1 id="program-title">Programa de fidelidad</h1><p>Define cómo se acumulan sellos y se generan recompensas.</p></div></header>
+        <section className="enterprise-content-card admin-program-card" aria-labelledby="program-title">
+          <p className="enterprise-alert is-error" role="alert">
             No se pudo cargar de forma segura la configuración del programa.
           </p>
         </section>
@@ -89,33 +82,27 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
   );
 
   return (
-    <main className="shell">
-      <section className="panel form-panel" aria-labelledby="program-title">
-        <Link className="text-link" href="/admin">
-          Volver
-        </Link>
-        <p className="eyebrow">Administrador · {tenant?.name ?? "Tenant"}</p>
-        <h1 id="program-title" className="form-title">
-          Programa de lealtad
-        </h1>
-        <p className="body-copy">
+    <main className="enterprise-page">
+      <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración · {tenant?.name ?? "Tenant"}</p><h1 id="program-title">Programa de fidelidad</h1><p>Define cómo se acumulan sellos y se generan recompensas.</p></div></header>
+      <section className="enterprise-content-card admin-program-card" aria-labelledby="program-title">
+        <p className="admin-card-copy">
           El backend calculará siempre los sellos y recompensas. Los importes se
           guardan en unidades mínimas de {currencyCode}.
         </p>
 
         {params.saved ? (
-          <p className="success-alert" role="status">
+          <p className="enterprise-alert is-success" role="status">
             Programa guardado
             {params.status === "PAUSED" ? " y pausado." : " y activo."}
           </p>
         ) : null}
         {params.error ? (
-          <p className="auth-alert" role="alert">
+          <p className="enterprise-alert is-error" role="alert">
             {params.error}
           </p>
         ) : null}
         {program ? (
-          <dl className="summary-list">
+          <dl className="admin-status-summary">
             <div>
               <dt>Estado actual</dt>
               <dd>{program.status === "ACTIVE" ? "Activo" : "Pausado"}</dd>
@@ -162,7 +149,7 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
             </label>
           </div>
 
-          <h2 className="section-title">Regla por compra</h2>
+          <div className="admin-form-section"><h2 className="section-title">Regla por compra</h2>
           <p className="field-hint">
             Estos valores se usan solamente cuando la regla seleccionada es por
             compra.
@@ -196,7 +183,9 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
             </label>
           </div>
 
-          <h2 className="section-title">Regla por monto</h2>
+          </div>
+
+          <div className="admin-form-section"><h2 className="section-title">Regla por monto</h2>
           <p className="field-hint">
             Este importe se usa solamente cuando la regla seleccionada es por
             monto.
@@ -229,7 +218,9 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
             <span>Acumular remanente entre compras</span>
           </label>
 
-          <h2 className="section-title">Recompensa</h2>
+          </div>
+
+          <div className="admin-form-section"><h2 className="section-title">Recompensa</h2>
           <div className="form-grid">
             <label className="field">
               <span>Meta de sellos</span>
@@ -272,6 +263,8 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
               rows={4}
             />
           </label>
+
+          </div>
 
           <SubmitButton>
             {program ? "Guardar configuración" : "Crear programa"}

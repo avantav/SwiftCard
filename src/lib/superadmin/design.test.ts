@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const layout = readFileSync(new URL("../../app/superadmin/layout.tsx", import.meta.url), "utf8");
 const dashboard = readFileSync(new URL("../../app/superadmin/page.tsx", import.meta.url), "utf8");
-const navigation = readFileSync(new URL("../../components/superadmin-navigation.tsx", import.meta.url), "utf8");
+const navigation = readFileSync(new URL("../../components/enterprise-navigation.tsx", import.meta.url), "utf8");
 const statusForm = readFileSync(new URL("../../components/tenant-status-form.tsx", import.meta.url), "utf8");
 const styles = readFileSync(new URL("../../app/globals.css", import.meta.url), "utf8");
 const logoutAction = readFileSync(new URL("../../app/logout/actions.ts", import.meta.url), "utf8");
@@ -15,7 +15,7 @@ describe("Superadmin enterprise design contract", () => {
     expect(layout).toContain('className="enterprise-main"');
     expect(navigation).toContain("aria-current");
     expect(navigation).toContain("Cerrar sesión");
-    expect(navigation).toContain('aria-controls="superadmin-navigation"');
+    expect(navigation).toContain('aria-controls="enterprise-navigation"');
     expect(logoutAction).toContain("supabase.auth.signOut()");
   });
 
@@ -36,7 +36,7 @@ describe("Superadmin enterprise design contract", () => {
 
   it("includes the required tokens, focus treatment, responsive widths and reduced motion", () => {
     expect(styles).toContain("--enterprise-sidebar-width: 248px");
-    expect(styles).toContain("--enterprise-primary: #087f74");
+    expect(styles).toContain("--enterprise-primary: #149c91");
     expect(styles).toContain(":focus-visible");
     expect(styles).toContain("@media (max-width: 1023px)");
     expect(styles).toContain("@media (max-width: 767px)");

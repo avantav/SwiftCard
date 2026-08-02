@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { OperationsNavigation } from "@/components/operations-navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,7 @@ export default async function EmployeeAppLayout({
 }: {
   children: ReactNode;
 }) {
-  await requireInternalArea("APP");
-  return children;
+  const context = await requireInternalArea("APP");
+  const role = context.access.role === "MANAGER" ? "MANAGER" : "EMPLOYEE";
+  return <div className="operations-app"><OperationsNavigation email={context.email} role={role} /><div className="operations-main">{children}</div></div>;
 }

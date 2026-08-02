@@ -1,4 +1,6 @@
 import { getSafeRedirectPath } from "@/lib/auth/redirects";
+import { SubmitButton } from "@/components/submit-button";
+import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
 import { signInWithPassword } from "./actions";
 
 const errorMessages: Record<string, string> = {
@@ -21,18 +23,20 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const error = params.error ? errorMessages[params.error] : null;
 
   return (
-    <main className="shell auth-shell">
-      <section className="auth-card" aria-labelledby="login-title">
-        <p className="eyebrow">SwiftWallet</p>
+    <main className="public-shell">
+      <div className="public-auth-layout">
+      <SwiftWalletBrand subtitle="Operación de fidelidad" />
+      <section className="public-card" aria-labelledby="login-title">
+        <p className="public-eyebrow">Acceso interno</p>
         <h1 id="login-title" className="auth-title">
           Iniciar sesión
         </h1>
         {error ? (
-          <p className="auth-alert" role="alert">
+          <p className="enterprise-alert is-error" role="alert">
             {error}
           </p>
         ) : null}
-        <form className="auth-form" action={signInWithPassword}>
+        <form className="public-form" action={signInWithPassword}>
           <input type="hidden" name="next" value={nextPath} />
           <label className="field">
             <span>Correo</span>
@@ -47,11 +51,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               required
             />
           </label>
-          <button className="primary-button" type="submit">
-            Entrar
-          </button>
+          <SubmitButton className="public-primary-button">Iniciar sesión</SubmitButton>
         </form>
       </section>
+      <p className="public-security-note">Acceso protegido para personal autorizado.</p>
+      </div>
     </main>
   );
 }

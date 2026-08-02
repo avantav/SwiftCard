@@ -1,4 +1,6 @@
 import { requirePasswordChangeContext } from "@/lib/auth/server";
+import { SubmitButton } from "@/components/submit-button";
+import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
 import { changeRequiredPassword } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -16,18 +18,21 @@ export default async function ChangePasswordPage({
   const { error } = await searchParams;
 
   return (
-    <main className="shell auth-shell">
-      <section className="auth-card" aria-labelledby="change-password-title">
-        <p className="eyebrow">Seguridad</p>
+    <main className="public-shell">
+      <div className="public-auth-layout">
+      <SwiftWalletBrand subtitle="Seguridad de la cuenta" />
+      <section className="public-card" aria-labelledby="change-password-title">
+        <p className="public-eyebrow">Primer acceso</p>
         <h1 id="change-password-title" className="auth-title">
           Cambiar contraseña
         </h1>
         {error ? (
-          <p className="auth-alert" role="alert">
+          <p className="enterprise-alert is-error" role="alert">
             {error}
           </p>
         ) : null}
-        <form className="auth-form" action={changeRequiredPassword}>
+        <p className="public-card-copy">Crea una contraseña personal de al menos 12 caracteres para continuar.</p>
+        <form className="public-form" action={changeRequiredPassword}>
           <label className="field">
             <span>Contraseña temporal</span>
             <input
@@ -59,11 +64,10 @@ export default async function ChangePasswordPage({
               required
             />
           </label>
-          <button className="primary-button" type="submit">
-            Guardar contraseña
-          </button>
+          <SubmitButton className="public-primary-button">Guardar contraseña</SubmitButton>
         </form>
       </section>
+      </div>
     </main>
   );
 }

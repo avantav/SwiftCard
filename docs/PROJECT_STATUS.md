@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Resume authorized Admin/Manager correction and operational-history UI after the Superadmin design review.
-- Last completed task: Redesigned the Superadmin shell, tenant overview, and child workflows under `docs/DESIGN_SYSTEM.md`, including authenticated responsive review.
+- Current task: Resume authorized Admin/Manager correction and operational-history UI after the application-wide design-system rollout.
+- Last completed task: Applied the mandatory enterprise design system to every existing Administrator, PWA, authentication, public registration, home, and Web Card page.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature commit: `73bdb9b feat: add admin loyalty program controls`.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
@@ -67,6 +67,9 @@
 - Mandatory enterprise design rules now cover layout, navigation, tokens, components, states, responsive behavior, accessibility, content, implementation, prohibited patterns, and completion review.
 - Superadmin now uses a reusable enterprise shell with responsive navigation, active-route indication, account identity, visible logout, operational metrics, semantic tenant table, status actions, and explicit loading-result/error/empty/success treatments.
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
+- Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
+- The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 
 ## Pending Functionality
 
@@ -89,7 +92,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 122 tests passed.
+- `npm run test:run`: passed; 127 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -132,6 +135,7 @@
 - Hosted migration application through `0033`: passed; 32 migration files are tracked remotely.
 - Hosted Data API `app` schema RPC and server-key database checks: passed.
 - Authenticated visual review passed at 375, 768, 1280, and 1440 px against the populated hosted tenant directory.
+- Authenticated Administrator review passed at 375, 768, 1280, and 1440 px; public login passed at 375 and 1440 px. Because no active Manager/Employee or customer card exists yet, the exact production PWA and Web Card components were also reviewed with temporary representative data at 375 and 768 px, and all temporary routes were removed.
 
 ## Validation Results
 

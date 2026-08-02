@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
 import { resolveScannedCard } from "./actions";
 
@@ -7,19 +7,16 @@ type ScanPageProps = { searchParams: Promise<{ error?: string }> };
 export default async function ScanPage({ searchParams }: ScanPageProps) {
   await requireInternalArea("APP");
   const { error } = await searchParams;
-  return (
-    <main className="shell auth-shell">
-      <section className="auth-card" aria-labelledby="scan-title">
-        <Link className="text-link" href="/app">Volver</Link>
-        <p className="eyebrow">PWA empleados</p>
-        <h1 id="scan-title" className="auth-title">Escanear tarjeta</h1>
-        {error ? <p className="auth-alert" role="alert">{error}</p> : null}
-        <p className="body-copy">Captura el contenido del QR para validar la tarjeta dentro de tu negocio.</p>
-        <form className="auth-form" action={resolveScannedCard}>
-          <label className="field"><span>Contenido del QR</span><input name="payload" autoComplete="off" required /></label>
-          <button className="primary-button" type="submit">Validar tarjeta</button>
-        </form>
-      </section>
-    </main>
-  );
+  return <main className="operations-page">
+    <header className="operations-page-header"><p>Tarjetas</p><h1 id="scan-title">Escanear tarjeta</h1><span>Valida el QR antes de iniciar una compra o canje.</span></header>
+    {error ? <p className="operations-alert is-error" role="alert">{error}</p> : null}
+    <section className="operations-card operations-scan-card" aria-labelledby="scan-title">
+      <div className="operations-scan-target" aria-hidden="true"><span /><span /><span /><span /></div>
+      <div className="operations-card-header"><h2>Contenido del QR</h2><p>La cámara se integrará aquí; mientras tanto captura o pega el contenido.</p></div>
+      <form className="operations-form" action={resolveScannedCard}>
+        <label className="field"><span>Token de la tarjeta</span><input name="payload" autoComplete="off" required /></label>
+        <SubmitButton className="operations-primary-button">Validar tarjeta</SubmitButton>
+      </form>
+    </section>
+  </main>;
 }
