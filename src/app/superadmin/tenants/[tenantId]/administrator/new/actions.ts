@@ -103,7 +103,7 @@ export async function createFirstAdministrator(
         return error || !data.user ? null : { userId: data.user.id };
       },
       async createStaffProfile(profile) {
-        const { error } = await adminClient.rpc(
+        const { error } = await adminClient.schema("app").rpc(
           "create_first_tenant_administrator",
           {
             target_tenant_id: profile.tenantId,
@@ -173,7 +173,7 @@ export async function resetAdministratorPassword(
     validation.data.temporaryPassword,
     {
       async markPasswordResetRequired(targetTenantId, targetAdministratorId) {
-        const { error } = await adminClient.rpc(
+        const { error } = await adminClient.schema("app").rpc(
           "mark_tenant_administrator_password_reset",
           {
             target_tenant_id: targetTenantId,

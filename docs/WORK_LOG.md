@@ -1,5 +1,25 @@
 # Work Log
 
+## 2026-08-02 - Hosted Supabase Development Setup
+
+**Objective:** Bring up a safe hosted development database and prepare the first real UI review without running the direct-`auth.users` development seed.
+
+**Files Created Or Modified:** Added the remote migration runner, compensated Superadmin bootstrap script, migration `0033_expose_app_api_schema.sql`, explicit custom-schema RPC routing, modern Supabase key-name compatibility, focused tests, and continuity updates.
+
+**Changes Made:** Connected to a new Supabase PostgreSQL 17 project, verified it was empty, applied and tracked all 32 repository migration files through `0033`, exposed the permission-scoped `app` schema to PostgREST, routed `app.*` calls explicitly, added repeatable remote migration/bootstrap package commands, and verified both anonymous public-card RPC and elevated server-key access.
+
+**Security And Consistency Review:** No secret values were printed or committed. `.env.local` remains ignored. The remote runner refuses an existing untracked SwiftWallet schema, applies each migration atomically, excludes `supabase/seed.sql`, and records migration versions. The bootstrap creates Auth first, compensates by deleting the Auth user if profile creation fails, and refuses to overwrite a non-Superadmin profile.
+
+**Problems Encountered:** The current one-shot and pinned Supabase npm CLI executables both failed before database access because their packaged Bun runtime tried to access `/supabase/config.json`. The first live Data API check then exposed that existing code resolved `app.*` functions against `public` and that `app` was not exposed by PostgREST.
+
+**Solution Applied:** Added a repository-owned `psql` migration runner with Supabase-compatible history, introduced additive migration `0033`, and changed application RPC calls to use `schema("app")` explicitly.
+
+**Commands Executed:** Hosted read-only PostgreSQL checks, `npm run db:push:remote`, live Data API checks, `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run db:verify-rls`, `npm run build`, `node --check`, and `git diff --check`.
+
+**Results:** Remote database has 32 tracked migrations, 16 public application tables, 32 RLS policies, and zero tenants pending bootstrap. Hosted Data API checks pass. Disposable PostgreSQL RLS verification passes through `0033`; 118 Vitest tests, typecheck, and production build pass; lint has only the pre-existing Next `<img>` warning.
+
+**Next Action:** Bootstrap the development Superadmin from local-only environment values, then create the first tenant and Administrator through the live UI.
+
 ## 2026-07-30 - Admin Loyalty Program Configuration
 
 **Objective:** Let a tenant Administrator create, configure, pause, and reactivate the MVP loyalty program without trusting tenant or stamp authority from the browser.

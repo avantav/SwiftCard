@@ -8,7 +8,7 @@ type RedeemPageProps = { searchParams: Promise<{ error?: string; redeemed?: stri
 export default async function RedeemPage({ searchParams }: RedeemPageProps) {
   const context = await requireInternalArea("APP");
   const params = await searchParams;
-  await context.supabase.rpc("expire_due_rewards");
+  await context.supabase.schema("app").rpc("expire_due_rewards");
   const now = new Date().toISOString();
   const { data: rewards } = await context.supabase
     .from("rewards")

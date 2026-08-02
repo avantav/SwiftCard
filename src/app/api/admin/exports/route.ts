@@ -69,7 +69,7 @@ export async function GET(request: Request) {
     rows = (response.data ?? []) as Array<Record<string, unknown>>;
     columns = ["customer_id", "branch_id", "staff_profile_id", "stamps_delta", "reason", "created_at"];
   } else {
-    const response = await context.supabase.rpc("get_dashboard_metrics", { target_branch_id: branchId || null, from_date: from ? `${from}T00:00:00Z` : null, to_date: to ? `${to}T00:00:00Z` : null });
+    const response = await context.supabase.schema("app").rpc("get_dashboard_metrics", { target_branch_id: branchId || null, from_date: from ? `${from}T00:00:00Z` : null, to_date: to ? `${to}T00:00:00Z` : null });
     rows = (response.data ?? []) as Array<Record<string, unknown>>;
     columns = ["customer_count", "new_customer_count", "purchase_count", "purchase_amount_minor", "stamps_awarded", "rewards_generated", "rewards_redeemed"];
   }

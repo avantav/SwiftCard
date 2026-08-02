@@ -69,3 +69,13 @@
 - Reason: The ledger marker preserves an explicit consistency boundary and lets the existing later-activity cancellation guard reject unsafe reversals.
 - Consequences: Purchases before a converting goal change cannot be cancelled through the simple rollback path; an operator must use an audited corrective adjustment when appropriate.
 - Status: Accepted.
+
+## DEC-0008 - Expose Permission-Scoped Application RPCs Explicitly
+
+- Date: 2026-08-02
+- Context: SwiftWallet stores authorization helpers and critical RPCs in the `app` schema, but hosted Supabase exposes `public` by default and unqualified Supabase client RPC calls resolve only against the default schema.
+- Decision: Expose `app` alongside `public` and `graphql_public`, keep `public` as the default schema, and route every `app.*` RPC through `supabase.schema("app").rpc(...)`.
+- Alternatives considered: Move critical functions into `public`, add public wrapper functions, or make `app` the default Data API schema.
+- Reason: Explicit schema routing preserves the existing database boundary, avoids duplicating the API surface, and keeps ordinary table access in `public`.
+- Consequences: Hosted environments must apply migration `0033`; all new `app` RPC call sites must select the schema explicitly, while function grants remain the authority boundary.
+- Status: Accepted.

@@ -7,12 +7,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const context = await requireInternalArea("ADMIN");
   const params = await searchParams;
   const { data: branches } = await context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name");
-  const { data } = await context.supabase.rpc("get_dashboard_metrics", {
+  const { data } = await context.supabase.schema("app").rpc("get_dashboard_metrics", {
     target_branch_id: params.branchId || null,
     from_date: params.from ? `${params.from}T00:00:00Z` : null,
     to_date: params.to ? `${params.to}T00:00:00Z` : null
   });
-  const { data: rawBranchMetrics } = await context.supabase.rpc("get_dashboard_branch_metrics", {
+  const { data: rawBranchMetrics } = await context.supabase.schema("app").rpc("get_dashboard_branch_metrics", {
     from_date: params.from ? `${params.from}T00:00:00Z` : null,
     to_date: params.to ? `${params.to}T00:00:00Z` : null
   });

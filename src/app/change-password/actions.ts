@@ -70,7 +70,7 @@ export async function changeRequiredPassword(formData: FormData) {
     redirectWithError("No se pudo actualizar la contraseña.");
   }
 
-  const { error: profileError } = await adminClient.rpc(
+  const { error: profileError } = await adminClient.schema("app").rpc(
     "complete_required_password_change",
     {
       target_user_id: user.id

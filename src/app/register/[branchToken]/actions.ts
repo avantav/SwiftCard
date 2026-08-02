@@ -19,7 +19,7 @@ export async function registerCustomer(branchToken: string, formData: FormData) 
     registrationRedirect(branchToken, { error: "El registro no está disponible." });
   }
 
-  const { data, error } = await supabase.rpc("register_public_customer", {
+  const { data, error } = await supabase.schema("app").rpc("register_public_customer", {
     target_branch_token: branchToken,
     target_full_name: validation.data.fullName,
     target_normalized_phone: validation.data.phone,

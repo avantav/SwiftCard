@@ -25,7 +25,7 @@ describe("password change server boundary", () => {
       "supabase.auth.updateUser"
     );
     const profileCompletion = changePasswordAction.indexOf(
-      'adminClient.rpc(\n    "complete_required_password_change"'
+      'adminClient.schema("app").rpc(\n    "complete_required_password_change"'
     );
 
     expect(changePasswordAction).toContain("createSupabaseAdminClient");

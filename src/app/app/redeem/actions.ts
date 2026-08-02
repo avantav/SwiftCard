@@ -8,7 +8,7 @@ export async function redeemReward(formData: FormData) {
   const branchId = String(formData.get("branchId") ?? "").trim();
   if (!rewardId || !branchId) redirect("/app/redeem?error=Selecciona recompensa y sucursal.");
   const context = await requireInternalArea("APP");
-  const { data, error } = await context.supabase.rpc("redeem_reward", {
+  const { data, error } = await context.supabase.schema("app").rpc("redeem_reward", {
     target_reward_id: rewardId,
     target_branch_id: branchId,
     target_latitude: null,

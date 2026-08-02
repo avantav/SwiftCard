@@ -20,7 +20,7 @@ export async function previewPurchase(formData: FormData) {
     back({ error: "Cliente, sucursal y monto válido son obligatorios." });
   }
   const context = await requireInternalArea("APP");
-  const { data, error } = await context.supabase.rpc("preview_purchase", {
+  const { data, error } = await context.supabase.schema("app").rpc("preview_purchase", {
     target_customer_id: customerId,
     target_branch_id: branchId,
     target_amount_minor: amountMinor
@@ -41,7 +41,7 @@ export async function confirmPurchase(formData: FormData) {
     back({ error: "Cliente, sucursal, ticket y monto válido son obligatorios." });
   }
   const context = await requireInternalArea("APP");
-  const { data, error } = await context.supabase.rpc("confirm_purchase", {
+  const { data, error } = await context.supabase.schema("app").rpc("confirm_purchase", {
     target_customer_id: customerId,
     target_branch_id: branchId,
     target_ticket_number: ticketNumber,

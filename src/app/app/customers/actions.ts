@@ -18,7 +18,7 @@ export async function updateCustomer(formData: FormData) {
   const validation = validateEmployeeCustomerRegistration(formData);
   if (!validation.ok) back({ error: validation.errors.join(" ") });
 
-  const { data, error } = await context.supabase.rpc("update_customer_profile", {
+  const { data, error } = await context.supabase.schema("app").rpc("update_customer_profile", {
     target_customer_id: customerId,
     target_full_name: validation.data.fullName,
     target_normalized_phone: validation.data.phone,

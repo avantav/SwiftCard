@@ -23,7 +23,7 @@ export default async function CardPage({ params }: CardPageProps) {
 
   try {
     const supabase = await createSupabaseServerClient();
-    const { data } = await supabase.rpc("get_public_web_card", { target_card_token: cardToken });
+    const { data } = await supabase.schema("app").rpc("get_public_web_card", { target_card_token: cardToken });
     card = Array.isArray(data) && data[0] ? data[0] : null;
   } catch {
     card = null;

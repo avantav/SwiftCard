@@ -1,14 +1,16 @@
 const publicSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const publicSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const publicSupabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export function getPublicSupabaseConfig() {
-  if (!publicSupabaseUrl || !publicSupabaseAnonKey) {
+  if (!publicSupabaseUrl || !publicSupabaseKey) {
     return null;
   }
 
   return {
     url: publicSupabaseUrl,
-    anonKey: publicSupabaseAnonKey
+    anonKey: publicSupabaseKey
   };
 }
 
@@ -23,5 +25,9 @@ export function getRequiredPublicSupabaseConfig() {
 }
 
 export function getServerSupabaseServiceRoleKey() {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY ?? null;
+  return (
+    process.env.SUPABASE_SECRET_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    null
+  );
 }

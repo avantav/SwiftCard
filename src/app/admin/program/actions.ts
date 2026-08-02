@@ -51,7 +51,7 @@ export async function saveLoyaltyProgram(formData: FormData) {
   };
 
   if (input.programId) {
-    const { data, error } = await context.supabase.rpc(
+    const { data, error } = await context.supabase.schema("app").rpc(
       "configure_loyalty_program",
       {
         target_program_id: input.programId,
@@ -64,7 +64,7 @@ export async function saveLoyaltyProgram(formData: FormData) {
       redirectWithError("No se pudo actualizar el programa.");
     }
   } else {
-    const { data, error } = await context.supabase.rpc(
+    const { data, error } = await context.supabase.schema("app").rpc(
       "create_loyalty_program",
       {
         target_name: input.name,

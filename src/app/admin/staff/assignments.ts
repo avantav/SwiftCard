@@ -22,7 +22,7 @@ export async function assignStaffBranch(formData: FormData) {
     redirectWithError("Solo el Administrador puede asignar sucursales.");
   }
 
-  const { error } = await context.supabase.rpc("set_staff_branch_assignment", {
+  const { error } = await context.supabase.schema("app").rpc("set_staff_branch_assignment", {
     target_staff_profile_id: staffProfileId,
     target_branch_id: branchId,
     should_assign: true,

@@ -10,7 +10,9 @@ describe("security regression boundaries", () => {
   it("keeps service role access server-only and secrets out of the browser", () => {
     expect(adminClient).toContain('import "server-only"');
     expect(browserClient).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(browserClient).not.toContain("SUPABASE_SECRET_KEY");
     expect(envExample).not.toMatch(/SUPABASE_SERVICE_ROLE_KEY=\S+/);
+    expect(envExample).not.toMatch(/SUPABASE_SECRET_KEY=\S+/);
   });
 
   it("keeps export tenant scope server-derived", () => {

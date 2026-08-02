@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "db:verify-rls": "node scripts/verify-rls.mjs"
+    "db:verify-rls": "node scripts/verify-rls.mjs",
+    "db:push:remote": "node --env-file=.env.local scripts/apply-remote-migrations.mjs",
+    "db:bootstrap:superadmin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",

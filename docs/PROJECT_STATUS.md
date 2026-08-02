@@ -3,8 +3,8 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Loyalty program Admin UI completed; administrative correction/history UI is the first incomplete internal task.
-- Last completed task: Tenant-derived program creation, configuration, pause/resume, currency-aware validation, initial-balance conversion, and full configuration audit metadata.
+- Current task: Hosted development environment setup; database and Data API are ready, and the bootstrap Superadmin/first tenant remain to be created.
+- Last completed task: Applied migrations through `0033` to the hosted Supabase project, exposed permission-scoped `app` RPCs correctly, and added repeatable remote migration and Superadmin bootstrap commands.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature commit: `73bdb9b feat: add admin loyalty program controls`.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
@@ -59,6 +59,10 @@
 - Admin can create the tenant's first loyalty program and edit, pause, or reactivate it from `/admin/program`.
 - Program money inputs use the tenant currency's minor-unit precision and never accept `tenant_id` from the form.
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
+- Hosted Supabase PostgreSQL 17 development database has all 32 repository migration files through `0033` applied and tracked; the development seed was not used.
+- Application RPC calls explicitly target the exposed `app` schema while public administrative RPCs remain in `public`.
+- Repeatable `npm run db:push:remote` migration runner refuses untracked existing SwiftWallet schemas and records canonical Supabase migration history.
+- Compensating `npm run db:bootstrap:superadmin` flow creates an Auth user and active Superadmin profile without storing credentials in Git.
 
 ## Pending Functionality
 
@@ -81,7 +85,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 114 tests passed.
+- `npm run test:run`: passed; 118 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -121,6 +125,9 @@
 - Expiration, Web Card filtering, positive-adjustment rewards, lower-goal conversion, pause behavior, program-change ledger, and audit metadata assertions: passed.
 - Loyalty program creation/configuration migration through `0032`: passed against disposable PostgreSQL 16.
 - Currency precision, form validation, first-program creation, initial-balance conversion, pause/edit, audit metadata, cross-tenant denial, and role denial assertions: passed.
+- Hosted migration application through `0033`: passed; 32 migration files are tracked remotely.
+- Hosted Data API `app` schema RPC and server-key database checks: passed.
+- Remote database remains empty of tenants pending the one-time Superadmin bootstrap and first-tenant UI flow.
 
 ## Validation Results
 
@@ -131,4 +138,4 @@
 
 ## Next Exact Step
 
-Expose purchase cancellation, redemption reversal, stamp adjustment, and reward cancellation to authorized Admin/Manager users, then add scoped operational and audit history views.
+Bootstrap the development Superadmin from local-only environment values, create the first tenant and Administrator through the real Superadmin UI, and verify role routing before returning to administrative correction/history UI.
