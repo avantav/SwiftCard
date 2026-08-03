@@ -37,49 +37,35 @@ export async function saveLoyaltyProgram(formData: FormData) {
   }
 
   const input = validation.data;
-  const rpcInput = {
-    target_status: input.status,
-    target_rule_type: input.ruleType,
-    target_minimum_purchase_minor: input.minimumPurchaseMinor,
-    target_stamps_per_purchase: input.stampsPerPurchase,
-    target_amount_per_stamp_minor: input.amountPerStampMinor,
-    target_carry_remainder: input.carryRemainder,
-    target_reward_stamp_goal: input.rewardStampGoal,
-    target_reward_name: input.rewardName,
-    target_reward_description: input.rewardDescription,
-    target_reward_expiration_days: input.rewardExpirationDays,
-  };
+  const { data, error } = await context.supabase.schema("app").rpc(
+    "save_loyalty_program_with_tiers",
+    {
+      target_program_id: input.programId,
+      target_name: input.name,
+      target_status: input.status,
+      target_rule_type: input.ruleType,
+      target_minimum_purchase_minor: input.minimumPurchaseMinor,
+      target_stamps_per_purchase: input.stampsPerPurchase,
+      target_amount_per_stamp_minor: input.amountPerStampMinor,
+      target_carry_remainder: input.carryRemainder,
+      target_terms_and_conditions: input.termsAndConditions,
+      target_reward_tiers: input.rewardTiers.map((tier) => ({
+        stamps_required: tier.stampsRequired,
+        name: tier.name,
+        description: tier.description,
+        expiration_days: tier.expirationDays,
+      })),
+    },
+  );
+  const result = Array.isArray(data) ? data[0]?.result : null;
+  const expectedResult = input.programId ? "UPDATED" : "CREATED";
 
-  if (input.programId) {
-    const { data, error } = await context.supabase.schema("app").rpc(
-      "configure_loyalty_program",
-      {
-        target_program_id: input.programId,
-        target_name: input.name,
-        ...rpcInput,
-      },
+  if (error || result !== expectedResult) {
+    redirectWithError(
+      result === "ALREADY_EXISTS"
+        ? "El tenant ya tiene un programa; recarga la página para editarlo."
+        : "No se pudo guardar el programa y sus niveles.",
     );
-
-    if (error || data !== "UPDATED") {
-      redirectWithError("No se pudo actualizar el programa.");
-    }
-  } else {
-    const { data, error } = await context.supabase.schema("app").rpc(
-      "create_loyalty_program",
-      {
-        target_name: input.name,
-        ...rpcInput,
-      },
-    );
-    const result = Array.isArray(data) ? data[0]?.result : null;
-
-    if (error || result !== "CREATED") {
-      redirectWithError(
-        result === "ALREADY_EXISTS"
-          ? "El tenant ya tiene un programa; recarga la página para editarlo."
-          : "No se pudo crear el programa.",
-      );
-    }
   }
 
   redirect(`/admin/program?saved=1&status=${input.status}`);

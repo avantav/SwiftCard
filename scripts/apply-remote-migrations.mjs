@@ -28,7 +28,7 @@ function runPsql(args, input) {
   );
 
   if (result.error) {
-    throw result.error;
+    throw new Error(`Unable to start psql: ${result.error.message}`);
   }
 
   if (result.status !== 0) {

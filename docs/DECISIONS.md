@@ -99,3 +99,13 @@
 - Reason: A static fallback supports a clear installed-app experience without creating stale financial operations, cross-user device leakage, queued double submissions, or an unsupported offline mode.
 - Consequences: A cold offline launch displays only the connection notice; all customer and loyalty operations require restored connectivity. Any future offline capability requires explicit product authorization and a new security design.
 - Status: Accepted.
+
+## DEC-0011 - Cumulative Reward Tiers With A Highest-Tier Cycle Boundary
+
+- Date: 2026-08-02
+- Context: A tenant must be able to offer small rewards at intermediate stamp totals while preserving progress toward a larger reward, and customer cards must explain both the prize ladder and its terms.
+- Decision: A loyalty program has one to ten uniquely ordered reward tiers. Each tier is granted at most once per customer cycle. Intermediate rewards accumulate without subtracting stamps; the highest threshold completes the cycle, preserves the remainder, and permits lower tiers in the next cycle to be reached in the same operation. Existing single-reward programs remain valid as one-tier programs. Terms and the active tier catalog are exposed through the public card projection.
+- Alternatives considered: Deduct stamps for every small reward, make customers choose a reward, reset progress at every tier, or create separate loyalty programs per prize.
+- Reason: The selected model supports progressive engagement without weakening atomic balance accounting, cancellation safety, or the existing remainder behavior.
+- Consequences: Rewards store immutable tier, cycle, threshold, and program-version snapshots; purchases and adjustments record completed cycles separately from the number of rewards generated; changing active tiers creates an audited program-change boundary when it converts existing progress.
+- Status: Accepted.

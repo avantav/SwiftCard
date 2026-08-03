@@ -4,6 +4,13 @@ export const loyaltyRuleTypes = ["PER_PURCHASE", "PER_AMOUNT"] as const;
 export type LoyaltyProgramStatus = (typeof loyaltyProgramStatuses)[number];
 export type LoyaltyRuleType = (typeof loyaltyRuleTypes)[number];
 
+export type RewardTierInput = {
+  stampsRequired: number;
+  name: string;
+  description: string;
+  expirationDays: number | null;
+};
+
 export type LoyaltyProgramInput = {
   programId: string | null;
   name: string;
@@ -13,10 +20,8 @@ export type LoyaltyProgramInput = {
   stampsPerPurchase: number;
   amountPerStampMinor: number | null;
   carryRemainder: boolean;
-  rewardStampGoal: number;
-  rewardName: string;
-  rewardDescription: string;
-  rewardExpirationDays: number | null;
+  termsAndConditions: string;
+  rewardTiers: RewardTierInput[];
 };
 
 export type LoyaltyProgramValidationResult =
@@ -29,6 +34,12 @@ const uuidPattern =
 function text(formData: FormData, field: string) {
   const value = formData.get(field);
   return typeof value === "string" ? value.trim() : "";
+}
+
+function texts(formData: FormData, field: string) {
+  return formData
+    .getAll(field)
+    .map((value) => (typeof value === "string" ? value.trim() : ""));
 }
 
 export function getCurrencyFractionDigits(currencyCode: string): number {
@@ -130,8 +141,7 @@ export function validateLoyaltyProgramForm(
   const name = text(formData, "name");
   const status = text(formData, "status");
   const ruleType = text(formData, "ruleType");
-  const rewardName = text(formData, "rewardName");
-  const rewardDescription = text(formData, "rewardDescription");
+  const termsAndConditions = text(formData, "termsAndConditions");
   const fractionDigits = getCurrencyFractionDigits(currencyCode);
 
   if (rawProgramId && !uuidPattern.test(rawProgramId)) {
@@ -150,32 +160,76 @@ export function validateLoyaltyProgramForm(
     errors.push("La regla de acumulación no es válida.");
   }
 
-  if (!rewardName || rewardName.length > 120) {
-    errors.push("El nombre de la recompensa es obligatorio y admite hasta 120 caracteres.");
+  if (termsAndConditions.length < 10 || termsAndConditions.length > 4000) {
+    errors.push("Los términos y condiciones son obligatorios y admiten entre 10 y 4000 caracteres.");
   }
 
-  if (rewardDescription.length > 500) {
-    errors.push("La descripción de la recompensa admite hasta 500 caracteres.");
-  }
-
-  const rewardStampGoal = parseBoundedInteger(
-    text(formData, "rewardStampGoal"),
-    "La meta de sellos",
-    1,
-    1_000_000,
-    errors,
+  const tierStamps = texts(formData, "tierStamps");
+  const tierNames = texts(formData, "tierName");
+  const tierDescriptions = texts(formData, "tierDescription");
+  const tierExpirations = texts(formData, "tierExpirationDays");
+  const tierCount = Math.max(
+    tierStamps.length,
+    tierNames.length,
+    tierDescriptions.length,
+    tierExpirations.length,
   );
+  const rewardTiers: RewardTierInput[] = [];
 
-  const expirationText = text(formData, "rewardExpirationDays");
-  const rewardExpirationDays = expirationText
-    ? parseBoundedInteger(
-        expirationText,
-        "La expiración",
+  if (tierCount < 1 || tierCount > 10) {
+    errors.push("Configura entre 1 y 10 niveles de recompensa.");
+  } else if (
+    tierStamps.length !== tierCount
+    || tierNames.length !== tierCount
+    || tierDescriptions.length !== tierCount
+    || tierExpirations.length !== tierCount
+  ) {
+    errors.push("Todos los niveles deben incluir sellos, nombre y descripción.");
+  } else {
+    for (let index = 0; index < tierCount; index += 1) {
+      const level = index + 1;
+      const stampsRequired = parseBoundedInteger(
+        tierStamps[index] ?? "",
+        `Los sellos del nivel ${level}`,
         1,
-        3650,
+        1_000_000,
         errors,
-      )
-    : null;
+      );
+      const tierName = tierNames[index] ?? "";
+      const tierDescription = tierDescriptions[index] ?? "";
+      const expirationText = tierExpirations[index] ?? "";
+      const expirationDays = expirationText
+        ? parseBoundedInteger(
+            expirationText,
+            `La expiración del nivel ${level}`,
+            1,
+            3650,
+            errors,
+          )
+        : null;
+
+      if (!tierName || tierName.length > 120) {
+        errors.push(`El nombre del nivel ${level} es obligatorio y admite hasta 120 caracteres.`);
+      }
+      if (!tierDescription || tierDescription.length > 500) {
+        errors.push(`La descripción del nivel ${level} es obligatoria y admite hasta 500 caracteres.`);
+      }
+
+      if (stampsRequired !== null && tierName && tierDescription) {
+        rewardTiers.push({
+          stampsRequired,
+          name: tierName,
+          description: tierDescription,
+          expirationDays,
+        });
+      }
+    }
+
+    const uniqueStamps = new Set(rewardTiers.map((tier) => tier.stampsRequired));
+    if (uniqueStamps.size !== rewardTiers.length) {
+      errors.push("Cada nivel debe requerir una cantidad distinta de sellos.");
+    }
+  }
 
   let minimumPurchaseMinor = 0;
   let stampsPerPurchase = 1;
@@ -210,9 +264,11 @@ export function validateLoyaltyProgramForm(
     carryRemainder = formData.get("carryRemainder") === "on";
   }
 
-  if (errors.length > 0 || rewardStampGoal === null) {
+  if (errors.length > 0 || rewardTiers.length !== tierCount) {
     return { ok: false, errors };
   }
+
+  rewardTiers.sort((left, right) => left.stampsRequired - right.stampsRequired);
 
   return {
     ok: true,
@@ -225,10 +281,8 @@ export function validateLoyaltyProgramForm(
       stampsPerPurchase,
       amountPerStampMinor,
       carryRemainder,
-      rewardStampGoal,
-      rewardName,
-      rewardDescription,
-      rewardExpirationDays,
+      termsAndConditions,
+      rewardTiers,
     },
   };
 }

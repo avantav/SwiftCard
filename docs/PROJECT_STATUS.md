@@ -3,10 +3,10 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Resume authorized Admin/Manager correction and operational-history UI after completing the employee PWA installation layer.
-- Last completed task: Added production-ready PWA installation, adaptive icons, secure service-worker registration, connection handling, and phone/tablet install guidance.
+- Current task: Resume authorized Admin/Manager correction and operational-history UI after completing cumulative reward tiers and card terms.
+- Last completed task: Added one-to-ten cumulative reward levels, cycle-safe generation and cancellation, required terms, and the tier catalog on customer cards.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Employee PWA installation and online-only connection handling.
+- Last stable feature: Cumulative reward tiers and customer-card terms.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
@@ -59,7 +59,11 @@
 - Admin can create the tenant's first loyalty program and edit, pause, or reactivate it from `/admin/program`.
 - Program money inputs use the tenant currency's minor-unit precision and never accept `tenant_id` from the form.
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
-- Hosted Supabase PostgreSQL 17 development database has all 32 repository migration files through `0033` applied and tracked; the development seed was not used.
+- Admin can configure one to ten uniquely ordered reward levels with independent names, descriptions, and expiration rules.
+- Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
+- Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
+- The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.
+- Hosted Supabase PostgreSQL 17 development database has all repository migration files through `0034` applied and tracked; the development seed was not used.
 - Application RPC calls explicitly target the exposed `app` schema while public administrative RPCs remain in `public`.
 - Repeatable `npm run db:push:remote` migration runner refuses untracked existing SwiftWallet schemas and records canonical Supabase migration history.
 - Compensating `npm run db:bootstrap:superadmin` flow creates an Auth user and active Superadmin profile without storing credentials in Git.
@@ -94,7 +98,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 127 tests passed.
+- `npm run test:run`: passed; 132 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -139,6 +143,8 @@
 - Authenticated visual review passed at 375, 768, 1280, and 1440 px against the populated hosted tenant directory.
 - Authenticated Administrator review passed at 375, 768, 1280, and 1440 px; public login passed at 375 and 1440 px. Because no active Manager/Employee or customer card exists yet, the exact production PWA and Web Card components were also reviewed with temporary representative data at 375 and 768 px, and all temporary routes were removed.
 - PWA install guidance and online/offline notices were visually reviewed with exact production styles at 375 and 768 px; launcher icons and the maskable safe area were inspected, all temporary review routes were removed, and live `/manifest.webmanifest`, `/sw.js`, and `/offline.html` responses were verified.
+- Tier editor and customer-card reward catalog were visually reviewed at 375, 768, 1280, and 1440 px; no overflow, hidden action, or one-off visual language was found, and the temporary review route was removed.
+- Migration `0034` and its dedicated integration test passed cumulative 3/5/10 thresholds, current-cycle conversion, next-cycle rewards, remainder preservation, cancellation restoration, anonymous projection, direct-table denial, and duplicate-threshold rejection.
 
 ## Validation Results
 

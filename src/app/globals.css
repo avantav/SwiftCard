@@ -1510,7 +1510,7 @@ textarea {
 
 .admin-status-summary {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin: 0 0 24px;
 }
@@ -1550,6 +1550,107 @@ textarea {
 
 .admin-form-section .field-hint {
   margin: -10px 0 0;
+}
+
+.reward-tiers-editor {
+  display: grid;
+  gap: 16px;
+}
+
+.reward-tiers-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.reward-tiers-heading h3,
+.reward-tiers-heading p {
+  margin: 0;
+}
+
+.reward-tiers-heading h3 {
+  font-size: 0.9rem;
+}
+
+.reward-tiers-heading p {
+  max-width: 580px;
+  margin-top: 4px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.reward-tiers-heading .secondary-button {
+  min-height: 44px;
+  flex: 0 0 auto;
+}
+
+.reward-tiers-heading .secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.reward-tier-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reward-tier-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 16px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.reward-tier-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--enterprise-border);
+  padding-bottom: 12px;
+}
+
+.reward-tier-card-header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.reward-tier-card-header span {
+  color: var(--enterprise-primary-hover);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.reward-tier-card-header strong {
+  font-size: 0.82rem;
+}
+
+.reward-tier-remove {
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--enterprise-radius-md);
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--enterprise-danger);
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.reward-tier-remove:hover:not(:disabled) {
+  background: var(--enterprise-danger-soft);
+}
+
+.reward-tier-remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 /* Mobile employee operations */
@@ -2436,6 +2537,17 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   margin: 24px 0;
 }
 
+.wallet-program-status {
+  width: fit-content;
+  margin: 12px 0 0 !important;
+  border: 1px solid #fedf89;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: var(--enterprise-warning-soft);
+  color: var(--enterprise-warning) !important;
+  font-weight: 700;
+}
+
 .wallet-progress > div:first-child {
   display: flex;
   align-items: center;
@@ -2506,7 +2618,8 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 1rem;
 }
 
-.wallet-rewards ul {
+.wallet-rewards ul,
+.wallet-rewards ol {
   display: grid;
   gap: 12px;
   margin: 18px 0 0;
@@ -2533,6 +2646,17 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 0.7rem;
 }
 
+.wallet-rewards.wallet-tier-catalog li > span {
+  width: 44px;
+  min-height: 32px;
+  flex-basis: 44px;
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary-hover);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
 .wallet-rewards li div {
   display: grid;
   gap: 2px;
@@ -2546,10 +2670,28 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 .wallet-rewards li small,
 .wallet-no-rewards,
 .wallet-help,
-.wallet-powered {
+.wallet-powered,
+.wallet-terms > p:last-child {
   color: var(--enterprise-text-muted);
   font-size: 0.72rem;
   line-height: 1.5;
+}
+
+.wallet-terms {
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 20px;
+  background: var(--enterprise-surface);
+}
+
+.wallet-terms h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.wallet-terms > p:last-child {
+  margin: 12px 0 0;
+  white-space: pre-wrap;
 }
 
 .wallet-rewards li p,
@@ -2633,6 +2775,18 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
   .operations-page {
     padding: 20px 16px 28px;
+  }
+
+  .admin-status-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .reward-tiers-heading {
+    display: grid;
+  }
+
+  .reward-tiers-heading .secondary-button {
+    width: 100%;
   }
 
   .pwa-status-region {

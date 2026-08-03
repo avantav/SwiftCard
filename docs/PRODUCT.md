@@ -41,7 +41,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - QR seguro por tarjeta.  
 - Una tarjeta por cliente y tenant, válida en todas sus sucursales.  
 - Una moneda configurable por tenant.  
-- Un programa activo y una recompensa principal por tenant.  
+- Un programa activo con uno o varios niveles de recompensa por tenant.
 - Regla por compra o por monto.  
 - Remanente configurable.  
 - Recompensas acumulables y expiración configurable.  
@@ -62,7 +62,6 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Integración directa con POS.  
 - Foto u OCR del ticket.  
 - Promociones temporales y reglas por producto.  
-- Varios niveles de recompensa.  
 - Cobro automático de planes.  
 - Registro público de tenants.  
 - Acceso de soporte o impersonación.  
@@ -84,7 +83,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 ### Administrador
 
 - Gestionar sucursales, empleados y asignaciones.  
-- Configurar programa, recompensa, branding y geolocalización.  
+- Configurar programa, niveles de recompensa, términos, branding y geolocalización.
 - Consultar y editar clientes.  
 - Cancelar compras.  
 - Ajustar sellos.  
@@ -211,15 +210,17 @@ Contenido mínimo:
 - Nombre del cliente.  
 - QR seguro.  
 - Sellos actuales y meta.  
+- Premios por número de sellos.
 - Recompensas disponibles.  
-- Descripción de la recompensa.  
+- Descripción de cada recompensa.
+- Términos y condiciones del programa.
 - Marca de agua Powered by SwiftWallet cuando el tenant no sea white-label.
 
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
 
 ## 12. Programa de fidelidad
 
-Cada tenant tendrá un programa activo y una recompensa principal.
+Cada tenant tendrá un programa con uno o varios niveles de recompensa. El nivel con más sellos define la meta y el cierre del ciclo.
 
 Estados:
 
@@ -248,7 +249,7 @@ Ejemplo: un sello cada $100; compra de $250; resultado de dos sellos y $50 de re
 
 ### Cambios de reglas
 
-Los clientes conservan su progreso. La nueva regla aplica inmediatamente. Si la nueva meta genera recompensas, se crean automáticamente y se conserva el sobrante. El cambio queda auditado.
+Los clientes conservan su progreso. La nueva regla aplica inmediatamente. Si los nuevos niveles generan recompensas, se crean automáticamente, sin duplicar niveles ya otorgados en el ciclo, y se conserva el sobrante. El cambio queda auditado.
 
 ## 13. Compras
 
@@ -298,19 +299,25 @@ La regla se aplicará a compras y canjes.
 
 ## 15. Recompensas
 
-Al completar la meta:
+El programa permite configurar de uno a diez niveles ordenados por número de sellos. Cada nivel puede representar un premio pequeño o el premio principal.
 
-- Se genera una recompensa AVAILABLE.  
-- El progreso vuelve a iniciar con sellos sobrantes.  
-- El cliente puede seguir acumulando.  
-- Puede tener varias recompensas disponibles.
+Comportamiento:
 
-Configuración:
+- Al alcanzar un nivel se genera una recompensa AVAILABLE una sola vez dentro de ese ciclo.
+- Los premios de niveles menores son acumulables: otorgarlos no descuenta sellos ni reinicia el progreso.
+- El nivel con más sellos completa el ciclo y el progreso vuelve a iniciar conservando los sellos sobrantes.
+- Una sola operación puede otorgar varios niveles, incluso completar la meta actual y alcanzar un nivel menor del siguiente ciclo.
+- Las recompensas obtenidas permanecen disponibles de manera independiente hasta su canje, expiración o cancelación.
+- Un programa existente con una sola recompensa funciona como un único nivel y conserva el comportamiento anterior.
 
+Configuración de cada nivel:
+
+- Número de sellos requerido, único dentro del programa.
 - Nombre.  
 - Descripción.  
-- Meta de sellos.  
 - Sin expiración o expiración después de N días.
+
+El programa también requiere términos y condiciones visibles en la tarjeta del cliente junto con el catálogo de premios por número de sellos.
 
 Estados:
 
@@ -466,6 +473,7 @@ Tablas principales:
 - customers.  
 - customer_cards.  
 - loyalty_programs.  
+- loyalty_reward_tiers.
 - customer_loyalty_balances.  
 - purchases.  
 - stamp_ledger.  
@@ -527,7 +535,7 @@ Unitarias:
 
 - Normalización de teléfono.  
 - Reglas y remanente.  
-- Recompensas múltiples.  
+- Recompensas múltiples y niveles acumulables.
 - Expiración.  
 - Ajustes.  
 - Geofence.
@@ -535,6 +543,7 @@ Unitarias:
 Integración:
 
 - Compra atómica.  
+- Cruce de varios niveles y conservación del excedente.
 - Cancelación.  
 - Reversión.  
 - Tickets.  
@@ -575,7 +584,6 @@ E2E:
 - Recuperación automática.  
 - Portal del cliente.  
 - Promociones.  
-- Varios niveles de recompensa.  
 - Reglas por producto.  
 - POS y webhooks.  
 - Modo offline.  

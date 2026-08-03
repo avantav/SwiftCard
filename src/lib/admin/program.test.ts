@@ -14,14 +14,17 @@ const action = readFileSync(
 const migration = readFileSync(
   join(
     process.cwd(),
-    "supabase/migrations/0032_loyalty_program_creation.sql",
+    "supabase/migrations/0034_tiered_rewards_and_card_terms.sql",
   ),
   "utf8",
 );
 
-function form(values: Record<string, string>) {
+function form(values: Record<string, string | string[]>) {
   const data = new FormData();
-  Object.entries(values).forEach(([key, value]) => data.set(key, value));
+  Object.entries(values).forEach(([key, value]) => {
+    if (Array.isArray(value)) value.forEach((item) => data.append(key, item));
+    else data.set(key, value);
+  });
   return data;
 }
 
@@ -36,10 +39,11 @@ describe("loyalty program Admin configuration", () => {
           ruleType: "PER_PURCHASE",
           minimumPurchase: "100.50",
           stampsPerPurchase: "2",
-          rewardStampGoal: "10",
-          rewardName: " Bebida gratis ",
-          rewardDescription: "Una bebida",
-          rewardExpirationDays: "30",
+          termsAndConditions: "Válido en sucursales participantes.",
+          tierStamps: ["3", "10"],
+          tierName: [" Café pequeño ", " Bebida gratis "],
+          tierDescription: ["Un café del día", "Una bebida de cortesía"],
+          tierExpirationDays: ["", "30"],
         }),
         "MXN",
       ),
@@ -54,10 +58,21 @@ describe("loyalty program Admin configuration", () => {
         stampsPerPurchase: 2,
         amountPerStampMinor: null,
         carryRemainder: false,
-        rewardStampGoal: 10,
-        rewardName: "Bebida gratis",
-        rewardDescription: "Una bebida",
-        rewardExpirationDays: 30,
+        termsAndConditions: "Válido en sucursales participantes.",
+        rewardTiers: [
+          {
+            stampsRequired: 3,
+            name: "Café pequeño",
+            description: "Un café del día",
+            expirationDays: null,
+          },
+          {
+            stampsRequired: 10,
+            name: "Bebida gratis",
+            description: "Una bebida de cortesía",
+            expirationDays: 30,
+          },
+        ],
       },
     });
   });
@@ -71,10 +86,11 @@ describe("loyalty program Admin configuration", () => {
           ruleType: "PER_AMOUNT",
           amountPerStamp: "25.75",
           carryRemainder: "on",
-          rewardStampGoal: "8",
-          rewardName: "Premio",
-          rewardDescription: "",
-          rewardExpirationDays: "",
+          termsAndConditions: "Aplican condiciones del programa.",
+          tierStamps: ["8"],
+          tierName: ["Premio"],
+          tierDescription: ["Premio principal"],
+          tierExpirationDays: [""],
         }),
         "USD",
       ),
@@ -88,7 +104,8 @@ describe("loyalty program Admin configuration", () => {
         stampsPerPurchase: 1,
         amountPerStampMinor: 2575,
         carryRemainder: true,
-        rewardExpirationDays: null,
+        termsAndConditions: "Aplican condiciones del programa.",
+        rewardTiers: [expect.objectContaining({ stampsRequired: 8, expirationDays: null })],
       },
     });
   });
@@ -105,8 +122,11 @@ describe("loyalty program Admin configuration", () => {
           status: "ACTIVE",
           ruleType: "PER_AMOUNT",
           amountPerStamp: "100.50",
-          rewardStampGoal: "10",
-          rewardName: "Premio",
+          termsAndConditions: "Aplican condiciones del programa.",
+          tierStamps: ["10"],
+          tierName: ["Premio"],
+          tierDescription: ["Premio principal"],
+          tierExpirationDays: [""],
         }),
         "JPY",
       ),
@@ -128,9 +148,11 @@ describe("loyalty program Admin configuration", () => {
           ruleType: "PER_PURCHASE",
           minimumPurchase: "-1",
           stampsPerPurchase: "0",
-          rewardStampGoal: "0",
-          rewardName: "",
-          rewardExpirationDays: "0",
+          termsAndConditions: "corto",
+          tierStamps: ["3", "3"],
+          tierName: ["Premio", "Premio repetido"],
+          tierDescription: ["Descripción", "Otra descripción"],
+          tierExpirationDays: ["0", ""],
         }),
         "MXN",
       ),
@@ -141,21 +163,21 @@ describe("loyalty program Admin configuration", () => {
         "El estado del programa no es válido.",
         "El monto mínimo debe ser un importe válido con máximo 2 decimales.",
         "La cantidad de sellos por compra debe ser un entero entre 1 y 1000000.",
+        "Cada nivel debe requerir una cantidad distinta de sellos.",
       ]),
     });
   });
 
   it("derives tenant authority from the authenticated Admin", () => {
     expect(action).toContain('context.access.role !== "ADMIN"');
-    expect(action).toContain('"create_loyalty_program"');
-    expect(action).toContain('"configure_loyalty_program"');
+    expect(action).toContain('"save_loyalty_program_with_tiers"');
     expect(action).not.toContain('formData.get("tenant');
     expect(migration).toContain("sp.id = auth.uid()");
     expect(migration).toContain("sp.role = 'ADMIN'");
-    expect(migration).not.toContain("target_tenant_id");
     expect(migration).toContain("from public, anon");
-    expect(migration).toContain("'previous_name', old.name");
     expect(migration).toContain("not between 1 and 120");
-    expect(migration).toContain("return app.configure_loyalty_program(");
+    expect(migration).toContain("target_reward_tiers jsonb");
+    expect(migration).toContain("LOYALTY_REWARD_TIERS_CONFIGURED");
+    expect(migration).toContain("staff_record.tenant_id");
   });
 });

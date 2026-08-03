@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { SubmitButton } from "@/components/submit-button";
+import { RewardTiersEditor } from "@/components/reward-tiers-editor";
 import { requireInternalArea } from "@/lib/auth/server";
 import {
   formatMinorUnitsForInput,
@@ -28,7 +29,16 @@ type ProgramRow = {
   reward_name: string;
   reward_description: string;
   reward_expiration_days: number | null;
+  terms_and_conditions: string;
   version: number;
+};
+
+type RewardTierRow = {
+  id: string;
+  stamps_required: number;
+  name: string;
+  description: string;
+  expiration_days: number | null;
 };
 
 export default async function ProgramPage({ searchParams }: ProgramPageProps) {
@@ -51,14 +61,24 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
       context.supabase
         .from("loyalty_programs")
         .select(
-          "id,name,status,rule_type,minimum_purchase_minor,stamps_per_purchase,amount_per_stamp_minor,carry_remainder,reward_stamp_goal,reward_name,reward_description,reward_expiration_days,version",
+          "id,name,status,rule_type,minimum_purchase_minor,stamps_per_purchase,amount_per_stamp_minor,carry_remainder,reward_stamp_goal,reward_name,reward_description,reward_expiration_days,terms_and_conditions,version",
         )
         .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
   ]);
 
-  if (tenantError || !tenant?.currency_code || programError) {
+  const program = rawProgram as ProgramRow | null;
+  const { data: rawTiers, error: tiersError } = program
+    ? await context.supabase
+        .from("loyalty_reward_tiers")
+        .select("id,stamps_required,name,description,expiration_days")
+        .eq("program_id", program.id)
+        .eq("active", true)
+        .order("stamps_required")
+    : { data: [], error: null };
+
+  if (tenantError || !tenant?.currency_code || programError || tiersError) {
     return (
       <main className="enterprise-page">
         <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración</p><h1 id="program-title">Programa de fidelidad</h1><p>Define cómo se acumulan sellos y se generan recompensas.</p></div></header>
@@ -75,7 +95,7 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
   const fractionDigits = getCurrencyFractionDigits(currencyCode);
   const moneyStep =
     fractionDigits === 0 ? "1" : `0.${"0".repeat(fractionDigits - 1)}1`;
-  const program = rawProgram as ProgramRow | null;
+  const rewardTiers = (rawTiers ?? []) as RewardTierRow[];
   const defaultAmountPerStamp = formatMinorUnitsForInput(
     100 * 10 ** fractionDigits,
     currencyCode,
@@ -110,6 +130,10 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
             <div>
               <dt>Versión</dt>
               <dd>{program.version}</dd>
+            </div>
+            <div>
+              <dt>Niveles</dt>
+              <dd>{rewardTiers.length}</dd>
             </div>
           </dl>
         ) : null}
@@ -220,50 +244,29 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
 
           </div>
 
-          <div className="admin-form-section"><h2 className="section-title">Recompensa</h2>
-          <div className="form-grid">
-            <label className="field">
-              <span>Meta de sellos</span>
-              <input
-                name="rewardStampGoal"
-                type="number"
-                min={1}
-                max={1_000_000}
-                defaultValue={program?.reward_stamp_goal ?? 10}
-                required
-              />
-            </label>
-            <label className="field">
-              <span>Expiración en días</span>
-              <input
-                name="rewardExpirationDays"
-                type="number"
-                min={1}
-                max={3650}
-                defaultValue={program?.reward_expiration_days ?? ""}
-                placeholder="Sin expiración"
-              />
-            </label>
+          <div className="admin-form-section"><h2 className="section-title">Premios por sellos</h2>
+          <RewardTiersEditor initialTiers={rewardTiers.map((tier) => ({
+            id: tier.id,
+            stampsRequired: tier.stamps_required,
+            name: tier.name,
+            description: tier.description,
+            expirationDays: tier.expiration_days,
+          }))} />
           </div>
+
+          <div className="admin-form-section"><h2 className="section-title">Términos de la tarjeta</h2>
+          <p className="field-hint">Este texto se mostrará junto con el catálogo de premios en la tarjeta digital del cliente.</p>
           <label className="field">
-            <span>Nombre de la recompensa</span>
-            <input
-              name="rewardName"
-              maxLength={120}
-              defaultValue={program?.reward_name ?? "Recompensa"}
+            <span>Términos y condiciones</span>
+            <textarea
+              name="termsAndConditions"
+              minLength={10}
+              maxLength={4000}
+              defaultValue={program?.terms_and_conditions ?? "Los premios están sujetos a disponibilidad y deben canjearse en las sucursales participantes."}
+              rows={6}
               required
             />
           </label>
-          <label className="field">
-            <span>Descripción</span>
-            <textarea
-              name="rewardDescription"
-              maxLength={500}
-              defaultValue={program?.reward_description ?? ""}
-              rows={4}
-            />
-          </label>
-
           </div>
 
           <SubmitButton>
