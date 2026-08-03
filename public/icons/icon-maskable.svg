@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>SwiftWallet</title>
+  <rect width="512" height="512" fill="#111827"/>
+  <g fill="#42cabb" transform="rotate(35 256 256)">
+    <rect x="166" y="224" width="36" height="92" rx="18"/>
+    <rect x="238" y="188" width="36" height="136" rx="18"/>
+    <rect x="310" y="206" width="36" height="100" rx="18"/>
+  </g>
+</svg>

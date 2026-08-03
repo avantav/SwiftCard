@@ -1665,6 +1665,135 @@ textarea {
   padding: 68px 0 72px;
 }
 
+.pwa-status-region {
+  display: grid;
+  width: min(100%, 720px);
+  gap: 10px;
+  margin: 0 auto;
+  padding: 14px 20px 0;
+}
+
+.pwa-connection-state {
+  display: inline-flex;
+  min-height: 28px;
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 0 auto;
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.pwa-connection-state > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pwa-connection-state.is-online {
+  border-color: #abefc6;
+  background: var(--enterprise-success-soft);
+  color: var(--enterprise-success);
+}
+
+.pwa-connection-state.is-offline {
+  border-color: #fedf89;
+  background: var(--enterprise-warning-soft);
+  color: var(--enterprise-warning);
+}
+
+.pwa-notice {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 14px;
+  background: var(--enterprise-surface);
+  box-shadow: var(--enterprise-shadow-card);
+}
+
+.pwa-notice.is-offline {
+  grid-template-columns: 1fr;
+  border-color: #fedf89;
+  background: var(--enterprise-warning-soft);
+}
+
+.pwa-notice strong {
+  display: block;
+  font-size: 0.82rem;
+}
+
+.pwa-notice p {
+  margin: 3px 0 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.pwa-notice-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary-hover);
+}
+
+.pwa-notice-icon .enterprise-icon,
+.pwa-dismiss-button .enterprise-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.pwa-install-button,
+.pwa-dismiss-button {
+  display: inline-grid;
+  min-height: 44px;
+  place-items: center;
+  border-radius: var(--enterprise-radius-md);
+  cursor: pointer;
+}
+
+.pwa-install-button {
+  border: 1px solid var(--enterprise-primary);
+  padding: 8px 14px;
+  background: var(--enterprise-primary);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pwa-install-button:hover {
+  border-color: var(--enterprise-primary-hover);
+  background: var(--enterprise-primary-hover);
+}
+
+.pwa-dismiss-button {
+  width: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--enterprise-text-muted);
+}
+
+.pwa-dismiss-button:hover {
+  background: var(--enterprise-surface-subtle);
+  color: var(--enterprise-text);
+}
+
+html[data-connection="offline"] .operations-app form button[type="submit"] {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .operations-page {
   display: grid;
   width: min(100%, 720px);
@@ -2504,6 +2633,25 @@ textarea {
 
   .operations-page {
     padding: 20px 16px 28px;
+  }
+
+  .pwa-status-region {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .pwa-notice {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .pwa-notice .pwa-install-button {
+    grid-column: 2 / -1;
+    width: 100%;
+  }
+
+  .pwa-dismiss-button {
+    grid-column: 3;
+    grid-row: 1;
   }
 
   .operations-card {

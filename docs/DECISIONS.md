@@ -89,3 +89,13 @@
 - Reason: A repository-owned system creates consistent navigation, hierarchy, density, accessibility, responsive behavior, and interaction states across future work without relying on chat history.
 - Consequences: Every modified interface must move toward the shared system, applicable checklist items must be verified, and exceptions require explicit user authorization plus a recorded decision. Verkada remains conceptual inspiration only; SwiftWallet retains its own identity.
 - Status: Accepted.
+
+## DEC-0010 - PWA Remains Online-Only With A Static Offline Fallback
+
+- Date: 2026-08-02
+- Context: The employee PWA must be installable and communicate connection loss, while the MVP explicitly excludes offline operation and handles tenant, customer, purchase, and reward data.
+- Decision: Register a root-scoped service worker that caches only a static, non-sensitive offline notice and uses the network for every application navigation and operation. Do not cache authenticated HTML, tenant data, API responses, Supabase traffic, or operational assets for offline use. Block operational form submissions when the browser reports no connection.
+- Alternatives considered: Cache the authenticated application shell and recent data, omit the service worker entirely, or add background synchronization for queued operations.
+- Reason: A static fallback supports a clear installed-app experience without creating stale financial operations, cross-user device leakage, queued double submissions, or an unsupported offline mode.
+- Consequences: A cold offline launch displays only the connection notice; all customer and loyalty operations require restored connectivity. Any future offline capability requires explicit product authorization and a new security design.
+- Status: Accepted.

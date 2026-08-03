@@ -3,10 +3,10 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Resume authorized Admin/Manager correction and operational-history UI after the application-wide design-system rollout.
-- Last completed task: Applied the mandatory enterprise design system to every existing Administrator, PWA, authentication, public registration, home, and Web Card page.
+- Current task: Resume authorized Admin/Manager correction and operational-history UI after completing the employee PWA installation layer.
+- Last completed task: Added production-ready PWA installation, adaptive icons, secure service-worker registration, connection handling, and phone/tablet install guidance.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature commit: `73bdb9b feat: add admin loyalty program controls`.
+- Last stable feature: Employee PWA installation and online-only connection handling.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
@@ -69,6 +69,8 @@
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
 - The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
+- The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 
 ## Pending Functionality
@@ -116,7 +118,7 @@
 - Loyalty schema, active-program uniqueness, nonnegative balance, ticket uniqueness, and RLS assertions: passed.
 - Purchase preview/confirmation, balance locking, duplicate ticket, ledger, and reward-generation assertions: passed.
 - Multiple-reward, versioned-rule, preserved-balance, and paused-program assertions: passed.
-- PWA manifest unit test and generated manifest route: passed.
+- PWA manifest, PNG dimensions, install runtime, secure worker headers, online-only cache boundary, and generated manifest route: passed.
 - Scanner parser unit tests and cross-tenant card scan assertions: passed.
 - Purchase route build and full application validation: passed.
 - Reward redemption migration, tenant authorization, and one-time redemption assertions: passed.
@@ -136,6 +138,7 @@
 - Hosted Data API `app` schema RPC and server-key database checks: passed.
 - Authenticated visual review passed at 375, 768, 1280, and 1440 px against the populated hosted tenant directory.
 - Authenticated Administrator review passed at 375, 768, 1280, and 1440 px; public login passed at 375 and 1440 px. Because no active Manager/Employee or customer card exists yet, the exact production PWA and Web Card components were also reviewed with temporary representative data at 375 and 768 px, and all temporary routes were removed.
+- PWA install guidance and online/offline notices were visually reviewed with exact production styles at 375 and 768 px; launcher icons and the maskable safe area were inspected, all temporary review routes were removed, and live `/manifest.webmanifest`, `/sw.js`, and `/offline.html` responses were verified.
 
 ## Validation Results
 

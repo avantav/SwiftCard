@@ -21,6 +21,7 @@ describe("application-wide design contract", () => {
     expect(adminLayout).toContain("AdminNavigation");
     expect(operationsLayout).toContain('requireInternalArea("APP")');
     expect(operationsLayout).toContain("OperationsNavigation");
+    expect(operationsLayout).toContain("PwaController");
     expect(adminNavigation).toContain('role === "ADMIN"');
     expect(operationsNavigation).toContain('aria-label="Navegación operativa"');
     expect(operationsNavigation).toContain("Salir");

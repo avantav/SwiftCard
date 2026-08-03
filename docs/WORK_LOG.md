@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-02 - Employee PWA Installation And Online-Only Runtime
+
+**Objective:** Make the employee application installable as a home-screen shortcut on phones and tablets while preserving the MVP's online-only and multi-tenant security boundaries.
+
+**Files Created Or Modified:** Expanded the App Router manifest and root metadata; added SwiftWallet 192px, 512px, maskable, and Apple touch icons; added `src/components/pwa-controller.tsx`, `public/sw.js`, `public/offline.html`, worker response headers, responsive PWA state styles, focused runtime tests, and continuity updates.
+
+**Changes Made:** Added standalone identity, safe-area viewport handling, Android/Chromium launcher shortcuts and install action, Safari instructions for iPhone/iPad, installed-mode detection, an accessible live connection indicator, offline operational-submit blocking, and a branded cold-launch connection fallback. The icon set now matches the SwiftWallet enterprise brand mark and supports Android adaptive masks.
+
+**Security And Product Boundary:** The worker caches only `/offline.html`. It does not cache authenticated routes, HTML application shells, tenant/customer data, Supabase requests, sessions, API responses, or queued operations. Navigation remains network-first and all business writes remain online and backend-authoritative. Worker updates bypass HTTP cache and `/sw.js` is served with no-store, MIME, CSP, and root-scope headers.
+
+**Design Checklist Review:** The existing operational shell and hierarchy remain intact; connection state uses text plus color; install/offline states have semantic live regions; buttons retain visible focus and 44px touch targets; no gradient, glass, copied asset, or page-specific visual language was introduced. Exact production styles were reviewed at 375px and 768px, including install and connection-loss notices, and the temporary review route was removed.
+
+**Validation:** Live `/manifest.webmanifest`, `/sw.js`, and `/offline.html` responses passed; PNG signatures and dimensions are tested; `npm run lint`, `npm run typecheck`, all 131 Vitest tests, `npm run build`, and `git diff --check` passed.
+
+**Next Action:** Implement the authorized Admin/Manager correction controls and permission-scoped operational/audit history views.
+
 ## 2026-08-02 - Application-Wide Enterprise Design Rollout
 
 **Objective:** Apply the mandatory SwiftWallet enterprise design system to every existing page beyond Superadmin without changing database authority, permissions, or business calculations.

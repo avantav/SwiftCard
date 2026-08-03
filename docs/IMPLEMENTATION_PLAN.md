@@ -109,7 +109,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 **Tasks**
 
-- [x] [Terminada] Add manifest and install metadata.
+- [x] [Terminada] Add manifest, adaptive launcher icons, install metadata, secure service-worker registration, installation guidance, and online-only connection states.
 - [x] [Terminada] Implement scanner route and QR parsing.
 - [x] [Terminada] Implement purchase and redemption mobile flows.
 - [x] [Terminada] Add strict/flexible geolocation handling.
