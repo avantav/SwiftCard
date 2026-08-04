@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-04 - Local Auth Cookie Header Recovery
+
+**Objective:** Restore `/app` after Firefox showed a blank response and prove whether the failure occurred before or during application rendering.
+
+**Cause:** Browser network evidence showed HTTP `431 Request Header Fields Too Large` with a request-cookie header above 16KB. Next rejected the request before middleware, route guards, RLS, or `/app` rendering could execute; this was not an empty React page.
+
+**Changes Made:** Added one shared, application-specific `swiftwallet-auth` cookie name and enabled Supabase SSR's tokens-only cookie encoding consistently in browser, server, and middleware clients. This removes the duplicated user payload from session cookies and prevents SwiftWallet sessions from continuing under changing Supabase project-derived cookie names.
+
+**Recovery Note:** Browsers that already contain the oversized localhost cookie set must clear site cookies once before the new configuration can receive a request and establish the smaller session.
+
+**Security Review:** Tokens remain in the existing Supabase SSR cookie mechanism; tenant resolution, server-side `getUser()` validation, route guards, RLS, and sign-out behavior are unchanged. No secrets or session values were inspected or logged.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 135 Vitest tests, `npm run build`, and `git diff --check` passed. Added focused checks requiring the same name and encoding across all three Supabase client boundaries. No migration is required.
+
+**Next Action:** Implement the authorized Admin/Manager correction controls and permission-scoped operational/audit history views.
+
 ## 2026-08-04 - Collapsible Reward-Level Editor
 
 **Objective:** Make the Admin “Agregar nivel” action visibly responsive and reduce the vertical cost of editing cumulative rewards.

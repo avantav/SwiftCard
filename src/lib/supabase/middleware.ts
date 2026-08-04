@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import {
+  swiftWalletAuthCookieEncoding,
+  swiftWalletAuthCookieOptions,
+} from "./auth-cookies";
 import { getPublicSupabaseConfig } from "./config";
 
 export type SupabaseMiddlewareResult = {
@@ -26,7 +30,9 @@ export async function updateSupabaseSession(
   }
 
   const supabase = createServerClient(config.url, config.anonKey, {
+    cookieOptions: swiftWalletAuthCookieOptions,
     cookies: {
+      encode: swiftWalletAuthCookieEncoding,
       getAll() {
         return request.cookies.getAll();
       },
@@ -66,4 +72,3 @@ export function copyAuthCookies(source: NextResponse, target: NextResponse) {
     target.cookies.set(cookie);
   });
 }
-

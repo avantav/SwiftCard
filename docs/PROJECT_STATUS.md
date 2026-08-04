@@ -4,9 +4,9 @@
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
 - Current task: Resume authorized Admin/Manager correction and operational-history UI after completing cumulative reward tiers and card terms.
-- Last completed task: Fixed the add-level interaction and converted the reward-tier editor into compact, accessible collapsible panels.
+- Last completed task: Fixed blank local `/app` responses caused by oversized accumulated Supabase auth cookies.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Cumulative reward tiers and customer-card terms.
+- Last stable feature: Cumulative reward tiers with a collapsible editor and reduced Supabase auth cookies.
 - Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
@@ -76,6 +76,7 @@
 - The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
+- Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 
 ## Pending Functionality
@@ -99,7 +100,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 133 tests passed.
+- `npm run test:run`: passed; 135 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
