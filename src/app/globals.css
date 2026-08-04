@@ -1591,6 +1591,12 @@ textarea {
   opacity: 0.55;
 }
 
+.reward-tiers-status {
+  margin: -8px 0 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.76rem;
+}
+
 .reward-tier-list {
   display: grid;
   gap: 12px;
@@ -1613,23 +1619,64 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid var(--enterprise-border);
-  padding-bottom: 12px;
 }
 
-.reward-tier-card-header > div {
+.reward-tier-toggle {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--enterprise-radius-md);
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--enterprise-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.reward-tier-toggle:hover {
+  background: var(--enterprise-surface);
+}
+
+.reward-tier-title {
   display: grid;
   gap: 2px;
+  min-width: 0;
 }
 
-.reward-tier-card-header span {
+.reward-tier-title > span {
   color: var(--enterprise-primary-hover);
   font-size: 0.7rem;
   font-weight: 700;
 }
 
-.reward-tier-card-header strong {
+.reward-tier-title strong {
+  overflow: hidden;
   font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reward-tier-summary {
+  flex: 0 0 auto;
+  color: var(--enterprise-text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.reward-tier-fields {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--enterprise-border);
+  padding-top: 14px;
+}
+
+.reward-tier-fields[hidden] {
+  display: none;
 }
 
 .reward-tier-remove {
@@ -2787,6 +2834,20 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
   .reward-tiers-heading .secondary-button {
     width: 100%;
+  }
+
+  .reward-tier-card-header {
+    align-items: start;
+    gap: 8px;
+  }
+
+  .reward-tier-toggle {
+    display: grid;
+    gap: 4px;
+  }
+
+  .reward-tier-summary {
+    white-space: normal;
   }
 
   .pwa-status-region {

@@ -11,6 +11,10 @@ const action = readFileSync(
   join(process.cwd(), "src/app/admin/program/actions.ts"),
   "utf8",
 );
+const rewardTiersEditor = readFileSync(
+  join(process.cwd(), "src/components/reward-tiers-editor.tsx"),
+  "utf8",
+);
 const migration = readFileSync(
   join(
     process.cwd(),
@@ -179,5 +183,16 @@ describe("loyalty program Admin configuration", () => {
     expect(migration).toContain("target_reward_tiers jsonb");
     expect(migration).toContain("LOYALTY_REWARD_TIERS_CONFIGURED");
     expect(migration).toContain("staff_record.tenant_id");
+  });
+
+  it("keeps add-level local to the form and reveals the new tier", () => {
+    expect(rewardTiersEditor).toContain('type="button">Agregar nivel');
+    expect(rewardTiersEditor).toContain("setTiers((current) =>");
+    expect(rewardTiersEditor).toContain("scrollIntoView");
+    expect(rewardTiersEditor).toContain("?.focus({ preventScroll: true })");
+    expect(rewardTiersEditor).toContain("aria-expanded={expanded}");
+    expect(rewardTiersEditor).toContain("hidden={!expanded}");
+    expect(rewardTiersEditor).toContain('expanded ? "Ocultar" : "Editar"');
+    expect(rewardTiersEditor).toContain("setExpandedKeys(new Set([key]))");
   });
 });

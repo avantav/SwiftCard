@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-04 - Collapsible Reward-Level Editor
+
+**Objective:** Make the Admin “Agregar nivel” action visibly responsive and reduce the vertical cost of editing cumulative rewards.
+
+**Files Created Or Modified:** Updated `src/components/reward-tiers-editor.tsx`, its shared styles in `src/app/globals.css`, the focused Admin program test, and continuity documentation.
+
+**Changes Made:** Added compact per-level Editar/Ocultar controls with `aria-expanded` and associated field regions. Adding a level now collapses prior levels, expands the new one, scrolls it into view, focuses its stamp input, and shows a visible live confirmation. Tier fields are controlled so names and stamp summaries remain synchronized, and validation reveals the affected collapsed level.
+
+**Design Checklist Review:** The editor keeps one clear add action, uses existing tokens, preserves 44px touch targets and visible focus, communicates expansion with text and ARIA rather than color, and compacts cleanly on mobile. No new visual dependency or page-specific visual language was introduced. Live interaction review remains with the user after the local server approval was declined.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 133 Vitest tests, `npm run build`, and `git diff --check` passed. No database migration is required for this UI correction.
+
+**Next Action:** Implement the authorized Admin/Manager correction controls and permission-scoped operational/audit history views.
+
 ## 2026-08-02 - Employee PWA Installation And Online-Only Runtime
 
 **Objective:** Make the employee application installable as a home-screen shortcut on phones and tablets while preserving the MVP's online-only and multi-tenant security boundaries.
