@@ -1,11 +1,18 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { validateBranchCreateForm } from "./branches";
+import {
+  describeBranchPersistenceError,
+  validateBranchCreateForm,
+} from "./branches";
 
 const branchAction = readFileSync(
   join(process.cwd(), "src/app/admin/branches/actions.ts"),
   "utf8"
+);
+const branchForm = readFileSync(
+  join(process.cwd(), "src/components/branch-create-form.tsx"),
+  "utf8",
 );
 
 function form(values: Record<string, string>) {
@@ -84,17 +91,97 @@ describe("validateBranchCreateForm", () => {
     ).toMatchObject({
       ok: false,
       errors: [
-        "Nombre es obligatorio.",
-        "Latitud y longitud deben capturarse juntas.",
-        "La latitud debe estar entre -90 y 90.",
-        "El radio debe ser un entero entre 1 y 100000 metros."
-      ]
+        "El nombre de la sucursal es obligatorio.",
+        "Captura la longitud junto con la latitud.",
+        "La latitud debe ser un número entre -90 y 90.",
+        "El radio debe ser un número entero entre 1 y 100000 metros."
+      ],
+      fieldErrors: {
+        name: ["El nombre de la sucursal es obligatorio."],
+        longitude: ["Captura la longitud junto con la latitud."],
+        latitude: ["La latitud debe ser un número entre -90 y 90."],
+        geofenceRadiusMeters: [
+          "El radio debe ser un número entero entre 1 y 100000 metros.",
+        ],
+      },
+      values: {
+        latitude: "91",
+        geofenceRadiusMeters: "0",
+      },
     });
+  });
+
+  it("reports every invalid shared-account field without retaining passwords", () => {
+    const result = validateBranchCreateForm(
+      form({
+        name: "Sucursal válida",
+        address: "x".repeat(301),
+        geofenceRadiusMeters: "100.5",
+        employeeAccessMode: "SHARED_ACCOUNT_PIN",
+        sharedEmail: "correo-invalido",
+        sharedPassword: "short",
+        sharedPasswordConfirmation: "different",
+      }),
+    );
+
+    expect(result).toMatchObject({
+      ok: false,
+      fieldErrors: {
+        address: ["La dirección no puede exceder 300 caracteres."],
+        geofenceRadiusMeters: [
+          "El radio debe ser un número entero entre 1 y 100000 metros.",
+        ],
+        sharedEmail: ["Captura un correo compartido válido."],
+        sharedPassword: [
+          "La contraseña compartida debe tener entre 12 y 72 caracteres.",
+        ],
+        sharedPasswordConfirmation: [
+          "La confirmación no coincide con la contraseña compartida.",
+        ],
+      },
+    });
+    if (!result.ok) {
+      expect(result.values).not.toHaveProperty("sharedPassword");
+      expect(result.values).not.toHaveProperty("sharedPasswordConfirmation");
+    }
+  });
+
+  it("translates database rejections into safe actionable explanations", () => {
+    expect(
+      describeBranchPersistenceError({
+        code: "PGRST204",
+        message: "employee_access_mode was not found",
+      }),
+    ).toMatchObject({
+      formError: expect.stringContaining("migración 0035"),
+      fieldErrors: { employeeAccessMode: expect.any(Array) },
+    });
+    expect(
+      describeBranchPersistenceError({
+        code: "42501",
+        message: "new row violates row-level security policy",
+      }).formError,
+    ).toContain("Admin general");
+    expect(
+      describeBranchPersistenceError({ code: "NETWORK_FAILURE" }).formError,
+    ).toContain("NETWORK_FAILURE");
   });
 
   it("derives tenant authority from the authenticated context", () => {
     expect(branchAction).toContain("tenant_id: context.tenantId");
+    expect(branchAction).toContain("const branchId = randomUUID()");
     expect(branchAction).toContain('context.access.role !== "ADMIN"');
+    expect(branchAction).toContain("describeBranchPersistenceError");
+    expect(branchAction).toContain("logCreateFailure");
+    expect(branchAction).not.toContain('.select("id").single()');
     expect(branchAction).not.toContain('formData.get("tenant');
+  });
+
+  it("renders an accessible error summary and field-level validation", () => {
+    expect(branchForm).toContain("useActionState");
+    expect(branchForm).toContain('role="alert"');
+    expect(branchForm).toContain("aria-invalid");
+    expect(branchForm).toContain("field-error-message");
+    expect(branchForm).toContain("summaryRef.current?.focus()");
   });
 });

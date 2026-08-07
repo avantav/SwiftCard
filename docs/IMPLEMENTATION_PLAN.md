@@ -56,6 +56,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement temporary-password reset from Superadmin.
 - [x] [Terminada] Enforce role/status route guards and mandatory password change.
 - [x] [Terminada] Implement minimum branch management.
+- [x] [Terminada] Add accessible field-level branch validation, retained non-sensitive values, and safe database/Auth error diagnostics.
 - [x] [Terminada] Implement tenant staff account provisioning.
 - [x] [Terminada] Implement staff branch assignments and primary branch management.
 - [x] [Terminada] Add branch-scoped Administrator semantics, per-branch employee access modes, shared branch accounts, PIN operators, revocable PIN sessions, and individual actor attribution.
@@ -172,6 +173,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add wallet pass schema and server-only service boundaries.
 - [x] [Terminada] Implement Web Card fallback updates through the dynamic public projection.
 - [x] [Terminada] Implement tenant-owned Apple Wallet `storeCard` design and signed `.pkpass` generation behind server-only config.
+- [x] [Terminada] Offer the signed Apple pass directly after public registration without routing the customer through the Web Card.
 - [x] [Terminada] Add direct Admin uploads for tenant Wallet images through a public-read, tenant-scoped Supabase Storage bucket with RLS-protected writes and bounded raster formats.
 - [ ] [Pendiente] Implement Apple Wallet device registrations, APNs update notifications, updated-pass delivery, and validation with real Apple credentials.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.

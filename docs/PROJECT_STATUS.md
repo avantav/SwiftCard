@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 8 Apple Wallet initial generation complete; provider updates, Google Wallet, and real-device validation remain.
-- Current task: Deploy the public branch registration QR workflow, then validate a real Apple pass on an Apple device.
-- Last completed task: Added Admin-controlled public registration links and downloadable QR codes for every active branch.
+- Current task: Deploy and verify direct Apple Wallet handoff after registration, then validate a real pass on an Apple device.
+- Last completed task: Replaced the post-registration Web Card link with a direct, availability-checked Apple Wallet action.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Public registration link/QR distribution per branch, backed by the existing secure registration RPC.
-- Git status: Public registration QR work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current public registration QR work is not pushed.
+- Last stable feature: Direct Apple Wallet handoff after public registration with the Web Card retained only as a fallback.
+- Git status: Direct registration-to-Wallet work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current direct-Wallet work is not pushed.
 
 ## Completed Functionality
 
@@ -42,6 +42,8 @@
 - Dynamic server-side role/status/tenant guards for all internal route trees.
 - Admin-only `/admin/branches` listing and creation flow.
 - Branch validation for coordinates, geofence radius, address, and proximity.
+- Branch creation reports all field issues together, restores non-sensitive inputs, focuses an accessible error summary, and translates RLS, schema/migration, constraint, session, Auth-email, and Auth-password failures without leaking secrets.
+- Branch IDs are generated on the trusted server before insertion, so creation no longer depends on an RLS-filtered `INSERT ... RETURNING` response to continue shared-account compensation safely.
 - Admin-only `/admin/staff` creation for Manager and Employee accounts.
 - Server-only Auth provisioning with profile cleanup compensation.
 - Tenant and creator derived from the authenticated Admin context.
@@ -88,6 +90,7 @@
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
+- A newly registered customer sees a direct generic Apple Wallet action when both signer configuration and tenant design are enabled; the success screen no longer routes through the Web Card.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
 - The Admin Wallet designer uploads PNG/JPEG/WebP assets of at most 5 MB directly to the public-read `wallet-assets` Supabase bucket, under generated `tenant_id/apple` paths.
@@ -115,7 +118,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 157 tests passed.
+- `npm run test:run`: passed; 162 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 4 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.

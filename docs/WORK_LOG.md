@@ -1,5 +1,35 @@
 # Work Log
 
+## 2026-08-07 - Direct Apple Wallet Handoff After Registration
+
+**Objective:** Remove the Web Card as the post-registration destination and let a newly registered customer add the signed pass directly to Apple Wallet.
+
+**Changes Made:** The public registration success state now checks signer and tenant availability on the server and shows a generic Apple Wallet icon/button linked directly to the signed `.pkpass` endpoint. The previous “Abrir mi tarjeta” link was removed. When Wallet is unavailable, the customer sees a clear temporary-unavailability notice instead of a dead action. The Web Card route remains as a fallback and as the secure URL encoded inside the pass QR.
+
+**Security Review:** The browser receives no signer configuration or tenant authority. Availability is checked through the existing bounded public RPC, and the pass endpoint still derives tenant, customer, card, design, balance, and program exclusively from the opaque card token. Only an exact `created=1` result renders the success handoff.
+
+**Design Review:** The real success component passed Chrome review at 375, 768, 1280, and 1440 px. The black 58px action has a code-native generic Wallet icon, visible focus behavior, sufficient contrast, readable hierarchy, and no mobile overflow. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 162 Vitest tests, and `npm run build` passed. Focused tests verify direct pass routing, removal of the Web Card link, exact success-state handling, server-only signer/design availability, and existing Apple generation boundaries.
+
+**Current Limitation:** Installed Apple passes do not yet refresh when stamps or rewards change. Automatic refresh still requires PassKit device-registration/update endpoints, APNs credentials and notifications, and updated-pass delivery.
+
+**Next Action:** Deploy and perform one complete registration on an iPhone. After Apple accepts the initial pass, implement and validate the pending PassKit web service/APNs update flow.
+
+## 2026-08-07 - Branch Creation Validation And Failure Diagnostics
+
+**Objective:** Replace the generic “No se pudo crear la sucursal” response with complete field validation and an actionable, safe explanation of persistence failures.
+
+**Changes Made:** Converted branch creation to action state so failed submissions retain name, address, coordinates, radius, mode, proximity, and shared email while always clearing passwords. Added structured validation for every applicable field, a focused error summary, inline errors, bounds and length guidance, and safe translations for RLS, expired sessions, missing migration/schema cache, connectivity, database constraints, duplicate system email, Auth email, and Auth password failures. Branch IDs are now generated on the trusted server before insertion, removing the unnecessary RLS-filtered `INSERT ... RETURNING` dependency while preserving compensation. Server logs identify the failure stage and provider code without logging form values or passwords.
+
+**Security Review:** Tenant authority still comes exclusively from the authenticated Admin context. Raw database details are not returned to the browser, unknown errors expose only a provider code, and passwords are omitted from all returned action state and diagnostic logs. Existing compensation still deletes the new branch/Auth account when shared-account setup fails.
+
+**Design Review:** The multi-error state passed Chrome review at 375, 768, 1280, and 1440 px. The summary receives programmatic focus, fields expose `aria-invalid` and linked descriptions, error contrast and borders are visible, controls remain at least 44px, and the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 160 Vitest tests, and `npm run build` passed. Focused tests cover aggregation, field mapping, non-retention of passwords, safe migration/RLS/unknown-code explanations, and the accessible summary boundary.
+
+**Next Action:** Deploy and repeat the failed branch submission. If the cause is migration/schema cache, the form will now identify migration `0035`; otherwise use the displayed diagnostic code and `[branch-create]` server log stage to resolve the exact provider rejection.
+
 ## 2026-08-07 - Public Branch Registration Links And QR Distribution
 
 **Objective:** Let the Admin general generate and distribute a public self-service registration link and QR for every branch without introducing a second registration authority.

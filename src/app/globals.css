@@ -184,6 +184,20 @@ textarea {
   outline-offset: 2px;
 }
 
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--enterprise-danger);
+  background: var(--enterprise-danger-soft);
+}
+
+.field-error-message {
+  color: var(--enterprise-danger) !important;
+  font-size: 0.78rem !important;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 .primary-button {
   min-height: 44px;
   border: 0;
@@ -400,6 +414,47 @@ textarea {
   align-items: center;
   gap: 10px;
   font-weight: 700;
+}
+
+.branch-proximity-field {
+  align-items: flex-start;
+}
+
+.branch-proximity-field > input {
+  margin-top: 3px;
+}
+
+.branch-proximity-field > span {
+  display: grid;
+  gap: 3px;
+}
+
+.branch-proximity-field small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.branch-validation-summary {
+  display: grid;
+  gap: 6px;
+}
+
+.branch-validation-summary:focus {
+  outline: 3px solid rgb(37 99 235 / 35%);
+  outline-offset: 2px;
+}
+
+.branch-validation-summary p,
+.branch-validation-summary ul {
+  margin: 0;
+}
+
+.branch-validation-summary ul {
+  display: grid;
+  gap: 4px;
+  padding-left: 20px;
 }
 
 @media (max-width: 720px) {
@@ -2655,6 +2710,65 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   color: var(--enterprise-text-muted);
   font-size: 0.8rem;
   line-height: 1.5;
+}
+
+.public-apple-wallet-button {
+  display: inline-flex;
+  width: min(100%, 280px);
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  padding: 7px 18px;
+  background: #000;
+  color: #fff;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.public-apple-wallet-button:hover {
+  background: #202124;
+}
+
+.public-apple-wallet-button:active {
+  transform: translateY(1px);
+}
+
+.public-apple-wallet-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+}
+
+.public-apple-wallet-button > span {
+  display: grid;
+  justify-items: start;
+  gap: 0;
+  line-height: 1;
+  text-align: left;
+}
+
+.public-apple-wallet-button small {
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.public-apple-wallet-button strong {
+  color: #fff;
+  font-size: 1.12rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.public-success-state .public-wallet-unavailable {
+  margin: 0;
+  border: 1px solid #f2cf8c;
+  border-radius: var(--enterprise-radius-md);
+  padding: 10px 12px;
+  background: var(--enterprise-warning-soft);
+  color: #8a3f06;
 }
 
 .public-unavailable-card {

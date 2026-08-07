@@ -1,7 +1,15 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
-import { validateBranchCreateForm, validateSharedAccessCredentials } from "@/lib/admin/branches";
+import {
+  describeBranchPersistenceError,
+  type BranchCreateActionState,
+  type BranchCreateFieldErrors,
+  type BranchCreateInput,
+  validateBranchCreateForm,
+  validateSharedAccessCredentials,
+} from "@/lib/admin/branches";
 import { requireInternalArea } from "@/lib/auth/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -9,17 +17,107 @@ function redirectWithError(error: string): never {
   redirect(`/admin/branches?error=${encodeURIComponent(error)}`);
 }
 
-export async function createBranch(formData: FormData) {
+function valuesFromInput(data: BranchCreateInput) {
+  return {
+    name: data.name,
+    address: data.address ?? "",
+    latitude: data.latitude?.toString() ?? "",
+    longitude: data.longitude?.toString() ?? "",
+    geofenceRadiusMeters: data.geofenceRadiusMeters.toString(),
+    proximityEnabled: data.proximityEnabled,
+    employeeAccessMode: data.employeeAccessMode,
+    sharedEmail: data.sharedEmail ?? "",
+  };
+}
+
+function createErrorState(
+  data: BranchCreateInput,
+  formError: string,
+  fieldErrors: BranchCreateFieldErrors = {},
+): BranchCreateActionState {
+  return {
+    status: "error",
+    formError,
+    fieldErrors,
+    values: valuesFromInput(data),
+  };
+}
+
+function logCreateFailure(
+  stage: string,
+  error: { code?: string; message?: string; status?: number } | null,
+) {
+  console.error("[branch-create]", {
+    stage,
+    code: error?.code ?? "NO_CODE",
+    message: error?.message ?? "No error payload returned",
+    status: error?.status,
+  });
+}
+
+function describeSharedAccountAuthError(error: {
+  code?: string;
+  message?: string;
+}): { formError: string; fieldErrors: BranchCreateFieldErrors } {
+  const message = error.message?.toLowerCase() ?? "";
+  if (
+    message.includes("already") ||
+    message.includes("registered") ||
+    message.includes("exists")
+  ) {
+    return {
+      formError: "No se pudo crear la cuenta compartida.",
+      fieldErrors: {
+        sharedEmail: [
+          "Este correo ya pertenece a otra cuenta. Usa un correo operativo diferente.",
+        ],
+      },
+    };
+  }
+  if (message.includes("email")) {
+    return {
+      formError: "No se pudo crear la cuenta compartida.",
+      fieldErrors: { sharedEmail: ["Supabase rechazó este correo."] },
+    };
+  }
+  if (message.includes("password")) {
+    return {
+      formError: "No se pudo crear la cuenta compartida.",
+      fieldErrors: {
+        sharedPassword: [
+          "Supabase rechazó la contraseña. Usa al menos 12 caracteres y evita una contraseña conocida o fácil de adivinar.",
+        ],
+      },
+    };
+  }
+  return {
+    formError: `No se pudo crear la cuenta compartida (código ${error.code ?? "AUTH_UNKNOWN"}).`,
+    fieldErrors: {},
+  };
+}
+
+export async function createBranch(
+  _previousState: BranchCreateActionState,
+  formData: FormData,
+): Promise<BranchCreateActionState> {
   const validation = validateBranchCreateForm(formData);
 
   if (!validation.ok) {
-    redirectWithError(validation.errors[0] ?? "Datos de sucursal inválidos.");
+    return {
+      status: "error",
+      formError: "Corrige los campos indicados antes de crear la sucursal.",
+      fieldErrors: validation.fieldErrors,
+      values: validation.values,
+    };
   }
 
   const context = await requireInternalArea("ADMIN");
 
   if (context.access.role !== "ADMIN" || !context.tenantId) {
-    redirectWithError("Solo el Administrador puede crear sucursales.");
+    return createErrorState(
+      validation.data,
+      "Solo el Admin general del tenant puede crear sucursales.",
+    );
   }
 
   let sharedAdminClient: ReturnType<typeof createSupabaseAdminClient> | null = null;
@@ -27,11 +125,16 @@ export async function createBranch(formData: FormData) {
     try {
       sharedAdminClient = createSupabaseAdminClient();
     } catch {
-      redirectWithError("La service role no está configurada.");
+      return createErrorState(
+        validation.data,
+        "No se puede crear la cuenta compartida porque falta la configuración privada de Supabase en el servidor.",
+      );
     }
   }
 
-  const { data: branch, error } = await context.supabase.from("branches").insert({
+  const branchId = randomUUID();
+  const { error } = await context.supabase.from("branches").insert({
+    id: branchId,
     tenant_id: context.tenantId,
     name: validation.data.name,
     address: validation.data.address,
@@ -40,10 +143,16 @@ export async function createBranch(formData: FormData) {
     geofence_radius_meters: validation.data.geofenceRadiusMeters,
     proximity_enabled: validation.data.proximityEnabled,
     employee_access_mode: "INDIVIDUAL_CREDENTIALS"
-  }).select("id").single();
+  });
 
-  if (error || !branch) {
-    redirectWithError("No se pudo crear la sucursal.");
+  if (error) {
+    logCreateFailure("branch_insert", error);
+    const description = describeBranchPersistenceError(error);
+    return createErrorState(
+      validation.data,
+      description.formError ?? "No se pudo crear la sucursal.",
+      description.fieldErrors,
+    );
   }
 
   if (validation.data.employeeAccessMode === "SHARED_ACCOUNT_PIN") {
@@ -55,21 +164,37 @@ export async function createBranch(formData: FormData) {
       email_confirm: true
     });
     if (authError || !authData.user) {
-      await adminClient.from("branches").delete().eq("id", branch.id);
-      redirectWithError("No se pudo crear la cuenta compartida de la sucursal.");
+      await adminClient.from("branches").delete().eq("id", branchId);
+      logCreateFailure("shared_auth_create", authError);
+      const description = describeSharedAccountAuthError(
+        authError ?? { code: "AUTH_EMPTY_RESPONSE" },
+      );
+      return createErrorState(
+        validation.data,
+        description.formError,
+        description.fieldErrors,
+      );
     }
 
     const { data: result, error: configError } = await context.supabase
       .schema("app")
       .rpc("configure_branch_shared_access", {
-        target_branch_id: branch.id,
+        target_branch_id: branchId,
         target_staff_profile_id: authData.user.id,
         target_email: validation.data.sharedEmail!
       });
     if (configError || result !== "CONFIGURED") {
       await adminClient.auth.admin.deleteUser(authData.user.id);
-      await adminClient.from("branches").delete().eq("id", branch.id);
-      redirectWithError("No se pudo configurar el acceso compartido.");
+      await adminClient.from("branches").delete().eq("id", branchId);
+      logCreateFailure("shared_access_config", configError);
+      const description = describeBranchPersistenceError(configError);
+      return createErrorState(
+        validation.data,
+        configError
+          ? description.formError ?? "No se pudo configurar el acceso compartido."
+          : `La configuración de acceso respondió ${String(result)} en lugar de CONFIGURED.`,
+        description.fieldErrors,
+      );
     }
   }
 
