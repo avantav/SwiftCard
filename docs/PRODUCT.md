@@ -136,6 +136,8 @@ Cada tenant tendrá nombre, contacto, estado, moneda, zona horaria, branding mod
 
 Cada sucursal tendrá nombre, dirección, coordenadas, radio de geofence, estado, token público de registro y configuración de proximidad. El Admin general podrá copiar su enlace público, descargar su QR en PNG y abrir una vista previa desde la administración de sucursales.
 
+El alta de sucursal validará y explicará por campo: nombre obligatorio de 2 a 120 caracteres, dirección opcional de hasta 300, latitud y longitud opcionales pero capturadas en conjunto y dentro de sus rangos, radio entero de 1 a 100000 metros, modo de acceso permitido y, cuando aplique, correo y contraseña compartidos válidos. Un rechazo de base de datos o Auth mostrará una causa segura y un código de diagnóstico; el formulario conservará los valores no sensibles, nunca las contraseñas.
+
 Las ubicaciones servirán para:
 
 - Recordatorios de tarjeta cerca del negocio.  

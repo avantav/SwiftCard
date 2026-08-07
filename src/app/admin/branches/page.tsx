@@ -2,13 +2,14 @@ import { redirect } from "next/navigation";
 import QRCode from "qrcode";
 import { SubmitButton } from "@/components/submit-button";
 import { BranchAccessFields } from "@/components/branch-access-fields";
+import { BranchCreateForm } from "@/components/branch-create-form";
 import { PublicRegistrationShare } from "@/components/public-registration-share";
 import { requireInternalArea } from "@/lib/auth/server";
 import {
   publicRegistrationUrl,
   resolvePublicOrigin,
 } from "@/lib/public-origin";
-import { configureBranchAccess, createBranch } from "./actions";
+import { configureBranchAccess } from "./actions";
 
 type BranchesPageProps = {
   searchParams: Promise<{ accessUpdated?: string; created?: string; error?: string }>;
@@ -108,47 +109,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           <section className="enterprise-content-card admin-form-card" id="new-branch" aria-labelledby="new-branch-title">
             <h2 id="new-branch-title" className="admin-card-title">Nueva sucursal</h2>
             <p className="admin-card-copy">Los datos de ubicación se usarán para geofence y proximidad.</p>
-            <form className="auth-form" action={createBranch}>
-              <label className="field">
-                <span>Nombre</span>
-                <input name="name" required />
-              </label>
-              <label className="field">
-                <span>Dirección</span>
-                <input name="address" />
-              </label>
-              <div className="form-grid">
-                <label className="field">
-                  <span>Latitud</span>
-                  <input name="latitude" type="number" step="any" />
-                </label>
-                <label className="field">
-                  <span>Longitud</span>
-                  <input name="longitude" type="number" step="any" />
-                </label>
-              </div>
-              <label className="field">
-                <span>Radio de geofence (metros)</span>
-                <input
-                  name="geofenceRadiusMeters"
-                  type="number"
-                  min={1}
-                  max={100000}
-                  defaultValue={100}
-                  required
-                />
-              </label>
-              <label className="check-field">
-                <input
-                  name="proximityEnabled"
-                  type="checkbox"
-                  defaultChecked
-                />
-                <span>Proximidad habilitada</span>
-              </label>
-              <BranchAccessFields />
-              <SubmitButton>Crear sucursal</SubmitButton>
-            </form>
+            <BranchCreateForm />
           </section>
         </div>
     </main>

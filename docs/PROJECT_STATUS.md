@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 8 Apple Wallet initial generation complete; provider updates, Google Wallet, and real-device validation remain.
-- Current task: Deploy the public branch registration QR workflow, then validate a real Apple pass on an Apple device.
-- Last completed task: Added Admin-controlled public registration links and downloadable QR codes for every active branch.
+- Current task: Deploy and verify branch creation diagnostics plus the public registration QR workflow, then validate a real Apple pass on an Apple device.
+- Last completed task: Replaced generic branch-creation failures with accessible field validation and safe Supabase/Auth diagnostics.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Public registration link/QR distribution per branch, backed by the existing secure registration RPC.
-- Git status: Public registration QR work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current public registration QR work is not pushed.
+- Last stable feature: Branch creation with retained non-sensitive values, complete field errors, and safe persistence diagnostics.
+- Git status: Branch validation work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current branch-validation work is not pushed.
 
 ## Completed Functionality
 
@@ -42,6 +42,8 @@
 - Dynamic server-side role/status/tenant guards for all internal route trees.
 - Admin-only `/admin/branches` listing and creation flow.
 - Branch validation for coordinates, geofence radius, address, and proximity.
+- Branch creation reports all field issues together, restores non-sensitive inputs, focuses an accessible error summary, and translates RLS, schema/migration, constraint, session, Auth-email, and Auth-password failures without leaking secrets.
+- Branch IDs are generated on the trusted server before insertion, so creation no longer depends on an RLS-filtered `INSERT ... RETURNING` response to continue shared-account compensation safely.
 - Admin-only `/admin/staff` creation for Manager and Employee accounts.
 - Server-only Auth provisioning with profile cleanup compensation.
 - Tenant and creator derived from the authenticated Admin context.
@@ -115,7 +117,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 157 tests passed.
+- `npm run test:run`: passed; 160 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 4 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.

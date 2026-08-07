@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-07 - Branch Creation Validation And Failure Diagnostics
+
+**Objective:** Replace the generic “No se pudo crear la sucursal” response with complete field validation and an actionable, safe explanation of persistence failures.
+
+**Changes Made:** Converted branch creation to action state so failed submissions retain name, address, coordinates, radius, mode, proximity, and shared email while always clearing passwords. Added structured validation for every applicable field, a focused error summary, inline errors, bounds and length guidance, and safe translations for RLS, expired sessions, missing migration/schema cache, connectivity, database constraints, duplicate system email, Auth email, and Auth password failures. Branch IDs are now generated on the trusted server before insertion, removing the unnecessary RLS-filtered `INSERT ... RETURNING` dependency while preserving compensation. Server logs identify the failure stage and provider code without logging form values or passwords.
+
+**Security Review:** Tenant authority still comes exclusively from the authenticated Admin context. Raw database details are not returned to the browser, unknown errors expose only a provider code, and passwords are omitted from all returned action state and diagnostic logs. Existing compensation still deletes the new branch/Auth account when shared-account setup fails.
+
+**Design Review:** The multi-error state passed Chrome review at 375, 768, 1280, and 1440 px. The summary receives programmatic focus, fields expose `aria-invalid` and linked descriptions, error contrast and borders are visible, controls remain at least 44px, and the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 160 Vitest tests, and `npm run build` passed. Focused tests cover aggregation, field mapping, non-retention of passwords, safe migration/RLS/unknown-code explanations, and the accessible summary boundary.
+
+**Next Action:** Deploy and repeat the failed branch submission. If the cause is migration/schema cache, the form will now identify migration `0035`; otherwise use the displayed diagnostic code and `[branch-create]` server log stage to resolve the exact provider rejection.
+
 ## 2026-08-07 - Public Branch Registration Links And QR Distribution
 
 **Objective:** Let the Admin general generate and distribute a public self-service registration link and QR for every branch without introducing a second registration authority.

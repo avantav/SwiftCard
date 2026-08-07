@@ -184,6 +184,20 @@ textarea {
   outline-offset: 2px;
 }
 
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--enterprise-danger);
+  background: var(--enterprise-danger-soft);
+}
+
+.field-error-message {
+  color: var(--enterprise-danger) !important;
+  font-size: 0.78rem !important;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 .primary-button {
   min-height: 44px;
   border: 0;
@@ -400,6 +414,47 @@ textarea {
   align-items: center;
   gap: 10px;
   font-weight: 700;
+}
+
+.branch-proximity-field {
+  align-items: flex-start;
+}
+
+.branch-proximity-field > input {
+  margin-top: 3px;
+}
+
+.branch-proximity-field > span {
+  display: grid;
+  gap: 3px;
+}
+
+.branch-proximity-field small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.branch-validation-summary {
+  display: grid;
+  gap: 6px;
+}
+
+.branch-validation-summary:focus {
+  outline: 3px solid rgb(37 99 235 / 35%);
+  outline-offset: 2px;
+}
+
+.branch-validation-summary p,
+.branch-validation-summary ul {
+  margin: 0;
+}
+
+.branch-validation-summary ul {
+  display: grid;
+  gap: 4px;
+  padding-left: 20px;
 }
 
 @media (max-width: 720px) {
