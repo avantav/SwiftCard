@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-07 - Public Branch Registration Links And QR Distribution
+
+**Objective:** Let the Admin general generate and distribute a public self-service registration link and QR for every branch without introducing a second registration authority.
+
+**Changes Made:** Added the active branch's tenant/branch context to the existing public registration page; invalid, inactive, or suspended destinations now stop before showing the form. `/admin/branches` now derives the public URL from the server-configured HTTPS origin, generates a 512px PNG QR, and provides copy, download, and open actions. Existing opaque branch tokens, source-branch attribution, duplicate handling, and atomic registration RPC remain unchanged; no migration was required.
+
+**Security Review:** Only the Admin general sees distribution controls. The public context uses a server-only lookup and returns only tenant and branch names after active-status checks. Tenant, branch, customer, and card authority continue to be derived inside the existing database RPC; no frontend-provided identifier became authoritative.
+
+**Design Review:** Chrome review passed at 375, 768, 1280, and 1440 px. The QR stays square and readable, the long URL remains contained, mobile actions use full-width 44px targets, status messages are announced, keyboard focus remains visible, and the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 157 Vitest tests, and `npm run build` passed. Focused tests cover HTTPS-origin validation, minimal public context, Admin-only sharing, inactive branches, and PNG QR generation. `npm audit --omit=dev` found no QR-library advisory; the four existing runtime advisories remain tracked.
+
+**Next Action:** Configure `SWIFTWALLET_PUBLIC_URL` with the final Hostinger HTTPS domain, deploy, download a branch QR from `/admin/branches`, and complete one registration from a physical phone.
+
 ## 2026-08-07 - Tenant-Scoped Apple Wallet Storage Uploads
 
 **Objective:** Let the Admin general upload Apple Wallet logo and strip images directly from `/admin/wallet` while preserving tenant isolation and safe server-side pass generation.

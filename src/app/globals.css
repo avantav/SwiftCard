@@ -735,6 +735,12 @@ textarea {
   color: #8f1d14;
 }
 
+.enterprise-alert.is-warning {
+  border-color: #f2cf8c;
+  background: var(--enterprise-warning-soft);
+  color: #8a3f06;
+}
+
 .enterprise-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1495,6 +1501,72 @@ textarea {
 .admin-inline-form {
   border-top: 1px solid var(--enterprise-border);
   padding: 14px;
+}
+
+.admin-registration-details {
+  border-top: 1px solid var(--enterprise-border);
+  padding: 16px;
+}
+
+.public-registration-share {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+}
+
+.public-registration-qr {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 8px;
+  background: #fff;
+}
+
+.public-registration-qr img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.public-registration-share-content {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.public-registration-share-content .field input {
+  min-width: 0;
+  font-size: 0.78rem;
+}
+
+.public-registration-share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.public-registration-share-actions .secondary-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.public-registration-copy-status {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.public-registration-copy-status.is-success {
+  color: var(--enterprise-success);
+}
+
+.public-registration-copy-status.is-error {
+  color: var(--enterprise-danger);
 }
 
 .enterprise-subsection {
@@ -3370,6 +3442,20 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .operations-customer-heading .enterprise-badge {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .public-registration-share {
+    grid-template-columns: 1fr;
+  }
+
+  .public-registration-qr {
+    width: min(100%, 240px);
+    justify-self: center;
+  }
+
+  .public-registration-share-actions,
+  .public-registration-share-actions > * {
+    width: 100%;
   }
 
   .public-shell {

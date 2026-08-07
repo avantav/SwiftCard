@@ -82,6 +82,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add customer and card schema.
 - [x] [Terminada] Implement phone normalization with tests.
 - [x] [Terminada] Implement self-service registration by branch token.
+- [x] [Terminada] Expose each active branch registration link with copy, PNG QR download, and inactive-link handling in the Admin UI.
 - [x] [Terminada] Implement employee registration.
 - [x] [Terminada] Implement customer search and profile editing.
 - [x] [Terminada] Implement public web card by card token.

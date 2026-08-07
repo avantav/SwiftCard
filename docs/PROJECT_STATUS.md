@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 8 Apple Wallet initial generation complete; provider updates, Google Wallet, and real-device validation remain.
-- Current task: Prepare migrations `0036` and `0037` for controlled deployment, then validate a real pass on an Apple device.
-- Last completed task: Added direct tenant-scoped Supabase Storage uploads for Apple Wallet images.
+- Current task: Deploy the public branch registration QR workflow, then validate a real Apple pass on an Apple device.
+- Last completed task: Added Admin-controlled public registration links and downloadable QR codes for every active branch.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Apple Wallet tenant designer with direct Storage uploads, secure pass assets, and on-demand `.pkpass` download.
-- Git status: Wallet Storage work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current Wallet Storage work is not pushed.
+- Last stable feature: Public registration link/QR distribution per branch, backed by the existing secure registration RPC.
+- Git status: Public registration QR work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current public registration QR work is not pushed.
 
 ## Completed Functionality
 
@@ -64,7 +64,7 @@
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
 - The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.
 - The Admin reward-tier editor visibly confirms additions, collapses prior levels, opens and focuses each new level, keeps edited summaries synchronized, and exposes accessible Editar/Ocultar controls.
-- Hosted Supabase PostgreSQL 17 development database is reported by the user as migrated through `0035`; new migration `0036` remains local and unapplied remotely.
+- Hosted Supabase PostgreSQL 17 development database was verified with migrations through `0037` applied.
 - Application RPC calls explicitly target the exposed `app` schema while public administrative RPCs remain in `public`.
 - Repeatable `npm run db:push:remote` migration runner refuses untracked existing SwiftWallet schemas and records canonical Supabase migration history.
 - Compensating `npm run db:bootstrap:superadmin` flow creates an Auth user and active Superadmin profile without storing credentials in Git.
@@ -84,6 +84,8 @@
 - Admin general configures branch access and shared credentials; assigned branch Administrators manage scoped individual employees and PIN operators.
 - Customer creation, purchases, stamp ledger, redemptions and audit logs preserve the PIN operator alongside the technical shared account.
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
+- Admin general can copy each active branch's public registration link, download its PNG QR, and open the destination from `/admin/branches`; the link is derived from the server-configured public HTTPS origin.
+- Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
@@ -113,9 +115,9 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 151 tests passed.
+- `npm run test:run`: passed; 157 tests passed.
 - `npm run build`: passed with webpack.
-- `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
+- `npm audit --omit=dev`: completed with 4 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
 - RLS behavior checks via `SET ROLE authenticated` and `request.jwt.claim.sub`: passed.
 - Role/permission helper unit tests: passed.

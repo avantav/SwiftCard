@@ -7,6 +7,7 @@ import sharp from "sharp";
 import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
 import { walletProviderConfig } from "./service";
+import { resolvePublicOrigin } from "@/lib/public-origin";
 
 const MAX_REMOTE_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -165,12 +166,9 @@ export async function generateAppleWalletPass(
 
 export function resolvePublicAppUrl(requestUrl: string) {
   const configured = process.env.SWIFTWALLET_PUBLIC_URL?.trim();
-  const base = new URL(configured || requestUrl);
-  if (
-    base.protocol !== "https:" &&
-    !(base.protocol === "http:" && ["localhost", "127.0.0.1"].includes(base.hostname))
-  ) {
+  const origin = resolvePublicOrigin(configured || new URL(requestUrl).origin);
+  if (!origin) {
     throw new Error("SwiftWallet public URL must use HTTPS.");
   }
-  return base.origin;
+  return origin;
 }
