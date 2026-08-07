@@ -1,0 +1,47 @@
+{
+  "name": "swiftwallet",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "db:verify-rls": "node scripts/verify-rls.mjs",
+    "db:push:remote": "node --env-file=.env.local scripts/apply-remote-migrations.mjs",
+    "db:bootstrap:superadmin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.8",
+    "clsx": "^2.1.1",
+    "next": "16.2.11",
+    "passkit-generator": "^3.5.7",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.3",
+    "tailwind-merge": "^3.6.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "22.12.0",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "autoprefixer": "^10.5.4",
+    "eslint": "9.36.0",
+    "eslint-config-next": "16.2.11",
+    "postcss": "^8.5.22",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  },
+  "overrides": {
+    "passkit-generator": {
+      "joi": "17.13.4"
+    }
+  }
+}

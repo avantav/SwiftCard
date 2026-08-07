@@ -1,0 +1,2 @@
+-- Static/runtime harness coverage is asserted by src/lib/superadmin/imports.test.ts.
+-- The migration must remain Superadmin-only and append import history metadata.

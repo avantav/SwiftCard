@@ -1,0 +1,1 @@
+-- Wallet pass schema and RLS assertions are covered by src/lib/wallet/pass.test.ts.

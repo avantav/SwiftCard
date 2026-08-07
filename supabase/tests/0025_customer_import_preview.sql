@@ -1,0 +1,1 @@
+-- Preview metadata constraints are covered by src/lib/superadmin/imports.test.ts.

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#149c91" />
+    <title>Sin conexión · SwiftWallet</title>
+    <style>
+      :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      * { box-sizing: border-box; }
+      body { display: grid; min-height: 100vh; margin: 0; place-items: center; padding: 24px; background: #f5f7f8; color: #111827; }
+      main { width: min(100%, 440px); border: 1px solid #e4e7ec; border-radius: 12px; padding: 28px; background: #fff; box-shadow: 0 1px 2px rgb(16 24 40 / 5%); }
+      .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; font-size: .9rem; font-weight: 700; }
+      .mark { position: relative; display: block; width: 36px; height: 36px; flex: 0 0 36px; border-radius: 9px; background: #111827; }
+      .mark::before, .mark::after, .mark span { content: ""; position: absolute; width: 4px; border-radius: 99px; background: #42cabb; transform: rotate(35deg); }
+      .mark::before { height: 10px; top: 13px; left: 9px; }
+      .mark span { height: 18px; top: 9px; left: 16px; }
+      .mark::after { height: 12px; top: 8px; right: 9px; }
+      .status { display: inline-flex; margin: 0 0 12px; border-radius: 999px; padding: 5px 9px; background: #fffaeb; color: #b54708; font-size: .72rem; font-weight: 700; }
+      h1 { margin: 0 0 10px; font-size: 1.65rem; line-height: 1.2; letter-spacing: -.025em; }
+      p { margin: 0; color: #667085; font-size: .92rem; line-height: 1.6; }
+      form { margin: 24px 0 0; }
+      button { width: 100%; min-height: 48px; border: 1px solid #149c91; border-radius: 8px; padding: 10px 16px; background: #149c91; color: #fff; cursor: pointer; font: inherit; font-size: .88rem; font-weight: 700; }
+      button:hover { border-color: #0f7e75; background: #0f7e75; }
+      button:focus-visible { outline: 3px solid rgb(37 99 235 / 35%); outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand"><span class="mark" aria-hidden="true"><span></span></span>SwiftWallet</div>
+      <p class="status">Sin conexión</p>
+      <h1>Necesitas internet para continuar</h1>
+      <p>SwiftWallet no guarda datos operativos en este dispositivo. Recupera la conexión para volver a consultar clientes y realizar operaciones.</p>
+      <form action="/app" method="get"><button type="submit">Reintentar conexión</button></form>
+    </main>
+  </body>
+</html>
