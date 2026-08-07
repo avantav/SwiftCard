@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-07 - Direct Apple Wallet Handoff After Registration
+
+**Objective:** Remove the Web Card as the post-registration destination and let a newly registered customer add the signed pass directly to Apple Wallet.
+
+**Changes Made:** The public registration success state now checks signer and tenant availability on the server and shows a generic Apple Wallet icon/button linked directly to the signed `.pkpass` endpoint. The previous “Abrir mi tarjeta” link was removed. When Wallet is unavailable, the customer sees a clear temporary-unavailability notice instead of a dead action. The Web Card route remains as a fallback and as the secure URL encoded inside the pass QR.
+
+**Security Review:** The browser receives no signer configuration or tenant authority. Availability is checked through the existing bounded public RPC, and the pass endpoint still derives tenant, customer, card, design, balance, and program exclusively from the opaque card token. Only an exact `created=1` result renders the success handoff.
+
+**Design Review:** The real success component passed Chrome review at 375, 768, 1280, and 1440 px. The black 58px action has a code-native generic Wallet icon, visible focus behavior, sufficient contrast, readable hierarchy, and no mobile overflow. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 162 Vitest tests, and `npm run build` passed. Focused tests verify direct pass routing, removal of the Web Card link, exact success-state handling, server-only signer/design availability, and existing Apple generation boundaries.
+
+**Current Limitation:** Installed Apple passes do not yet refresh when stamps or rewards change. Automatic refresh still requires PassKit device-registration/update endpoints, APNs credentials and notifications, and updated-pass delivery.
+
+**Next Action:** Deploy and perform one complete registration on an iPhone. After Apple accepts the initial pass, implement and validate the pending PassKit web service/APNs update flow.
+
 ## 2026-08-07 - Branch Creation Validation And Failure Diagnostics
 
 **Objective:** Replace the generic “No se pudo crear la sucursal” response with complete field validation and an actionable, safe explanation of persistence failures.

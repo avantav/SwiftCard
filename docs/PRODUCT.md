@@ -199,7 +199,7 @@ Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Admi
 
 ### Autoservicio
 
-Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal, captura sus datos, el sistema valida formato y duplicados, crea el cliente y genera la tarjeta. Se guarda la sucursal de origen y el método SELF_SERVICE. Un enlace inválido, de una sucursal inactiva o de un tenant suspendido no mostrará el formulario.
+Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal, captura sus datos, el sistema valida formato y duplicados, crea el cliente y genera la tarjeta. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro se ofrecerá directamente **Agregar a Apple Wallet** cuando el tenant y el servidor estén listos; no se enviará al cliente a una pantalla intermedia de tarjeta actual. Un enlace inválido, de una sucursal inactiva o de un tenant suspendido no mostrará el formulario.
 
 ### Por empleado
 
@@ -450,7 +450,7 @@ Requisitos:
 
 ## 22. Apple Wallet y Google Wallet
 
-Apple Wallet requiere cuenta Apple Developer, Pass Type ID, Team ID, certificado firmante, llave privada y certificado WWDR. Los secretos solo existirán en el entorno del servidor. El archivo `.pkpass` se generará y firmará al descargarlo desde la Web Card.
+Apple Wallet requiere cuenta Apple Developer, Pass Type ID, Team ID, certificado firmante, llave privada y certificado WWDR. Los secretos solo existirán en el entorno del servidor. El archivo `.pkpass` se generará y firmará al solicitar **Agregar a Apple Wallet** después del registro o desde el respaldo Web Card.
 
 Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor. Ante un recurso inválido se usará el activo seguro de respaldo.
 
