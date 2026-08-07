@@ -1,10 +1,17 @@
 "use client";
 
-/* Tenant images are explicit HTTPS design inputs and are previewed before saving. */
+/* Tenant images upload to an RLS-scoped public Supabase Storage bucket. */
 /* eslint-disable @next/next/no-img-element */
-import { useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { saveAppleWalletDesign } from "@/app/admin/wallet/actions";
 import { SubmitButton } from "@/components/submit-button";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import {
+  APPLE_WALLET_ASSET_BUCKET,
+  createAppleWalletAssetPath,
+  validateAppleWalletAssetFile,
+  type AppleWalletAssetKind,
+} from "@/lib/wallet/assets";
 
 export type AppleWalletDesignValues = {
   appleEnabled: boolean;
@@ -18,11 +25,31 @@ export type AppleWalletDesignValues = {
 };
 
 export function AppleWalletDesignForm({
+  fallbackAssets,
   initial,
+  tenantId,
 }: {
+  fallbackAssets: { logoImageUrl: string; stripImageUrl: string };
   initial: AppleWalletDesignValues;
+  tenantId: string;
 }) {
   const [design, setDesign] = useState(initial);
+  const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({
+    logo: null,
+    strip: null,
+  });
+  const [uploads, setUploads] = useState<
+    Record<
+      AppleWalletAssetKind,
+      {
+        status: "idle" | "uploading" | "success" | "error";
+        message: string;
+      }
+    >
+  >({
+    logo: { status: "idle", message: "" },
+    strip: { status: "idle", message: "" },
+  });
   const update = <Key extends keyof AppleWalletDesignValues>(
     key: Key,
     value: AppleWalletDesignValues[Key],
@@ -32,10 +59,101 @@ export function AppleWalletDesignForm({
     "--apple-pass-foreground": design.foregroundColor,
     "--apple-pass-label": design.labelColor,
   } as CSSProperties;
+  const isUploading = Object.values(uploads).some(
+    (upload) => upload.status === "uploading",
+  );
+  const previewLogoUrl = design.logoImageUrl || fallbackAssets.logoImageUrl;
+  const previewStripUrl = design.stripImageUrl || fallbackAssets.stripImageUrl;
+
+  async function uploadAsset(kind: AppleWalletAssetKind, file: File) {
+    const validationError = validateAppleWalletAssetFile(file);
+    if (validationError) {
+      setUploads((current) => ({
+        ...current,
+        [kind]: { status: "error", message: validationError },
+      }));
+      return;
+    }
+
+    setUploads((current) => ({
+      ...current,
+      [kind]: { status: "uploading", message: "Subiendo imagen…" },
+    }));
+    const supabase = createSupabaseBrowserClient();
+    const path = createAppleWalletAssetPath(
+      tenantId,
+      kind,
+      file.type as "image/png" | "image/jpeg" | "image/webp",
+    );
+    const { error } = await supabase.storage
+      .from(APPLE_WALLET_ASSET_BUCKET)
+      .upload(path, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+        upsert: false,
+      });
+    if (error) {
+      setUploads((current) => ({
+        ...current,
+        [kind]: {
+          status: "error",
+          message:
+            "No se pudo subir la imagen. Confirma que la migración de Storage esté aplicada.",
+        },
+      }));
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from(APPLE_WALLET_ASSET_BUCKET)
+      .getPublicUrl(path);
+    const previousPendingPath = pendingPaths.current[kind];
+    if (previousPendingPath && previousPendingPath !== path) {
+      await supabase.storage
+        .from(APPLE_WALLET_ASSET_BUCKET)
+        .remove([previousPendingPath]);
+    }
+    pendingPaths.current[kind] = path;
+    const key = kind === "logo" ? "logoImageUrl" : "stripImageUrl";
+    setDesign((current) => ({ ...current, [key]: data.publicUrl }));
+    setUploads((current) => ({
+      ...current,
+      [kind]: {
+        status: "success",
+        message: "Imagen cargada. Guarda el diseño para publicarla.",
+      },
+    }));
+  }
+
+  function clearAsset(kind: AppleWalletAssetKind) {
+    const pendingPath = pendingPaths.current[kind];
+    if (pendingPath) {
+      pendingPaths.current[kind] = null;
+      const supabase = createSupabaseBrowserClient();
+      void supabase.storage
+        .from(APPLE_WALLET_ASSET_BUCKET)
+        .remove([pendingPath]);
+    }
+    const key = kind === "logo" ? "logoImageUrl" : "stripImageUrl";
+    setDesign((current) => ({ ...current, [key]: "" }));
+    setUploads((current) => ({
+      ...current,
+      [kind]: {
+        status: "idle",
+        message: "Se usará la imagen general del tenant al guardar.",
+      },
+    }));
+  }
 
   return (
     <div className="apple-wallet-editor">
-      <form className="auth-form apple-wallet-form" action={saveAppleWalletDesign}>
+      <form
+        className="auth-form apple-wallet-form"
+        action={saveAppleWalletDesign}
+        onSubmit={(event) => {
+          if (isUploading) event.preventDefault();
+        }}
+      >
         <label className="check-field apple-wallet-enable">
           <input
             checked={design.appleEnabled}
@@ -115,30 +233,66 @@ export function AppleWalletDesignForm({
         <div className="admin-form-section">
           <h2 className="section-title">Imágenes</h2>
           <p className="field-hint">
-            Usa HTTPS. Para generar el pase, el host debe estar autorizado en el servidor.
+            Sube PNG, JPEG o WebP de hasta 5 MB. Las imágenes se guardan en el
+            espacio seguro de tu tenant.
           </p>
-          <label className="field">
-            <span>Logo</span>
-            <input
-              name="logoImageUrl"
-              onChange={(event) => update("logoImageUrl", event.target.value)}
-              placeholder="https://…/logo.png"
-              type="url"
-              value={design.logoImageUrl}
-            />
-          </label>
-          <label className="field">
-            <span>Imagen principal</span>
-            <input
-              name="stripImageUrl"
-              onChange={(event) => update("stripImageUrl", event.target.value)}
-              placeholder="https://…/wallet-strip.jpg"
-              type="url"
-              value={design.stripImageUrl}
-            />
-          </label>
+          <input name="logoImageUrl" type="hidden" value={design.logoImageUrl} />
+          <input name="stripImageUrl" type="hidden" value={design.stripImageUrl} />
+          <div className="apple-wallet-upload-grid">
+            {([
+              {
+                kind: "logo" as const,
+                label: "Logo",
+                hint: "Recomendado: imagen horizontal con fondo transparente.",
+              },
+              {
+                kind: "strip" as const,
+                label: "Imagen principal",
+                hint: "Recomendado: proporción aproximada de 3:1.",
+              },
+            ]).map((asset) => (
+              <div className="apple-wallet-upload-field" key={asset.kind}>
+                <label className="field" htmlFor={`wallet-${asset.kind}-file`}>
+                  <span>{asset.label}</span>
+                  <input
+                    accept="image/png,image/jpeg,image/webp"
+                    disabled={uploads[asset.kind].status === "uploading"}
+                    id={`wallet-${asset.kind}-file`}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) void uploadAsset(asset.kind, file);
+                      event.target.value = "";
+                    }}
+                    type="file"
+                  />
+                  <small>{asset.hint}</small>
+                </label>
+                {(asset.kind === "logo"
+                  ? design.logoImageUrl
+                  : design.stripImageUrl) ? (
+                  <button
+                    className="secondary-button"
+                    onClick={() => clearAsset(asset.kind)}
+                    type="button"
+                  >
+                    Quitar imagen personalizada
+                  </button>
+                ) : null}
+                {uploads[asset.kind].message ? (
+                  <p
+                    className={`apple-wallet-upload-status is-${uploads[asset.kind].status}`}
+                    role={
+                      uploads[asset.kind].status === "error" ? "alert" : "status"
+                    }
+                  >
+                    {uploads[asset.kind].message}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
-        <SubmitButton>Guardar diseño</SubmitButton>
+        <SubmitButton disabled={isUploading}>Guardar diseño</SubmitButton>
       </form>
 
       <aside className="apple-wallet-preview-panel" aria-labelledby="apple-wallet-preview-title">
@@ -149,16 +303,16 @@ export function AppleWalletDesignForm({
         </div>
         <div className="apple-pass-preview" style={previewStyle}>
           <header>
-            {design.logoImageUrl ? (
-              <img alt="Logo configurado" src={design.logoImageUrl} />
+            {previewLogoUrl ? (
+              <img alt="Logo configurado" src={previewLogoUrl} />
             ) : (
               <span className="apple-pass-preview-mark" aria-hidden="true">SW</span>
             )}
             <strong>{design.logoText || "Nombre del negocio"}</strong>
             <small><span>PREMIOS</span>1</small>
           </header>
-          {design.stripImageUrl ? (
-            <img className="apple-pass-preview-strip" alt="Imagen principal configurada" src={design.stripImageUrl} />
+          {previewStripUrl ? (
+            <img className="apple-pass-preview-strip" alt="Imagen principal configurada" src={previewStripUrl} />
           ) : null}
           <div className="apple-pass-preview-content">
             <p><span>SELLOS</span><strong>4</strong></p>

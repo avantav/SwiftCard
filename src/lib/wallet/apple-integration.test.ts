@@ -5,6 +5,13 @@ const migration = readFileSync(
   new URL("../../../supabase/migrations/0036_apple_wallet_tenant_designs.sql", import.meta.url),
   "utf8",
 );
+const storageMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0037_apple_wallet_storage_assets.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const route = readFileSync(
   new URL("../../app/api/wallet/apple/[cardToken]/route.ts", import.meta.url),
   "utf8",
@@ -19,6 +26,10 @@ const publicCard = readFileSync(
 );
 const appleServer = readFileSync(
   new URL("./apple-server.ts", import.meta.url),
+  "utf8",
+);
+const walletForm = readFileSync(
+  new URL("../../components/apple-wallet-design-form.tsx", import.meta.url),
   "utf8",
 );
 
@@ -51,5 +62,18 @@ describe("Apple Wallet integration boundaries", () => {
     expect(migration).toContain("public_apple_wallet_is_enabled");
     expect(publicCard).toContain("appleWalletAvailable && cardToken");
     expect(publicCard).toContain("/api/wallet/apple/");
+  });
+
+  it("uploads tenant images to an RLS-scoped Supabase Storage bucket", () => {
+    expect(storageMigration).toContain("'wallet-assets'");
+    expect(storageMigration).toContain("file_size_limit");
+    expect(storageMigration).toContain("wallet_assets_admin_insert");
+    expect(storageMigration).toContain("app.current_staff_tenant_id()::text");
+    expect(storageMigration).toContain("app.current_staff_can_manage_tenant");
+    expect(walletForm).toContain("createSupabaseBrowserClient");
+    expect(walletForm).toContain(".upload(path, file");
+    expect(walletForm).toContain('type="file"');
+    expect(walletForm).not.toContain('placeholder="https://');
+    expect(appleServer).toContain("NEXT_PUBLIC_SUPABASE_URL");
   });
 });

@@ -129,3 +129,13 @@
 - Reason: The fixed store-card model matches loyalty semantics, preserves tenant branding within Apple's supported fields, and keeps signing and tenant authority outside the browser.
 - Consequences: The public download is visible only when both the tenant design and server signing config are enabled. Initial generation works without an Apple update web service; installed-pass updates and real-device validation remain separate Phase 8 work.
 - Status: Accepted.
+
+## DEC-0014 - Tenant-Scoped Public Wallet Asset Bucket
+
+- Date: 2026-08-07
+- Context: Admins need to upload Apple Wallet logos and strip images from the tenant configuration without copying external URLs, while the pass generator must fetch those assets without exposing privileged Storage credentials.
+- Decision: Store Wallet raster assets in one public-read Supabase Storage bucket named `wallet-assets`, under generated `tenant_id/apple` object paths. Limit insert, update, and delete with Storage RLS to the active Admin general of that tenant; accept only PNG, JPEG, or WebP up to 5 MB and validate the submitted public URL again on the server before saving the design.
+- Alternatives considered: Service-role uploads through Server Actions, private objects with signed URLs, one bucket per tenant, unrestricted external URLs, or storing image bytes in PostgreSQL.
+- Reason: Direct browser uploads avoid Server Action body limits, public reads give the pass generator stable HTTPS assets, and tenant-path RLS preserves write isolation without proliferating buckets or exposing the service role.
+- Consequences: Wallet images are intentionally public brand assets; replacing or clearing a saved design removes the previous tenant-owned object, failed submissions clean new objects when possible, and additional non-Supabase asset hosts still require `APPLE_WALLET_ASSET_HOSTS`.
+- Status: Accepted.

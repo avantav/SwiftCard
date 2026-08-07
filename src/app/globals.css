@@ -2934,6 +2934,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 .apple-wallet-editor {
   display: grid;
   width: min(100%, 1180px);
+  min-width: 0;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
   align-items: start;
   gap: 24px;
@@ -2941,6 +2942,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .apple-wallet-form,
 .apple-wallet-preview-panel {
+  min-width: 0;
   border: 1px solid var(--enterprise-border);
   border-radius: var(--enterprise-radius-lg);
   padding: 28px;
@@ -2952,6 +2954,12 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   border-radius: var(--enterprise-radius-md);
   padding: 12px;
   background: var(--enterprise-surface-subtle);
+}
+
+.apple-wallet-enable span,
+.apple-wallet-form .admin-form-section {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .apple-wallet-color-grid {
@@ -2971,6 +2979,69 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   color: var(--enterprise-text-muted);
   font-size: 0.7rem;
   font-variant-numeric: tabular-nums;
+}
+
+.apple-wallet-upload-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.apple-wallet-upload-field {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 12px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 16px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.apple-wallet-upload-field input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  min-height: 48px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 4px;
+  background: var(--enterprise-surface);
+  cursor: pointer;
+}
+
+.apple-wallet-upload-field input[type="file"]::file-selector-button {
+  min-height: 38px;
+  border: 0;
+  border-radius: var(--enterprise-radius-sm);
+  margin-right: 10px;
+  padding: 8px 12px;
+  background: var(--enterprise-surface-subtle);
+  color: var(--enterprise-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+}
+
+.apple-wallet-upload-field .secondary-button {
+  min-height: 44px;
+  border-color: var(--enterprise-border-strong);
+  color: var(--enterprise-text);
+}
+
+.apple-wallet-upload-status {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.apple-wallet-upload-status.is-error {
+  color: var(--enterprise-danger);
+}
+
+.apple-wallet-upload-status.is-success {
+  color: var(--enterprise-success);
 }
 
 .apple-wallet-preview-panel {
@@ -3126,6 +3197,10 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   }
 
   .apple-wallet-color-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .apple-wallet-upload-grid {
     grid-template-columns: 1fr;
   }
 }

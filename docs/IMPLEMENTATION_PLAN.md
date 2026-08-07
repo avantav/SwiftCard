@@ -171,6 +171,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add wallet pass schema and server-only service boundaries.
 - [x] [Terminada] Implement Web Card fallback updates through the dynamic public projection.
 - [x] [Terminada] Implement tenant-owned Apple Wallet `storeCard` design and signed `.pkpass` generation behind server-only config.
+- [x] [Terminada] Add direct Admin uploads for tenant Wallet images through a public-read, tenant-scoped Supabase Storage bucket with RLS-protected writes and bounded raster formats.
 - [ ] [Pendiente] Implement Apple Wallet device registrations, APNs update notifications, updated-pass delivery, and validation with real Apple credentials.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.
