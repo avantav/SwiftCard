@@ -24,7 +24,8 @@ describe("validateBranchCreateForm", () => {
           latitude: "23.2494",
           longitude: "-106.4111",
           geofenceRadiusMeters: "150",
-          proximityEnabled: "on"
+          proximityEnabled: "on",
+          employeeAccessMode: "INDIVIDUAL_CREDENTIALS"
         })
       )
     ).toEqual({
@@ -35,7 +36,27 @@ describe("validateBranchCreateForm", () => {
         latitude: 23.2494,
         longitude: -106.4111,
         geofenceRadiusMeters: 150,
-        proximityEnabled: true
+        proximityEnabled: true,
+        employeeAccessMode: "INDIVIDUAL_CREDENTIALS",
+        sharedEmail: null,
+        sharedPassword: null
+      }
+    });
+  });
+
+  it("requires valid shared credentials for PIN access", () => {
+    expect(validateBranchCreateForm(form({
+      name: "Terraza",
+      geofenceRadiusMeters: "100",
+      employeeAccessMode: "SHARED_ACCOUNT_PIN",
+      sharedEmail: "operacion@example.test",
+      sharedPassword: "Shared-access-123",
+      sharedPasswordConfirmation: "Shared-access-123"
+    }))).toMatchObject({
+      ok: true,
+      data: {
+        employeeAccessMode: "SHARED_ACCOUNT_PIN",
+        sharedEmail: "operacion@example.test"
       }
     });
   });

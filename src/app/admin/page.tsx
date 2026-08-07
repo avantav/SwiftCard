@@ -17,7 +17,7 @@ export default async function AdminPage() {
     {tenantError ? <p className="enterprise-alert is-error" role="alert">No se pudo cargar la información del tenant. Actualiza la página.</p> : null}
     <section aria-label="Contexto de la cuenta" className="enterprise-metrics admin-overview-metrics">
       <article className="enterprise-metric"><span>Estado del tenant</span><strong className="enterprise-metric-text">{tenant?.status === "ACTIVE" ? "Activo" : "No disponible"}</strong><small>Acceso operativo actual</small></article>
-      <article className="enterprise-metric"><span>Tu rol</span><strong className="enterprise-metric-text">{context.access.role === "ADMIN" ? "Administrador" : "Encargado"}</strong><small>Permisos aplicados por sesión</small></article>
+      <article className="enterprise-metric"><span>Tu rol</span><strong className="enterprise-metric-text">{context.access.role === "ADMIN" ? "Admin general" : "Administrador de sucursal"}</strong><small>Permisos aplicados por sesión</small></article>
       <article className="enterprise-metric"><span>Moneda</span><strong>{tenant?.currency_code ?? "—"}</strong><small>Unidad configurada del tenant</small></article>
     </section>
     <section className="enterprise-data-panel" aria-labelledby="admin-actions-title">

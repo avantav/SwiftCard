@@ -57,7 +57,7 @@ describe("role permission helpers", () => {
     expect(canAccessBranch(activeAdmin, "any-tenant-branch")).toBe(true);
 
     expect(canManageBranches(activeManager)).toBe(false);
-    expect(canManageStaff(activeManager)).toBe(false);
+    expect(canManageStaff(activeManager)).toBe(true);
   });
 
   it("allows managers and employees to use only assigned PWA branches", () => {
@@ -106,4 +106,3 @@ describe("role permission helpers", () => {
     expect(canViewAudit(activeEmployee)).toBe(false);
   });
 });
-

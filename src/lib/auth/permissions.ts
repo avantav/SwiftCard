@@ -1,10 +1,12 @@
 export const STAFF_ROLES = ["SUPERADMIN", "ADMIN", "MANAGER", "EMPLOYEE"] as const;
 export const STAFF_STATUSES = ["ACTIVE", "INACTIVE", "PASSWORD_RESET_REQUIRED"] as const;
 export const TENANT_STATUSES = ["ACTIVE", "SUSPENDED"] as const;
+export const STAFF_ACCOUNT_KINDS = ["INDIVIDUAL", "BRANCH_SHARED"] as const;
 
 export type StaffRole = (typeof STAFF_ROLES)[number];
 export type StaffStatus = (typeof STAFF_STATUSES)[number];
 export type TenantStatus = (typeof TENANT_STATUSES)[number];
+export type StaffAccountKind = (typeof STAFF_ACCOUNT_KINDS)[number];
 
 export type StaffAccessContext = {
   role: StaffRole;
@@ -49,7 +51,10 @@ export function canManageBranches(context: StaffAccessContext) {
 }
 
 export function canManageStaff(context: StaffAccessContext) {
-  return isActiveTenantStaff(context) && context.role === "ADMIN";
+  return (
+    isActiveTenantStaff(context) &&
+    (context.role === "ADMIN" || context.role === "MANAGER")
+  );
 }
 
 export function canResetTenantAdminPasswords(context: StaffAccessContext) {
@@ -96,4 +101,3 @@ export function canViewAudit(context: StaffAccessContext) {
       (context.role === "ADMIN" || context.role === "MANAGER"))
   );
 }
-

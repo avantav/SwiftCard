@@ -35,6 +35,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Panel Superadmin.  
 - Panel administrativo del tenant.  
 - PWA para empleados.  
+- Acceso operativo configurable por sucursal mediante cuentas individuales o una cuenta compartida con PIN personal.
 - Registro público por sucursal.  
 - Registro manual por empleado.  
 - Web Card, Apple Wallet y Google Wallet.  
@@ -91,9 +92,11 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Consultar estadísticas, exportaciones y auditoría.  
 - Pausar o reactivar el programa.
 
-### Encargado
+### Administrador de sucursal
 
 - Operar y supervisar sucursales asignadas.  
+- Iniciar sesión con correo y contraseña en el panel administrativo.
+- Administrar empleados individuales y usuarios PIN dentro de sus sucursales, sin modificar cuentas que también pertenezcan a sucursales fuera de su alcance.
 - Registrar compras y clientes.  
 - Editar o desactivar clientes.  
 - Canjear recompensas.  
@@ -149,11 +152,20 @@ Cuando un tenant está suspendido:
 - Las tarjetas siguen visibles en modo informativo.  
 - No se elimina información.
 
-## 8. Acceso de empleados
+## 8. Acceso del personal
 
-Los empleados usarán correo y contraseña con sesión persistente. La PWA se instalará en teléfonos del negocio y tendrá botones visibles para cerrar sesión o cambiar empleado.
+El Admin general y los Administradores de sucursal usarán cuentas personales con correo y contraseña. La PWA se instalará en teléfonos del negocio y tendrá botones visibles para cerrar sesión o cambiar empleado.
 
-El Administrador podrá asignar una o varias sucursales y una sucursal principal a cada Encargado o Empleado.
+Cada sucursal configurará un modo exclusivo para usuarios operativos:
+
+- `INDIVIDUAL_CREDENTIALS`: cada empleado usa su propio correo y contraseña, conservando el comportamiento original.
+- `SHARED_ACCOUNT_PIN`: la sucursal usa una sola cuenta común de correo y contraseña y cada mesero se identifica después con un PIN personal de seis dígitos.
+
+La cuenta compartida pertenece a una sola sucursal. El PIN queda hasheado, es único dentro de esa sucursal y nunca sustituye la atribución individual: clientes registrados, compras, canjes, ledger y auditoría guardan al operador PIN. Cinco intentos fallidos bloquean el acceso PIN durante cinco minutos. La sesión del operador termina al cambiar usuario, cerrar el navegador o después de ocho horas sin actividad.
+
+Solo el Admin general configura o rota la credencial compartida. El Admin general y los Administradores asignados a la sucursal administran usuarios PIN. Cambiar el modo revoca las sesiones incompatibles sin borrar el historial.
+
+El Administrador podrá asignar una o varias sucursales y una sucursal principal a cada Administrador de sucursal o Empleado.
 
 Las contraseñas se restablecerán manualmente mediante contraseña temporal y cambio obligatorio en el siguiente acceso.
 
@@ -470,6 +482,9 @@ Tablas principales:
 - branches.  
 - staff_profiles.  
 - staff_branch_assignments.  
+- branch_shared_accounts.
+- branch_pin_operators.
+- branch_pin_sessions.
 - customers.  
 - customer_cards.  
 - loyalty_programs.  

@@ -19,7 +19,7 @@ describe("application-wide design contract", () => {
   it("uses protected shared shells and role-aware navigation", () => {
     expect(adminLayout).toContain('requireInternalArea("ADMIN")');
     expect(adminLayout).toContain("AdminNavigation");
-    expect(operationsLayout).toContain('requireInternalArea("APP")');
+    expect(operationsLayout).toContain('requireInternalArea("APP", { allowLockedShared: true })');
     expect(operationsLayout).toContain("OperationsNavigation");
     expect(operationsLayout).toContain("PwaController");
     expect(adminNavigation).toContain('role === "ADMIN"');

@@ -4,8 +4,10 @@ import { redirect } from "next/navigation";
 import {
   STAFF_ROLES,
   STAFF_STATUSES,
+  STAFF_ACCOUNT_KINDS,
   TENANT_STATUSES,
   type StaffAccessContext,
+  type StaffAccountKind,
   type StaffRole,
   type StaffStatus,
   type TenantStatus
@@ -33,6 +35,20 @@ function isTenantStatus(value: unknown): value is TenantStatus {
   );
 }
 
+function isStaffAccountKind(value: unknown): value is StaffAccountKind {
+  return (
+    typeof value === "string" &&
+    STAFF_ACCOUNT_KINDS.includes(value as StaffAccountKind)
+  );
+}
+
+type PinOperatorContext = {
+  id: string;
+  fullName: string;
+  branchId: string;
+  branchName: string;
+};
+
 export async function getStaffSessionContext() {
   const supabase = await createSupabaseServerClient();
   const {
@@ -45,11 +61,16 @@ export async function getStaffSessionContext() {
 
   const { data: profile } = await supabase
     .from("staff_profiles")
-    .select("role,status,tenant_id")
+    .select("role,status,tenant_id,account_kind")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!profile || !isStaffRole(profile.role) || !isStaffStatus(profile.status)) {
+  if (
+    !profile ||
+    !isStaffRole(profile.role) ||
+    !isStaffStatus(profile.status) ||
+    !isStaffAccountKind(profile.account_kind)
+  ) {
     return null;
   }
 
@@ -73,9 +94,31 @@ export async function getStaffSessionContext() {
     tenantStatus
   };
 
+  let pinOperator: PinOperatorContext | null = null;
+  if (profile.account_kind === "BRANCH_SHARED" && profile.status === "ACTIVE") {
+    const { data } = await supabase.schema("app").rpc("get_current_pin_operator");
+    const operator = Array.isArray(data) ? data[0] : null;
+    if (
+      operator &&
+      typeof operator.id === "string" &&
+      typeof operator.full_name === "string" &&
+      typeof operator.branch_id === "string" &&
+      typeof operator.branch_name === "string"
+    ) {
+      pinOperator = {
+        id: operator.id,
+        fullName: operator.full_name,
+        branchId: operator.branch_id,
+        branchName: operator.branch_name
+      };
+    }
+  }
+
   return {
     access,
+    accountKind: profile.account_kind,
     email: user.email ?? null,
+    pinOperator,
     supabase,
     tenantId: profile.tenant_id as string | null,
     userId: user.id
@@ -96,7 +139,10 @@ export async function getActiveSuperadminContext() {
   return context;
 }
 
-export async function requireInternalArea(area: InternalArea) {
+export async function requireInternalArea(
+  area: InternalArea,
+  options: { allowLockedShared?: boolean } = {}
+) {
   const context = await getStaffSessionContext();
 
   if (!context) {
@@ -116,6 +162,15 @@ export async function requireInternalArea(area: InternalArea) {
 
   if (!canAccessInternalArea(context.access, area)) {
     redirect(getDefaultInternalRoute(context.access.role));
+  }
+
+  if (
+    area === "APP" &&
+    context.accountKind === "BRANCH_SHARED" &&
+    !context.pinOperator &&
+    !options.allowLockedShared
+  ) {
+    redirect("/app/unlock");
   }
 
   return context;

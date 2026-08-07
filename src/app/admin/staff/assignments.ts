@@ -18,18 +18,20 @@ export async function assignStaffBranch(formData: FormData) {
 
   const context = await requireInternalArea("ADMIN");
 
-  if (context.access.role !== "ADMIN") {
-    redirectWithError("Solo el Administrador puede asignar sucursales.");
-  }
+  const { data, error } = context.access.role === "ADMIN"
+    ? await context.supabase.schema("app").rpc("set_staff_branch_assignment", {
+      target_staff_profile_id: staffProfileId,
+      target_branch_id: branchId,
+      should_assign: true,
+      make_primary: makePrimary
+    })
+    : await context.supabase.schema("app").rpc("assign_scoped_employee_branch", {
+      target_staff_profile_id: staffProfileId,
+      target_branch_id: branchId,
+      make_primary: makePrimary
+    });
 
-  const { error } = await context.supabase.schema("app").rpc("set_staff_branch_assignment", {
-    target_staff_profile_id: staffProfileId,
-    target_branch_id: branchId,
-    should_assign: true,
-    make_primary: makePrimary
-  });
-
-  if (error) {
+  if (error || (context.access.role === "MANAGER" && data !== "ASSIGNED")) {
     redirectWithError("No se pudo asignar la sucursal.");
   }
 

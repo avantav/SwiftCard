@@ -5,7 +5,18 @@ export type BranchCreateInput = {
   longitude: number | null;
   geofenceRadiusMeters: number;
   proximityEnabled: boolean;
+  employeeAccessMode: BranchEmployeeAccessMode;
+  sharedEmail: string | null;
+  sharedPassword: string | null;
 };
+
+export const BRANCH_EMPLOYEE_ACCESS_MODES = [
+  "INDIVIDUAL_CREDENTIALS",
+  "SHARED_ACCOUNT_PIN"
+] as const;
+
+export type BranchEmployeeAccessMode =
+  (typeof BRANCH_EMPLOYEE_ACCESS_MODES)[number];
 
 export type BranchCreateValidationResult =
   | { ok: true; data: BranchCreateInput }
@@ -34,6 +45,11 @@ export function validateBranchCreateForm(
   const latitude = optionalCoordinate(text(formData, "latitude"));
   const longitude = optionalCoordinate(text(formData, "longitude"));
   const radius = Number(text(formData, "geofenceRadiusMeters"));
+  const employeeAccessMode = text(formData, "employeeAccessMode") || "INDIVIDUAL_CREDENTIALS";
+  const sharedEmail = text(formData, "sharedEmail").toLowerCase();
+  const sharedPasswordValue = formData.get("sharedPassword");
+  const sharedPassword = typeof sharedPasswordValue === "string" ? sharedPasswordValue : "";
+  const sharedPasswordConfirmation = formData.get("sharedPasswordConfirmation");
 
   if (!name) {
     errors.push("Nombre es obligatorio.");
@@ -58,6 +74,22 @@ export function validateBranchCreateForm(
     errors.push("El radio debe ser un entero entre 1 y 100000 metros.");
   }
 
+  if (!BRANCH_EMPLOYEE_ACCESS_MODES.includes(employeeAccessMode as BranchEmployeeAccessMode)) {
+    errors.push("El modo de acceso del personal no es válido.");
+  }
+
+  if (employeeAccessMode === "SHARED_ACCOUNT_PIN") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sharedEmail)) {
+      errors.push("El correo compartido no es válido.");
+    }
+    if (sharedPassword.length < 12 || sharedPassword.length > 72) {
+      errors.push("La contraseña compartida debe tener entre 12 y 72 caracteres.");
+    }
+    if (sharedPassword !== sharedPasswordConfirmation) {
+      errors.push("La confirmación de la contraseña compartida no coincide.");
+    }
+  }
+
   if (errors.length > 0) {
     return { ok: false, errors };
   }
@@ -70,7 +102,31 @@ export function validateBranchCreateForm(
       latitude,
       longitude,
       geofenceRadiusMeters: radius,
-      proximityEnabled: formData.get("proximityEnabled") === "on"
+      proximityEnabled: formData.get("proximityEnabled") === "on",
+      employeeAccessMode: employeeAccessMode as BranchEmployeeAccessMode,
+      sharedEmail: employeeAccessMode === "SHARED_ACCOUNT_PIN" ? sharedEmail : null,
+      sharedPassword: employeeAccessMode === "SHARED_ACCOUNT_PIN" ? sharedPassword : null
     }
   };
+}
+
+export function validateSharedAccessCredentials(formData: FormData) {
+  const email = text(formData, "sharedEmail").toLowerCase();
+  const passwordValue = formData.get("sharedPassword");
+  const confirmationValue = formData.get("sharedPasswordConfirmation");
+  const password = typeof passwordValue === "string" ? passwordValue : "";
+  const confirmation = typeof confirmationValue === "string" ? confirmationValue : "";
+  const errors: string[] = [];
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.push("El correo compartido no es válido.");
+  }
+  if (password.length < 12 || password.length > 72) {
+    errors.push("La contraseña compartida debe tener entre 12 y 72 caracteres.");
+  }
+  if (password !== confirmation) {
+    errors.push("La confirmación de la contraseña compartida no coincide.");
+  }
+
+  return errors.length ? { ok: false as const, errors } : { ok: true as const, data: { email, password } };
 }

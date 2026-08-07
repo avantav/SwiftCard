@@ -20,6 +20,7 @@ describe("validateStaffCreateForm", () => {
       validateStaffCreateForm(
         form({
           fullName: "  Encargada Norte ",
+          branchId: "20000000-0000-4000-8000-000000000001",
           email: "NORTE@EXAMPLE.TEST",
           role: "MANAGER",
           temporaryPassword: "Temporary-1234",
@@ -29,6 +30,7 @@ describe("validateStaffCreateForm", () => {
     ).toEqual({
       ok: true,
       data: {
+        branchId: "20000000-0000-4000-8000-000000000001",
         fullName: "Encargada Norte",
         email: "norte@example.test",
         role: "MANAGER",
@@ -41,6 +43,7 @@ describe("validateStaffCreateForm", () => {
     const result = validateStaffCreateForm(
       form({
         fullName: "",
+        branchId: "",
         email: "bad",
         role: "ADMIN",
         temporaryPassword: "short",
@@ -52,6 +55,7 @@ describe("validateStaffCreateForm", () => {
       ok: false,
       errors: [
         "Nombre es obligatorio.",
+        "Sucursal es obligatoria.",
         "El correo no es válido.",
         "El rol seleccionado no es válido.",
         "La contraseña temporal debe tener al menos 12 caracteres.",
@@ -62,7 +66,7 @@ describe("validateStaffCreateForm", () => {
 
   it("derives tenant and creator from the authenticated Admin context", () => {
     expect(actionSource).toContain('requireInternalArea("ADMIN")');
-    expect(actionSource).toContain("tenant_id: context.tenantId");
+    expect(actionSource).toContain('rpc("provision_branch_employee"');
     expect(actionSource).toContain("created_by: context.userId");
     expect(actionSource).not.toContain('formData.get("tenant');
   });

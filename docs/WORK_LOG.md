@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-06 - Branch Administrator And Shared PIN Access
+
+**Objective:** Add the requested role hierarchy and optional branch-level shared employee login without losing individual operational attribution.
+
+**Changes Made:** Preserved `MANAGER` as the compatible internal role and relabeled it Administrador de sucursal; allowed scoped employee/PIN management; added individual versus shared-PIN branch modes; compensated shared Auth provisioning; six-digit hashed PIN operators; five-attempt lockout; HttpOnly revocable operator sessions; explicit user switching; and PIN attribution on customers, purchases, ledger, redemptions, and audit logs.
+
+**Security Review:** The shared JWT receives no direct branch access. RLS validates a per-device operator token forwarded only by the server from an HttpOnly cookie. PINs and raw session tokens are never persisted in plaintext, tenant/branch scope remains backend-derived, and account-level employee changes are denied when a Branch Administrator does not cover every assignment.
+
+**Design Review:** PIN unlock and personal-management states were reviewed at 375, 768, 1280, and 1440 px. Forms reflow without horizontal overflow, critical controls retain 44px targets and visible labels, and the temporary visual-review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, 139 Vitest tests, `npm run db:verify-rls`, `npm run build`, and focused Chrome screenshots passed. Migration `0035` remains local and unapplied remotely.
+
+**Next Action:** Resume the authorized correction controls and permission-scoped operational/audit history views.
+
 ## 2026-08-04 - Local Auth Cookie Header Recovery
 
 **Objective:** Restore `/app` after Firefox showed a blank response and prove whether the failure occurred before or during application rendering.

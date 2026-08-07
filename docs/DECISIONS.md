@@ -109,3 +109,13 @@
 - Reason: The selected model supports progressive engagement without weakening atomic balance accounting, cancellation safety, or the existing remainder behavior.
 - Consequences: Rewards store immutable tier, cycle, threshold, and program-version snapshots; purchases and adjustments record completed cycles separately from the number of rewards generated; changing active tiers creates an audited program-change boundary when it converts existing progress.
 - Status: Accepted.
+
+## DEC-0012 - Branch-Scoped Administration And Shared PIN Access
+
+- Date: 2026-08-06
+- Context: Branch Administrators need personal administrative accounts, while restaurant staff at selected branches must operate from a shared device account without individual email addresses.
+- Decision: Preserve `MANAGER` internally and present it as Administrador de sucursal. Add an exclusive employee access mode per branch: individual credentials or one shared Auth account followed by a hashed six-digit operator PIN. A server-side HttpOnly token binds the unlocked operator to the shared Auth account and branch; RLS rejects the shared JWT without that token.
+- Alternatives considered: New database role, one tenant-wide shared credential, storing reversible employee passwords, or attributing every action only to the shared account.
+- Reason: The design preserves applied migrations and existing individual accounts while maintaining branch isolation and human attribution for loyalty operations.
+- Consequences: Shared accounts are technical `EMPLOYEE` profiles, PIN sessions are revocable and expire after eight hours of inactivity, five failed attempts lock PIN entry for five minutes, and operational records store both the technical account and PIN operator.
+- Status: Accepted.

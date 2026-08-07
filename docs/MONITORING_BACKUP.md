@@ -10,6 +10,7 @@
 ## Operational Events
 
 - Review audit events for tenant suspension, branding changes, imports, purchases, cancellations, adjustments, redemptions, and reversals.
+- Alert on repeated `PIN_UNLOCK_FAILED` events and review branch PIN lockouts without logging PIN values or session tokens.
 - Track import counts and errors without storing uploaded source files outside the approved retention boundary.
 - Treat Wallet provider failures as non-blocking to Web Card availability.
 

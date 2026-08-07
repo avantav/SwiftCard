@@ -14,6 +14,7 @@
 
 - [ ] Test tenant A cannot read or modify tenant B.
 - [ ] Test assigned-branch restrictions for Manager and Employee.
+- [ ] Test shared branch JWT denial without PIN, PIN lockout/revocation, and individual actor attribution.
 - [ ] Test suspended tenants and inactive staff cannot operate.
 - [ ] Verify audit logs are append-only and accessible only by permitted roles.
 - [ ] Confirm customer consent and privacy retention policy with the operator.

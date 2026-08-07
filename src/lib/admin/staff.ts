@@ -2,6 +2,7 @@ export const creatableStaffRoles = ["MANAGER", "EMPLOYEE"] as const;
 export type CreatableStaffRole = (typeof creatableStaffRoles)[number];
 
 export type StaffCreateInput = {
+  branchId: string;
   fullName: string;
   email: string;
   role: CreatableStaffRole;
@@ -22,6 +23,7 @@ export function validateStaffCreateForm(
 ): StaffCreateValidationResult {
   const errors: string[] = [];
   const fullName = text(formData, "fullName");
+  const branchId = text(formData, "branchId");
   const email = text(formData, "email").toLowerCase();
   const role = text(formData, "role");
   const temporaryPassword = formData.get("temporaryPassword");
@@ -31,6 +33,10 @@ export function validateStaffCreateForm(
 
   if (!fullName) {
     errors.push("Nombre es obligatorio.");
+  }
+
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(branchId)) {
+    errors.push("Sucursal es obligatoria.");
   }
 
   if (!email) {
@@ -62,6 +68,7 @@ export function validateStaffCreateForm(
   return {
     ok: true,
     data: {
+      branchId,
       fullName,
       email,
       role: role as CreatableStaffRole,

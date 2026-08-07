@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Resume authorized Admin/Manager correction and operational-history UI after completing cumulative reward tiers and card terms.
-- Last completed task: Fixed blank local `/app` responses caused by oversized accumulated Supabase auth cookies.
+- Current task: Resume authorized Admin/Manager correction and operational-history UI after completing branch role hierarchy and PIN access.
+- Last completed task: Added branch-scoped Administrators and optional shared employee access with personal PIN attribution.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Cumulative reward tiers with a collapsible editor and reduced Supabase auth cookies.
-- Git status: working tree expected clean after the continuity commit; local branch is ahead of origin.
+- Last stable feature: Per-branch individual/shared-PIN access with revocable sessions and attributed operations.
+- Git status: feature changes committed; the pre-existing generated `next-env.d.ts` development-path change remains unstaged. Local branch is ahead of origin.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
 
 ## Completed Functionality
@@ -77,6 +77,12 @@
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.
+- Existing `MANAGER` accounts are presented as Administradores de sucursal, retain personal password access to `/admin`, and remain restricted to assigned branches.
+- Each branch can use individual employee credentials or one shared Auth account followed by six-digit personal PIN unlock.
+- Shared-account JWTs cannot access branch data without a valid device-bound operator token propagated only from an HttpOnly cookie.
+- PIN unlock enforces five-attempt/five-minute lockout, eight-hour inactivity expiry, explicit user switching, hashed PINs and revocable server-side sessions.
+- Admin general configures branch access and shared credentials; assigned branch Administrators manage scoped individual employees and PIN operators.
+- Customer creation, purchases, stamp ledger, redemptions and audit logs preserve the PIN operator alongside the technical shared account.
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 
 ## Pending Functionality
@@ -100,7 +106,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 135 tests passed.
+- `npm run test:run`: passed; 139 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -147,6 +153,7 @@
 - PWA install guidance and online/offline notices were visually reviewed with exact production styles at 375 and 768 px; launcher icons and the maskable safe area were inspected, all temporary review routes were removed, and live `/manifest.webmanifest`, `/sw.js`, and `/offline.html` responses were verified.
 - Tier editor and customer-card reward catalog were visually reviewed at 375, 768, 1280, and 1440 px; no overflow, hidden action, or one-off visual language was found, and the temporary review route was removed.
 - Migration `0034` and its dedicated integration test passed cumulative 3/5/10 thresholds, current-cycle conversion, next-cycle rewards, remainder preservation, cancellation restoration, anonymous projection, direct-table denial, and duplicate-threshold rejection.
+- Migration `0035` and its integration test passed branch-Administrator scope, shared-account bypass denial, PIN uniqueness, lockout, unlock, revocation, branch isolation, and actor attribution.
 
 ## Validation Results
 

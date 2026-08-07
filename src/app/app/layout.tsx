@@ -10,7 +10,7 @@ export default async function EmployeeAppLayout({
 }: {
   children: ReactNode;
 }) {
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { allowLockedShared: true });
   const role = context.access.role === "MANAGER" ? "MANAGER" : "EMPLOYEE";
-  return <div className="operations-app"><OperationsNavigation email={context.email} role={role} /><div className="operations-main"><PwaController />{children}</div></div>;
+  return <div className="operations-app"><OperationsNavigation accountKind={context.accountKind} email={context.email} operatorName={context.pinOperator?.fullName ?? null} role={role} /><div className="operations-main"><PwaController />{children}</div></div>;
 }

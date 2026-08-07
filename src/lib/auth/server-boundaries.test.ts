@@ -48,7 +48,7 @@ describe("password change server boundary", () => {
     for (const [area, expectedGuard] of [
       ["superadmin", 'requireInternalArea("SUPERADMIN")'],
       ["admin", 'requireInternalArea("ADMIN")'],
-      ["app", 'requireInternalArea("APP")']
+      ["app", 'requireInternalArea("APP", { allowLockedShared: true })']
     ] as const) {
       const layout = readLayout(area);
 
