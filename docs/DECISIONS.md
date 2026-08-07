@@ -119,3 +119,13 @@
 - Reason: The design preserves applied migrations and existing individual accounts while maintaining branch isolation and human attribution for loyalty operations.
 - Consequences: Shared accounts are technical `EMPLOYEE` profiles, PIN sessions are revocable and expire after eight hours of inactivity, five failed attempts lock PIN entry for five minutes, and operational records store both the technical account and PIN operator.
 - Status: Accepted.
+
+## DEC-0013 - Tenant-Owned Apple Store Cards With Server-Only Signing
+
+- Date: 2026-08-06
+- Context: Tenants need distinct Apple Wallet designs while Apple constrains pass layouts and requires a signed local-resource bundle.
+- Decision: Use one audited `storeCard` design per tenant, managed only by the Admin general. Generate `.pkpass` files on demand from the secure public card token, resize bounded HTTPS assets only from configured hosts, and keep the Pass Type ID, Team ID, signer certificate, private key, WWDR certificate, and password exclusively in server secrets.
+- Alternatives considered: Arbitrary drag-and-drop layouts, storing certificates in the database, accepting unrestricted image URLs, or issuing unsigned passes.
+- Reason: The fixed store-card model matches loyalty semantics, preserves tenant branding within Apple's supported fields, and keeps signing and tenant authority outside the browser.
+- Consequences: The public download is visible only when both the tenant design and server signing config are enabled. Initial generation works without an Apple update web service; installed-pass updates and real-device validation remain separate Phase 8 work.
+- Status: Accepted.

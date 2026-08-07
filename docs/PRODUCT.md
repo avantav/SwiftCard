@@ -230,6 +230,8 @@ Contenido mínimo:
 
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
 
+El Admin general podrá configurar por tenant la tarjeta Apple Wallet mediante una plantilla `storeCard`: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El diseño de Wallet es independiente del secreto de firma y no permite alterar libremente la estructura definida por Apple.
+
 ## 12. Programa de fidelidad
 
 Cada tenant tendrá un programa con uno o varios niveles de recompensa. El nivel con más sellos define la meta y el cierre del ciclo.
@@ -444,7 +446,9 @@ Requisitos:
 
 ## 22. Apple Wallet y Google Wallet
 
-Apple Wallet requerirá cuenta Apple Developer, Pass Type ID, certificados, generación firmada y servicio de actualización.
+Apple Wallet requiere cuenta Apple Developer, Pass Type ID, Team ID, certificado firmante, llave privada y certificado WWDR. Los secretos solo existirán en el entorno del servidor. El archivo `.pkpass` se generará y firmará al descargarlo desde la Web Card.
+
+Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. Las imágenes remotas deberán usar HTTPS y un host autorizado por el servidor; ante un recurso inválido se usará el activo seguro de respaldo.
 
 Google Wallet requerirá proyecto, Issuer ID, service account, clase y objeto de pase.
 
@@ -498,6 +502,7 @@ Tablas principales:
 - customer_imports.  
 - customer_import_rows.  
 - wallet_passes.  
+- tenant_wallet_designs.
 - audit_logs.
 
 Operaciones de compra, cancelación, canje, ajuste y cambio de reglas deberán ejecutarse de forma atómica.

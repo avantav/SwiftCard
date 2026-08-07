@@ -2,13 +2,13 @@
 
 ## Current State
 
-- Current phase: Cross-phase MVP hardening before E2E; provider-specific Phase 8 work remains externally blocked.
-- Current task: Resume authorized Admin/Manager correction and operational-history UI after completing branch role hierarchy and PIN access.
-- Last completed task: Added branch-scoped Administrators and optional shared employee access with personal PIN attribution.
+- Current phase: Phase 8 Apple Wallet initial generation complete; provider updates, Google Wallet, and real-device validation remain.
+- Current task: Prepare migration `0036` and Apple signing secrets for controlled deployment and device validation.
+- Last completed task: Added per-tenant Apple Wallet design and signed `storeCard` generation.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Per-branch individual/shared-PIN access with revocable sessions and attributed operations.
-- Git status: feature changes committed; the pre-existing generated `next-env.d.ts` development-path change remains unstaged. Local branch is ahead of origin.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current work is not pushed.
+- Last stable feature: Apple Wallet tenant designer, secure pass assets, and on-demand `.pkpass` download.
+- Git status: Apple Wallet feature changes are local and ready for a stable commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current Apple Wallet work is not pushed.
 
 ## Completed Functionality
 
@@ -64,7 +64,7 @@
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
 - The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.
 - The Admin reward-tier editor visibly confirms additions, collapses prior levels, opens and focuses each new level, keeps edited summaries synchronized, and exposes accessible Editar/Ocultar controls.
-- Hosted Supabase PostgreSQL 17 development database has all repository migration files through `0034` applied and tracked; the development seed was not used.
+- Hosted Supabase PostgreSQL 17 development database is reported by the user as migrated through `0035`; new migration `0036` remains local and unapplied remotely.
 - Application RPC calls explicitly target the exposed `app` schema while public administrative RPCs remain in `public`.
 - Repeatable `npm run db:push:remote` migration runner refuses untracked existing SwiftWallet schemas and records canonical Supabase migration history.
 - Compensating `npm run db:bootstrap:superadmin` flow creates an Auth user and active Superadmin profile without storing credentials in Git.
@@ -84,29 +84,33 @@
 - Admin general configures branch access and shared credentials; assigned branch Administrators manage scoped individual employees and PIN operators.
 - Customer creation, purchases, stamp ledger, redemptions and audit logs preserve the PIN operator alongside the technical shared account.
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
+- Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
+- The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
+- The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
+- Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
 
 ## Pending Functionality
 
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
-- Apple/Google pass generation and updates, pilot tenant, privacy, and operational sign-off.
+- Apple Wallet update web service/APNs and real-device validation; Google pass generation; pilot tenant, privacy, and operational sign-off.
 
 ## Active Blockers
 
-- WALLET-001: Apple Developer and Google Wallet credentials are unavailable.
+- WALLET-001: Real Apple credentials/device validation and Google Wallet credentials are unavailable.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks
 
-- `npm audit --omit=dev` reports high-severity runtime advisories in Next.js transitive dependencies `postcss` and `sharp`; `npm audit fix --force` proposes a breaking downgrade to Next 9 and was not applied.
+- `npm audit --omit=dev` reports four high-severity runtime advisories in the pinned Next.js transitive `postcss`/`sharp` copies and the existing `xlsx` package. The Apple generator's Joi advisory was removed with a tested `17.13.4` override; unrelated framework/export dependency upgrades remain separate risk work.
 - `npm install` reports an `EBADENGINE` warning for transitive `eslint-visitor-keys@5.0.1`, which requires Node `22.13+`; local Node is `22.12.0`. `npm ls`, lint, typecheck, tests, and build still pass.
-- Wallet integrations later require external Apple and Google credentials.
+- Apple device acceptance, registrations, APNs updates, the licensed official web badge, and Google Wallet require external credentials or account acceptance.
 
 ## Last Validation Commands
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 139 tests passed.
+- `npm run test:run`: passed; 147 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -154,6 +158,9 @@
 - Tier editor and customer-card reward catalog were visually reviewed at 375, 768, 1280, and 1440 px; no overflow, hidden action, or one-off visual language was found, and the temporary review route was removed.
 - Migration `0034` and its dedicated integration test passed cumulative 3/5/10 thresholds, current-cycle conversion, next-cycle rewards, remainder preservation, cancellation restoration, anonymous projection, direct-table denial, and duplicate-threshold rejection.
 - Migration `0035` and its integration test passed branch-Administrator scope, shared-account bypass denial, PIN uniqueness, lockout, unlock, revocation, branch isolation, and actor attribution.
+- Migration `0036` and its integration test passed Admin-only design mutation, Manager/anonymous denial, audit attribution, public availability filtering, and RLS/table-grant boundaries.
+- Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
+- The Apple Wallet designer passed Chrome review at 375, 768, 1280, and 1440 px; the temporary review route and certificate files were removed.
 
 ## Validation Results
 
@@ -164,4 +171,4 @@
 
 ## Next Exact Step
 
-Implement the authorized Admin/Manager purchase-cancellation, redemption-reversal, stamp-adjustment, and reward-cancellation controls, then add permission-scoped operational and audit history views.
+Apply migration `0036` with explicit release approval, configure Apple secrets and `APPLE_WALLET_ASSET_HOSTS`, install the licensed official web badge, and validate a generated pass on a real Apple device. Then implement pass registrations/APNs updates.

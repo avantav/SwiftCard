@@ -2867,6 +2867,269 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-weight: 600;
 }
 
+.wallet-apple-action {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 18px;
+  background: var(--enterprise-surface);
+  text-align: center;
+}
+
+.wallet-apple-action a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-md);
+  padding: 10px 16px;
+  background: var(--enterprise-surface);
+  color: var(--enterprise-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.wallet-apple-action a:hover {
+  background: var(--enterprise-surface-subtle);
+}
+
+.wallet-apple-action p {
+  max-width: 360px;
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+/* Tenant Apple Wallet designer */
+.apple-wallet-status {
+  display: flex;
+  width: min(100%, 1180px);
+  min-height: 52px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 12px 16px;
+  background: var(--enterprise-surface);
+}
+
+.apple-wallet-status p {
+  flex: 1;
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.apple-wallet-status small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.apple-wallet-editor {
+  display: grid;
+  width: min(100%, 1180px);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  align-items: start;
+  gap: 24px;
+}
+
+.apple-wallet-form,
+.apple-wallet-preview-panel {
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 28px;
+  background: var(--enterprise-surface);
+}
+
+.apple-wallet-enable {
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 12px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.apple-wallet-color-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.apple-wallet-color-grid .field input[type="color"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.apple-wallet-color-grid .field small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.apple-wallet-preview-panel {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.apple-wallet-preview-panel h2 {
+  margin: 2px 0 4px;
+  font-size: 1rem;
+}
+
+.apple-wallet-preview-panel > div:first-child > p:last-child,
+.apple-wallet-preview-note {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.apple-pass-preview {
+  --apple-pass-background: #17202a;
+  --apple-pass-foreground: #ffffff;
+  --apple-pass-label: #ffffff;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--apple-pass-background);
+  color: var(--apple-pass-foreground);
+  box-shadow: 0 12px 24px rgb(16 24 40 / 12%);
+}
+
+.apple-pass-preview > header {
+  display: grid;
+  min-height: 62px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+}
+
+.apple-pass-preview > header img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.apple-pass-preview-mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 9px;
+  background: rgb(255 255 255 / 14%);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.apple-pass-preview > header strong {
+  overflow: hidden;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.apple-pass-preview > header small,
+.apple-pass-preview-content span {
+  display: grid;
+  gap: 2px;
+  color: var(--apple-pass-label);
+  font-size: 0.52rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.apple-pass-preview > header small {
+  color: var(--apple-pass-foreground);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.apple-pass-preview-strip {
+  display: block;
+  width: 100%;
+  height: 112px;
+  object-fit: cover;
+}
+
+.apple-pass-preview-content {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.apple-pass-preview-content p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.apple-pass-preview-content > p > strong {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.apple-pass-preview-content > div:not(.apple-pass-preview-code) {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+}
+
+.apple-pass-preview-content strong {
+  font-size: 0.82rem;
+}
+
+.apple-pass-preview-code {
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-self: center;
+  place-items: center;
+  border: 8px solid #fff;
+  border-radius: 6px;
+  background: #111827;
+  color: #fff;
+  font-size: 3.2rem;
+}
+
+@media (max-width: 1023px) {
+  .apple-wallet-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .apple-wallet-preview-panel {
+    position: static;
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 639px) {
+  .apple-wallet-status {
+    display: grid;
+  }
+
+  .apple-wallet-status small {
+    white-space: normal;
+  }
+
+  .apple-wallet-form,
+  .apple-wallet-preview-panel {
+    padding: 20px 16px;
+  }
+
+  .apple-wallet-color-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1023px) {
   .admin-management-grid {
     grid-template-columns: 1fr;

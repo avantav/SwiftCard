@@ -9,6 +9,10 @@ const remoteMigrationRunner = readFileSync(
   new URL("../../../scripts/apply-remote-migrations.mjs", import.meta.url),
   "utf8",
 );
+const appleWalletServer = readFileSync(
+  new URL("../wallet/apple-server.ts", import.meta.url),
+  "utf8",
+);
 
 describe("security regression boundaries", () => {
   it("keeps service role access server-only and secrets out of the browser", () => {
@@ -17,6 +21,9 @@ describe("security regression boundaries", () => {
     expect(browserClient).not.toContain("SUPABASE_SECRET_KEY");
     expect(envExample).not.toMatch(/SUPABASE_SERVICE_ROLE_KEY=\S+/);
     expect(envExample).not.toMatch(/SUPABASE_SECRET_KEY=\S+/);
+    expect(envExample).not.toMatch(/APPLE_SIGNER_KEY_BASE64=\S+/);
+    expect(envExample).not.toMatch(/APPLE_CERTIFICATE_PASSWORD=\S+/);
+    expect(appleWalletServer).toContain('import "server-only"');
   });
 
   it("keeps export tenant scope server-derived", () => {

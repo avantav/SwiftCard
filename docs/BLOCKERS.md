@@ -2,11 +2,11 @@
 
 ## Active Blockers
 
-- **WALLET-001:** Apple Wallet generation requires Apple Developer account, Pass Type ID, Team ID, signing certificate, and certificate password. Google Wallet requires a Google Cloud project, Issuer ID, and service-account credentials. No secrets are present in the repository.
+- **WALLET-001:** Initial Apple Wallet generation and tenant design are implemented, but real signing/device validation and the update service require an Apple Developer account, Pass Type ID, Team ID, signer certificate, private key, WWDR certificate, and optional key password. Google Wallet requires a Google Cloud project, Issuer ID, and service-account credentials. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** Provider-specific pass generation, signing, updates, and device validation cannot be implemented or verified.
+  - **Consequence:** The `.pkpass` package path is code-complete and locally signature-tested with disposable certificates, but it cannot be accepted by Apple devices or validated end to end; registrations, APNs updates, Google passes, and official Wallet badge installation remain pending.
   - **Recommendation:** Provide authorized test credentials through the deployment secret manager, never through Git or chat.
-  - **Work that can continue:** Web Card fallback, provider-neutral payload tests, documentation, and security review.
+  - **Work that can continue:** Apply migration `0036`, configure tenant designs, finish the Apple update web service, and implement Google Wallet without committing secrets.
   - **Status:** Active.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.

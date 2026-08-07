@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-06 - Apple Wallet Tenant Design And Signed Pass Generation
+
+**Objective:** Let each tenant design and distribute a loyalty card for Apple Wallet without exposing signing credentials or tenant authority to the browser.
+
+**Changes Made:** Added migration `0036` with an Admin-only audited design RPC and anonymous availability check; added `/admin/wallet` with a live responsive `storeCard` preview; generated signed `.pkpass` files from public card tokens; included stamps, goals, rewards, terms, QR, and branch locations; recorded pass status; and added bounded, content-checked, allowlisted image processing with safe fallback assets.
+
+**Security Review:** Service-role reads derive every identifier from the high-entropy card token, only active tenant/customer/card records can generate, signer material remains server-only, output is non-cacheable, remote assets require exact allowed hosts and a 5 MB/40 MP limit, and design writes remain Admin-only under RLS/RPC. The vulnerable Joi version pinned transitively by the signing package is overridden to `17.13.4`.
+
+**Design Review:** The production designer was reviewed in Chrome at 375, 768, 1280, and 1440 px using representative data. Form, pending action, status, contrast rules, preview reflow, focus treatment, and 44px mobile targets comply with `docs/DESIGN_SYSTEM.md`; the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, 147 Vitest tests, `npm run db:verify-rls`, and `npm run build` passed. A disposable self-signed certificate test produced a valid signed `.pkpass` ZIP; real Apple acceptance remains blocked by credentials. Migration `0036` is local and unapplied remotely.
+
+**Next Action:** Apply migration `0036` with release approval, configure Apple secrets and allowed asset hosts, then validate the pass on an Apple device before implementing registrations/APNs updates.
+
 ## 2026-08-06 - Branch Administrator And Shared PIN Access
 
 **Objective:** Add the requested role hierarchy and optional branch-level shared employee login without losing individual operational attribution.

@@ -1,15 +1,16 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last stable feature before the next task: branch-scoped Administrators and per-branch shared-account PIN access.
-3. Git status: the feature commit is complete; the pre-existing generated `next-env.d.ts` development-path change remains unstaged. Local branch is ahead of `origin/codex/swiftwallet-mvp`.
-4. Current focus: return to authorized correction and operational-history UI after completing branch role hierarchy and PIN access.
-5. Last completed task: fixed local blank `/app` responses identified as HTTP 431 from a 16KB-plus cookie header; Supabase clients now share a SwiftWallet-specific cookie name and tokens-only encoding. Existing oversized localhost cookies still require one manual browser-site-data clear.
-6. Completed behavior: every reward tier is generated at most once per cycle; small rewards remain available and do not consume progress; crossing the highest tier can also grant a lower reward in the next cycle; cancellation restores the prior cycle state.
-7. Relevant files: `supabase/migrations/0034_tiered_rewards_and_card_terms.sql`, `supabase/tests/0034_tiered_rewards_and_card_terms.sql`, `src/app/admin/program/**`, `src/components/reward-tiers-editor.tsx`, `src/lib/admin/program.ts`, `src/lib/supabase/auth-cookies.ts`, the Supabase browser/server/middleware clients, and `src/app/globals.css`.
-8. Commands passed for the latest feature: `npm run lint`, `npm run typecheck`, 139 Vitest tests, `npm run db:verify-rls`, and `npm run build`. Migration `0035` is local and has not been applied remotely.
-9. Immediate step: implement the authorized correction actions in the Admin/Manager UI while reusing the mandatory shell, hierarchy, state, responsive, and accessibility rules.
-10. First incomplete feature task: expose purchase cancellation, redemption reversal, stamp adjustment, and reward cancellation controls to authorized Admin/Manager users, followed by permission-scoped operational and audit history views.
-11. External blockers: `WALLET-001` and `PILOT-001` remain active.
-12. Known risks: `npm audit --omit=dev` advisories and the local Node/transitive `eslint-visitor-keys` engine warning remain as previously documented.
-13. Do not modify applied migrations; continue with additive migration numbers after `0035` once it is approved and applied.
+2. Last completed feature: per-tenant Apple Wallet `storeCard` design and on-demand signed `.pkpass` generation.
+3. Migration state: the user reports `0035` applied; new migration `0036_apple_wallet_tenant_designs.sql` is local and must not be pushed remotely without explicit release approval.
+4. Admin route: `/admin/wallet` is Admin-general-only and provides activation, accessible colors, text, HTTPS image inputs, version state, and live preview.
+5. Public route: `/api/wallet/apple/[cardToken]` derives all authority from the card token and returns `application/vnd.apple.pkpass` only for active records, enabled design, and complete signing config.
+6. Required server secrets: `APPLE_PASS_TYPE_ID`, `APPLE_TEAM_ID`, `APPLE_SIGNER_CERTIFICATE_BASE64`, `APPLE_SIGNER_KEY_BASE64`, `APPLE_WWDR_CERTIFICATE_BASE64`, optional `APPLE_CERTIFICATE_PASSWORD`, and `SWIFTWALLET_PUBLIC_URL`.
+7. Asset security: Supabase's configured host is allowed automatically; other exact HTTPS hosts must be listed in `APPLE_WALLET_ASSET_HOSTS`.
+8. Commands passed: `npm run lint`, `npm run typecheck`, 147 Vitest tests, `npm run db:verify-rls`, and `npm run build`.
+9. Additional validation: Chrome review passed at 375, 768, 1280, and 1440 px; disposable certificates produced a signed `.pkpass` ZIP. Real Apple device acceptance was not possible without authorized credentials.
+10. Immediate release step: review and apply `0036`, configure secrets in the deployment manager, enable a tenant design, then download from an active Web Card on iPhone/Mac.
+11. Next feature step: implement Apple's device registration/update endpoints and APNs notifications so installed cards refresh after loyalty changes; Google Wallet remains pending.
+12. External blockers: `WALLET-001` and `PILOT-001` remain active.
+13. Security risk: `npm audit --omit=dev` still reports four high advisories in existing Next.js transitive packages and `xlsx`; the Apple dependency's Joi advisory is mitigated by the package override.
+14. Continue only with additive migrations after `0036`; never modify an applied migration.

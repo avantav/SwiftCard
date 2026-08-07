@@ -28,7 +28,7 @@ export type PublicCard = {
   }>;
 };
 
-export function PublicWalletCard({ card }: { card: PublicCard }) {
+export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean }) {
   const progress = card.reward_goal ? Math.min(100, Math.max(0, (card.stamp_balance / card.reward_goal) * 100)) : 0;
   const brandStyle = { "--card-primary": card.primary_color, "--card-secondary": card.secondary_color } as CSSProperties;
   return <main className="wallet-shell" style={brandStyle}>
@@ -40,6 +40,7 @@ export function PublicWalletCard({ card }: { card: PublicCard }) {
         <div className="wallet-qr" aria-label="QR de la tarjeta"><div>QR</div><p>Presenta este código al personal</p></div>
       </div>
     </section>
+    {appleWalletAvailable && cardToken ? <section className="wallet-apple-action" aria-label="Apple Wallet"><a href={`/api/wallet/apple/${encodeURIComponent(cardToken)}`}>Descargar para Apple Wallet</a><p>Abre esta página en un dispositivo Apple compatible para agregar el pase.</p></section> : null}
     <section className="wallet-rewards wallet-tier-catalog" aria-labelledby="reward-tiers-title"><div><p className="public-eyebrow">Cómo ganar</p><h2 id="reward-tiers-title">Premios por número de sellos</h2></div>
       {card.reward_tiers.length ? <ol>{card.reward_tiers.map((tier) => <li key={`${tier.stamps_required}-${tier.name}`}><span>{tier.stamps_required}</span><div><strong>{tier.name}</strong><p>{tier.description}</p><small>{tier.stamps_required} {tier.stamps_required === 1 ? "sello" : "sellos"}{tier.expiration_days ? ` · Vigencia de ${tier.expiration_days} días al obtenerlo` : " · Sin expiración"}</small></div></li>)}</ol> : <p className="wallet-no-rewards">El negocio todavía no ha publicado su catálogo de premios.</p>}
     </section>

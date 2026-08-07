@@ -4,7 +4,8 @@ export function AdminNavigation({ email, role }: { email: string | null; role: "
   const configuration = role === "ADMIN" ? [
     { href: "/admin/branches", label: "Sucursales", icon: "building" as const },
     { href: "/admin/staff", label: "Personal", icon: "users" as const },
-    { href: "/admin/program", label: "Programa", icon: "award" as const }
+    { href: "/admin/program", label: "Programa", icon: "award" as const },
+    { href: "/admin/wallet", label: "Apple Wallet", icon: "wallet" as const }
   ] : [{ href: "/admin/staff", label: "Personal", icon: "users" as const }];
   const groups: EnterpriseNavGroup[] = [
     { label: "Operación", items: [
