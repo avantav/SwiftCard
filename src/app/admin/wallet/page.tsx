@@ -57,8 +57,8 @@ export default async function WalletPage({ searchParams }: WalletPageProps) {
         backgroundColor: tenant.secondary_color,
         foregroundColor: "#FFFFFF",
         labelColor: "#FFFFFF",
-        logoImageUrl: tenant.logo_url ?? "",
-        stripImageUrl: tenant.banner_url ?? "",
+        logoImageUrl: "",
+        stripImageUrl: "",
       };
   const signing = walletProviderConfig("APPLE");
 
@@ -74,7 +74,14 @@ export default async function WalletPage({ searchParams }: WalletPageProps) {
       </section>
       {query.error ? <p className="enterprise-alert is-error" role="alert">{query.error}</p> : null}
       {query.saved ? <p className="enterprise-alert is-success" role="status">Diseño de Apple Wallet actualizado.</p> : null}
-      <AppleWalletDesignForm initial={initial} />
+      <AppleWalletDesignForm
+        fallbackAssets={{
+          logoImageUrl: tenant.logo_url ?? "",
+          stripImageUrl: tenant.banner_url ?? "",
+        }}
+        initial={initial}
+        tenantId={context.tenantId}
+      />
     </main>
   );
 }

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-07 - Tenant-Scoped Apple Wallet Storage Uploads
+
+**Objective:** Let the Admin general upload Apple Wallet logo and strip images directly from `/admin/wallet` while preserving tenant isolation and safe server-side pass generation.
+
+**Changes Made:** Added migration `0037` with a public-read `wallet-assets` bucket, 5 MB PNG/JPEG/WebP limits, and Admin-only own-tenant Storage policies; replaced manual URL fields with direct authenticated uploads, pending/error/success states, live previews, replacement cleanup, and server validation of generated Supabase public URLs. The same-project Supabase hostname is now configured locally and remains automatically trusted by the pass generator.
+
+**Security Review:** Storage writes require the active Admin general, the exact `tenant_id/apple` folder depth, and generated `logo`/`strip` filenames. Cross-tenant paths, Branch Administrators, invalid filenames, oversized files, unsupported MIME types, arbitrary submitted URLs, redirects, and invalid raster content are denied or safely ignored. The bucket is public only for non-sensitive brand-image reads; service-role credentials and signer secrets remain server-only.
+
+**Design Review:** Chrome review passed at 375, 768, 1280, and 1440 px. The review found and fixed a browser-client prerender error plus horizontal file-input overflow at 375/768 px. Upload controls retain visible labels, status announcements, keyboard-native behavior, 44px targets, one primary save action, and no horizontal overflow. The temporary route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 151 Vitest tests, `npm run db:verify-rls`, and `npm run build` passed. Migration `0037` and its RLS assertions pass on disposable PostgreSQL 16. Authorized ignored local Apple credentials also produced a valid signed `.pkpass`; no secret was committed.
+
+**Next Action:** Apply migrations `0036` and `0037` only with release approval, copy Apple secrets to the deployment manager, upload tenant assets, and validate the resulting pass on an Apple device.
+
 ## 2026-08-06 - Apple Wallet Tenant Design And Signed Pass Generation
 
 **Objective:** Let each tenant design and distribute a loyalty card for Apple Wallet without exposing signing credentials or tenant authority to the browser.

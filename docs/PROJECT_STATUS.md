@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 8 Apple Wallet initial generation complete; provider updates, Google Wallet, and real-device validation remain.
-- Current task: Prepare migration `0036` and Apple signing secrets for controlled deployment and device validation.
-- Last completed task: Added per-tenant Apple Wallet design and signed `storeCard` generation.
+- Current task: Prepare migrations `0036` and `0037` for controlled deployment, then validate a real pass on an Apple device.
+- Last completed task: Added direct tenant-scoped Supabase Storage uploads for Apple Wallet images.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Apple Wallet tenant designer, secure pass assets, and on-demand `.pkpass` download.
-- Git status: Apple Wallet feature changes are local and ready for a stable commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current Apple Wallet work is not pushed.
+- Last stable feature: Apple Wallet tenant designer with direct Storage uploads, secure pass assets, and on-demand `.pkpass` download.
+- Git status: Wallet Storage work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current Wallet Storage work is not pushed.
 
 ## Completed Functionality
 
@@ -88,6 +88,9 @@
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
+- The Admin Wallet designer uploads PNG/JPEG/WebP assets of at most 5 MB directly to the public-read `wallet-assets` Supabase bucket, under generated `tenant_id/apple` paths.
+- Storage RLS permits insert/update/delete only to an active Admin general in their own tenant path; Branch Administrators and cross-tenant paths are denied.
+- Saving a replacement design removes the prior tenant-owned object, failed saves clean newly submitted objects, and the same-project Supabase hostname is accepted automatically by pass generation.
 
 ## Pending Functionality
 
@@ -97,7 +100,7 @@
 
 ## Active Blockers
 
-- WALLET-001: Real Apple credentials/device validation and Google Wallet credentials are unavailable.
+- WALLET-001: Local Apple signing is configured and produces a signed `.pkpass`; real-device acceptance, production secret deployment, APNs updates, and Google Wallet credentials remain pending.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks
@@ -110,7 +113,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 147 tests passed.
+- `npm run test:run`: passed; 151 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 3 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -159,8 +162,10 @@
 - Migration `0034` and its dedicated integration test passed cumulative 3/5/10 thresholds, current-cycle conversion, next-cycle rewards, remainder preservation, cancellation restoration, anonymous projection, direct-table denial, and duplicate-threshold rejection.
 - Migration `0035` and its integration test passed branch-Administrator scope, shared-account bypass denial, PIN uniqueness, lockout, unlock, revocation, branch isolation, and actor attribution.
 - Migration `0036` and its integration test passed Admin-only design mutation, Manager/anonymous denial, audit attribution, public availability filtering, and RLS/table-grant boundaries.
+- Migration `0037` and its integration test passed bucket configuration, Admin-only own-tenant upload/delete, invalid filename rejection, cross-tenant denial, and Branch Administrator denial.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
-- The Apple Wallet designer passed Chrome review at 375, 768, 1280, and 1440 px; the temporary review route and certificate files were removed.
+- Authorized local Apple credentials produced a signed `.pkpass` ZIP with a matching, currently valid signer certificate; no secret was committed.
+- The Wallet Storage designer passed Chrome review at 375, 768, 1280, and 1440 px; a prerender-only browser client bug and responsive file-input overflow were found and fixed, and the temporary review route was removed.
 
 ## Validation Results
 
@@ -171,4 +176,4 @@
 
 ## Next Exact Step
 
-Apply migration `0036` with explicit release approval, configure Apple secrets and `APPLE_WALLET_ASSET_HOSTS`, install the licensed official web badge, and validate a generated pass on a real Apple device. Then implement pass registrations/APNs updates.
+Apply migrations `0036` and `0037` with explicit release approval, copy the already tested Apple secrets to the deployment secret manager, enable a tenant design, upload its images, and validate the generated pass on a real Apple device. Then implement pass registrations/APNs updates.
