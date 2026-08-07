@@ -134,7 +134,7 @@ Principios:
 
 Cada tenant tendrá nombre, contacto, estado, moneda, zona horaria, branding mode, logo, banner, colores y programa.
 
-Cada sucursal tendrá nombre, dirección, coordenadas, radio de geofence, estado, token público de registro y configuración de proximidad.
+Cada sucursal tendrá nombre, dirección, coordenadas, radio de geofence, estado, token público de registro y configuración de proximidad. El Admin general podrá copiar su enlace público, descargar su QR en PNG y abrir una vista previa desde la administración de sucursales.
 
 Las ubicaciones servirán para:
 
@@ -197,7 +197,7 @@ Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Admi
 
 ### Autoservicio
 
-Cada sucursal tendrá su propio QR público. El cliente captura sus datos, el sistema valida formato y duplicados, crea el cliente y genera la tarjeta. Se guarda la sucursal de origen y el método SELF_SERVICE.
+Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal, captura sus datos, el sistema valida formato y duplicados, crea el cliente y genera la tarjeta. Se guarda la sucursal de origen y el método SELF_SERVICE. Un enlace inválido, de una sucursal inactiva o de un tenant suspendido no mostrará el formulario.
 
 ### Por empleado
 
