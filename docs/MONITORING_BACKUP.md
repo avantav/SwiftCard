@@ -13,6 +13,9 @@
 - Alert on repeated `PIN_UNLOCK_FAILED` events and review branch PIN lockouts without logging PIN values or session tokens.
 - Track import counts and errors without storing uploaded source files outside the approved retention boundary.
 - Treat Wallet provider failures as non-blocking to Web Card availability.
+- Monitor `apple_wallet_update_outbox` age, attempt counts, last errors, and sustained growth without exposing serials or push tokens.
+- Alert when the oldest due Apple Wallet update exceeds five minutes or repeated APNs certificate/provider errors occur.
+- Until an external cron is connected, record that retry delivery is opportunistic after normal operations; invoke only the Bearer-protected internal endpoint from the approved scheduler.
 
 ## Database Backups
 

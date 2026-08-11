@@ -195,6 +195,8 @@ Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya e
 
 Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
 
+El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers`, con búsqueda, filtro por estado y paginación. La vista mostrará nombre, contacto, sucursal de alta, estado del cliente y de su tarjeta, sellos, recompensas disponibles, estado de generación de Apple Wallet, método y fecha de registro. Los Administradores de sucursal no verán este directorio administrativo y conservarán únicamente la búsqueda operativa dentro de su alcance.
+
 ## 10. Registro de clientes
 
 ### Autoservicio
@@ -460,7 +462,9 @@ La Web Card será el respaldo universal.
 
 Las sucursales activas se asociarán a la tarjeta para que el sistema operativo pueda sugerirla cerca del negocio. Esta función depende de permisos, dispositivo, límites y políticas del proveedor; no se garantizará una notificación en todos los teléfonos.
 
-La tarjeta se actualizará al recibir sellos o generar/canjear recompensas. Se incluirá notificación compatible de nueva recompensa. Los avisos de expiración quedan para una fase posterior.
+La tarjeta se actualizará al recibir sellos o generar/canjear recompensas mediante el servicio web PassKit, registro revocable de dispositivos, tags monotónicos, entrega firmada del pase y notificaciones APNs vacías. Los push tokens permanecerán cifrados y los identificadores de dispositivo se almacenarán como HMAC. Un fallo de APNs nunca revertirá una operación de fidelidad: quedará en una cola transaccional para reintento. Se incluirá notificación compatible de nueva recompensa. Los avisos de expiración quedan para una fase posterior.
+
+Mientras el hosting no tenga cron, la aplicación intentará el envío inmediatamente después de cada operación y conservará un endpoint interno protegido para conectar un scheduler externo. El cron de reintentos será requisito antes de producción a escala, pero no bloqueará el piloto controlado.
 
 ## 23. Arquitectura técnica
 
@@ -506,6 +510,9 @@ Tablas principales:
 - customer_imports.  
 - customer_import_rows.  
 - wallet_passes.  
+- apple_wallet_devices.
+- apple_wallet_registrations.
+- apple_wallet_update_outbox.
 - tenant_wallet_designs.
 - Supabase Storage bucket `wallet-assets` con rutas por tenant y políticas RLS de escritura.
 - audit_logs.

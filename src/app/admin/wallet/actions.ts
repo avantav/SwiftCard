@@ -9,6 +9,7 @@ import {
   type AppleWalletAssetKind,
 } from "@/lib/wallet/assets";
 import { validateAppleWalletDesignForm } from "@/lib/wallet/design";
+import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
 function redirectWithError(error: string): never {
   redirect(`/admin/wallet?error=${encodeURIComponent(error)}`);
@@ -157,5 +158,9 @@ export async function saveAppleWalletDesign(formData: FormData) {
       .from(APPLE_WALLET_ASSET_BUCKET)
       .remove(previousPaths);
   }
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 25,
+    tenantId: context.tenantId,
+  });
   redirect("/admin/wallet?saved=1");
 }

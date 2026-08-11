@@ -972,6 +972,11 @@ textarea {
   color: #53606a;
 }
 
+.enterprise-badge.is-error {
+  background: var(--enterprise-danger-soft);
+  color: var(--enterprise-danger);
+}
+
 .enterprise-number {
   font-variant-numeric: tabular-nums;
 }
@@ -1707,6 +1712,81 @@ textarea {
   min-height: 44px;
   background: var(--enterprise-primary);
   font-weight: 650;
+}
+
+.admin-customer-filters {
+  grid-template-columns: minmax(240px, 1fr) minmax(170px, 0.35fr) auto auto;
+}
+
+.admin-customer-filters .enterprise-secondary-action {
+  min-height: 44px;
+}
+
+.admin-customer-identity {
+  min-width: 210px;
+}
+
+.admin-customer-identity small {
+  max-width: 280px;
+  overflow-wrap: anywhere;
+}
+
+.admin-customer-date,
+.admin-customer-method {
+  display: block;
+  white-space: nowrap;
+}
+
+.admin-customer-method {
+  margin-top: 3px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+}
+
+.admin-customer-pagination {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--enterprise-border);
+  padding: 12px 20px;
+}
+
+.admin-customer-pagination p {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+}
+
+.admin-customer-pagination > div {
+  display: flex;
+  gap: 8px;
+}
+
+.enterprise-secondary-action.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.admin-customer-loading-list {
+  display: grid;
+}
+
+.admin-customer-loading-list span {
+  height: 58px;
+  border-bottom: 1px solid var(--enterprise-border);
+  background: var(--enterprise-surface-subtle);
+}
+
+.admin-customer-loading-list span:last-child {
+  border-bottom: 0;
+}
+
+.admin-customer-table th,
+.admin-customer-table td {
+  padding-right: 12px;
+  padding-left: 12px;
 }
 
 .admin-dashboard-metrics {
@@ -3357,6 +3437,59 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 3.2rem;
 }
 
+@media (max-width: 1199px) {
+  .admin-customer-table,
+  .admin-customer-table tbody,
+  .admin-customer-table tr,
+  .admin-customer-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-customer-table thead {
+    display: none;
+  }
+
+  .admin-customer-table tr {
+    border-bottom: 1px solid var(--enterprise-border);
+    padding: 16px 20px;
+  }
+
+  .admin-customer-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .admin-customer-table td {
+    display: grid;
+    grid-template-columns: minmax(130px, 0.35fr) 1fr;
+    align-items: center;
+    border: 0;
+    padding: 7px 0;
+  }
+
+  .admin-customer-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--enterprise-text-muted);
+    font-size: 0.69rem;
+    font-weight: 750;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .admin-customer-table td:first-child {
+    display: block;
+    padding: 0 0 12px;
+  }
+
+  .admin-customer-table td:first-child::before {
+    display: none;
+  }
+
+  .admin-customer-identity {
+    min-width: 0;
+  }
+}
+
 @media (max-width: 1023px) {
   .apple-wallet-editor {
     grid-template-columns: 1fr;
@@ -3408,6 +3541,16 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     grid-column: 1 / -1;
     width: fit-content;
   }
+
+  .admin-customer-filters {
+    grid-template-columns: minmax(240px, 1fr) minmax(170px, 0.45fr);
+  }
+
+  .admin-customer-filters .primary-button,
+  .admin-customer-filters .enterprise-secondary-action {
+    grid-column: auto;
+    width: 100%;
+  }
 }
 
 @media (max-width: 767px) {
@@ -3422,6 +3565,24 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
   .enterprise-filter-form .primary-button {
     width: 100%;
+  }
+
+  .admin-customer-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-customer-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-customer-pagination > div,
+  .admin-customer-pagination .enterprise-secondary-action {
+    width: 100%;
+  }
+
+  .admin-customer-pagination .enterprise-secondary-action {
+    min-height: 44px;
   }
 }
 

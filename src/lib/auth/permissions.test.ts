@@ -9,6 +9,7 @@ import {
   canManageStaff,
   canOperateBranch,
   canResetTenantAdminPasswords,
+  canViewTenantCustomers,
   canViewAudit,
   mustChangePassword,
   type StaffAccessContext
@@ -54,10 +55,12 @@ describe("role permission helpers", () => {
     expect(canAccessAdminPanel(activeAdmin)).toBe(true);
     expect(canManageBranches(activeAdmin)).toBe(true);
     expect(canManageStaff(activeAdmin)).toBe(true);
+    expect(canViewTenantCustomers(activeAdmin)).toBe(true);
     expect(canAccessBranch(activeAdmin, "any-tenant-branch")).toBe(true);
 
     expect(canManageBranches(activeManager)).toBe(false);
     expect(canManageStaff(activeManager)).toBe(true);
+    expect(canViewTenantCustomers(activeManager)).toBe(false);
   });
 
   it("allows managers and employees to use only assigned PWA branches", () => {

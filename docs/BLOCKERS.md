@@ -2,11 +2,11 @@
 
 ## Active Blockers
 
-- **WALLET-001:** Initial Apple Wallet generation, tenant design, Storage uploads, and local signing are implemented. Authorized Apple credentials are configured only in the ignored local environment and generate a signed `.pkpass`; real-device acceptance, production secret deployment, the update service, and Google Wallet credentials remain pending. No secrets are present in the repository.
+- **WALLET-001:** Initial Apple Wallet generation was accepted on a real iPhone. The automatic-update code, migration `0038`, PassKit endpoints, encrypted registrations, transactional outbox, immediate APNs sender and protected retry endpoint are implemented and locally validated. Applying `0038`, deploying the stable update secret, reinstalling the pass, validating production APNs end to end, connecting an external retry cron and adding Google Wallet remain pending. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** Cryptographic signing is locally verified, but Apple-device acceptance and the production download path remain unconfirmed; registrations, APNs updates, Google passes, and official Wallet badge installation remain pending.
-  - **Recommendation:** Apply migrations `0036` and `0037` with release approval, copy credentials through the deployment secret manager, and validate on a real Apple device without exposing secrets.
-  - **Work that can continue:** Finish the Apple update web service and implement Google Wallet without committing secrets.
+  - **Consequence:** The implementation is ready for configuration but installed passes will not update until `0038` and the new pass metadata are deployed; failed immediate pushes can remain queued without an external scheduler.
+  - **Recommendation:** Apply `0038`, configure `APPLE_WALLET_UPDATE_SECRET_BASE64`, redeploy, reinstall the pass, validate one stamp and reward update, then schedule the protected retry endpoint.
+  - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
   - **Status:** Active.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.

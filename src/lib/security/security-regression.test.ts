@@ -23,6 +23,8 @@ describe("security regression boundaries", () => {
     expect(envExample).not.toMatch(/SUPABASE_SECRET_KEY=\S+/);
     expect(envExample).not.toMatch(/APPLE_SIGNER_KEY_BASE64=\S+/);
     expect(envExample).not.toMatch(/APPLE_CERTIFICATE_PASSWORD=\S+/);
+    expect(envExample).not.toMatch(/APPLE_WALLET_UPDATE_SECRET_BASE64=\S+/);
+    expect(envExample).not.toMatch(/APPLE_WALLET_RETRY_SECRET=\S+/);
     expect(appleWalletServer).toContain('import "server-only"');
   });
 

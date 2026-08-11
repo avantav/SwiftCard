@@ -13,7 +13,10 @@ export function AdminNavigation({ email, role }: { email: string | null; role: "
       { href: "/admin/dashboard", label: "Dashboard", icon: "chart" }
     ] },
     ...(configuration.length ? [{ label: "Configuración", items: configuration }] : []),
-    { label: "Datos", items: [{ href: "/admin/exports", label: "Exportaciones", icon: "download" }] }
+    { label: "Datos", items: [
+      ...(role === "ADMIN" ? [{ href: "/admin/customers", label: "Clientes", icon: "users" as const }] : []),
+      { href: "/admin/exports", label: "Exportaciones", icon: "download" }
+    ] }
   ];
   return <EnterpriseNavigation areaLabel="Administración" email={email} groups={groups} roleLabel={role === "ADMIN" ? "Admin general" : "Administrador de sucursal"} />;
 }

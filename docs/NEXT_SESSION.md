@@ -1,19 +1,24 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Last completed feature: direct Apple Wallet action on the successful public registration screen, without a Web Card intermediate step.
-3. Migration state: hosted Supabase was verified through `0037`; public registration QR sharing reuses existing branch tokens and requires no new migration.
-4. Admin route: `/admin/wallet` is Admin-general-only and provides activation, accessible colors, direct PNG/JPEG/WebP uploads, version state, and live preview.
-5. Public route: `/api/wallet/apple/[cardToken]` derives all authority from the card token and returns `application/vnd.apple.pkpass` only for active records, enabled design, and complete signing config.
-6. Required server secrets: `APPLE_PASS_TYPE_ID`, `APPLE_TEAM_ID`, `APPLE_SIGNER_CERTIFICATE_BASE64`, `APPLE_SIGNER_KEY_BASE64`, `APPLE_WWDR_CERTIFICATE_BASE64`, optional `APPLE_CERTIFICATE_PASSWORD`, and `SWIFTWALLET_PUBLIC_URL`.
-7. Asset security: migration `0037` creates public-read bucket `wallet-assets`; Admin writes are RLS-limited to generated `tenant_id/apple` paths, raster MIME types, and 5 MB. The configured Supabase host is allowed automatically; `APPLE_WALLET_ASSET_HOSTS` is only needed for additional external hosts.
-8. Public registration distribution: `/admin/branches` uses `SWIFTWALLET_PUBLIC_URL` to copy/open each active branch link and download its QR; invalid/inactive links and suspended tenants do not render the form.
-9. Branch creation diagnostics: `/admin/branches` reports every invalid field, retains non-sensitive values, clears passwords, and maps safe causes for RLS/session/schema/constraint/Auth failures; server logs include only stage, error code/message, and status.
-10. Registration success: when server signing and tenant design are enabled, the page exposes `/api/wallet/apple/[cardToken]` through a generic Apple Wallet button; it does not link to `/card/[cardToken]`. If unavailable, it shows a clear temporary-unavailability message.
-11. Commands passed: `npm run lint`, `npm run typecheck`, 162 Vitest tests, `npm run db:verify-rls`, and `npm run build`.
-12. Additional validation: direct Wallet handoff, branch-error, and registration-QR Chrome reviews passed at 375, 768, 1280, and 1440 px; authorized local credentials previously produced a signed `.pkpass` ZIP. Real Apple device acceptance remains pending.
-13. Immediate release step: deploy, complete one real registration from an iPhone, tap **Agregar a Apple Wallet**, and validate that Apple accepts the pass. If branch creation still fails, use its displayed safe reason/code.
-14. Next feature step: implement Apple's device registration/update endpoints and APNs notifications so installed cards refresh after loyalty changes; **the current installed pass does not update automatically**. Google Wallet remains pending.
-15. External blockers: `WALLET-001` and `PILOT-001` remain active.
-16. Security risk: `npm audit --omit=dev` still reports four high advisories in existing Next.js transitive packages and `xlsx`; the Apple dependency's Joi advisory is mitigated by the package override.
-17. Continue only with additive migrations after `0037`; never modify an applied migration.
+2. Latest feature: `/admin/customers` provides the Admin general an exclusive tenant-wide directory with name/phone search, status filtering, 50-row pagination, customer/card state, balance, available rewards, source branch, registration metadata and Apple Wallet diagnostics.
+3. Customer-directory security: the navigation entry is Admin-only, the route redirects Managers before querying, every query uses the authenticated server client plus `context.tenantId`, and no service-role client or new migration is used.
+4. Current Wallet state: Apple Wallet automatic-update service is implemented locally; production migration, credentials and end-to-end APNs validation remain.
+5. Migration state: hosted Supabase is verified through `0037`; additive migration `0038_apple_wallet_updates.sql` exists and was validated only in disposable PostgreSQL. The user will apply it manually.
+6. New pass metadata: every newly generated pass contains `webServiceURL`, stable per-pass `authenticationToken`, the existing serial and current `changeMessage` fields.
+7. Public update base: `${SWIFTWALLET_PUBLIC_URL}/api/wallet/apple`; official `/v1` register, unregister, changed-serial, updated-pass and log endpoints are implemented.
+8. Database security: device identifiers are keyed hashes, push tokens are AES-256-GCM ciphertext, update tables have forced RLS and no browser grants, and worker RPCs are `service_role` only.
+9. Update authority: migration triggers queue changes to balances, rewards, customer/card state, program, reward tiers, Wallet design, branding and branch locations inside the same transaction.
+10. Delivery mode: successful purchase, redemption, customer, program, design, branch and tenant actions attempt APNs immediately; failure never reverts the application operation and remains in the outbox.
+11. APNs: production HTTP/2 endpoint, empty JSON payload, background push type, Pass Type topic, and the existing signer certificate/private key plus WWDR chain.
+12. Invalid APNs device tokens remove their registrations. Successful device deliveries advance their update tag and avoid duplicate retry pushes.
+13. Future retry path: `POST /api/internal/wallet/apple/process-updates` requires `Authorization: Bearer <APPLE_WALLET_RETRY_SECRET>` and processes up to 25 jobs. Connecting an external cron remains explicitly pending because Hostinger shared cron is not confirmed.
+14. Required new secret: `APPLE_WALLET_UPDATE_SECRET_BASE64`, exactly 32 random bytes encoded as Base64. It is stable and must not be rotated directly.
+15. Optional future scheduler secret: `APPLE_WALLET_RETRY_SECRET`, at least 32 random characters.
+16. Existing Apple and Supabase secret names remain in `.env.example`; no secret is committed.
+17. Important rollout: passes emitted before this work lack update metadata and must be removed from the iPhone and installed again after migration/deployment.
+18. Validation completed: lint, typecheck, all 172 Vitest tests, production build, and the full disposable PostgreSQL/RLS suite including migration and test `0038`.
+19. Deployment guide: `docs/APPLE_WALLET_UPDATES.md`.
+20. Do not apply `0038` remotely; the user explicitly chose to apply it.
+21. After deployment: reinstall pass, verify registration, register a stamp, verify APNs callbacks and updated `.pkpass`, then test generated/redeemed reward.
+22. Remaining Phase 8 work: external retry cron, production APNs validation and Google Wallet.

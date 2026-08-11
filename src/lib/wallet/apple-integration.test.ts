@@ -16,6 +16,33 @@ const route = readFileSync(
   new URL("../../app/api/wallet/apple/[cardToken]/route.ts", import.meta.url),
   "utf8",
 );
+const source = readFileSync(new URL("./apple-pass-source.ts", import.meta.url), "utf8");
+const updateMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0038_apple_wallet_updates.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
+const registrationRoute = readFileSync(
+  new URL(
+    "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
+    import.meta.url,
+  ),
+  "utf8",
+);
+const updatedPassRoute = readFileSync(
+  new URL(
+    "../../app/api/wallet/apple/v1/passes/[passTypeIdentifier]/[serialNumber]/route.ts",
+    import.meta.url,
+  ),
+  "utf8",
+);
+const apns = readFileSync(new URL("./apple-apns.ts", import.meta.url), "utf8");
+const webService = readFileSync(
+  new URL("./apple-web-service.ts", import.meta.url),
+  "utf8",
+);
 const adminAction = readFileSync(
   new URL("../../app/admin/wallet/actions.ts", import.meta.url),
   "utf8",
@@ -45,10 +72,11 @@ describe("Apple Wallet integration boundaries", () => {
   });
 
   it("derives pass ownership from the public card token on the server", () => {
-    expect(route).toContain('.eq("public_token", cardToken)');
+    expect(route).toContain("loadAppleWalletPassSource");
+    expect(source).toContain('.eq("public_token", lookup.cardToken)');
     expect(route).toContain("createSupabaseAdminClient");
-    expect(route).toContain('tenant.status !== "ACTIVE"');
-    expect(route).toContain('customer.status !== "ACTIVE"');
+    expect(source).toContain('tenant.status !== "ACTIVE"');
+    expect(source).toContain('customer.status !== "ACTIVE"');
     expect(route).toContain("application/vnd.apple.pkpass");
     expect(route).toContain('"Cache-Control": "private, no-store"');
     expect(route).not.toContain("tenantId = request");
@@ -56,6 +84,24 @@ describe("Apple Wallet integration boundaries", () => {
     expect(appleServer).toContain("pass.primaryFields.push");
     expect(appleServer).toContain("APPLE_WALLET_ASSET_HOSTS");
     expect(appleServer).toContain("MAX_REMOTE_IMAGE_BYTES");
+  });
+
+  it("implements the complete PassKit update web service and durable outbox", () => {
+    expect(updateMigration).toContain("create table public.apple_wallet_devices");
+    expect(updateMigration).toContain("create table public.apple_wallet_registrations");
+    expect(updateMigration).toContain("create table public.apple_wallet_update_outbox");
+    expect(updateMigration).toContain("force row level security");
+    expect(updateMigration).toContain("queue_apple_wallet_customer_updates");
+    expect(updateMigration).toContain("claim_apple_wallet_updates");
+    expect(registrationRoute).toContain("registerAppleWalletDevice");
+    expect(webService).toContain("applePassAuthorizationMatches");
+    expect(updatedPassRoute).toContain("application/vnd.apple.pkpass");
+    expect(updatedPassRoute).toContain("If-Modified-Since".toLowerCase());
+    expect(source).toContain("webServiceUrl");
+    expect(source).toContain("authenticationToken");
+    expect(apns).toContain("api.push.apple.com");
+    expect(apns).toContain('"apns-push-type": "background"');
+    expect(apns).toContain('const payload = "{}"');
   });
 
   it("only exposes the public download when the server and tenant are ready", () => {
