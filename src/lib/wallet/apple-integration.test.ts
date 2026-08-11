@@ -24,6 +24,13 @@ const updateMigration = readFileSync(
   ),
   "utf8",
 );
+const serviceSequenceMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0039_apple_wallet_service_sequence.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -102,6 +109,13 @@ describe("Apple Wallet integration boundaries", () => {
     expect(apns).toContain("api.push.apple.com");
     expect(apns).toContain('"apns-push-type": "background"');
     expect(apns).toContain('const payload = "{}"');
+  });
+
+  it("lets only the server role allocate update tags during pass issuance", () => {
+    expect(serviceSequenceMigration).toContain("grant usage, select");
+    expect(serviceSequenceMigration).toContain("apple_wallet_update_tag_seq");
+    expect(serviceSequenceMigration).toContain("to service_role");
+    expect(serviceSequenceMigration).not.toMatch(/to\s+(anon|authenticated)/);
   });
 
   it("only exposes the public download when the server and tenant are ready", () => {

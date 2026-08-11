@@ -15,12 +15,13 @@ El flujo actual es:
 
 La notificación APNs no contiene saldo, cliente ni recompensas. Solo solicita a Wallet que consulte nuevamente el pase.
 
-## Migración pendiente de aplicación manual
+## Migraciones y reparación de emisión
 
 Aplicar, después de respaldar y revisar el proyecto correcto:
 
 ```text
 supabase/migrations/0038_apple_wallet_updates.sql
+supabase/migrations/0039_apple_wallet_service_sequence.sql
 ```
 
 La migración crea:
@@ -33,7 +34,15 @@ La migración crea:
 - Triggers para cambios que afectan el contenido de un pase.
 - RPC exclusivas de `service_role`; `anon` y `authenticated` no pueden leer las tablas ni ejecutar el worker.
 
-La migración `0038` fue validada junto con todas las migraciones y pruebas RLS en PostgreSQL desechable. No fue aplicada al Supabase remoto.
+`0038` revocaba por error a `service_role` el uso de
+`apple_wallet_update_tag_seq`, aunque la inserción de un pase nuevo requiere esa
+secuencia para generar `update_tag`. El resultado era una respuesta genérica de
+generación fallida justo después de desplegar las actualizaciones automáticas.
+
+`0039` restaura únicamente `USAGE` y `SELECT` para `service_role`; no concede
+acceso a `anon` ni `authenticated`. Ambas migraciones y una emisión real bajo el
+rol de backend fueron validadas con la suite PostgreSQL/RLS desechable. El usuario
+aplica las migraciones remotas manualmente.
 
 ## Variables de entorno
 
@@ -127,7 +136,7 @@ Ese endpoint procesa hasta 25 trabajos por llamada y nunca expone push tokens. H
 
 ## Activación y prueba en iPhone
 
-1. Aplicar la migración `0038`.
+1. Confirmar que `0038` está aplicada y aplicar después `0039`.
 2. Configurar las variables de entorno en Hostinger y volver a desplegar/reiniciar la app Node.js.
 3. Eliminar del iPhone cualquier pase emitido antes de esta implementación y volver a agregarlo. Los pases anteriores no contienen `webServiceURL` ni `authenticationToken`.
 4. Confirmar que Apple registra el dispositivo en el nuevo endpoint.

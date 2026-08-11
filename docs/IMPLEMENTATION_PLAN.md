@@ -177,7 +177,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Offer the signed Apple pass directly after public registration without routing the customer through the Web Card.
 - [x] [Terminada] Add direct Admin uploads for tenant Wallet images through a public-read, tenant-scoped Supabase Storage bucket with RLS-protected writes and bounded raster formats.
 - [x] [Terminada] Implement Apple Wallet device registrations, stable per-pass authentication, encrypted push tokens, update tags, durable outbox, updated-pass delivery, immediate production APNs dispatch, invalid-token cleanup, and a protected retry endpoint.
-- [ ] [Pendiente] Apply migration `0038`, deploy the update credentials, reinstall a pass emitted with update metadata, validate APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
+- [x] [Terminada] Add migration `0039` to restore the server-only sequence permission required when issuing a new pass after `0038`, with positive `service_role` insertion and negative browser-role regression coverage.
+- [ ] [Pendiente] Apply migration `0039`, redeploy, reinstall a pass emitted with update metadata, validate APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.
 

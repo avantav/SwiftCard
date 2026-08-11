@@ -24,7 +24,7 @@
 
 - [ ] Provide Apple Developer credentials and Google Wallet credentials through the secret manager.
 - [ ] Configure a stable 32-byte `APPLE_WALLET_UPDATE_SECRET_BASE64`; never rotate it without a compatibility rollout.
-- [ ] Apply migration `0038`, deploy the HTTPS PassKit endpoints, and reinstall passes issued before update metadata existed.
+- [ ] Confirm `0038` is present, apply repair migration `0039`, deploy the HTTPS PassKit endpoints, and reinstall passes issued before update metadata existed.
 - [ ] Verify device registration, stamp/reward update, invalid-token cleanup, and non-blocking behavior during an APNs failure on a real iPhone.
 - [ ] Connect `/api/internal/wallet/apple/process-updates` to an approved external scheduler using `APPLE_WALLET_RETRY_SECRET` before production scale.
 - [ ] Test Web Card fallback with active and revoked cards.

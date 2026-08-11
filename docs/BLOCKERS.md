@@ -2,10 +2,10 @@
 
 ## Active Blockers
 
-- **WALLET-001:** Initial Apple Wallet generation was accepted on a real iPhone. The automatic-update code, migration `0038`, PassKit endpoints, encrypted registrations, transactional outbox, immediate APNs sender and protected retry endpoint are implemented and locally validated. Applying `0038`, deploying the stable update secret, reinstalling the pass, validating production APNs end to end, connecting an external retry cron and adding Google Wallet remain pending. No secrets are present in the repository.
+- **WALLET-001:** Initial Apple Wallet generation was accepted on a real iPhone. After deploying the automatic-update schema, new pass issuance exposed a sequence-permission regression from `0038`. Additive repair `0039` is implemented and locally validated; applying it, retrying issuance, reinstalling the pass, validating production APNs end to end, connecting an external retry cron and adding Google Wallet remain pending. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** The implementation is ready for configuration but installed passes will not update until `0038` and the new pass metadata are deployed; failed immediate pushes can remain queued without an external scheduler.
-  - **Recommendation:** Apply `0038`, configure `APPLE_WALLET_UPDATE_SECRET_BASE64`, redeploy, reinstall the pass, validate one stamp and reward update, then schedule the protected retry endpoint.
+  - **Consequence:** New passes cannot be recorded or downloaded until `service_role` can allocate their update tag; failed immediate pushes can still remain queued without an external scheduler.
+  - **Recommendation:** Apply `0039`, retry pass generation, redeploy if necessary, reinstall the pass, validate one stamp and reward update, then schedule the protected retry endpoint.
   - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
   - **Status:** Active.
 

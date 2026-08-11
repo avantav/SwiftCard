@@ -2,7 +2,13 @@
 
 create role anon nologin;
 create role authenticated nologin;
-create role service_role nologin;
+-- Supabase manages this as the privileged, server-only role. Mirroring its
+-- BYPASSRLS flag and default object grants keeps integration tests faithful to
+-- requests made with the service-role key.
+create role service_role nologin bypassrls;
+
+alter default privileges in schema public grant all on tables to service_role;
+alter default privileges in schema public grant all on sequences to service_role;
 
 create schema auth;
 
