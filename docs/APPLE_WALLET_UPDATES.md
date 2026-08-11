@@ -15,12 +15,13 @@ El flujo actual es:
 
 La notificación APNs no contiene saldo, cliente ni recompensas. Solo solicita a Wallet que consulte nuevamente el pase.
 
-## Migración pendiente de aplicación manual
+## Migraciones y reparación de emisión
 
 Aplicar, después de respaldar y revisar el proyecto correcto:
 
 ```text
 supabase/migrations/0038_apple_wallet_updates.sql
+supabase/migrations/0039_apple_wallet_service_sequence.sql
 ```
 
 La migración crea:
@@ -33,7 +34,20 @@ La migración crea:
 - Triggers para cambios que afectan el contenido de un pase.
 - RPC exclusivas de `service_role`; `anon` y `authenticated` no pueden leer las tablas ni ejecutar el worker.
 
-La migración `0038` fue validada junto con todas las migraciones y pruebas RLS en PostgreSQL desechable. No fue aplicada al Supabase remoto.
+`0038` revocaba por error a `service_role` el uso de
+`apple_wallet_update_tag_seq`, aunque la inserción de un pase nuevo requiere esa
+secuencia para generar `update_tag`. El resultado era una respuesta genérica de
+generación fallida justo después de desplegar las actualizaciones automáticas.
+
+`0039` restaura únicamente `USAGE` y `SELECT` para `service_role`; no concede
+acceso a `anon` ni `authenticated`. Ambas migraciones y una emisión real bajo el
+rol de backend fueron validadas con la suite PostgreSQL/RLS desechable. El usuario
+aplica las migraciones remotas manualmente.
+
+La aplicación de `0039` ya fue confirmada en producción y la generación inicial
+volvió a funcionar. La corrección posterior del QR no requiere otra migración:
+el generador ahora aplica `barcodes` y `locations` mediante los setters de la
+librería PassKit para que ambos queden incluidos en el `pass.json` firmado.
 
 ## Variables de entorno
 
@@ -127,15 +141,16 @@ Ese endpoint procesa hasta 25 trabajos por llamada y nunca expone push tokens. H
 
 ## Activación y prueba en iPhone
 
-1. Aplicar la migración `0038`.
+1. Confirmar que `0038` y `0039` están aplicadas en ese orden.
 2. Configurar las variables de entorno en Hostinger y volver a desplegar/reiniciar la app Node.js.
-3. Eliminar del iPhone cualquier pase emitido antes de esta implementación y volver a agregarlo. Los pases anteriores no contienen `webServiceURL` ni `authenticationToken`.
+3. Actualizar mediante PassKit o eliminar y volver a agregar cualquier pase emitido antes de esta implementación. Los pases anteriores pueden no contener `webServiceURL`, `authenticationToken` o el QR visible corregido.
 4. Confirmar que Apple registra el dispositivo en el nuevo endpoint.
-5. Registrar una compra que otorgue un sello.
-6. Confirmar que la operación finaliza aunque APNs falle.
-7. Confirmar que Wallet solicita la lista de seriales, descarga el pase y muestra el nuevo saldo.
-8. Repetir con recompensa generada y canjeada.
-9. Revisar que no existan identificadores, tokens, secretos o datos de cliente en logs.
+5. Abrir `/app/scan` en el teléfono operativo, conceder permiso de cámara y confirmar que el QR abre al cliente correcto.
+6. Registrar una compra que otorgue un sello.
+7. Confirmar que la operación finaliza aunque APNs falle.
+8. Confirmar que Wallet solicita la lista de seriales, descarga el pase y muestra el nuevo saldo.
+9. Repetir con recompensa generada y canjeada.
+10. Revisar que no existan identificadores, tokens, secretos o datos de cliente en logs.
 
 Las notificaciones de actualización de pases funcionan únicamente contra APNs de producción y su entrega es best effort. La validación final requiere HTTPS público y un iPhone real.
 

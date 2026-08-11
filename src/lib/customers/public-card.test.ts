@@ -17,6 +17,8 @@ describe("public web card projection", () => {
     expect(loyaltyProjection).toContain("grant execute on function app.get_public_web_card(text) to anon");
     expect(cardComponent).toContain("Premios por número de sellos");
     expect(cardComponent).toContain("Términos y condiciones");
+    expect(cardComponent).toContain("Código QR para identificar esta tarjeta");
+    expect(cardComponent).not.toContain('<div>QR</div>');
   });
   it("only grants the projection to anon and filters active tokens", () => {
     expect(migration).toContain("app.get_public_web_card");

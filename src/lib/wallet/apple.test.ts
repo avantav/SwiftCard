@@ -56,9 +56,15 @@ describe("Apple Wallet store card", () => {
       baseProps,
     );
     pass.type = "storeCard";
+    pass.setBarcodes(...props.barcodes);
+    pass.setLocations(...props.locations);
     pass.primaryFields.push(...storeCard.primaryFields);
     expect(pass.type).toBe("storeCard");
     expect(pass.primaryFields[0]?.value).toBe(4);
+    expect(pass.props.barcodes?.[0]?.message).toBe(
+      "https://wallet.example.com/card/public-token",
+    );
+    expect(pass.props.locations).toHaveLength(1);
   });
 
   it("omits SwiftWallet attribution for white-label tenants", () => {

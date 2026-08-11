@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { parseCardQrPayload } from "./qr";
 
 const token = "AbcdefghijKLMNOPqrstuvwxyz0123456789-_ABCDE";
@@ -12,5 +13,20 @@ describe("parseCardQrPayload", () => {
   it("rejects unrelated URLs and malformed tokens", () => {
     expect(parseCardQrPayload("https://swiftwallet.test/register/branch")).toMatchObject({ ok: false });
     expect(parseCardQrPayload("short-token")).toMatchObject({ ok: false });
+  });
+
+  it("connects the operational scanner to the rear camera with a manual fallback", () => {
+    const scanner = readFileSync(
+      new URL("../../components/customer-card-scanner.tsx", import.meta.url),
+      "utf8",
+    );
+
+    expect(scanner).toContain("BrowserQRCodeReader");
+    expect(scanner).toContain("decodeFromConstraints");
+    expect(scanner).toContain('facingMode: { ideal: "environment" }');
+    expect(scanner).toContain("requestSubmit()");
+    expect(scanner).toContain("activeControls.stop()");
+    expect(scanner).toContain("Captura manual");
+    expect(scanner).toContain("navigator.onLine");
   });
 });

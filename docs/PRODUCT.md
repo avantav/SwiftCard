@@ -234,6 +234,11 @@ Contenido mínimo:
 
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
 
+El mismo identificador seguro se mostrará como QR real en la Web Card y como
+barcode QR en Apple Wallet. La PWA operativa podrá leer ambos con la cámara
+tras una acción explícita del empleado y conservará captura manual como
+respaldo cuando el dispositivo niegue o no soporte la cámara.
+
 El Admin general podrá configurar por tenant la tarjeta Apple Wallet mediante una plantilla `storeCard`: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El diseño de Wallet es independiente del secreto de firma y no permite alterar libremente la estructura definida por Apple.
 
 El logo y la imagen principal se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.

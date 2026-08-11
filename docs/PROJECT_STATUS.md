@@ -2,12 +2,12 @@
 
 ## Current State
 
-- Current phase: Phase 8 Apple Wallet automatic-update implementation complete locally; deployment/APNs validation, external retry scheduling, and Google Wallet remain.
-- Current task: Hand off the Admin-only customer directory and continue the manual Apple Wallet deployment.
-- Last completed task: Added `/admin/customers` with tenant-scoped search, status filtering, pagination and customer/card/loyalty/Apple Wallet diagnostics.
+- Current phase: Phase 8 customer QR and Apple Wallet rollout validation; production APNs validation, external retry scheduling, and Google Wallet remain.
+- Current task: Deploy and validate the complete customer-identification QR flow on a real employee phone and iPhone Wallet pass.
+- Last completed task: Added the real Web Card QR, corrected PassKit barcode/location persistence, and implemented rear-camera scanning with safe fallback states.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Admin-general customer directory with role-gated navigation and route enforcement.
-- Git status: Customer-directory work is locally validated; no unrelated worktree changes were detected.
+- Last stable feature: One opaque customer-card QR readable from Apple Wallet or the Web Card by the employee PWA.
+- Git status: Customer QR work is locally validated; no unrelated worktree changes are present.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the latest local work is not pushed.
 
 ## Completed Functionality
@@ -76,6 +76,7 @@
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
 - The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and retains manual entry as a fallback.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.
@@ -91,6 +92,7 @@
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
+- The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - A newly registered customer sees a direct generic Apple Wallet action when both signer configuration and tenant design are enabled; the success screen no longer routes through the Web Card.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
@@ -100,6 +102,9 @@
 - Newly generated Apple passes include an HTTPS `webServiceURL` and stable HMAC-derived authentication token without storing the token in plaintext.
 - The official PassKit register, unregister, changed-serial, updated-pass and log endpoints are implemented under `/api/wallet/apple/v1`.
 - Migration `0038` adds monotonic update tags, encrypted device registrations, many-to-many pass registrations and a coalescing transactional outbox with forced RLS and service-role-only worker RPCs.
+- Migration `0039` restores `service_role` usage of the update-tag sequence so the initial pass endpoint can insert `wallet_passes` rows; browser roles remain denied.
+- Production migration `0039` was applied manually and the user confirmed Apple Wallet pass generation works again.
+- Signed Apple passes now retain their QR barcode and branch locations by applying both through the PassKit generator methods that persist method-owned properties into `pass.json`.
 - Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.
 - Purchase, redemption and relevant administrative actions attempt production APNs delivery immediately without making application success depend on Apple availability.
 - APNs delivery uses HTTP/2, the existing pass certificate/private key and WWDR chain, an empty payload, Pass Type topic, bounded timeouts, invalid-token cleanup and per-device delivered tags.
@@ -109,11 +114,11 @@
 
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
-- Apply migration `0038`, deploy the update secret, reinstall a pass, validate production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
+- Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
 
 ## Active Blockers
 
-- WALLET-001: Initial pass acceptance succeeded on iPhone and the update service is locally complete; `0038`, production update secret, reinstallation, APNs validation, external retry cron and Google Wallet remain pending.
+- WALLET-001: Initial issuance and the `0039` repair now work in production. The locally corrected visible QR, employee camera scan, pass refresh/reinstallation, APNs validation, external retry cron and Google Wallet remain pending deployment or external validation.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks
@@ -126,15 +131,15 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 172 tests passed.
+- `npm run test:run`: passed; 176 tests passed.
 - `npm run build`: passed with webpack.
-- `npm audit --omit=dev`: completed with 4 high runtime advisories; no safe automatic fix.
+- `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
 - RLS behavior checks via `SET ROLE authenticated` and `request.jwt.claim.sub`: passed.
 - Role/permission helper unit tests: passed.
 - Auth redirect helper tests: passed.
 - Tenant validation and server-only admin boundary tests: passed.
-- `npm run db:verify-rls`: passed against disposable PostgreSQL 16.
+- `npm run db:verify-rls`: passed against disposable PostgreSQL 16 through migration/test `0039`.
 - First-Administrator RPC integration assertions: passed.
 - Administrator password-reset integration assertions: passed.
 - Required password-change integration assertions: passed.
@@ -177,7 +182,9 @@
 - Migration `0036` and its integration test passed Admin-only design mutation, Manager/anonymous denial, audit attribution, public availability filtering, and RLS/table-grant boundaries.
 - Migration `0037` and its integration test passed bucket configuration, Admin-only own-tenant upload/delete, invalid filename rejection, cross-tenant denial, and Branch Administrator denial.
 - Migration `0038` and its integration test passed encrypted/idempotent device registration, transactional customer and tenant update queuing, service-role-only claims, authenticated-role denial, per-device delivery tags, outbox completion, unregister cleanup and no work for uninstalled passes.
+- Migration `0039` and its integration test passed a new `wallet_passes` insertion as `service_role`, automatic positive `update_tag` allocation, and denial of sequence access to `authenticated`.
 - Apple Wallet update cryptography, APNs response classification, PassKit web-service boundaries and production route build passed focused and full test coverage.
+- Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and manual fallback.
 - Admin customer-directory filter parsing, pagination preservation, tenant scoping, role denial and navigation visibility passed focused tests; the responsive table/card rules were reviewed at the required 375, 768, 1280 and 1440 px breakpoints.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
 - Authorized local Apple credentials produced a signed `.pkpass` ZIP with a matching, currently valid signer certificate; no secret was committed.
@@ -192,4 +199,4 @@
 
 ## Next Exact Step
 
-Review and apply migration `0038` manually, configure the stable update secret, redeploy, remove and reinstall the previously issued pass, then validate registration plus one stamp and reward update on the real iPhone. Connect the protected retry endpoint to an external scheduler before production scale.
+Deploy the QR/scanner commit, then refresh or remove/reinstall the Apple pass so it receives the visible barcode. Scan it from `/app/scan` on the employee phone, confirm the expected customer opens, and validate one stamp plus reward update on the real iPhone. Connect the protected retry endpoint to an external scheduler before production scale.

@@ -163,13 +163,16 @@ export async function generateAppleWalletPass(
 ) {
   const signing = getAppleSigningConfig();
   const images = await buildPassImages(assets.logoUrl, assets.stripUrl);
-  const { storeCard, ...props } = buildAppleWalletPassProps(input, signing.identity);
+  const { barcodes, locations, storeCard, ...props } =
+    buildAppleWalletPassProps(input, signing.identity);
   const pass = new PKPass(
     images,
     signing.certificates,
     props,
   );
   pass.type = "storeCard";
+  pass.setBarcodes(...barcodes);
+  if (locations.length) pass.setLocations(...locations);
   pass.headerFields.push(...storeCard.headerFields);
   pass.primaryFields.push(...storeCard.primaryFields);
   pass.secondaryFields.push(...storeCard.secondaryFields);
