@@ -88,6 +88,8 @@ describe("Apple Wallet integration boundaries", () => {
     expect(route).toContain('"Cache-Control": "private, no-store"');
     expect(route).not.toContain("tenantId = request");
     expect(appleServer).toContain('pass.type = "storeCard"');
+    expect(appleServer).toContain("pass.setBarcodes(...barcodes)");
+    expect(appleServer).toContain("pass.setLocations(...locations)");
     expect(appleServer).toContain("pass.primaryFields.push");
     expect(appleServer).toContain("APPLE_WALLET_ASSET_HOSTS");
     expect(appleServer).toContain("MAX_REMOTE_IMAGE_BYTES");

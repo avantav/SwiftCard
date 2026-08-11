@@ -2,10 +2,10 @@
 
 ## Active Blockers
 
-- **WALLET-001:** Initial Apple Wallet generation was accepted on a real iPhone. After deploying the automatic-update schema, new pass issuance exposed a sequence-permission regression from `0038`. Additive repair `0039` is implemented and locally validated; applying it, retrying issuance, reinstalling the pass, validating production APNs end to end, connecting an external retry cron and adding Google Wallet remain pending. No secrets are present in the repository.
+- **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The visible QR and employee camera corrections are implemented and locally validated; deployment, pass refresh/reinstallation, real-device scan, APNs validation, an external retry cron and Google Wallet remain pending. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** New passes cannot be recorded or downloaded until `service_role` can allocate their update tag; failed immediate pushes can still remain queued without an external scheduler.
-  - **Recommendation:** Apply `0039`, retry pass generation, redeploy if necessary, reinstall the pass, validate one stamp and reward update, then schedule the protected retry endpoint.
+  - **Consequence:** The current deployed pass may still omit the visible QR, and failed immediate pushes can remain queued without an external scheduler.
+  - **Recommendation:** Deploy the QR correction, refresh or reinstall the pass, scan it from the employee PWA, validate one stamp and reward update, then schedule the protected retry endpoint.
   - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
   - **Status:** Active.
 

@@ -149,3 +149,13 @@
 - Reason: The selected design preserves loyalty correctness during provider outages, works on the current Node hosting, keeps provider secrets out of the browser and database plaintext, and leaves a clean path to reliable scheduled retries.
 - Consequences: A failed push can remain pending until another scoped operation or the protected retry endpoint runs. Connecting an external cron is documented as pending before production scale. Existing passes issued without update metadata must be removed and reinstalled after deployment.
 - Status: Accepted.
+
+## DEC-0016 - One Opaque Customer QR Across Wallet Channels
+
+- Date: 2026-08-10
+- Context: The customer card must identify the customer at the point of sale, but the Web Card displayed a placeholder and the PassKit generator silently discarded barcode and location properties passed only through its constructor. The employee scanner also lacked camera capture.
+- Decision: Use the existing rotatable `customer_cards.public_token` as the only QR authority. Render it as a real high-contrast QR on the Web Card, encode the secure card URL as the Apple Wallet QR message, apply barcode and location data through the PassKit generator setter APIs, and decode QR codes on demand in the employee PWA with a rear-camera-first browser reader plus manual fallback.
+- Alternatives considered: Encode customer UUID or phone, create a second Wallet-only token, rely on manual token entry, or request camera permission automatically on page load.
+- Reason: One opaque identifier preserves the existing tenant-aware resolution RPC, avoids personal data in the barcode, works across Web Card and Apple Wallet, and keeps camera use explicit and recoverable.
+- Consequences: Existing passes need an updated `.pkpass` or reinstallation to receive the visible QR. Camera scanning requires HTTPS or localhost and user permission; denial, unsupported devices and offline state retain the manual path. No database migration is required.
+- Status: Accepted.

@@ -28,7 +28,7 @@ export type PublicCard = {
   }>;
 };
 
-export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean }) {
+export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false, qrDataUrl }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean; qrDataUrl?: string | null }) {
   const progress = card.reward_goal ? Math.min(100, Math.max(0, (card.stamp_balance / card.reward_goal) * 100)) : 0;
   const brandStyle = { "--card-primary": card.primary_color, "--card-secondary": card.secondary_color } as CSSProperties;
   return <main className="wallet-shell" style={brandStyle}>
@@ -37,7 +37,7 @@ export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false
       <div className="wallet-card-body"><p>{card.program_name ?? "Programa de fidelidad"}</p><h1 id="card-title">{card.customer_name}</h1>
         {card.program_status === "PAUSED" ? <p className="wallet-program-status">Programa temporalmente pausado</p> : null}
         {card.reward_goal ? <section className="wallet-progress" aria-label={`${card.stamp_balance} de ${card.reward_goal} sellos`}><div><span>Progreso</span><strong>{card.stamp_balance} / {card.reward_goal} sellos</strong></div><div className="wallet-progress-track"><span style={{ width: `${progress}%` }} /></div></section> : null}
-        <div className="wallet-qr" aria-label="QR de la tarjeta"><div>QR</div><p>Presenta este código al personal</p></div>
+        <div className="wallet-qr" aria-label="QR de la tarjeta">{qrDataUrl ? <div><img alt="Código QR para identificar esta tarjeta" height="172" src={qrDataUrl} width="172" /></div> : <div className="wallet-qr-unavailable" role="status">QR no disponible</div>}<p>{qrDataUrl ? "Presenta este código al personal" : "Solicita al personal que busque tu tarjeta por nombre o teléfono."}</p></div>
       </div>
     </section>
     {appleWalletAvailable && cardToken ? <section className="wallet-apple-action" aria-label="Apple Wallet"><a href={`/api/wallet/apple/${encodeURIComponent(cardToken)}`}>Descargar para Apple Wallet</a><p>Abre esta página en un dispositivo Apple compatible para agregar el pase.</p></section> : null}

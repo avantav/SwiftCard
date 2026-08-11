@@ -116,6 +116,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Add manifest, adaptive launcher icons, install metadata, secure service-worker registration, installation guidance, and online-only connection states.
 - [x] [Terminada] Implement scanner route and QR parsing.
+- [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and a manual input fallback.
 - [x] [Terminada] Implement purchase and redemption mobile flows.
 - [x] [Terminada] Add strict/flexible geolocation handling.
 - [x] [Terminada] Add double-submit protection.
@@ -173,12 +174,15 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Add wallet pass schema and server-only service boundaries.
 - [x] [Terminada] Implement Web Card fallback updates through the dynamic public projection.
+- [x] [Terminada] Render the opaque card token as a real, high-contrast QR on the Web Card.
 - [x] [Terminada] Implement tenant-owned Apple Wallet `storeCard` design and signed `.pkpass` generation behind server-only config.
 - [x] [Terminada] Offer the signed Apple pass directly after public registration without routing the customer through the Web Card.
 - [x] [Terminada] Add direct Admin uploads for tenant Wallet images through a public-read, tenant-scoped Supabase Storage bucket with RLS-protected writes and bounded raster formats.
 - [x] [Terminada] Implement Apple Wallet device registrations, stable per-pass authentication, encrypted push tokens, update tags, durable outbox, updated-pass delivery, immediate production APNs dispatch, invalid-token cleanup, and a protected retry endpoint.
 - [x] [Terminada] Add migration `0039` to restore the server-only sequence permission required when issuing a new pass after `0038`, with positive `service_role` insertion and negative browser-role regression coverage.
-- [ ] [Pendiente] Apply migration `0039`, redeploy, reinstall a pass emitted with update metadata, validate APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
+- [x] [Terminada] Apply migration `0039` manually and confirm that production pass issuance works again.
+- [x] [Terminada] Preserve the configured QR barcode and branch locations in the final signed `.pkpass` through the PassKit generator setter APIs.
+- [ ] [Pendiente] Deploy the QR/scanner correction, refresh or reinstall the pass, validate scanning plus APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.
 

@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-10 - Customer QR Presentation And Camera Scanning
+
+**Objective:** Make the customer's secure card QR visible and usable from Web Card or Apple Wallet through the employee PWA.
+
+**Changes Made:** Replaced the Web Card's visual placeholder with a generated 512px PNG QR containing only the opaque public card token. Fixed the signed Apple pass by applying barcode and location properties through `PKPass.setBarcodes` and `PKPass.setLocations`; the library intentionally strips these method-owned properties from constructor props. Replaced the scan-page placeholder with explicit rear-camera capture using the Node-compatible `@zxing/browser@0.1.5`, automatic validated submission, stream cleanup, and manual input fallback.
+
+**Security Review:** The QR contains no name, phone, UUID, tenant ID or balance. Both raw tokens and secure card URLs still resolve through the tenant-scoped backend RPC, so scanning another tenant's card reveals no customer data. Camera access starts only after a user action, scanning stops after success, offline submission is denied, and no frames are stored or uploaded.
+
+**Design Review:** The real Web Card and scanner were reviewed at 375, 768, 1280 and 1440 px. The QR remains high-contrast with a quiet zone; the scanner uses one primary action, 48px controls, visible permission/error/status copy, mobile-safe sizing and a manual fallback. Temporary review routes were removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 176 Vitest tests, and `npm run build` passed. Focused tests cover QR PNG generation and token bounds, removal of the placeholder, PassKit barcode/location persistence, camera configuration, automatic submission, offline denial and manual fallback. `npm audit --omit=dev` reports five existing high-severity framework/export advisories; the ZXing packages are not in the advisory paths.
+
+**Migration:** None required. The user confirmed previously pending migration `0039` is applied and initial Apple pass generation works.
+
+**Next Action:** Deploy this commit, refresh or reinstall the Apple pass, scan it from `/app/scan` on the real employee phone, and then validate automatic stamp/reward refresh on iPhone.
+
 ## 2026-08-10 - Apple Wallet Initial-Issuance Permission Repair
 
 **Objective:** Restore new Apple Wallet pass generation after deployment of migration `0038` without widening browser access.
