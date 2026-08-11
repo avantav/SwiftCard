@@ -185,6 +185,22 @@ end;
 $$;
 
 do $$
+declare
+  affected_rows integer;
+begin
+  update public.branches
+  set name = 'Cross-tenant branch update'
+  where id = '20000000-0000-0000-0000-000000000003';
+
+  get diagnostics affected_rows = row_count;
+
+  if affected_rows <> 0 then
+    raise exception 'Admin A updated a branch from Tenant B';
+  end if;
+end;
+$$;
+
+do $$
 begin
   begin
     insert into public.staff_branch_assignments (

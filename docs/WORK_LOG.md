@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-11 - Admin Branch Editing
+
+**Objective:** Let the Admin general edit an existing branch without weakening tenant isolation or mixing general branch data with sensitive shared-access credentials.
+
+**Changes Made:** Added inline editing to `/admin/branches` for name, address, coordinates, geofence radius, proximity activation/message and status. The server action validates every field, retains submitted values after failure, reports safe field/global errors, confirms deactivation, and dispatches already-queued Apple Wallet updates after a successful write. Access mode and shared credentials remain in their existing separate control.
+
+**Security Review:** The action requires the active `ADMIN` internal area, derives the tenant from the authenticated context, validates the branch UUID, matches both branch ID and tenant ID, and remains subject to existing branch RLS. No service role, frontend tenant authority, secret, grant or migration was added. Cross-tenant branch update denial was added to the PostgreSQL RLS test.
+
+**Design Review:** The editor reuses the existing branch record, disclosure, form, field, alert, badge and button patterns. Validation focuses an accessible summary and marks each invalid control; deactivation explains the impact before confirmation. Representative populated states were reviewed at 375, 768, 1280 and 1440 px with no horizontal overflow or hidden action; the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 181 Vitest tests, `npm run build`, and `npm run db:verify-rls` passed. Focused coverage verifies normalization, multi-error reporting, safe persistence messages, accessible error handling, deactivation confirmation, authenticated tenant scoping and cross-tenant update denial.
+
+**Migration:** None required. Existing branch RLS and Apple Wallet update triggers remain authoritative.
+
 ## 2026-08-10 - Customer QR Presentation And Camera Scanning
 
 **Objective:** Make the customer's secure card QR visible and usable from Web Card or Apple Wallet through the employee PWA.

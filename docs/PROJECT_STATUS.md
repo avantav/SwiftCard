@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Phase 8 customer QR and Apple Wallet rollout validation; production APNs validation, external retry scheduling, and Google Wallet remain.
-- Current task: Deploy and validate the complete customer-identification QR flow on a real employee phone and iPhone Wallet pass.
-- Last completed task: Added the real Web Card QR, corrected PassKit barcode/location persistence, and implemented rear-camera scanning with safe fallback states.
+- Current task: Deploy the accumulated branch-editing and customer-identification QR work, then validate scanning and Wallet updates on real devices.
+- Last completed task: Added Admin-only branch editing for location, geofence, proximity and status with detailed validation and tenant-scoped persistence.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: One opaque customer-card QR readable from Apple Wallet or the Web Card by the employee PWA.
-- Git status: Customer QR work is locally validated; no unrelated worktree changes are present.
+- Last stable feature: Admin general can edit a tenant branch safely while access-mode credentials remain isolated in their existing sensitive control.
+- Git status: Branch editing is locally validated; no unrelated worktree changes are present.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the latest local work is not pushed.
 
 ## Completed Functionality
@@ -44,6 +44,8 @@
 - Branch validation for coordinates, geofence radius, address, and proximity.
 - Branch creation reports all field issues together, restores non-sensitive inputs, focuses an accessible error summary, and translates RLS, schema/migration, constraint, session, Auth-email, and Auth-password failures without leaking secrets.
 - Branch IDs are generated on the trusted server before insertion, so creation no longer depends on an RLS-filtered `INSERT ... RETURNING` response to continue shared-account compensation safely.
+- Admin general can edit branch name, address, coordinates, geofence radius, proximity activation/message and status inline from `/admin/branches`; validation retains submitted values, deactivation requires confirmation, and the write matches both branch ID and the authenticated tenant under RLS.
+- Branch location/proximity/status changes continue through the existing Apple Wallet outbox trigger and immediate best-effort dispatcher; shared-access mode and credentials remain in their separate confirmed control.
 - Admin-only `/admin/staff` creation for Manager and Employee accounts.
 - Server-only Auth provisioning with profile cleanup compensation.
 - Tenant and creator derived from the authenticated Admin context.
@@ -131,7 +133,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 176 tests passed.
+- `npm run test:run`: passed; 181 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -145,6 +147,7 @@
 - Required password-change integration assertions: passed.
 - Staff provisioning validation and server-boundary tests: passed.
 - Staff branch assignment RPC integration assertions: passed.
+- Branch update RLS assertions passed, including denial of an Admin attempting to update another tenant's branch.
 - Customer/card migration and RLS integration assertions: passed.
 - Phone normalization unit tests: passed; 11 cases.
 - Public registration migration and anonymous RLS assertions: passed.
@@ -199,4 +202,4 @@
 
 ## Next Exact Step
 
-Deploy the QR/scanner commit, then refresh or remove/reinstall the Apple pass so it receives the visible barcode. Scan it from `/app/scan` on the employee phone, confirm the expected customer opens, and validate one stamp plus reward update on the real iPhone. Connect the protected retry endpoint to an external scheduler before production scale.
+Deploy the branch editor and QR/scanner changes. Confirm an Admin general can edit and persist one branch in production, then refresh or remove/reinstall the Apple pass so it receives the visible barcode. Scan it from `/app/scan` on the employee phone, confirm the expected customer opens, and validate one stamp plus reward update on the real iPhone. Connect the protected retry endpoint to an external scheduler before production scale.
