@@ -8,6 +8,10 @@ import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
 import { walletProviderConfig } from "./service";
 import { resolvePublicOrigin } from "@/lib/public-origin";
+import {
+  applePassAuthenticationToken,
+  decodeAppleWalletUpdateSecret,
+} from "./apple-update-crypto";
 
 const MAX_REMOTE_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -22,7 +26,7 @@ function decodePemSecret(name: string) {
   return decoded;
 }
 
-function getAppleSigningConfig() {
+export function getAppleSigningConfig() {
   const status = walletProviderConfig("APPLE");
   if (!status.configured) throw new Error("Apple Wallet signing is not configured.");
   return {
@@ -37,6 +41,16 @@ function getAppleSigningConfig() {
       signerKeyPassphrase: process.env.APPLE_CERTIFICATE_PASSWORD?.trim() || undefined,
     },
   };
+}
+
+export function getAppleWalletUpdateSecret() {
+  return decodeAppleWalletUpdateSecret(
+    process.env.APPLE_WALLET_UPDATE_SECRET_BASE64,
+  );
+}
+
+export function getApplePassAuthenticationToken(serialNumber: string) {
+  return applePassAuthenticationToken(getAppleWalletUpdateSecret(), serialNumber);
 }
 
 function allowedAssetHosts() {

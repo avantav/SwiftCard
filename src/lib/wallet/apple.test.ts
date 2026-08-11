@@ -26,6 +26,8 @@ describe("Apple Wallet store card", () => {
           { stampsRequired: 3, name: "Extra", description: "Un extra" },
         ],
         cardUrl: "https://wallet.example.com/card/public-token",
+        webServiceUrl: "https://wallet.example.com/api/wallet/apple",
+        authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
         locations: [{ latitude: 23.2, longitude: -106.4, relevantText: "Café Central" }],
       },
       { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
@@ -37,6 +39,11 @@ describe("Apple Wallet store card", () => {
     );
     expect(JSON.stringify(props)).not.toContain("customer-id");
     expect(props.locations).toHaveLength(1);
+    expect(props.webServiceURL).toBe(
+      "https://wallet.example.com/api/wallet/apple",
+    );
+    expect(props.authenticationToken).toHaveLength(43);
+    expect(props.voided).toBe(false);
 
     const { storeCard, ...baseProps } = props;
     const pass = new PKPass(
@@ -72,6 +79,8 @@ describe("Apple Wallet store card", () => {
       termsAndConditions: "Términos vigentes.",
       rewardTiers: [],
       cardUrl: "https://example.com/card/token",
+      webServiceUrl: "https://example.com/api/wallet/apple",
+      authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
       locations: [],
     };
     const props = buildAppleWalletPassProps(base, {

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { validateEmployeeCustomerRegistration } from "@/lib/customers/employee-registration";
+import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
 function back(params: Record<string, string>): never {
   redirect(`/app/customers?${new URLSearchParams(params).toString()}`);
@@ -28,5 +29,6 @@ export async function updateCustomer(formData: FormData) {
   });
   if (error || data === "DUPLICATE") back({ error: "Ese teléfono ya está registrado." });
   if (data !== "UPDATED") back({ error: "No tienes acceso a ese cliente." });
+  await dispatchAppleWalletUpdatesBestEffort({ limit: 1, customerId });
   back({ updated: "1" });
 }

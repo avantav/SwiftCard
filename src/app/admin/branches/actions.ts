@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin/branches";
 import { requireInternalArea } from "@/lib/auth/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
 function redirectWithError(error: string): never {
   redirect(`/admin/branches?error=${encodeURIComponent(error)}`);
@@ -198,6 +199,10 @@ export async function createBranch(
     }
   }
 
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 25,
+    tenantId: context.tenantId,
+  });
   redirect("/admin/branches?created=1");
 }
 

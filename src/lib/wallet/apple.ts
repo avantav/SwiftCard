@@ -27,6 +27,9 @@ export type AppleWalletPassData = {
     description: string;
   }>;
   cardUrl: string;
+  webServiceUrl: string;
+  authenticationToken: string;
+  voided?: boolean;
   locations: AppleWalletLocation[];
 };
 
@@ -34,7 +37,12 @@ export function buildAppleWalletPassProps(
   input: AppleWalletPassData,
   identity: { passTypeIdentifier: string; teamIdentifier: string },
 ) {
-  if (!input.serialNumber.trim() || !input.cardUrl.startsWith("http")) {
+  if (
+    !input.serialNumber.trim() ||
+    !input.cardUrl.startsWith("https://") ||
+    !input.webServiceUrl.startsWith("https://") ||
+    input.authenticationToken.length < 32
+  ) {
     throw new Error("Apple Wallet identifiers are required.");
   }
 
@@ -53,8 +61,11 @@ export function buildAppleWalletPassProps(
     passTypeIdentifier: identity.passTypeIdentifier,
     teamIdentifier: identity.teamIdentifier,
     serialNumber: input.serialNumber,
+    webServiceURL: input.webServiceUrl.replace(/\/$/, ""),
+    authenticationToken: input.authenticationToken,
     organizationName: input.tenantName,
     description: input.description,
+    voided: input.voided ?? false,
     logoText: input.logoText,
     backgroundColor: hexToAppleRgb(input.backgroundColor),
     foregroundColor: hexToAppleRgb(input.foregroundColor),

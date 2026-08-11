@@ -2,13 +2,13 @@
 
 ## Current State
 
-- Current phase: Phase 8 Apple Wallet initial generation complete; provider updates, Google Wallet, and real-device validation remain.
-- Current task: Deploy and verify direct Apple Wallet handoff after registration, then validate a real pass on an Apple device.
-- Last completed task: Replaced the post-registration Web Card link with a direct, availability-checked Apple Wallet action.
+- Current phase: Phase 8 Apple Wallet automatic-update implementation complete locally; deployment/APNs validation, external retry scheduling, and Google Wallet remain.
+- Current task: Hand off migration `0038` plus the production configuration guide for manual deployment.
+- Last completed task: Implemented the PassKit update web service, encrypted device registrations, transactional outbox, immediate APNs delivery and protected retry endpoint.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Direct Apple Wallet handoff after public registration with the Web Card retained only as a fallback.
-- Git status: Direct registration-to-Wallet work is in a stable local commit; the pre-existing `next-env.d.ts` modification remains outside this work.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current direct-Wallet work is not pushed.
+- Last stable feature: Apple Wallet automatic updates with encrypted device registration, transactional queuing, immediate APNs delivery and durable retries.
+- Git status: Apple Wallet automatic-update work is locally validated and ready for its stable commit.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current Apple update work is not pushed.
 
 ## Completed Functionality
 
@@ -96,29 +96,36 @@
 - The Admin Wallet designer uploads PNG/JPEG/WebP assets of at most 5 MB directly to the public-read `wallet-assets` Supabase bucket, under generated `tenant_id/apple` paths.
 - Storage RLS permits insert/update/delete only to an active Admin general in their own tenant path; Branch Administrators and cross-tenant paths are denied.
 - Saving a replacement design removes the prior tenant-owned object, failed saves clean newly submitted objects, and the same-project Supabase hostname is accepted automatically by pass generation.
+- Newly generated Apple passes include an HTTPS `webServiceURL` and stable HMAC-derived authentication token without storing the token in plaintext.
+- The official PassKit register, unregister, changed-serial, updated-pass and log endpoints are implemented under `/api/wallet/apple/v1`.
+- Migration `0038` adds monotonic update tags, encrypted device registrations, many-to-many pass registrations and a coalescing transactional outbox with forced RLS and service-role-only worker RPCs.
+- Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.
+- Purchase, redemption and relevant administrative actions attempt production APNs delivery immediately without making application success depend on Apple availability.
+- APNs delivery uses HTTP/2, the existing pass certificate/private key and WWDR chain, an empty payload, Pass Type topic, bounded timeouts, invalid-token cleanup and per-device delivered tags.
+- A Bearer-protected internal endpoint is ready for a future external retry scheduler; Hostinger shared cron remains unconfirmed and documented as pending.
 
 ## Pending Functionality
 
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
-- Apple Wallet update web service/APNs and real-device validation; Google pass generation; pilot tenant, privacy, and operational sign-off.
+- Apply migration `0038`, deploy the update secret, reinstall a pass, validate production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
 
 ## Active Blockers
 
-- WALLET-001: Local Apple signing is configured and produces a signed `.pkpass`; real-device acceptance, production secret deployment, APNs updates, and Google Wallet credentials remain pending.
+- WALLET-001: Initial pass acceptance succeeded on iPhone and the update service is locally complete; `0038`, production update secret, reinstallation, APNs validation, external retry cron and Google Wallet remain pending.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks
 
 - `npm audit --omit=dev` reports four high-severity runtime advisories in the pinned Next.js transitive `postcss`/`sharp` copies and the existing `xlsx` package. The Apple generator's Joi advisory was removed with a tested `17.13.4` override; unrelated framework/export dependency upgrades remain separate risk work.
 - `npm install` reports an `EBADENGINE` warning for transitive `eslint-visitor-keys@5.0.1`, which requires Node `22.13+`; local Node is `22.12.0`. `npm ls`, lint, typecheck, tests, and build still pass.
-- Apple device acceptance, registrations, APNs updates, the licensed official web badge, and Google Wallet require external credentials or account acceptance.
+- Production APNs validation, the licensed official web badge, external retry scheduling, and Google Wallet require deployment configuration or external credentials.
 
 ## Last Validation Commands
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 162 tests passed.
+- `npm run test:run`: passed; 168 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 4 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -168,6 +175,8 @@
 - Migration `0035` and its integration test passed branch-Administrator scope, shared-account bypass denial, PIN uniqueness, lockout, unlock, revocation, branch isolation, and actor attribution.
 - Migration `0036` and its integration test passed Admin-only design mutation, Manager/anonymous denial, audit attribution, public availability filtering, and RLS/table-grant boundaries.
 - Migration `0037` and its integration test passed bucket configuration, Admin-only own-tenant upload/delete, invalid filename rejection, cross-tenant denial, and Branch Administrator denial.
+- Migration `0038` and its integration test passed encrypted/idempotent device registration, transactional customer and tenant update queuing, service-role-only claims, authenticated-role denial, per-device delivery tags, outbox completion, unregister cleanup and no work for uninstalled passes.
+- Apple Wallet update cryptography, APNs response classification, PassKit web-service boundaries and production route build passed focused and full test coverage.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
 - Authorized local Apple credentials produced a signed `.pkpass` ZIP with a matching, currently valid signer certificate; no secret was committed.
 - The Wallet Storage designer passed Chrome review at 375, 768, 1280, and 1440 px; a prerender-only browser client bug and responsive file-input overflow were found and fixed, and the temporary review route was removed.
@@ -181,4 +190,4 @@
 
 ## Next Exact Step
 
-Apply migrations `0036` and `0037` with explicit release approval, copy the already tested Apple secrets to the deployment secret manager, enable a tenant design, upload its images, and validate the generated pass on a real Apple device. Then implement pass registrations/APNs updates.
+Review and apply migration `0038` manually, configure the stable update secret, redeploy, remove and reinstall the previously issued pass, then validate registration plus one stamp and reward update on the real iPhone. Connect the protected retry endpoint to an external scheduler before production scale.

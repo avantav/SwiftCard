@@ -139,3 +139,13 @@
 - Reason: Direct browser uploads avoid Server Action body limits, public reads give the pass generator stable HTTPS assets, and tenant-path RLS preserves write isolation without proliferating buckets or exposing the service role.
 - Consequences: Wallet images are intentionally public brand assets; replacing or clearing a saved design removes the previous tenant-owned object, failed submissions clean new objects when possible, and additional non-Supabase asset hosts still require `APPLE_WALLET_ASSET_HOSTS`.
 - Status: Accepted.
+
+## DEC-0015 - Transactional Apple Wallet Outbox With Immediate Dispatch
+
+- Date: 2026-08-10
+- Context: The deployed Hostinger shared plan supports Node.js but has no confirmed cron facility. Loyalty operations must update installed Apple passes without becoming dependent on APNs availability.
+- Decision: Add `webServiceURL` and a stable HMAC-derived `authenticationToken` to every new Apple pass; store device identifiers only as keyed hashes and push tokens encrypted with AES-256-GCM; mark pass changes and coalesce an outbox record transactionally in PostgreSQL; then attempt APNs delivery immediately after successful application mutations. Keep failures in the outbox and expose a separate Bearer-protected retry endpoint for a future external scheduler.
+- Alternatives considered: Call APNs inside PostgreSQL, make loyalty RPC success depend on APNs, store raw device/push tokens, require an unconfirmed Hostinger cron, or omit retries.
+- Reason: The selected design preserves loyalty correctness during provider outages, works on the current Node hosting, keeps provider secrets out of the browser and database plaintext, and leaves a clean path to reliable scheduled retries.
+- Consequences: A failed push can remain pending until another scoped operation or the protected retry endpoint runs. Connecting an external cron is documented as pending before production scale. Existing passes issued without update metadata must be removed and reinstalled after deployment.
+- Status: Accepted.

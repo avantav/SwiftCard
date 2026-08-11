@@ -1,5 +1,23 @@
 # Work Log
 
+## 2026-08-10 - Apple Wallet Automatic Updates
+
+**Objective:** Leave Apple Wallet automatic updates ready for deployment by adding device registration, authenticated updated-pass delivery, APNs notifications and durable non-blocking retries without requiring a confirmed Hostinger cron.
+
+**Changes Made:** Added migration `0038` with monotonic update tags, hashed device identifiers, AES-256-GCM push-token ciphertext, many-to-many registrations, per-device delivered tags, a coalescing transactional outbox, RLS denial and service-role-only worker RPCs. Added the complete PassKit `/v1` web service, stable per-pass HMAC authentication, reusable current-pass projection, `If-Modified-Since` support, voiding for inactive cards, production HTTP/2 APNs delivery using the pass certificate, invalid-token cleanup, immediate scoped dispatch after loyalty/design mutations, and a Bearer-protected retry endpoint for a future scheduler.
+
+**Security Review:** No frontend or request-provided tenant is authoritative. Registration requires the exact Pass Type ID, existing serial and constant-time `ApplePass` token validation. Device identifiers cannot be recovered from the database, push tokens require the stable server secret to decrypt, tables expose no browser grants, RPCs are restricted to `service_role`, request bodies and identifiers are bounded, and device logs are redacted. APNs failure never rolls back a purchase or redemption.
+
+**Hosting Decision:** Hostinger shared supports Node.js but has no confirmed cron. Normal operations therefore attempt their own update immediately. Failed work remains durable and `/api/internal/wallet/apple/process-updates` is ready for an external scheduler. Connecting that scheduler remains documented as a production-scale pending item.
+
+**Migration:** `0038_apple_wallet_updates.sql` was created and passed the full disposable PostgreSQL/RLS suite. Per user instruction it was not applied remotely; the user will apply it.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 168 Vitest tests and `npm run build` passed. The full disposable PostgreSQL/RLS suite passed through migration and test `0038`, including registration idempotency, transactional queuing, tenant-wide coalescing, role denial, scoped claims, delivered tags, completion, unregister cleanup and suppression of work for uninstalled passes.
+
+**Deployment Note:** A pass issued before this change lacks `webServiceURL` and `authenticationToken`; it must be removed and reinstalled after deployment. See `docs/APPLE_WALLET_UPDATES.md`.
+
+**Next Action:** Review/apply `0038`, configure the environment and redeploy. Then reinstall the pass, validate a stamp and reward update on the real iPhone, and add the external cron.
+
 ## 2026-08-07 - Direct Apple Wallet Handoff After Registration
 
 **Objective:** Remove the Web Card as the post-registration destination and let a newly registered customer add the signed pass directly to Apple Wallet.

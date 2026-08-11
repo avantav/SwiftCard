@@ -460,7 +460,9 @@ La Web Card será el respaldo universal.
 
 Las sucursales activas se asociarán a la tarjeta para que el sistema operativo pueda sugerirla cerca del negocio. Esta función depende de permisos, dispositivo, límites y políticas del proveedor; no se garantizará una notificación en todos los teléfonos.
 
-La tarjeta se actualizará al recibir sellos o generar/canjear recompensas. Se incluirá notificación compatible de nueva recompensa. Los avisos de expiración quedan para una fase posterior.
+La tarjeta se actualizará al recibir sellos o generar/canjear recompensas mediante el servicio web PassKit, registro revocable de dispositivos, tags monotónicos, entrega firmada del pase y notificaciones APNs vacías. Los push tokens permanecerán cifrados y los identificadores de dispositivo se almacenarán como HMAC. Un fallo de APNs nunca revertirá una operación de fidelidad: quedará en una cola transaccional para reintento. Se incluirá notificación compatible de nueva recompensa. Los avisos de expiración quedan para una fase posterior.
+
+Mientras el hosting no tenga cron, la aplicación intentará el envío inmediatamente después de cada operación y conservará un endpoint interno protegido para conectar un scheduler externo. El cron de reintentos será requisito antes de producción a escala, pero no bloqueará el piloto controlado.
 
 ## 23. Arquitectura técnica
 
@@ -506,6 +508,9 @@ Tablas principales:
 - customer_imports.  
 - customer_import_rows.  
 - wallet_passes.  
+- apple_wallet_devices.
+- apple_wallet_registrations.
+- apple_wallet_update_outbox.
 - tenant_wallet_designs.
 - Supabase Storage bucket `wallet-assets` con rutas por tenant y políticas RLS de escritura.
 - audit_logs.

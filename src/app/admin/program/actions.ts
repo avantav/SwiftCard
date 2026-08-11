@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { validateLoyaltyProgramForm } from "@/lib/admin/program";
+import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
 function redirectWithError(error: string): never {
   redirect(`/admin/program?error=${encodeURIComponent(error)}`);
@@ -68,5 +69,9 @@ export async function saveLoyaltyProgram(formData: FormData) {
     );
   }
 
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 25,
+    tenantId: context.tenantId,
+  });
   redirect(`/admin/program?saved=1&status=${input.status}`);
 }
