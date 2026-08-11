@@ -50,6 +50,10 @@ export function canManageBranches(context: StaffAccessContext) {
   return isActiveTenantStaff(context) && context.role === "ADMIN";
 }
 
+export function canViewTenantCustomers(context: StaffAccessContext) {
+  return isActiveTenantStaff(context) && context.role === "ADMIN";
+}
+
 export function canManageStaff(context: StaffAccessContext) {
   return (
     isActiveTenantStaff(context) &&

@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-10 - Admin Customer Directory
+
+**Objective:** Give the Admin general a visible tenant-wide customer directory for diagnosing customer, card and Apple Wallet availability without exposing that administrative view to Branch Administrators.
+
+**Changes Made:** Added `/admin/customers` with bounded name or normalized-phone search, ACTIVE/INACTIVE filtering, 50-row pagination, source branch, customer/card status, stamp balance, available rewards, registration metadata and Apple Wallet generation state. Added an Admin-only navigation entry, route-level loading state, explicit error/empty/no-result treatments and responsive table-to-record layouts.
+
+**Security Review:** The route checks the active `ADMIN` permission before any data query. All reads use the authenticated server client and the tenant ID derived from the session; no service-role client, frontend tenant authority, public card token or new grant was introduced. Administradores de sucursal are redirected to `/admin` and do not receive the navigation item.
+
+**Design Review:** The existing enterprise shell, filter panel, semantic table, textual state badges and approved tokens are reused. At the 375 and 768 layouts records become structured blocks without horizontal scrolling; 1280 and 1440 retain the compact table. Native controls and links retain keyboard focus, mobile actions reach 44px, and loading, error, initial-empty and filtered-empty states are explicit.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 172 Vitest tests and `npm run build` passed. Focused coverage verifies filter bounds, phone normalization, pagination links, tenant-scoped queries, role enforcement and Admin-only navigation.
+
+**Migration:** None required.
+
+**Next Action:** Deploy the local commit, sign in as Admin general and open `/admin/customers` to confirm the newly registered customer's four availability signals before retrying the Apple Wallet download.
+
 ## 2026-08-10 - Apple Wallet Automatic Updates
 
 **Objective:** Leave Apple Wallet automatic updates ready for deployment by adding device registration, authenticated updated-pass delivery, APNs notifications and durable non-blocking retries without requiring a confirmed Hostinger cron.

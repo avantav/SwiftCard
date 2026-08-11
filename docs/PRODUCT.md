@@ -195,6 +195,8 @@ Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya e
 
 Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
 
+El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers`, con búsqueda, filtro por estado y paginación. La vista mostrará nombre, contacto, sucursal de alta, estado del cliente y de su tarjeta, sellos, recompensas disponibles, estado de generación de Apple Wallet, método y fecha de registro. Los Administradores de sucursal no verán este directorio administrativo y conservarán únicamente la búsqueda operativa dentro de su alcance.
+
 ## 10. Registro de clientes
 
 ### Autoservicio

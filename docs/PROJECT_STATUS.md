@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Phase 8 Apple Wallet automatic-update implementation complete locally; deployment/APNs validation, external retry scheduling, and Google Wallet remain.
-- Current task: Hand off migration `0038` plus the production configuration guide for manual deployment.
-- Last completed task: Implemented the PassKit update web service, encrypted device registrations, transactional outbox, immediate APNs delivery and protected retry endpoint.
+- Current task: Hand off the Admin-only customer directory and continue the manual Apple Wallet deployment.
+- Last completed task: Added `/admin/customers` with tenant-scoped search, status filtering, pagination and customer/card/loyalty/Apple Wallet diagnostics.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Apple Wallet automatic updates with encrypted device registration, transactional queuing, immediate APNs delivery and durable retries.
-- Git status: Apple Wallet automatic-update work is locally validated and ready for its stable commit.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; current Apple update work is not pushed.
+- Last stable feature: Admin-general customer directory with role-gated navigation and route enforcement.
+- Git status: Customer-directory work is locally validated; no unrelated worktree changes were detected.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the latest local work is not pushed.
 
 ## Completed Functionality
 
@@ -87,6 +87,7 @@
 - Customer creation, purchases, stamp ledger, redemptions and audit logs preserve the PIN operator alongside the technical shared account.
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 - Admin general can copy each active branch's public registration link, download its PNG QR, and open the destination from `/admin/branches`; the link is derived from the server-configured public HTTPS origin.
+- Admin general has an exclusive `/admin/customers` directory with bounded name/phone search, status filter, 50-row pagination, registration source, customer/card state, loyalty balances, available rewards and Apple Wallet generation diagnostics; Branch Administrators are redirected before data queries and do not see the navigation entry.
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
@@ -125,7 +126,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 168 tests passed.
+- `npm run test:run`: passed; 172 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 4 high runtime advisories; no safe automatic fix.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -177,6 +178,7 @@
 - Migration `0037` and its integration test passed bucket configuration, Admin-only own-tenant upload/delete, invalid filename rejection, cross-tenant denial, and Branch Administrator denial.
 - Migration `0038` and its integration test passed encrypted/idempotent device registration, transactional customer and tenant update queuing, service-role-only claims, authenticated-role denial, per-device delivery tags, outbox completion, unregister cleanup and no work for uninstalled passes.
 - Apple Wallet update cryptography, APNs response classification, PassKit web-service boundaries and production route build passed focused and full test coverage.
+- Admin customer-directory filter parsing, pagination preservation, tenant scoping, role denial and navigation visibility passed focused tests; the responsive table/card rules were reviewed at the required 375, 768, 1280 and 1440 px breakpoints.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
 - Authorized local Apple credentials produced a signed `.pkpass` ZIP with a matching, currently valid signer certificate; no secret was committed.
 - The Wallet Storage designer passed Chrome review at 375, 768, 1280, and 1440 px; a prerender-only browser client bug and responsive file-input overflow were found and fixed, and the temporary review route was removed.

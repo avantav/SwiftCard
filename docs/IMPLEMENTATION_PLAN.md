@@ -86,6 +86,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Expose each active branch registration link with copy, PNG QR download, and inactive-link handling in the Admin UI.
 - [x] [Terminada] Implement employee registration.
 - [x] [Terminada] Implement customer search and profile editing.
+- [x] [Terminada] Add the tenant-wide customer directory with status, card, loyalty and Apple Wallet diagnostics exclusively for the Admin general.
 - [x] [Terminada] Implement public web card by card token.
 
 ## Phase 3 - Motor De Fidelidad
