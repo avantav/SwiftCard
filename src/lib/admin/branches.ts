@@ -11,12 +11,15 @@ export type BranchCreateInput = {
 };
 
 export type BranchCreateField =
+  | "branchId"
   | "name"
   | "address"
   | "latitude"
   | "longitude"
   | "geofenceRadiusMeters"
   | "proximityEnabled"
+  | "proximityMessage"
+  | "status"
   | "employeeAccessMode"
   | "sharedEmail"
   | "sharedPassword"
@@ -43,6 +46,49 @@ export type BranchCreateActionState = {
   fieldErrors: BranchCreateFieldErrors;
   values: BranchCreateFormValues;
 };
+
+export const BRANCH_STATUSES = ["ACTIVE", "INACTIVE"] as const;
+
+export type BranchStatus = (typeof BRANCH_STATUSES)[number];
+
+export type BranchUpdateInput = {
+  branchId: string;
+  name: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  geofenceRadiusMeters: number;
+  proximityEnabled: boolean;
+  proximityMessage: string | null;
+  status: BranchStatus;
+};
+
+export type BranchUpdateFormValues = {
+  name: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  geofenceRadiusMeters: string;
+  proximityEnabled: boolean;
+  proximityMessage: string;
+  status: BranchStatus;
+};
+
+export type BranchUpdateActionState = {
+  status: "idle" | "error";
+  formError: string | null;
+  fieldErrors: BranchCreateFieldErrors;
+  values: BranchUpdateFormValues;
+};
+
+export type BranchUpdateValidationResult =
+  | { ok: true; data: BranchUpdateInput }
+  | {
+      ok: false;
+      errors: string[];
+      fieldErrors: BranchCreateFieldErrors;
+      values: BranchUpdateFormValues;
+    };
 
 export const BRANCH_EMPLOYEE_ACCESS_MODES = [
   "INDIVIDUAL_CREDENTIALS",
@@ -229,6 +275,131 @@ export function validateBranchCreateForm(
   };
 }
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function validateBranchUpdateForm(
+  formData: FormData,
+): BranchUpdateValidationResult {
+  const issues: Array<{ field: BranchCreateField; message: string }> = [];
+  const branchId = text(formData, "branchId");
+  const name = text(formData, "name");
+  const addressValue = text(formData, "address");
+  const latitudeValue = text(formData, "latitude");
+  const longitudeValue = text(formData, "longitude");
+  const radiusValue = text(formData, "geofenceRadiusMeters");
+  const proximityMessageValue = text(formData, "proximityMessage");
+  const rawStatus = text(formData, "status");
+  const latitude = optionalCoordinate(latitudeValue);
+  const longitude = optionalCoordinate(longitudeValue);
+  const radius = Number(radiusValue);
+  const status = BRANCH_STATUSES.includes(rawStatus as BranchStatus)
+    ? (rawStatus as BranchStatus)
+    : "ACTIVE";
+  const values: BranchUpdateFormValues = {
+    name,
+    address: addressValue,
+    latitude: latitudeValue,
+    longitude: longitudeValue,
+    geofenceRadiusMeters: radiusValue,
+    proximityEnabled: formData.get("proximityEnabled") === "on",
+    proximityMessage: proximityMessageValue,
+    status,
+  };
+
+  function addIssue(field: BranchCreateField, message: string) {
+    issues.push({ field, message });
+  }
+
+  if (!UUID_PATTERN.test(branchId)) {
+    issues.push({
+      field: "branchId",
+      message: "No se pudo identificar la sucursal que deseas editar.",
+    });
+  }
+
+  if (!name) {
+    addIssue("name", "El nombre de la sucursal es obligatorio.");
+  } else if (name.length < 2) {
+    addIssue("name", "El nombre debe tener al menos 2 caracteres.");
+  } else if (name.length > 120) {
+    addIssue("name", "El nombre no puede exceder 120 caracteres.");
+  }
+
+  if (addressValue.length > 300) {
+    addIssue("address", "La dirección no puede exceder 300 caracteres.");
+  }
+
+  if ((latitude === null) !== (longitude === null)) {
+    if (latitude === null) {
+      addIssue("latitude", "Captura la latitud junto con la longitud.");
+    }
+    if (longitude === null) {
+      addIssue("longitude", "Captura la longitud junto con la latitud.");
+    }
+  }
+
+  if (latitude !== null && (!Number.isFinite(latitude) || latitude < -90 || latitude > 90)) {
+    addIssue("latitude", "La latitud debe ser un número entre -90 y 90.");
+  }
+
+  if (
+    longitude !== null &&
+    (!Number.isFinite(longitude) || longitude < -180 || longitude > 180)
+  ) {
+    addIssue("longitude", "La longitud debe ser un número entre -180 y 180.");
+  }
+
+  if (!Number.isInteger(radius) || radius < 1 || radius > 100000) {
+    addIssue(
+      "geofenceRadiusMeters",
+      "El radio debe ser un número entero entre 1 y 100000 metros.",
+    );
+  }
+
+  if (proximityMessageValue.length > 500) {
+    addIssue(
+      "proximityMessage",
+      "El mensaje de proximidad no puede exceder 500 caracteres.",
+    );
+  }
+
+  if (!BRANCH_STATUSES.includes(rawStatus as BranchStatus)) {
+    addIssue("status", "Selecciona un estado válido para la sucursal.");
+  }
+
+  if (issues.length > 0) {
+    const fieldErrors: BranchCreateFieldErrors = {};
+    for (const issue of issues) {
+      fieldErrors[issue.field] = [
+        ...(fieldErrors[issue.field] ?? []),
+        issue.message,
+      ];
+    }
+    return {
+      ok: false,
+      errors: issues.map((issue) => issue.message),
+      fieldErrors,
+      values,
+    };
+  }
+
+  return {
+    ok: true,
+    data: {
+      branchId,
+      name,
+      address: addressValue || null,
+      latitude,
+      longitude,
+      geofenceRadiusMeters: radius,
+      proximityEnabled: values.proximityEnabled,
+      proximityMessage: proximityMessageValue || null,
+      status,
+    },
+  };
+}
+
 type SupabaseErrorLike = {
   code?: string;
   message?: string;
@@ -237,6 +408,7 @@ type SupabaseErrorLike = {
 
 export function describeBranchPersistenceError(
   error: SupabaseErrorLike | null,
+  operation: "create" | "update" = "create",
 ): Pick<BranchCreateActionState, "formError" | "fieldErrors"> {
   const rawCode = error?.code?.trim() ?? "";
   const code = /^[A-Z0-9_]{1,32}$/.test(rawCode) ? rawCode : "UNKNOWN";
@@ -257,7 +429,9 @@ export function describeBranchPersistenceError(
   if (code === "42501" || message.includes("row-level security")) {
     return {
       formError:
-        "Tu sesión no tiene permiso para crear sucursales. Cierra sesión, vuelve a entrar con el Admin general e inténtalo nuevamente.",
+        operation === "update"
+          ? "Tu sesión no tiene permiso para editar esta sucursal. Cierra sesión, vuelve a entrar con el Admin general e inténtalo nuevamente."
+          : "Tu sesión no tiene permiso para crear sucursales. Cierra sesión, vuelve a entrar con el Admin general e inténtalo nuevamente.",
       fieldErrors: {},
     };
   }
@@ -334,7 +508,7 @@ export function describeBranchPersistenceError(
   }
 
   return {
-    formError: `Supabase rechazó la creación de la sucursal (código ${code}). Revisa los campos marcados o comparte este código con soporte.`,
+    formError: `Supabase rechazó ${operation === "update" ? "la actualización" : "la creación"} de la sucursal (código ${code}). Revisa los campos marcados o comparte este código con soporte.`,
     fieldErrors: {},
   };
 }

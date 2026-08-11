@@ -138,6 +138,8 @@ Cada sucursal tendrá nombre, dirección, coordenadas, radio de geofence, estado
 
 El alta de sucursal validará y explicará por campo: nombre obligatorio de 2 a 120 caracteres, dirección opcional de hasta 300, latitud y longitud opcionales pero capturadas en conjunto y dentro de sus rangos, radio entero de 1 a 100000 metros, modo de acceso permitido y, cuando aplique, correo y contraseña compartidos válidos. Un rechazo de base de datos o Auth mostrará una causa segura y un código de diagnóstico; el formulario conservará los valores no sensibles, nunca las contraseñas.
 
+El Admin general podrá editar desde la misma lista el nombre, dirección, coordenadas, radio de geofence, activación y mensaje de proximidad, y estado de una sucursal. La edición aplicará las mismas validaciones detalladas del alta; el mensaje de proximidad será opcional y admitirá hasta 500 caracteres. Desactivar una sucursal requerirá confirmación, impedirá registros públicos y operaciones nuevas, y conservará asignaciones e historial. El modo de acceso y la credencial compartida permanecerán en un control sensible separado.
+
 Las ubicaciones servirán para:
 
 - Recordatorios de tarjeta cerca del negocio.  

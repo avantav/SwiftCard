@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   describeBranchPersistenceError,
   validateBranchCreateForm,
+  validateBranchUpdateForm,
 } from "./branches";
 
 const branchAction = readFileSync(
@@ -12,6 +13,10 @@ const branchAction = readFileSync(
 );
 const branchForm = readFileSync(
   join(process.cwd(), "src/components/branch-create-form.tsx"),
+  "utf8",
+);
+const branchEditForm = readFileSync(
+  join(process.cwd(), "src/components/branch-edit-form.tsx"),
   "utf8",
 );
 
@@ -183,5 +188,96 @@ describe("validateBranchCreateForm", () => {
     expect(branchForm).toContain("aria-invalid");
     expect(branchForm).toContain("field-error-message");
     expect(branchForm).toContain("summaryRef.current?.focus()");
+  });
+});
+
+describe("validateBranchUpdateForm", () => {
+  it("normalizes every editable branch field", () => {
+    expect(
+      validateBranchUpdateForm(
+        form({
+          branchId: "20000000-0000-4000-8000-000000000001",
+          name: "  Malecón  ",
+          address: "Av. del Mar 100",
+          latitude: "23.2105",
+          longitude: "-106.4231",
+          geofenceRadiusMeters: "250",
+          proximityEnabled: "on",
+          proximityMessage: "  Estás cerca de Malecón.  ",
+          status: "ACTIVE",
+        }),
+      ),
+    ).toEqual({
+      ok: true,
+      data: {
+        branchId: "20000000-0000-4000-8000-000000000001",
+        name: "Malecón",
+        address: "Av. del Mar 100",
+        latitude: 23.2105,
+        longitude: -106.4231,
+        geofenceRadiusMeters: 250,
+        proximityEnabled: true,
+        proximityMessage: "Estás cerca de Malecón.",
+        status: "ACTIVE",
+      },
+    });
+  });
+
+  it("reports invalid identifiers, fields, proximity copy, and status together", () => {
+    expect(
+      validateBranchUpdateForm(
+        form({
+          branchId: "otra-sucursal",
+          name: "A",
+          latitude: "23",
+          geofenceRadiusMeters: "1.5",
+          proximityMessage: "x".repeat(501),
+          status: "DELETED",
+        }),
+      ),
+    ).toMatchObject({
+      ok: false,
+      fieldErrors: {
+        branchId: ["No se pudo identificar la sucursal que deseas editar."],
+        name: ["El nombre debe tener al menos 2 caracteres."],
+        longitude: ["Captura la longitud junto con la latitud."],
+        geofenceRadiusMeters: [
+          "El radio debe ser un número entero entre 1 y 100000 metros.",
+        ],
+        proximityMessage: [
+          "El mensaje de proximidad no puede exceder 500 caracteres.",
+        ],
+        status: ["Selecciona un estado válido para la sucursal."],
+      },
+    });
+  });
+
+  it("keeps update authority server-side and tenant-scoped", () => {
+    expect(branchAction).toContain("validateBranchUpdateForm");
+    expect(branchAction).toContain('.eq("id", validation.data.branchId)');
+    expect(branchAction).toContain('.eq("tenant_id", context.tenantId)');
+    expect(branchAction).toContain('context.access.role !== "ADMIN"');
+    expect(branchAction).not.toContain('formData.get("tenantId")');
+  });
+
+  it("renders accessible errors and confirms branch deactivation", () => {
+    expect(branchEditForm).toContain("useActionState");
+    expect(branchEditForm).toContain('role="alert"');
+    expect(branchEditForm).toContain("aria-invalid");
+    expect(branchEditForm).toContain("summaryRef.current?.focus()");
+    expect(branchEditForm).toContain("Al desactivar la sucursal");
+  });
+
+  it("describes update persistence failures without leaking raw details", () => {
+    expect(
+      describeBranchPersistenceError(
+        { code: "42501", message: "row-level security" },
+        "update",
+      ).formError,
+    ).toContain("editar esta sucursal");
+    expect(
+      describeBranchPersistenceError({ code: "DB_FAILURE" }, "update")
+        .formError,
+    ).toContain("actualización");
   });
 });

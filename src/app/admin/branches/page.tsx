@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 import { SubmitButton } from "@/components/submit-button";
 import { BranchAccessFields } from "@/components/branch-access-fields";
 import { BranchCreateForm } from "@/components/branch-create-form";
+import { BranchEditForm } from "@/components/branch-edit-form";
 import { PublicRegistrationShare } from "@/components/public-registration-share";
 import { requireInternalArea } from "@/lib/auth/server";
 import {
@@ -12,7 +13,12 @@ import {
 import { configureBranchAccess } from "./actions";
 
 type BranchesPageProps = {
-  searchParams: Promise<{ accessUpdated?: string; created?: string; error?: string }>;
+  searchParams: Promise<{
+    accessUpdated?: string;
+    created?: string;
+    error?: string;
+    updated?: string;
+  }>;
 };
 
 export default async function BranchesPage({ searchParams }: BranchesPageProps) {
@@ -22,11 +28,11 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
     redirect("/admin");
   }
 
-  const { accessUpdated, created, error } = await searchParams;
+  const { accessUpdated, created, error, updated } = await searchParams;
   const { data: branches, error: branchesError } = await context.supabase
     .from("branches")
     .select(
-      "id,name,address,status,geofence_radius_meters,employee_access_mode,public_registration_token",
+      "id,name,address,latitude,longitude,status,geofence_radius_meters,proximity_enabled,proximity_message,employee_access_mode,public_registration_token",
     )
     .order("name");
   const publicOrigin = resolvePublicOrigin(
@@ -63,6 +69,11 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
             Sucursal creada.
           </p>
         ) : null}
+        {updated ? (
+          <p className="enterprise-alert is-success" role="status">
+            Sucursal actualizada.
+          </p>
+        ) : null}
         {accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
         {error ? (
           <p className="enterprise-alert is-error" role="alert">
@@ -78,6 +89,10 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
                   <article key={branch.id} className="admin-record">
                     <div><strong>{branch.name}</strong><span>{branch.address || "Sin dirección registrada"}</span></div>
                     <div className="admin-record-meta"><span className={`enterprise-badge ${branch.status === "ACTIVE" ? "is-active" : "is-suspended"}`}>{branch.status === "ACTIVE" ? "Activa" : "Inactiva"}</span><span>{branch.geofence_radius_meters} m de radio</span><span>{branch.employee_access_mode === "SHARED_ACCOUNT_PIN" ? "Cuenta compartida + PIN" : "Cuentas individuales"}</span></div>
+                    <details className="admin-inline-details">
+                      <summary>Editar sucursal</summary>
+                      <BranchEditForm branch={branch} />
+                    </details>
                     <details className="admin-inline-details">
                       <summary>Enlace y QR de registro</summary>
                       <div className="admin-registration-details">

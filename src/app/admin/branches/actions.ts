@@ -7,7 +7,10 @@ import {
   type BranchCreateActionState,
   type BranchCreateFieldErrors,
   type BranchCreateInput,
+  type BranchUpdateActionState,
+  type BranchUpdateInput,
   validateBranchCreateForm,
+  validateBranchUpdateForm,
   validateSharedAccessCredentials,
 } from "@/lib/admin/branches";
 import { requireInternalArea } from "@/lib/auth/server";
@@ -49,6 +52,44 @@ function logCreateFailure(
   error: { code?: string; message?: string; status?: number } | null,
 ) {
   console.error("[branch-create]", {
+    stage,
+    code: error?.code ?? "NO_CODE",
+    message: error?.message ?? "No error payload returned",
+    status: error?.status,
+  });
+}
+
+function updateValuesFromInput(data: BranchUpdateInput) {
+  return {
+    name: data.name,
+    address: data.address ?? "",
+    latitude: data.latitude?.toString() ?? "",
+    longitude: data.longitude?.toString() ?? "",
+    geofenceRadiusMeters: data.geofenceRadiusMeters.toString(),
+    proximityEnabled: data.proximityEnabled,
+    proximityMessage: data.proximityMessage ?? "",
+    status: data.status,
+  };
+}
+
+function createUpdateErrorState(
+  data: BranchUpdateInput,
+  formError: string,
+  fieldErrors: BranchCreateFieldErrors = {},
+): BranchUpdateActionState {
+  return {
+    status: "error",
+    formError,
+    fieldErrors,
+    values: updateValuesFromInput(data),
+  };
+}
+
+function logUpdateFailure(
+  stage: string,
+  error: { code?: string; message?: string; status?: number } | null,
+) {
+  console.error("[branch-update]", {
     stage,
     code: error?.code ?? "NO_CODE",
     message: error?.message ?? "No error payload returned",
@@ -204,6 +245,72 @@ export async function createBranch(
     tenantId: context.tenantId,
   });
   redirect("/admin/branches?created=1");
+}
+
+export async function updateBranch(
+  _previousState: BranchUpdateActionState,
+  formData: FormData,
+): Promise<BranchUpdateActionState> {
+  const validation = validateBranchUpdateForm(formData);
+
+  if (!validation.ok) {
+    return {
+      status: "error",
+      formError: "Corrige los campos indicados antes de guardar la sucursal.",
+      fieldErrors: validation.fieldErrors,
+      values: validation.values,
+    };
+  }
+
+  const context = await requireInternalArea("ADMIN");
+
+  if (context.access.role !== "ADMIN" || !context.tenantId) {
+    return createUpdateErrorState(
+      validation.data,
+      "Solo el Admin general del tenant puede editar sucursales.",
+    );
+  }
+
+  const { data: updatedBranch, error } = await context.supabase
+    .from("branches")
+    .update({
+      name: validation.data.name,
+      address: validation.data.address,
+      latitude: validation.data.latitude,
+      longitude: validation.data.longitude,
+      geofence_radius_meters: validation.data.geofenceRadiusMeters,
+      proximity_enabled: validation.data.proximityEnabled,
+      proximity_message: validation.data.proximityMessage,
+      status: validation.data.status,
+    })
+    .eq("id", validation.data.branchId)
+    .eq("tenant_id", context.tenantId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    logUpdateFailure("branch_update", error);
+    const description = describeBranchPersistenceError(error, "update");
+    return createUpdateErrorState(
+      validation.data,
+      description.formError ?? "No se pudo actualizar la sucursal.",
+      description.fieldErrors,
+    );
+  }
+
+  if (!updatedBranch) {
+    logUpdateFailure("branch_not_found", null);
+    return createUpdateErrorState(
+      validation.data,
+      "La sucursal ya no existe o no pertenece a tu tenant. Actualiza la página y vuelve a intentarlo.",
+    );
+  }
+
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 25,
+    tenantId: context.tenantId,
+  });
+  redirect("/admin/branches?updated=1");
 }
 
 export async function configureBranchAccess(formData: FormData) {
