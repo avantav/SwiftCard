@@ -3437,21 +3437,32 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   border-radius: 18px;
   background: var(--apple-pass-background);
   color: var(--apple-pass-foreground);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   box-shadow: 0 12px 24px rgb(16 24 40 / 12%);
 }
 
 .apple-pass-preview > header {
   display: grid;
-  min-height: 62px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 64px;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 9px;
-  padding: 12px 16px;
+  gap: 16px;
+  padding: 10px 16px;
 }
 
-.apple-pass-preview > header img {
-  width: 38px;
-  height: 38px;
+.apple-pass-preview-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+}
+
+.apple-pass-preview-identity img {
+  width: auto;
+  max-width: 96px;
+  height: auto;
+  max-height: 34px;
   object-fit: contain;
 }
 
@@ -3466,54 +3477,77 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-weight: 800;
 }
 
-.apple-pass-preview > header strong {
+.apple-pass-preview-identity > strong {
   overflow: hidden;
   font-size: 0.82rem;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.apple-pass-preview > header small,
-.apple-pass-preview-content span {
+.apple-pass-preview-header-field,
+.apple-pass-preview-primary p,
+.apple-pass-preview-content p {
   display: grid;
   gap: 2px;
+  margin: 0;
+}
+
+.apple-pass-preview-header-field span,
+.apple-pass-preview-primary span,
+.apple-pass-preview-content span {
   color: var(--apple-pass-label);
-  font-size: 0.52rem;
-  font-weight: 650;
+  font-size: 0.5rem;
+  font-weight: 600;
   letter-spacing: 0.04em;
 }
 
-.apple-pass-preview > header small {
-  color: var(--apple-pass-foreground);
-  font-size: 0.85rem;
+.apple-pass-preview-header-field {
+  min-width: 42px;
   text-align: right;
 }
 
-.apple-pass-preview-strip {
-  display: block;
+.apple-pass-preview-header-field strong {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.apple-pass-preview-primary {
+  position: relative;
+  display: flex;
   width: 100%;
-  height: 112px;
+  min-height: 92px;
+  align-items: flex-end;
+  padding: 16px;
+  isolation: isolate;
+}
+
+.apple-pass-preview-primary.has-strip {
+  aspect-ratio: 375 / 144;
+}
+
+.apple-pass-preview-strip {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.apple-pass-preview-primary strong {
+  font-size: 2.2rem;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .apple-pass-preview-content {
   display: grid;
-  gap: 14px;
-  padding: 16px;
+  gap: 18px;
+  padding: 14px 16px 16px;
 }
 
-.apple-pass-preview-content p {
-  display: grid;
-  gap: 3px;
-  margin: 0;
-}
-
-.apple-pass-preview-content > p > strong {
-  font-size: 2.2rem;
-  line-height: 1;
-}
-
-.apple-pass-preview-content > div:not(.apple-pass-preview-code) {
+.apple-pass-preview-supporting-fields {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;
@@ -3521,19 +3555,37 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .apple-pass-preview-content strong {
   font-size: 0.82rem;
+  font-weight: 500;
 }
 
 .apple-pass-preview-code {
   display: grid;
-  width: 112px;
-  height: 112px;
+  width: 152px;
   place-self: center;
   place-items: center;
-  border: 8px solid #fff;
-  border-radius: 6px;
-  background: #111827;
-  color: #fff;
-  font-size: 3.2rem;
+  gap: 5px;
+  margin: 0;
+  border-radius: 8px;
+  padding: 10px 10px 7px;
+  background: #fff;
+  color: #111;
+}
+
+.apple-pass-preview-code img {
+  display: block;
+  width: 132px;
+  height: 132px;
+  image-rendering: pixelated;
+}
+
+.apple-pass-preview-code figcaption {
+  width: 132px;
+  overflow: hidden;
+  font-size: 0.5rem;
+  line-height: 1.25;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 1199px) {

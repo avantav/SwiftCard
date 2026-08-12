@@ -169,3 +169,14 @@
 - Reason: An explicit program type preserves backward compatibility and gives future tenants reusable options without weakening tenant authority or hiding behavior in customer-specific code.
 - Consequences: Migration `0040` is required before the new Admin form can load. The next implementation unit must add tenths-based purchase accounting, one-time welcome/milestone generation, import conversion, policy enforcement and Web Card/Apple Wallet projections before lifetime points can be activated.
 - Status: Accepted.
+
+## DEC-0018 - Apple Store-Card Preview Mirrors The Signed Pass Structure
+
+- Date: 2026-08-12
+- Context: The Admin Wallet designer needs a useful visual preview, but Apple owns the final `storeCard` renderer and can vary typography, cropping and field fitting by OS and device.
+- Decision: Model the preview from the same fixed field hierarchy and assets used by the signed pass: logo and logo text, header reward count, primary balance over a `375 × 144 pt` strip, one combined secondary/auxiliary row, and a square QR with alternate text. Resize the actual strip bundle to the same current Apple dimensions and keep a visible qualification that the browser preview is not an Apple renderer.
+- Alternatives considered: Preserve the approximate decorative card, copy an Apple screenshot, make the layout tenant-configurable, or claim pixel-perfect equivalence across iOS versions.
+- Reason: Structural parity gives the Admin an honest preview while respecting Apple's fixed layout, current image specification and ownership of final rendering.
+- Consequences: The mock tracks fields, order, colors and image proportions closely, but final acceptance still requires Apple's Pass Designer or a signed pass on a real device when exact OS rendering matters.
+- References: [Apple Wallet Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/wallet) and [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass).
+- Status: Accepted.

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-12 - Apple Store-Card Preview Parity
+
+**Objective:** Make the Admin Wallet mock represent the signed Apple `storeCard` as closely as a browser preview can.
+
+**Research:** Reviewed Apple's current Wallet Human Interface Guidelines, Pass Designer guidance and store-card developer documentation. The supported hierarchy is logo/header, primary content over an optional strip, one combined row of up to four secondary and auxiliary fields, and a system-optimized barcode. The current strip specification is `375 × 144 pt`.
+
+**Changes Made:** Rebuilt the mock with Apple-system typography, a correctly bounded logo, reward header field, stamp balance over the strip image, customer/meta supporting row and a realistic white QR block with alternate text. Updated image-upload guidance and changed generated strip assets from `375 × 123` to `375 × 144` plus matching 2x/3x sizes, so the mock and real `.pkpass` consume the same proportions.
+
+**Design Review:** The exact preview component was inspected in Chrome at 375, 768, 1280 and 1440 px. Field order, image crop, text hierarchy and barcode remain visible without overflow; the preview explicitly explains that Apple retains control over typography, text fitting and device-specific cropping. The temporary review route was removed.
+
+**Validation:** Focused Wallet tests, all 186 Vitest tests, `npm run lint`, `npm run typecheck` and the production webpack build passed. Regression coverage asserts the official strip dimensions, matching 2x/3x assets and preview structure.
+
+**Migration:** None required. Existing saved source images are resized to the new dimensions the next time a pass is generated or updated.
+
 ## 2026-08-12 - Employee PWA Zoom Lock
 
 **Objective:** Keep the installed employee PWA at a stable scale during scanning, customer selection, registration, purchases, redemptions and PIN unlock.

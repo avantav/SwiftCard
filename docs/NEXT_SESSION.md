@@ -12,10 +12,11 @@
 10. Imports: `1 imported stamp = N points` uses an integer multiplier; confirmation awards every reached milestone and does not accept historical reward status.
 11. Policies: purchase cancellation, manual reward cancellation and redemption reversal are configurable. Garmendia starts with the first two disabled and reversal enabled for Admin plus assigned Branch Administrator. Manual lifetime-point adjustments remain disabled.
 12. Operational flow: scanner or manual customer selection must open one customer view with available rewards plus register-purchase action; each redemption remains one reward per operation.
-13. Validation: lint, typecheck, 185 Vitest tests, webpack build and disposable PostgreSQL/RLS through `0040` pass. The configuration UI was reviewed at 375, 768, 1280 and 1440 px; the temporary review route was removed.
+13. Validation: lint, typecheck, 186 Vitest tests, webpack build and disposable PostgreSQL/RLS through `0040` pass. The configuration UI and Apple `storeCard` preview were reviewed at 375, 768, 1280 and 1440 px; temporary review routes were removed.
 14. PWA viewport: `/app` fixes the viewport at scale 1, disables user scaling, rejects pinch/double-tap zoom gestures and keeps all form controls at 16px. This is intentionally scoped away from `/admin`.
 15. Next exact implementation: add tenths-based lifetime balances and purchase/milestone SQL with cancellation-safe invariants, then welcome/import generation and card/Wallet projections. Only after those pass should the new type be allowed to become ACTIVE.
-16. Separate existing rollout: Apple QR/scanner deployment, real iPhone APNs validation, external retry cron and Google Wallet remain pending.
+16. Apple preview: the Admin mock now follows the official field hierarchy and `375 × 144 pt` strip proportion, and the real pass generator emits matching 1x/2x/3x strips. Exact OS rendering still requires Pass Designer or a real signed pass.
+17. Separate existing rollout: Apple QR/scanner deployment, real iPhone APNs validation, external retry cron and Google Wallet remain pending.
 
 ## Previous Apple Wallet Context
 

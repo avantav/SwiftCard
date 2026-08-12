@@ -146,9 +146,9 @@ async function buildPassImages(logoUrl: string | null, stripUrl: string | null) 
   };
   if (stripSource) {
     const strips = await Promise.all([
-      resizedPng(stripSource, 375, 123, "cover"),
-      resizedPng(stripSource, 750, 246, "cover"),
-      resizedPng(stripSource, 1125, 369, "cover"),
+      resizedPng(stripSource, 375, 144, "cover"),
+      resizedPng(stripSource, 750, 288, "cover"),
+      resizedPng(stripSource, 1125, 432, "cover"),
     ]);
     images["strip.png"] = strips[0];
     images["strip@2x.png"] = strips[1];
