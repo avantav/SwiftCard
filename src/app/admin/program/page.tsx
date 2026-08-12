@@ -168,12 +168,13 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
           </label>
 
           <ProgramTypeControls
+            hasExistingProgram={Boolean(program)}
             initialStatus={program?.status ?? "ACTIVE"}
             initialType={program?.program_type ?? "STAMPS_PER_PURCHASE"}
           />
 
           <p className="enterprise-alert is-info" role="status">
-            El tipo de programa queda bloqueado cuando existen compras, puntos o recompensas. Los demás ajustes pueden seguir evolucionando.
+            El Admin general puede cambiar el tipo. El cambio se confirma antes de guardar, conserva el historial y aplica la nueva regla a compras futuras.
           </p>
 
           <div className="admin-form-section"><h2 className="section-title">Terminología</h2>

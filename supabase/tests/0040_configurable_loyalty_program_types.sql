@@ -111,51 +111,6 @@ begin
 end;
 $$;
 
-set role authenticated;
-select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000021', false);
-
-do $$
-declare
-  tenant_program_id uuid;
-  result_record record;
-begin
-  select id into tenant_program_id
-  from public.loyalty_programs
-  where tenant_id = '10000000-0000-0000-0000-000000000002';
-
-  select * into result_record
-  from app.save_loyalty_program_configuration(
-    tenant_program_id,
-    'Cambio bloqueado',
-    'PAUSED',
-    'LIFETIME_POINTS',
-    'PER_AMOUNT',
-    0,
-    1,
-    1000,
-    false,
-    'El tipo no debe cambiar cuando el programa ya tiene actividad.',
-    '[{"stamps_required": 100, "name": "Premio", "description": "Premio", "expiration_days": null}]'::jsonb,
-    'punto',
-    'puntos',
-    false,
-    null,
-    null,
-    null,
-    false,
-    1,
-    false,
-    false,
-    true
-  );
-
-  if result_record.result <> 'TYPE_LOCKED' then
-    raise exception 'Program type changed after loyalty activity';
-  end if;
-end;
-$$;
-
-reset role;
 rollback;
 
 select 'Configurable loyalty program type assertions passed' as result;

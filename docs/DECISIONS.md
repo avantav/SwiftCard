@@ -164,7 +164,7 @@
 
 - Date: 2026-08-12
 - Context: Casa Garmendia requires one point per configurable whole-currency amount, lifetime progress that never resets, one-time milestones, an optional welcome reward, imported-stamp conversion and program-specific correction policies. Existing SwiftWallet programs must retain their cyclic behavior.
-- Decision: Add an explicit three-way program type: stamps per purchase, stamps per amount, and lifetime points. Store configurable singular/plural unit names, welcome/import options, an integer import multiplier, and purchase-cancellation, reward-cancellation and redemption-reversal policies. Existing programs are backfilled to their current cyclic type. A type change is rejected after purchases, rewards or a nonzero balance exist. Reward catalogs have no product-level count cap, while each field remains bounded. The configuration foundation remains paused until the decimal calculation and one-time milestone engine are connected.
+- Decision: Add an explicit three-way program type: stamps per purchase, stamps per amount, and lifetime points. Store configurable singular/plural unit names, welcome/import options, an integer import multiplier, and purchase-cancellation, reward-cancellation and redemption-reversal policies. Existing programs are backfilled to their current cyclic type. DEC-0019 supersedes the initial activity lock with a confirmed, audited Admin transition that starts paused and applies to future purchases. Reward catalogs have no product-level count cap, while each field remains bounded. The configuration foundation remains paused until the decimal calculation and one-time milestone engine are connected.
 - Alternatives considered: Replace all programs with lifetime points, encode Garmendia as tenant-specific conditionals, approximate lifetime progress with an unreachable cycle goal, or expose the new type before persisting its policies.
 - Reason: An explicit program type preserves backward compatibility and gives future tenants reusable options without weakening tenant authority or hiding behavior in customer-specific code.
 - Consequences: Migration `0040` is required before the new Admin form can load. The next implementation unit must add tenths-based purchase accounting, one-time welcome/milestone generation, import conversion, policy enforcement and Web Card/Apple Wallet projections before lifetime points can be activated.
@@ -179,4 +179,14 @@
 - Reason: Structural parity gives the Admin an honest preview while respecting Apple's fixed layout, current image specification and ownership of final rendering.
 - Consequences: The mock tracks fields, order, colors and image proportions closely, but final acceptance still requires Apple's Pass Designer or a signed pass on a real device when exact OS rendering matters.
 - References: [Apple Wallet Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/wallet) and [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass).
+- Status: Accepted.
+
+## DEC-0019 - Confirmed Admin Program-Type Changes Start Paused
+
+- Date: 2026-08-12
+- Context: The Admin general needs to change an existing tenant program even after loyalty activity exists, without rewriting purchases, destroying balances or silently changing active operation.
+- Decision: Allow only the active tenant `ADMIN` to change the existing program type through the tenant-scoped configuration RPC. Require explicit browser confirmation, require the changed program to be saved as `PAUSED`, preserve existing balances and rewards, and rely on the immutable rule/version snapshots already stored on historical purchases. Write a dedicated audit event with the previous type, new type and `FUTURE_PURCHASES` scope. `LIFETIME_POINTS` remains paused until its engine and conversion rules are complete.
+- Alternatives considered: Keep the permanent activity lock, delete and recreate the program, rewrite historical purchases, automatically activate the new type, or allow Branch Administrators to change it.
+- Reason: A paused two-step transition gives the Admin the requested flexibility while preventing an accidental live rule switch and preserving the ledger as historical truth.
+- Consequences: Migration `0041` is required. Cyclic type changes can be reviewed and activated in a second save; a change to lifetime points can be configured but not activated yet. Existing rewards retain their original program/tier snapshots.
 - Status: Accepted.
