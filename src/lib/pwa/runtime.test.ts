@@ -11,6 +11,7 @@ const rootLayout = source("../../app/layout.tsx");
 const serviceWorker = source("../../../public/sw.js");
 const offlinePage = source("../../../public/offline.html");
 const nextConfig = source("../../../next.config.mjs");
+const styles = source("../../app/globals.css");
 
 describe("PWA runtime contract", () => {
   it("registers the worker, handles install affordances and reports connectivity", () => {
@@ -45,5 +46,17 @@ describe("PWA runtime contract", () => {
     expect(nextConfig).toContain('source: "/sw.js"');
     expect(nextConfig).toContain("no-cache, no-store, must-revalidate");
     expect(nextConfig).toContain("Service-Worker-Allowed");
+  });
+
+  it("disables automatic and manual zoom only in the operations PWA", () => {
+    expect(styles).toContain('.operations-app input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
+    expect(styles).toContain(".operations-app select");
+    expect(styles).toContain(".operations-app textarea");
+    expect(styles).toMatch(/\.operations-app textarea \{\s*font-size: 16px;/);
+    expect(styles).toMatch(/\.operations-app \{[\s\S]*?touch-action: pan-x pan-y;/);
+    expect(layout).toContain("maximumScale: 1");
+    expect(layout).toContain("userScalable: false");
+    expect(rootLayout).not.toContain("userScalable: false");
+    expect(rootLayout).not.toContain("maximumScale: 1");
   });
 });

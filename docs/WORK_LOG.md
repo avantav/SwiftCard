@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-12 - Employee PWA Zoom Lock
+
+**Objective:** Keep the installed employee PWA at a stable scale during scanning, customer selection, registration, purchases, redemptions and PIN unlock.
+
+**Changes Made:** Added a route-specific viewport for `/app` with initial and maximum scale 1 plus user scaling disabled. Limited the PWA shell to horizontal and vertical pan gestures so pinch and double-tap cannot zoom, and fixed text inputs, selects and textareas at 16px to prevent iOS focus zoom. The root viewport remains unrestricted, so the Admin interface is unaffected.
+
+**Design Review:** The restriction is scoped to `.operations-app`; checkbox, radio and hidden controls are excluded from the text-control sizing rule. Existing spacing, 48px primary actions, safe-area handling and responsive layouts are unchanged.
+
+**Validation:** Focused PWA and application-design tests, `npm run lint`, `npm run typecheck`, all 185 Vitest tests and `npm run build` passed. Coverage asserts both the PWA restriction and the absence of scaling restrictions from the root layout.
+
+**Migration:** None required.
+
 ## 2026-08-12 - Configurable Lifetime-Points Foundation
 
 **Objective:** Make the third loyalty-program type visible and safely configurable from the Admin UI without changing existing cyclic programs or allowing an incomplete calculation mode to operate.

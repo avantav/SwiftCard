@@ -2026,6 +2026,7 @@ textarea {
   min-height: 100vh;
   background: var(--enterprise-canvas);
   color: var(--enterprise-text);
+  touch-action: pan-x pan-y;
 }
 
 .operations-header {
@@ -2344,6 +2345,13 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 .operations-search-form .field {
   font-size: 0.82rem;
   font-weight: 600;
+}
+
+/* iOS zooms the viewport when a focused form control renders below 16px. */
+.operations-app input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+.operations-app select,
+.operations-app textarea {
+  font-size: 16px;
 }
 
 .operations-form .field small {

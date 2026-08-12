@@ -4,10 +4,10 @@
 
 - Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
-- Last completed task: Added the visible, audited and backward-compatible configuration foundation for the third program type.
+- Last completed task: Prevented automatic and manual zoom throughout the employee PWA while leaving the Admin interface unaffected.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
-- Git status: Lifetime program configuration is locally validated; no unrelated worktree changes are present.
+- Git status: Lifetime program configuration and the scoped PWA zoom restriction are locally validated; no unrelated worktree changes are present.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
 
 ## Completed Functionality
@@ -80,6 +80,7 @@
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
 - The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
 - The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and retains manual entry as a fallback.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
