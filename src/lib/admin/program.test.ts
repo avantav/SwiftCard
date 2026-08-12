@@ -33,6 +33,13 @@ const configurableTypesMigration = readFileSync(
   ),
   "utf8",
 );
+const adminTypeChangesMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0041_admin_program_type_changes.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 
 function form(values: Record<string, string | string[]>) {
   const data = new FormData();
@@ -275,8 +282,11 @@ describe("loyalty program Admin configuration", () => {
     expect(migration).toContain("LOYALTY_REWARD_TIERS_CONFIGURED");
     expect(migration).toContain("staff_record.tenant_id");
     expect(configurableTypesMigration).toContain("'LIFETIME_POINTS'");
-    expect(configurableTypesMigration).toContain("'TYPE_LOCKED'");
     expect(configurableTypesMigration).toContain("LOYALTY_PROGRAM_OPTIONS_CONFIGURED");
+    expect(adminTypeChangesMigration).toContain("LOYALTY_PROGRAM_TYPE_CHANGED");
+    expect(adminTypeChangesMigration).toContain("'FUTURE_PURCHASES'");
+    expect(adminTypeChangesMigration).not.toContain("'TYPE_LOCKED'");
+    expect(action).toContain('formData.get("confirmProgramTypeChange")');
   });
 
   it("keeps add-level local to the form and reveals the new tier", () => {
@@ -292,8 +302,15 @@ describe("loyalty program Admin configuration", () => {
   });
 
   it("keeps lifetime points paused while the calculation engine is pending", () => {
-    expect(programTypeControls).toContain('nextType === "LIFETIME_POINTS"');
-    expect(programTypeControls).toContain('setStatus("PAUSED")');
-    expect(programTypeControls).toContain('disabled={lifetimePoints} value="ACTIVE"');
+    expect(programTypeControls).toContain("const forcedPaused = lifetimePoints || changingType");
+    expect(programTypeControls).toContain('nextType === initialType ? initialStatus : "PAUSED"');
+    expect(programTypeControls).toContain('disabled={forcedPaused} value="ACTIVE"');
+  });
+
+  it("requires explicit confirmation when the Admin changes program type", () => {
+    expect(programTypeControls).toContain("changingType");
+    expect(programTypeControls).toContain('name="confirmProgramTypeChange"');
+    expect(programTypeControls).toContain("Confirmo el cambio de tipo de programa");
+    expect(programTypeControls).toContain("compras futuras");
   });
 });

@@ -1864,6 +1864,19 @@ textarea {
   gap: 8px;
 }
 
+.program-type-confirmation {
+  display: grid;
+  gap: 10px;
+}
+
+.program-type-confirmation p {
+  margin: 0;
+}
+
+.program-type-confirmation .check-field {
+  min-height: 44px;
+}
+
 .admin-program-card form:not(:has(select[name="programType"] option[value="STAMPS_PER_PURCHASE"]:checked))
   .program-type-purchase,
 .admin-program-card form:not(:has(select[name="programType"] option[value="STAMPS_PER_AMOUNT"]:checked))

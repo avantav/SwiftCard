@@ -1,10 +1,10 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Latest feature: migration `0040` and `/admin/program` now persist and display three explicit program types plus custom unit labels, welcome/import options and operational policies.
+2. Latest feature: migration `0041` and `/admin/program` let the Admin general change among the three explicit program types with confirmation, audit and a mandatory paused transition.
 3. Compatibility: every existing program is backfilled to `STAMPS_PER_PURCHASE` or `STAMPS_PER_AMOUNT`; its current cyclic calculation remains unchanged.
 4. Safety boundary: `LIFETIME_POINTS` can be configured but is forced to `PAUSED` in both form validation and the database RPC until its decimal/non-resetting engine is implemented.
-5. Type locking: after any purchase, reward or nonzero balance/remainder exists, changing the program type returns `TYPE_LOCKED`.
+5. Type transition: an existing program can change type after activity. The save starts paused, applies the new calculation only to future purchases, preserves balances/rewards and historical purchase rule/version snapshots, and writes `LOYALTY_PROGRAM_TYPE_CHANGED`.
 6. Reward catalog: the prior 10-level application/database cap was removed; per-tier values and text remain bounded.
 7. Confirmed lifetime behavior to implement: one point per configurable integer amount, internal tenths, truncate every purchase, no carry of discarded fractions, no reset, each milestone once, points continue after the final milestone.
 8. Visibility: customers and employees see integer units; Admin and exports see one decimal. Web Card and Apple Wallet show current points, progress to the next milestone and a completion message; Apple shows as many next rewards as its bounded layout safely permits.
@@ -12,7 +12,7 @@
 10. Imports: `1 imported stamp = N points` uses an integer multiplier; confirmation awards every reached milestone and does not accept historical reward status.
 11. Policies: purchase cancellation, manual reward cancellation and redemption reversal are configurable. Garmendia starts with the first two disabled and reversal enabled for Admin plus assigned Branch Administrator. Manual lifetime-point adjustments remain disabled.
 12. Operational flow: scanner or manual customer selection must open one customer view with available rewards plus register-purchase action; each redemption remains one reward per operation.
-13. Validation: lint, typecheck, 186 Vitest tests, webpack build and disposable PostgreSQL/RLS through `0040` pass. The configuration UI and Apple `storeCard` preview were reviewed at 375, 768, 1280 and 1440 px; temporary review routes were removed.
+13. Validation: lint, typecheck, 187 Vitest tests and webpack build through `0041` pass. The new confirmation state and Apple `storeCard` preview were reviewed at 375, 768, 1280 and 1440 px; temporary review routes were removed. PostgreSQL/RLS passed through `0040`; the `0041` Docker run still needs execution because escalation timed out twice.
 14. PWA viewport: `/app` fixes the viewport at scale 1, disables user scaling, rejects pinch/double-tap zoom gestures and keeps all form controls at 16px. This is intentionally scoped away from `/admin`.
 15. Next exact implementation: add tenths-based lifetime balances and purchase/milestone SQL with cancellation-safe invariants, then welcome/import generation and card/Wallet projections. Only after those pass should the new type be allowed to become ACTIVE.
 16. Apple preview: the Admin mock now follows the official field hierarchy and `375 × 144 pt` strip proportion, and the real pass generator emits matching 1x/2x/3x strips. Exact OS rendering still requires Pass Designer or a real signed pass.

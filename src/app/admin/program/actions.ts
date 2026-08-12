@@ -38,6 +38,28 @@ export async function saveLoyaltyProgram(formData: FormData) {
   }
 
   const input = validation.data;
+
+  if (input.programId) {
+    const { data: currentProgram, error: currentProgramError } =
+      await context.supabase
+        .from("loyalty_programs")
+        .select("program_type")
+        .eq("id", input.programId)
+        .eq("tenant_id", context.tenantId)
+        .maybeSingle();
+
+    if (currentProgramError || !currentProgram?.program_type) {
+      redirectWithError("No se pudo verificar el programa actual.");
+    }
+
+    if (
+      currentProgram.program_type !== input.programType &&
+      formData.get("confirmProgramTypeChange") !== "1"
+    ) {
+      redirectWithError("Confirma el cambio de tipo de programa.");
+    }
+  }
+
   const { data, error } = await context.supabase.schema("app").rpc(
     "save_loyalty_program_configuration",
     {
@@ -77,8 +99,6 @@ export async function saveLoyaltyProgram(formData: FormData) {
     redirectWithError(
       result === "ALREADY_EXISTS"
         ? "El tenant ya tiene un programa; recarga la página para editarlo."
-        : result === "TYPE_LOCKED"
-          ? "El tipo de programa no puede cambiar porque ya existe actividad."
         : "No se pudo guardar el programa y sus niveles.",
     );
   }
