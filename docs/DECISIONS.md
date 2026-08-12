@@ -104,7 +104,7 @@
 
 - Date: 2026-08-02
 - Context: A tenant must be able to offer small rewards at intermediate stamp totals while preserving progress toward a larger reward, and customer cards must explain both the prize ladder and its terms.
-- Decision: A loyalty program has one to ten uniquely ordered reward tiers. Each tier is granted at most once per customer cycle. Intermediate rewards accumulate without subtracting stamps; the highest threshold completes the cycle, preserves the remainder, and permits lower tiers in the next cycle to be reached in the same operation. Existing single-reward programs remain valid as one-tier programs. Terms and the active tier catalog are exposed through the public card projection.
+- Decision: A loyalty program has uniquely ordered reward tiers. The original cyclic implementation limited the catalog to ten; DEC-0017 later removes that product-level cap. Each tier is granted at most once per customer cycle. Intermediate rewards accumulate without subtracting stamps; the highest threshold completes the cycle, preserves the remainder, and permits lower tiers in the next cycle to be reached in the same operation. Existing single-reward programs remain valid as one-tier programs. Terms and the active tier catalog are exposed through the public card projection.
 - Alternatives considered: Deduct stamps for every small reward, make customers choose a reward, reset progress at every tier, or create separate loyalty programs per prize.
 - Reason: The selected model supports progressive engagement without weakening atomic balance accounting, cancellation safety, or the existing remainder behavior.
 - Consequences: Rewards store immutable tier, cycle, threshold, and program-version snapshots; purchases and adjustments record completed cycles separately from the number of rewards generated; changing active tiers creates an audited program-change boundary when it converts existing progress.
@@ -158,4 +158,25 @@
 - Alternatives considered: Encode customer UUID or phone, create a second Wallet-only token, rely on manual token entry, or request camera permission automatically on page load.
 - Reason: One opaque identifier preserves the existing tenant-aware resolution RPC, avoids personal data in the barcode, works across Web Card and Apple Wallet, and keeps camera use explicit and recoverable.
 - Consequences: Existing passes need an updated `.pkpass` or reinstallation to receive the visible QR. Camera scanning requires HTTPS or localhost and user permission; denial, unsupported devices and offline state retain the manual path. No database migration is required.
+- Status: Accepted.
+
+## DEC-0017 - Configurable Lifetime-Points Programs
+
+- Date: 2026-08-12
+- Context: Casa Garmendia requires one point per configurable whole-currency amount, lifetime progress that never resets, one-time milestones, an optional welcome reward, imported-stamp conversion and program-specific correction policies. Existing SwiftWallet programs must retain their cyclic behavior.
+- Decision: Add an explicit three-way program type: stamps per purchase, stamps per amount, and lifetime points. Store configurable singular/plural unit names, welcome/import options, an integer import multiplier, and purchase-cancellation, reward-cancellation and redemption-reversal policies. Existing programs are backfilled to their current cyclic type. A type change is rejected after purchases, rewards or a nonzero balance exist. Reward catalogs have no product-level count cap, while each field remains bounded. The configuration foundation remains paused until the decimal calculation and one-time milestone engine are connected.
+- Alternatives considered: Replace all programs with lifetime points, encode Garmendia as tenant-specific conditionals, approximate lifetime progress with an unreachable cycle goal, or expose the new type before persisting its policies.
+- Reason: An explicit program type preserves backward compatibility and gives future tenants reusable options without weakening tenant authority or hiding behavior in customer-specific code.
+- Consequences: Migration `0040` is required before the new Admin form can load. The next implementation unit must add tenths-based purchase accounting, one-time welcome/milestone generation, import conversion, policy enforcement and Web Card/Apple Wallet projections before lifetime points can be activated.
+- Status: Accepted.
+
+## DEC-0018 - Apple Store-Card Preview Mirrors The Signed Pass Structure
+
+- Date: 2026-08-12
+- Context: The Admin Wallet designer needs a useful visual preview, but Apple owns the final `storeCard` renderer and can vary typography, cropping and field fitting by OS and device.
+- Decision: Model the preview from the same fixed field hierarchy and assets used by the signed pass: logo and logo text, header reward count, primary balance over a `375 × 144 pt` strip, one combined secondary/auxiliary row, and a square QR with alternate text. Resize the actual strip bundle to the same current Apple dimensions and keep a visible qualification that the browser preview is not an Apple renderer.
+- Alternatives considered: Preserve the approximate decorative card, copy an Apple screenshot, make the layout tenant-configurable, or claim pixel-perfect equivalence across iOS versions.
+- Reason: Structural parity gives the Admin an honest preview while respecting Apple's fixed layout, current image specification and ownership of final rendering.
+- Consequences: The mock tracks fields, order, colors and image proportions closely, but final acceptance still requires Apple's Pass Designer or a signed pass on a real device when exact OS rendering matters.
+- References: [Apple Wallet Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/wallet) and [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass).
 - Status: Accepted.

@@ -39,11 +39,12 @@ export async function saveLoyaltyProgram(formData: FormData) {
 
   const input = validation.data;
   const { data, error } = await context.supabase.schema("app").rpc(
-    "save_loyalty_program_with_tiers",
+    "save_loyalty_program_configuration",
     {
       target_program_id: input.programId,
       target_name: input.name,
       target_status: input.status,
+      target_program_type: input.programType,
       target_rule_type: input.ruleType,
       target_minimum_purchase_minor: input.minimumPurchaseMinor,
       target_stamps_per_purchase: input.stampsPerPurchase,
@@ -56,6 +57,17 @@ export async function saveLoyaltyProgram(formData: FormData) {
         description: tier.description,
         expiration_days: tier.expirationDays,
       })),
+      target_unit_name_singular: input.unitNameSingular,
+      target_unit_name_plural: input.unitNamePlural,
+      target_welcome_reward_enabled: input.welcomeRewardEnabled,
+      target_welcome_reward_name: input.welcomeRewardName,
+      target_welcome_reward_description: input.welcomeRewardDescription,
+      target_welcome_reward_expiration_days: input.welcomeRewardExpirationDays,
+      target_grant_welcome_reward_to_imports: input.grantWelcomeRewardToImports,
+      target_import_stamp_to_point_multiplier: input.importStampToPointMultiplier,
+      target_allow_purchase_cancellations: input.allowPurchaseCancellations,
+      target_allow_reward_cancellations: input.allowRewardCancellations,
+      target_allow_redemption_reversals: input.allowRedemptionReversals,
     },
   );
   const result = Array.isArray(data) ? data[0]?.result : null;
@@ -65,6 +77,8 @@ export async function saveLoyaltyProgram(formData: FormData) {
     redirectWithError(
       result === "ALREADY_EXISTS"
         ? "El tenant ya tiene un programa; recarga la página para editarlo."
+        : result === "TYPE_LOCKED"
+          ? "El tipo de programa no puede cambiar porque ya existe actividad."
         : "No se pudo guardar el programa y sus niveles.",
     );
   }

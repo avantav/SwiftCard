@@ -1,5 +1,45 @@
 # Work Log
 
+## 2026-08-12 - Apple Store-Card Preview Parity
+
+**Objective:** Make the Admin Wallet mock represent the signed Apple `storeCard` as closely as a browser preview can.
+
+**Research:** Reviewed Apple's current Wallet Human Interface Guidelines, Pass Designer guidance and store-card developer documentation. The supported hierarchy is logo/header, primary content over an optional strip, one combined row of up to four secondary and auxiliary fields, and a system-optimized barcode. The current strip specification is `375 × 144 pt`.
+
+**Changes Made:** Rebuilt the mock with Apple-system typography, a correctly bounded logo, reward header field, stamp balance over the strip image, customer/meta supporting row and a realistic white QR block with alternate text. Updated image-upload guidance and changed generated strip assets from `375 × 123` to `375 × 144` plus matching 2x/3x sizes, so the mock and real `.pkpass` consume the same proportions.
+
+**Design Review:** The exact preview component was inspected in Chrome at 375, 768, 1280 and 1440 px. Field order, image crop, text hierarchy and barcode remain visible without overflow; the preview explicitly explains that Apple retains control over typography, text fitting and device-specific cropping. The temporary review route was removed.
+
+**Validation:** Focused Wallet tests, all 186 Vitest tests, `npm run lint`, `npm run typecheck` and the production webpack build passed. Regression coverage asserts the official strip dimensions, matching 2x/3x assets and preview structure.
+
+**Migration:** None required. Existing saved source images are resized to the new dimensions the next time a pass is generated or updated.
+
+## 2026-08-12 - Employee PWA Zoom Lock
+
+**Objective:** Keep the installed employee PWA at a stable scale during scanning, customer selection, registration, purchases, redemptions and PIN unlock.
+
+**Changes Made:** Added a route-specific viewport for `/app` with initial and maximum scale 1 plus user scaling disabled. Limited the PWA shell to horizontal and vertical pan gestures so pinch and double-tap cannot zoom, and fixed text inputs, selects and textareas at 16px to prevent iOS focus zoom. The root viewport remains unrestricted, so the Admin interface is unaffected.
+
+**Design Review:** The restriction is scoped to `.operations-app`; checkbox, radio and hidden controls are excluded from the text-control sizing rule. Existing spacing, 48px primary actions, safe-area handling and responsive layouts are unchanged.
+
+**Validation:** Focused PWA and application-design tests, `npm run lint`, `npm run typecheck`, all 185 Vitest tests and `npm run build` passed. Coverage asserts both the PWA restriction and the absence of scaling restrictions from the root layout.
+
+**Migration:** None required.
+
+## 2026-08-12 - Configurable Lifetime-Points Foundation
+
+**Objective:** Make the third loyalty-program type visible and safely configurable from the Admin UI without changing existing cyclic programs or allowing an incomplete calculation mode to operate.
+
+**Changes Made:** Added migration `0040` with explicit `STAMPS_PER_PURCHASE`, `STAMPS_PER_AMOUNT` and `LIFETIME_POINTS` types; backfilled existing programs; persisted custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and purchase/reward cancellation plus redemption-reversal policies. Replaced the 10-tier product limit with an unbounded catalog whose individual fields remain bounded. Added an audited Admin-only save RPC and type locking after activity. Updated `/admin/program` with type-specific sections and a small interactive control that forces lifetime points to remain paused until its engine is implemented.
+
+**Security Review:** The RPC derives the active Admin and tenant from `auth.uid()`, delegates existing program/tier persistence to the established tenant-scoped authority, rejects cross-tenant IDs, audits new options and grants no new anonymous or service-role browser access. Existing programs preserve their prior type and calculation. Lifetime points cannot be activated through either the browser or a direct authenticated RPC yet.
+
+**Design Review:** The form uses the existing enterprise shell, sections, fields, alerts, checkboxes, reward editor and one primary action. Irrelevant calculation sections are hidden by the selected type, status is synchronized and keyboard-native, and screenshots at 375, 768, 1280 and 1440 px showed no overflow, hidden action or sub-44px critical mobile control. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 184 Vitest tests, `npm run build` and `npm run db:verify-rls` passed. PostgreSQL coverage verifies configuration persistence, audit attribution, catalogs above ten levels and type locking after activity.
+
+**Next Action:** Implement tenths-based non-resetting balances, per-purchase truncation and one-time milestone generation; then add welcome/import generation, policy enforcement and Web Card/Apple Wallet progress before allowing `LIFETIME_POINTS` to become active.
+
 ## 2026-08-11 - Admin Branch Editing
 
 **Objective:** Let the Admin general edit an existing branch without weakening tenant isolation or mixing general branch data with sensitive shared-access credentials.

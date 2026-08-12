@@ -243,12 +243,14 @@ export function AppleWalletDesignForm({
               {
                 kind: "logo" as const,
                 label: "Logo",
-                hint: "Recomendado: imagen horizontal con fondo transparente.",
+                hint:
+                  "Lienzo Apple: entre 50 y 160 pt de ancho por 50 pt de alto, con fondo transparente.",
               },
               {
                 kind: "strip" as const,
                 label: "Imagen principal",
-                hint: "Recomendado: proporción aproximada de 3:1.",
+                hint:
+                  "Lienzo Apple: 375 × 144 pt. Deja la zona superior izquierda limpia y con contraste para el saldo.",
               },
             ]).map((asset) => (
               <div className="apple-wallet-upload-field" key={asset.kind}>
@@ -298,30 +300,60 @@ export function AppleWalletDesignForm({
       <aside className="apple-wallet-preview-panel" aria-labelledby="apple-wallet-preview-title">
         <div>
           <p className="enterprise-breadcrumb">Vista previa</p>
-          <h2 id="apple-wallet-preview-title">Tarjeta de cliente</h2>
-          <p>Apple adapta el resultado final según el dispositivo.</p>
+          <h2 id="apple-wallet-preview-title">Vista frontal en iPhone</h2>
+          <p>Simulación de la plantilla storeCard publicada en Wallet.</p>
         </div>
         <div className="apple-pass-preview" style={previewStyle}>
           <header>
-            {previewLogoUrl ? (
-              <img alt="Logo configurado" src={previewLogoUrl} />
-            ) : (
-              <span className="apple-pass-preview-mark" aria-hidden="true">SW</span>
-            )}
-            <strong>{design.logoText || "Nombre del negocio"}</strong>
-            <small><span>PREMIOS</span>1</small>
+            <div className="apple-pass-preview-identity">
+              {previewLogoUrl ? (
+                <img alt="Logo configurado" src={previewLogoUrl} />
+              ) : (
+                <span className="apple-pass-preview-mark" aria-hidden="true">SW</span>
+              )}
+              <strong>{design.logoText || "Nombre del negocio"}</strong>
+            </div>
+            <p className="apple-pass-preview-header-field">
+              <span>PREMIOS</span>
+              <strong>1</strong>
+            </p>
           </header>
-          {previewStripUrl ? (
-            <img className="apple-pass-preview-strip" alt="Imagen principal configurada" src={previewStripUrl} />
-          ) : null}
+          <div
+            className={`apple-pass-preview-primary${previewStripUrl ? " has-strip" : ""}`}
+          >
+            {previewStripUrl ? (
+              <img
+                className="apple-pass-preview-strip"
+                alt="Imagen principal configurada"
+                src={previewStripUrl}
+              />
+            ) : null}
+            <p>
+              <span>SELLOS</span>
+              <strong>4</strong>
+            </p>
+          </div>
           <div className="apple-pass-preview-content">
-            <p><span>SELLOS</span><strong>4</strong></p>
-            <div><p><span>CLIENTE</span><strong>Cliente ejemplo</strong></p><p><span>META</span><strong>10 sellos</strong></p></div>
-            <div className="apple-pass-preview-code" aria-hidden="true">▦</div>
+            <div className="apple-pass-preview-supporting-fields">
+              <p>
+                <span>CLIENTE</span>
+                <strong>Cliente ejemplo</strong>
+              </p>
+              <p>
+                <span>META</span>
+                <strong>10 sellos</strong>
+              </p>
+            </div>
+            <figure className="apple-pass-preview-code">
+              <img alt="" src="/icons/wallet-preview-qr.svg" />
+              <figcaption>
+                Tarjeta de {design.logoText || "Nombre del negocio"}
+              </figcaption>
+            </figure>
           </div>
         </div>
         <p className="apple-wallet-preview-note">
-          La vista previa representa jerarquía, colores e imágenes; Wallet controla tipografía, recortes y dimensiones finales.
+          Usa los mismos campos, orden, proporciones de imagen y colores del pase. Apple controla la tipografía y puede ajustar texto o recortes según la versión de iOS y el dispositivo.
         </p>
       </aside>
     </div>

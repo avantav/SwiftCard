@@ -197,7 +197,7 @@ Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya e
 
 Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
 
-El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers`, con búsqueda, filtro por estado y paginación. La vista mostrará nombre, contacto, sucursal de alta, estado del cliente y de su tarjeta, sellos, recompensas disponibles, estado de generación de Apple Wallet, método y fecha de registro. Los Administradores de sucursal no verán este directorio administrativo y conservarán únicamente la búsqueda operativa dentro de su alcance.
+El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers`, con búsqueda, filtro por estado y paginación. La vista mostrará nombre, contacto, sucursal de alta, estado del cliente y de su tarjeta, unidades acumuladas con la precisión administrativa, recompensas disponibles, estado de generación de Apple Wallet, método y fecha de registro. Los Administradores de sucursal no verán este directorio administrativo y conservarán únicamente la búsqueda operativa dentro de su alcance.
 
 ## 10. Registro de clientes
 
@@ -247,7 +247,15 @@ El logo y la imagen principal se cargarán desde esta configuración a un bucket
 
 ## 12. Programa de fidelidad
 
-Cada tenant tendrá un programa con uno o varios niveles de recompensa. El nivel con más sellos define la meta y el cierre del ciclo.
+Cada tenant tendrá un programa con uno o varios niveles de recompensa. La configuración ofrecerá tres tipos de programa:
+
+- Sellos por compra: entrega una cantidad configurada por cada compra que alcance el mínimo y cierra ciclos en la meta mayor.
+- Sellos por monto: entrega sellos enteros por un monto configurado, con remanente opcional, y cierra ciclos en la meta mayor.
+- Puntos acumulativos con hitos: entrega un punto por cada monto entero configurado, conserva el progreso mientras la cuenta permanezca activa, nunca reinicia y entrega cada hito una sola vez por cliente.
+
+El Administrador configurará el nombre singular y plural de la unidad. Todos los programas calcularán con una precisión interna de un decimal y truncarán cada compra sin redondear. Cliente y Empleado verán únicamente la parte entera; Administradores, exportaciones y reportes verán un decimal. En puntos acumulativos, cualquier monto genera puntos y la fracción descartada en una compra no se traslada a otra.
+
+En los programas cíclicos, el nivel con más sellos define la meta y el cierre del ciclo. En puntos acumulativos no existe cierre de ciclo: después del último hito los puntos continúan aumentando y la tarjeta indica que todas las recompensas disponibles fueron desbloqueadas.
 
 Estados:
 
@@ -326,7 +334,7 @@ La regla se aplicará a compras y canjes.
 
 ## 15. Recompensas
 
-El programa permite configurar de uno a diez niveles ordenados por número de sellos. Cada nivel puede representar un premio pequeño o el premio principal.
+El programa permite configurar uno o más niveles sin un límite funcional de catálogo, ordenados por unidades requeridas. Cada nivel puede representar un premio pequeño o el premio principal.
 
 Comportamiento:
 
@@ -336,6 +344,10 @@ Comportamiento:
 - Una sola operación puede otorgar varios niveles, incluso completar la meta actual y alcanzar un nivel menor del siguiente ciclo.
 - Las recompensas obtenidas permanecen disponibles de manera independiente hasta su canje, expiración o cancelación.
 - Un programa existente con una sola recompensa funciona como un único nivel y conserva el comportamiento anterior.
+- En puntos acumulativos, cada nivel se entrega una sola vez durante toda la vida del cliente, aunque el saldo continúe aumentando.
+- Bajar un requisito o agregar un hito ya alcanzado genera la recompensa automáticamente. Subir un requisito o desactivar un nivel no retira recompensas ya otorgadas.
+- Una recompensa otorgada se conserva hasta su expiración; sin expiración permanece disponible indefinidamente.
+- La recompensa de bienvenida es opcional, configurable y se entrega una sola vez al registro. Una opción fija del programa decide si también se entrega a clientes importados.
 
 Configuración de cada nivel:
 
@@ -357,6 +369,8 @@ El canje no requiere ticket ni compra. Cada confirmación canjea una sola recomp
 
 Administrador puede cancelar una recompensa disponible y revertir un canje. Encargado solo puede revertir canjes. Empleado solo puede canjear.
 
+La cancelación manual de recompensas y la reversión de canjes serán opciones configurables. Cuando la reversión esté habilitada, podrán ejecutarla el Administrador general y el Administrador de sucursal asignado. Cada operación de empleado canjeará una sola recompensa.
+
 Cancelar una recompensa no devuelve sellos.
 
 ## 16. Ajustes manuales
@@ -371,6 +385,8 @@ Administrador y Encargado podrán agregar o retirar sellos con motivo obligatori
 ## 17. Corrección y cancelación de compras
 
 Las compras confirmadas no se editan. Para corregir se cancela la compra original y se registra una nueva.
+
+La disponibilidad de cancelaciones será configurable por programa. Cuando estén deshabilitadas, una compra confirmada será definitiva. Los puntos acumulativos de Garmendia iniciarán con cancelaciones de compra y ajustes manuales de puntos deshabilitados.
 
 La cancelación revierte sellos, remanente, progreso y recompensas generadas cuando corresponda.
 
@@ -391,6 +407,8 @@ Campos:
 - Sellos iniciales opcionales.
 
 Flujo: subir, mapear columnas, validar, previsualizar, confirmar y mostrar resumen. Se guardará historial con archivo, usuario, fecha, importados, duplicados y errores.
+
+Cuando el programa use puntos acumulativos, la configuración incluirá una equivalencia entera `1 sello importado = N puntos`. La confirmación importará los puntos resultantes y generará automáticamente todos los hitos alcanzados. La misma recompensa de bienvenida podrá incluir o excluir importados mediante una opción fija del programa.
 
 ## 19. Dashboard y exportaciones
 
@@ -456,6 +474,7 @@ Requisitos:
 - Confirmaciones para compras y canjes.  
 - Protección contra doble envío.  
 - Manejo claro de permisos de cámara y ubicación.
+- Resolución del cliente por escáner o búsqueda manual hacia una sola vista operativa con recompensas disponibles y acción para registrar compra.
 
 ## 22. Apple Wallet y Google Wallet
 

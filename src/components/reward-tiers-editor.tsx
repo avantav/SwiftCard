@@ -44,12 +44,9 @@ export function RewardTiersEditor({ initialTiers }: { initialTiers: RewardTierEd
   }, [addedTierKey]);
 
   const addTier = () => {
-    if (tiers.length >= 10) return;
     const key = `new-${nextKey.current}`;
     nextKey.current += 1;
     setTiers((current) => {
-      if (current.length >= 10) return current;
-
       const previousStamps = Math.max(
         ...current.map((tier) => Number(tier.stampsRequired) || 0),
         0,
@@ -113,9 +110,9 @@ export function RewardTiersEditor({ initialTiers }: { initialTiers: RewardTierEd
       <div className="reward-tiers-heading">
         <div>
           <h3>Niveles de recompensa</h3>
-          <p>Los niveles pequeños se acumulan. Al completar el nivel con más sellos, inicia un ciclo nuevo y se conserva cualquier sobrante.</p>
+          <p>Ordena los hitos por unidades requeridas. El tipo de programa define si se repiten por ciclo o se entregan una sola vez.</p>
         </div>
-        <button className="secondary-button" disabled={tiers.length >= 10} onClick={addTier} type="button">Agregar nivel</button>
+        <button className="secondary-button" onClick={addTier} type="button">Agregar nivel</button>
       </div>
       <p className="reward-tiers-status" aria-live="polite">
         {message || `${tiers.length} ${tiers.length === 1 ? "nivel configurado" : "niveles configurados"}.`}
@@ -143,7 +140,7 @@ export function RewardTiersEditor({ initialTiers }: { initialTiers: RewardTierEd
                     <strong>{tier.name.trim() || "Premio sin nombre"}</strong>
                   </span>
                   <span className="reward-tier-summary">
-                    {tier.stampsRequired || 0} {Number(tier.stampsRequired) === 1 ? "sello" : "sellos"} · {expanded ? "Ocultar" : "Editar"}
+                    {tier.stampsRequired || 0} {Number(tier.stampsRequired) === 1 ? "unidad" : "unidades"} · {expanded ? "Ocultar" : "Editar"}
                   </span>
                 </button>
                 <button className="reward-tier-remove" disabled={tiers.length === 1} onClick={() => removeTier(tier.key)} type="button">Eliminar</button>
@@ -151,7 +148,7 @@ export function RewardTiersEditor({ initialTiers }: { initialTiers: RewardTierEd
               <div className="reward-tier-fields" hidden={!expanded} id={fieldsId}>
                 <div className="form-grid">
                   <label className="field">
-                    <span>Sellos requeridos</span>
+                    <span>Unidades requeridas</span>
                     <input
                       name="tierStamps"
                       type="number"

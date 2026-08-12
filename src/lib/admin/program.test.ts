@@ -15,10 +15,21 @@ const rewardTiersEditor = readFileSync(
   join(process.cwd(), "src/components/reward-tiers-editor.tsx"),
   "utf8",
 );
+const programTypeControls = readFileSync(
+  join(process.cwd(), "src/components/program-type-controls.tsx"),
+  "utf8",
+);
 const migration = readFileSync(
   join(
     process.cwd(),
     "supabase/migrations/0034_tiered_rewards_and_card_terms.sql",
+  ),
+  "utf8",
+);
+const configurableTypesMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/0040_configurable_loyalty_program_types.sql",
   ),
   "utf8",
 );
@@ -57,11 +68,23 @@ describe("loyalty program Admin configuration", () => {
         programId: "10000000-0000-0000-0000-000000000001",
         name: "Programa principal",
         status: "ACTIVE",
+        programType: "STAMPS_PER_PURCHASE",
         ruleType: "PER_PURCHASE",
         minimumPurchaseMinor: 10050,
         stampsPerPurchase: 2,
         amountPerStampMinor: null,
         carryRemainder: false,
+        unitNameSingular: "sello",
+        unitNamePlural: "sellos",
+        welcomeRewardEnabled: false,
+        welcomeRewardName: null,
+        welcomeRewardDescription: null,
+        welcomeRewardExpirationDays: null,
+        grantWelcomeRewardToImports: false,
+        importStampToPointMultiplier: 1,
+        allowPurchaseCancellations: true,
+        allowRewardCancellations: true,
+        allowRedemptionReversals: true,
         termsAndConditions: "Válido en sucursales participantes.",
         rewardTiers: [
           {
@@ -103,6 +126,7 @@ describe("loyalty program Admin configuration", () => {
       data: {
         programId: null,
         status: "PAUSED",
+        programType: "STAMPS_PER_AMOUNT",
         ruleType: "PER_AMOUNT",
         minimumPurchaseMinor: 0,
         stampsPerPurchase: 1,
@@ -112,6 +136,73 @@ describe("loyalty program Admin configuration", () => {
         rewardTiers: [expect.objectContaining({ stampsRequired: 8, expirationDays: null })],
       },
     });
+  });
+
+  it("normalizes configurable lifetime points without resetting milestones", () => {
+    expect(
+      validateLoyaltyProgramForm(
+        form({
+          configurationOptionsPresent: "1",
+          name: "Puntos Garmendia",
+          status: "PAUSED",
+          programType: "LIFETIME_POINTS",
+          pointsAmount: "10",
+          unitNameSingular: "punto",
+          unitNamePlural: "puntos",
+          welcomeRewardEnabled: "on",
+          welcomeRewardName: "Churro individual",
+          welcomeRewardDescription: "Beneficio único de registro.",
+          welcomeRewardExpirationDays: "30",
+          grantWelcomeRewardToImports: "on",
+          importStampToPointMultiplier: "10",
+          allowRedemptionReversals: "on",
+          termsAndConditions: "Aplican condiciones del programa Garmendia.",
+          tierStamps: ["100", "200", "300"],
+          tierName: ["Café", "Chilaquiles", "Descuento"],
+          tierDescription: ["Dos bebidas", "Sin proteína", "Quince por ciento"],
+          tierExpirationDays: ["", "30", ""],
+        }),
+        "MXN",
+      ),
+    ).toMatchObject({
+      ok: true,
+      data: {
+        programType: "LIFETIME_POINTS",
+        ruleType: "PER_AMOUNT",
+        amountPerStampMinor: 1000,
+        carryRemainder: false,
+        unitNameSingular: "punto",
+        unitNamePlural: "puntos",
+        welcomeRewardEnabled: true,
+        welcomeRewardName: "Churro individual",
+        welcomeRewardExpirationDays: 30,
+        grantWelcomeRewardToImports: true,
+        importStampToPointMultiplier: 10,
+        allowPurchaseCancellations: false,
+        allowRewardCancellations: false,
+        allowRedemptionReversals: true,
+      },
+    });
+  });
+
+  it("accepts more than ten reward levels", () => {
+    const levels = Array.from({ length: 12 }, (_, index) => String(index + 1));
+    expect(
+      validateLoyaltyProgramForm(
+        form({
+          name: "Catálogo amplio",
+          status: "PAUSED",
+          programType: "LIFETIME_POINTS",
+          pointsAmount: "10",
+          termsAndConditions: "Aplican condiciones del catálogo amplio.",
+          tierStamps: levels,
+          tierName: levels.map((level) => `Premio ${level}`),
+          tierDescription: levels.map((level) => `Descripción ${level}`),
+          tierExpirationDays: levels.map(() => ""),
+        }),
+        "MXN",
+      ),
+    ).toMatchObject({ ok: true });
   });
 
   it("respects currency-specific decimal precision", () => {
@@ -174,7 +265,7 @@ describe("loyalty program Admin configuration", () => {
 
   it("derives tenant authority from the authenticated Admin", () => {
     expect(action).toContain('context.access.role !== "ADMIN"');
-    expect(action).toContain('"save_loyalty_program_with_tiers"');
+    expect(action).toContain('"save_loyalty_program_configuration"');
     expect(action).not.toContain('formData.get("tenant');
     expect(migration).toContain("sp.id = auth.uid()");
     expect(migration).toContain("sp.role = 'ADMIN'");
@@ -183,6 +274,9 @@ describe("loyalty program Admin configuration", () => {
     expect(migration).toContain("target_reward_tiers jsonb");
     expect(migration).toContain("LOYALTY_REWARD_TIERS_CONFIGURED");
     expect(migration).toContain("staff_record.tenant_id");
+    expect(configurableTypesMigration).toContain("'LIFETIME_POINTS'");
+    expect(configurableTypesMigration).toContain("'TYPE_LOCKED'");
+    expect(configurableTypesMigration).toContain("LOYALTY_PROGRAM_OPTIONS_CONFIGURED");
   });
 
   it("keeps add-level local to the form and reveals the new tier", () => {
@@ -194,5 +288,12 @@ describe("loyalty program Admin configuration", () => {
     expect(rewardTiersEditor).toContain("hidden={!expanded}");
     expect(rewardTiersEditor).toContain('expanded ? "Ocultar" : "Editar"');
     expect(rewardTiersEditor).toContain("setExpandedKeys(new Set([key]))");
+    expect(rewardTiersEditor).not.toContain("tiers.length >= 10");
+  });
+
+  it("keeps lifetime points paused while the calculation engine is pending", () => {
+    expect(programTypeControls).toContain('nextType === "LIFETIME_POINTS"');
+    expect(programTypeControls).toContain('setStatus("PAUSED")');
+    expect(programTypeControls).toContain('disabled={lifetimePoints} value="ACTIVE"');
   });
 });
