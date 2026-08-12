@@ -40,6 +40,13 @@ const adminTypeChangesMigration = readFileSync(
   ),
   "utf8",
 );
+const stampToPointConversionMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0042_stamp_to_point_balance_conversion.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 
 function form(values: Record<string, string | string[]>) {
   const data = new FormData();
@@ -285,6 +292,12 @@ describe("loyalty program Admin configuration", () => {
     expect(configurableTypesMigration).toContain("LOYALTY_PROGRAM_OPTIONS_CONFIGURED");
     expect(adminTypeChangesMigration).toContain("LOYALTY_PROGRAM_TYPE_CHANGED");
     expect(adminTypeChangesMigration).toContain("'FUTURE_PURCHASES'");
+    expect(stampToPointConversionMigration).toContain("'STAMPS_TO_POINTS'");
+    expect(stampToPointConversionMigration).toContain("target_multiplier");
+    expect(stampToPointConversionMigration).toContain("'PROGRAM_CHANGE'");
+    expect(stampToPointConversionMigration).toContain(
+      "LOYALTY_PROGRAM_BALANCES_CONVERTED",
+    );
     expect(adminTypeChangesMigration).not.toContain("'TYPE_LOCKED'");
     expect(action).toContain('formData.get("confirmProgramTypeChange")');
   });
@@ -312,5 +325,6 @@ describe("loyalty program Admin configuration", () => {
     expect(programTypeControls).toContain('name="confirmProgramTypeChange"');
     expect(programTypeControls).toContain("Confirmo el cambio de tipo de programa");
     expect(programTypeControls).toContain("compras futuras");
+    expect(programTypeControls).toContain("Los sellos actuales se convertirán a puntos");
   });
 });

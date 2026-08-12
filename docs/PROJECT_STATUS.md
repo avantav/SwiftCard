@@ -4,10 +4,10 @@
 
 - Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
-- Last completed task: Enabled confirmed, audited program-type changes for the Admin general without rewriting loyalty history.
+- Last completed task: Added atomic existing-stamp conversion to the confirmed Admin transition into lifetime points.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
-- Git status: The Admin program-type transition is locally validated at application/build level; disposable PostgreSQL verification is pending because Docker escalation timed out twice.
+- Git status: The Admin program-type transition and additive stamp-to-point conversion pass the disposable PostgreSQL/RLS suite through `0042`; no unrelated worktree changes are present.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
 
 ## Completed Functionality
@@ -65,7 +65,7 @@
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
 - Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
 - Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
-- Existing programs are backfilled to their current cyclic type; Admin type changes require confirmation, preserve historical data and begin paused. Reward catalogs have no product-level count cap, and lifetime points remain forced to PAUSED until the decimal engine is connected.
+- Existing programs are backfilled to their current cyclic type; Admin type changes require confirmation, preserve historical data and begin paused. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs the same conversion if the type changed after online migration `0041` but before `0042`. Reward catalogs have no product-level count cap, and lifetime points remain forced to PAUSED until the decimal engine is connected.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
 - The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.

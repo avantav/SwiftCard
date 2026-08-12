@@ -245,7 +245,7 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
               />
             </label>
             <label className="field">
-              <span>Puntos por cada sello importado</span>
+              <span>Puntos por cada sello existente o importado</span>
               <input
                 name="importStampToPointMultiplier"
                 type="number"
