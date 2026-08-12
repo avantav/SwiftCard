@@ -1,7 +1,24 @@
 # Next Session
 
 1. Branch: `codex/swiftwallet-mvp`.
-2. Latest feature: Admin general can edit branch identity, address, coordinates, geofence, proximity message/activation and status inline from `/admin/branches`; access mode remains separate.
+2. Latest feature: migration `0040` and `/admin/program` now persist and display three explicit program types plus custom unit labels, welcome/import options and operational policies.
+3. Compatibility: every existing program is backfilled to `STAMPS_PER_PURCHASE` or `STAMPS_PER_AMOUNT`; its current cyclic calculation remains unchanged.
+4. Safety boundary: `LIFETIME_POINTS` can be configured but is forced to `PAUSED` in both form validation and the database RPC until its decimal/non-resetting engine is implemented.
+5. Type locking: after any purchase, reward or nonzero balance/remainder exists, changing the program type returns `TYPE_LOCKED`.
+6. Reward catalog: the prior 10-level application/database cap was removed; per-tier values and text remain bounded.
+7. Confirmed lifetime behavior to implement: one point per configurable integer amount, internal tenths, truncate every purchase, no carry of discarded fractions, no reset, each milestone once, points continue after the final milestone.
+8. Visibility: customers and employees see integer units; Admin and exports see one decimal. Web Card and Apple Wallet show current points, progress to the next milestone and a completion message; Apple shows as many next rewards as its bounded layout safely permits.
+9. Welcome: one configurable reward granted once at self-service registration; a fixed program option decides whether imports also receive it. Registration remains available while the program is paused.
+10. Imports: `1 imported stamp = N points` uses an integer multiplier; confirmation awards every reached milestone and does not accept historical reward status.
+11. Policies: purchase cancellation, manual reward cancellation and redemption reversal are configurable. Garmendia starts with the first two disabled and reversal enabled for Admin plus assigned Branch Administrator. Manual lifetime-point adjustments remain disabled.
+12. Operational flow: scanner or manual customer selection must open one customer view with available rewards plus register-purchase action; each redemption remains one reward per operation.
+13. Validation: lint, typecheck, 184 Vitest tests, webpack build and disposable PostgreSQL/RLS through `0040` pass. The configuration UI was reviewed at 375, 768, 1280 and 1440 px; the temporary review route was removed.
+14. Next exact implementation: add tenths-based lifetime balances and purchase/milestone SQL with cancellation-safe invariants, then welcome/import generation and card/Wallet projections. Only after those pass should the new type be allowed to become ACTIVE.
+15. Separate existing rollout: Apple QR/scanner deployment, real iPhone APNs validation, external retry cron and Google Wallet remain pending.
+
+## Previous Apple Wallet Context
+
+1. Admin general can edit branch identity, address, coordinates, geofence, proximity message/activation and status inline from `/admin/branches`; access mode remains separate.
 3. Branch editing authority: the server validates the branch UUID and every editable field, derives the tenant from the authenticated Admin context, matches both branch and tenant under existing RLS, confirms deactivation, and never accepts a frontend `tenant_id`.
 4. Branch editing rollout: no migration is required. Existing Apple Wallet branch triggers queue changed name, status, location and proximity data, and the action attempts immediate best-effort dispatch.
 5. QR authority: only the existing `customer_cards.public_token` or its `/card/{token}` URL is encoded; the backend tenant-scoped scan RPC remains authoritative and no name, phone, UUID or balance enters the QR.

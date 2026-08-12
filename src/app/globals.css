@@ -796,6 +796,12 @@ textarea {
   color: #8a3f06;
 }
 
+.enterprise-alert.is-info {
+  border-color: #b2ddff;
+  background: #eff8ff;
+  color: #175cd3;
+}
+
 .enterprise-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1851,6 +1857,20 @@ textarea {
 
 .admin-form-section .field-hint {
   margin: -10px 0 0;
+}
+
+.program-policy-list {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-program-card form:not(:has(select[name="programType"] option[value="STAMPS_PER_PURCHASE"]:checked))
+  .program-type-purchase,
+.admin-program-card form:not(:has(select[name="programType"] option[value="STAMPS_PER_AMOUNT"]:checked))
+  .program-type-amount,
+.admin-program-card form:not(:has(select[name="programType"] option[value="LIFETIME_POINTS"]:checked))
+  .program-type-lifetime {
+  display: none;
 }
 
 .reward-tiers-editor {

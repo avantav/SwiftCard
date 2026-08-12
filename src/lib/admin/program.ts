@@ -1,8 +1,14 @@
 export const loyaltyProgramStatuses = ["ACTIVE", "PAUSED"] as const;
 export const loyaltyRuleTypes = ["PER_PURCHASE", "PER_AMOUNT"] as const;
+export const loyaltyProgramTypes = [
+  "STAMPS_PER_PURCHASE",
+  "STAMPS_PER_AMOUNT",
+  "LIFETIME_POINTS",
+] as const;
 
 export type LoyaltyProgramStatus = (typeof loyaltyProgramStatuses)[number];
 export type LoyaltyRuleType = (typeof loyaltyRuleTypes)[number];
+export type LoyaltyProgramType = (typeof loyaltyProgramTypes)[number];
 
 export type RewardTierInput = {
   stampsRequired: number;
@@ -15,11 +21,23 @@ export type LoyaltyProgramInput = {
   programId: string | null;
   name: string;
   status: LoyaltyProgramStatus;
+  programType: LoyaltyProgramType;
   ruleType: LoyaltyRuleType;
   minimumPurchaseMinor: number;
   stampsPerPurchase: number;
   amountPerStampMinor: number | null;
   carryRemainder: boolean;
+  unitNameSingular: string;
+  unitNamePlural: string;
+  welcomeRewardEnabled: boolean;
+  welcomeRewardName: string | null;
+  welcomeRewardDescription: string | null;
+  welcomeRewardExpirationDays: number | null;
+  grantWelcomeRewardToImports: boolean;
+  importStampToPointMultiplier: number;
+  allowPurchaseCancellations: boolean;
+  allowRewardCancellations: boolean;
+  allowRedemptionReversals: boolean;
   termsAndConditions: string;
   rewardTiers: RewardTierInput[];
 };
@@ -40,6 +58,11 @@ function texts(formData: FormData, field: string) {
   return formData
     .getAll(field)
     .map((value) => (typeof value === "string" ? value.trim() : ""));
+}
+
+function isChecked(formData: FormData, field: string, fallback: boolean) {
+  if (!formData.has("configurationOptionsPresent")) return fallback;
+  return formData.getAll(field).some((value) => value === "on" || value === "true");
 }
 
 export function getCurrencyFractionDigits(currencyCode: string): number {
@@ -140,8 +163,40 @@ export function validateLoyaltyProgramForm(
   const rawProgramId = text(formData, "programId");
   const name = text(formData, "name");
   const status = text(formData, "status");
-  const ruleType = text(formData, "ruleType");
+  const legacyRuleType = text(formData, "ruleType");
+  const submittedProgramType = text(formData, "programType");
+  const programType = submittedProgramType || (
+    legacyRuleType === "PER_AMOUNT" ? "STAMPS_PER_AMOUNT" : "STAMPS_PER_PURCHASE"
+  );
+  const ruleType: LoyaltyRuleType = programType === "STAMPS_PER_PURCHASE"
+    ? "PER_PURCHASE"
+    : "PER_AMOUNT";
   const termsAndConditions = text(formData, "termsAndConditions");
+  const defaultUnitSingular = programType === "LIFETIME_POINTS" ? "punto" : "sello";
+  const defaultUnitPlural = programType === "LIFETIME_POINTS" ? "puntos" : "sellos";
+  const unitNameSingular = text(formData, "unitNameSingular") || defaultUnitSingular;
+  const unitNamePlural = text(formData, "unitNamePlural") || defaultUnitPlural;
+  const welcomeRewardEnabled = isChecked(formData, "welcomeRewardEnabled", false);
+  const grantWelcomeRewardToImports = isChecked(
+    formData,
+    "grantWelcomeRewardToImports",
+    false,
+  );
+  const allowPurchaseCancellations = isChecked(
+    formData,
+    "allowPurchaseCancellations",
+    programType !== "LIFETIME_POINTS",
+  );
+  const allowRewardCancellations = isChecked(
+    formData,
+    "allowRewardCancellations",
+    programType !== "LIFETIME_POINTS",
+  );
+  const allowRedemptionReversals = isChecked(
+    formData,
+    "allowRedemptionReversals",
+    true,
+  );
   const fractionDigits = getCurrencyFractionDigits(currencyCode);
 
   if (rawProgramId && !uuidPattern.test(rawProgramId)) {
@@ -156,8 +211,22 @@ export function validateLoyaltyProgramForm(
     errors.push("El estado del programa no es válido.");
   }
 
-  if (!loyaltyRuleTypes.includes(ruleType as LoyaltyRuleType)) {
-    errors.push("La regla de acumulación no es válida.");
+  if (!loyaltyProgramTypes.includes(programType as LoyaltyProgramType)) {
+    errors.push("El tipo de programa no es válido.");
+  }
+  if (
+    !submittedProgramType
+    && legacyRuleType
+    && !loyaltyRuleTypes.includes(legacyRuleType as LoyaltyRuleType)
+  ) {
+    errors.push("El tipo de programa no es válido.");
+  }
+  if (programType === "LIFETIME_POINTS" && status === "ACTIVE") {
+    errors.push("El programa de puntos acumulativos debe permanecer pausado hasta activar su motor de cálculo.");
+  }
+
+  if (unitNameSingular.length > 24 || unitNamePlural.length > 24) {
+    errors.push("Los nombres singular y plural de la unidad admiten hasta 24 caracteres.");
   }
 
   if (termsAndConditions.length < 10 || termsAndConditions.length > 4000) {
@@ -176,8 +245,8 @@ export function validateLoyaltyProgramForm(
   );
   const rewardTiers: RewardTierInput[] = [];
 
-  if (tierCount < 1 || tierCount > 10) {
-    errors.push("Configura entre 1 y 10 niveles de recompensa.");
+  if (tierCount < 1) {
+    errors.push("Configura al menos un nivel de recompensa.");
   } else if (
     tierStamps.length !== tierCount
     || tierNames.length !== tierCount
@@ -236,7 +305,7 @@ export function validateLoyaltyProgramForm(
   let amountPerStampMinor: number | null = null;
   let carryRemainder = false;
 
-  if (ruleType === "PER_PURCHASE") {
+  if (programType === "STAMPS_PER_PURCHASE") {
     minimumPurchaseMinor =
       parseMoneyToMinorUnits(
         text(formData, "minimumPurchase"),
@@ -253,7 +322,7 @@ export function validateLoyaltyProgramForm(
         1_000_000,
         errors,
       ) ?? 1;
-  } else if (ruleType === "PER_AMOUNT") {
+  } else if (programType === "STAMPS_PER_AMOUNT") {
     amountPerStampMinor = parseMoneyToMinorUnits(
       text(formData, "amountPerStamp"),
       fractionDigits,
@@ -262,9 +331,55 @@ export function validateLoyaltyProgramForm(
       errors,
     );
     carryRemainder = formData.get("carryRemainder") === "on";
+  } else if (programType === "LIFETIME_POINTS") {
+    const pointsAmount = text(formData, "pointsAmount");
+    if (!/^\d+$/.test(pointsAmount)) {
+      errors.push("El monto por punto debe ser un importe entero mayor que cero.");
+    } else {
+      amountPerStampMinor = parseMoneyToMinorUnits(
+        pointsAmount,
+        fractionDigits,
+        "El monto por punto",
+        false,
+        errors,
+      );
+    }
   }
 
-  if (errors.length > 0 || rewardTiers.length !== tierCount) {
+  const importMultiplier = parseBoundedInteger(
+    text(formData, "importStampToPointMultiplier") || "1",
+    "La equivalencia de importación",
+    1,
+    1_000_000,
+    errors,
+  );
+  const welcomeRewardName = text(formData, "welcomeRewardName");
+  const welcomeRewardDescription = text(formData, "welcomeRewardDescription");
+  const welcomeExpirationText = text(formData, "welcomeRewardExpirationDays");
+  const welcomeRewardExpirationDays = welcomeExpirationText
+    ? parseBoundedInteger(
+        welcomeExpirationText,
+        "La vigencia de la recompensa de bienvenida",
+        1,
+        3650,
+        errors,
+      )
+    : null;
+
+  if (welcomeRewardEnabled) {
+    if (!welcomeRewardName || welcomeRewardName.length > 120) {
+      errors.push("El nombre de la recompensa de bienvenida es obligatorio y admite hasta 120 caracteres.");
+    }
+    if (!welcomeRewardDescription || welcomeRewardDescription.length > 500) {
+      errors.push("La descripción de bienvenida es obligatoria y admite hasta 500 caracteres.");
+    }
+  }
+
+  if (
+    errors.length > 0
+    || rewardTiers.length !== tierCount
+    || importMultiplier === null
+  ) {
     return { ok: false, errors };
   }
 
@@ -276,11 +391,25 @@ export function validateLoyaltyProgramForm(
       programId: rawProgramId || null,
       name,
       status: status as LoyaltyProgramStatus,
-      ruleType: ruleType as LoyaltyRuleType,
+      programType: programType as LoyaltyProgramType,
+      ruleType,
       minimumPurchaseMinor,
       stampsPerPurchase,
       amountPerStampMinor,
       carryRemainder,
+      unitNameSingular,
+      unitNamePlural,
+      welcomeRewardEnabled,
+      welcomeRewardName: welcomeRewardEnabled ? welcomeRewardName : null,
+      welcomeRewardDescription: welcomeRewardEnabled ? welcomeRewardDescription : null,
+      welcomeRewardExpirationDays: welcomeRewardEnabled
+        ? welcomeRewardExpirationDays
+        : null,
+      grantWelcomeRewardToImports: welcomeRewardEnabled && grantWelcomeRewardToImports,
+      importStampToPointMultiplier: importMultiplier,
+      allowPurchaseCancellations,
+      allowRewardCancellations,
+      allowRedemptionReversals,
       termsAndConditions,
       rewardTiers,
     },

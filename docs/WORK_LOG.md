@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-12 - Configurable Lifetime-Points Foundation
+
+**Objective:** Make the third loyalty-program type visible and safely configurable from the Admin UI without changing existing cyclic programs or allowing an incomplete calculation mode to operate.
+
+**Changes Made:** Added migration `0040` with explicit `STAMPS_PER_PURCHASE`, `STAMPS_PER_AMOUNT` and `LIFETIME_POINTS` types; backfilled existing programs; persisted custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and purchase/reward cancellation plus redemption-reversal policies. Replaced the 10-tier product limit with an unbounded catalog whose individual fields remain bounded. Added an audited Admin-only save RPC and type locking after activity. Updated `/admin/program` with type-specific sections and a small interactive control that forces lifetime points to remain paused until its engine is implemented.
+
+**Security Review:** The RPC derives the active Admin and tenant from `auth.uid()`, delegates existing program/tier persistence to the established tenant-scoped authority, rejects cross-tenant IDs, audits new options and grants no new anonymous or service-role browser access. Existing programs preserve their prior type and calculation. Lifetime points cannot be activated through either the browser or a direct authenticated RPC yet.
+
+**Design Review:** The form uses the existing enterprise shell, sections, fields, alerts, checkboxes, reward editor and one primary action. Irrelevant calculation sections are hidden by the selected type, status is synchronized and keyboard-native, and screenshots at 375, 768, 1280 and 1440 px showed no overflow, hidden action or sub-44px critical mobile control. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 184 Vitest tests, `npm run build` and `npm run db:verify-rls` passed. PostgreSQL coverage verifies configuration persistence, audit attribution, catalogs above ten levels and type locking after activity.
+
+**Next Action:** Implement tenths-based non-resetting balances, per-purchase truncation and one-time milestone generation; then add welcome/import generation, policy enforcement and Web Card/Apple Wallet progress before allowing `LIFETIME_POINTS` to become active.
+
 ## 2026-08-11 - Admin Branch Editing
 
 **Objective:** Let the Admin general edit an existing branch without weakening tenant isolation or mixing general branch data with sensitive shared-access credentials.

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { SubmitButton } from "@/components/submit-button";
 import { RewardTiersEditor } from "@/components/reward-tiers-editor";
+import { ProgramTypeControls } from "@/components/program-type-controls";
 import { requireInternalArea } from "@/lib/auth/server";
 import {
   formatMinorUnitsForInput,
@@ -20,6 +21,7 @@ type ProgramRow = {
   id: string;
   name: string;
   status: "ACTIVE" | "PAUSED";
+  program_type: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
   rule_type: "PER_PURCHASE" | "PER_AMOUNT";
   minimum_purchase_minor: number | string;
   stamps_per_purchase: number;
@@ -30,6 +32,17 @@ type ProgramRow = {
   reward_description: string;
   reward_expiration_days: number | null;
   terms_and_conditions: string;
+  unit_name_singular: string;
+  unit_name_plural: string;
+  welcome_reward_enabled: boolean;
+  welcome_reward_name: string | null;
+  welcome_reward_description: string | null;
+  welcome_reward_expiration_days: number | null;
+  grant_welcome_reward_to_imports: boolean;
+  import_stamp_to_point_multiplier: number;
+  allow_purchase_cancellations: boolean;
+  allow_reward_cancellations: boolean;
+  allow_redemption_reversals: boolean;
   version: number;
 };
 
@@ -61,7 +74,7 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
       context.supabase
         .from("loyalty_programs")
         .select(
-          "id,name,status,rule_type,minimum_purchase_minor,stamps_per_purchase,amount_per_stamp_minor,carry_remainder,reward_stamp_goal,reward_name,reward_description,reward_expiration_days,terms_and_conditions,version",
+          "id,name,status,program_type,rule_type,minimum_purchase_minor,stamps_per_purchase,amount_per_stamp_minor,carry_remainder,reward_stamp_goal,reward_name,reward_description,reward_expiration_days,terms_and_conditions,unit_name_singular,unit_name_plural,welcome_reward_enabled,welcome_reward_name,welcome_reward_description,welcome_reward_expiration_days,grant_welcome_reward_to_imports,import_stamp_to_point_multiplier,allow_purchase_cancellations,allow_reward_cancellations,allow_redemption_reversals,version",
         )
         .order("updated_at", { ascending: false })
         .limit(1)
@@ -139,6 +152,7 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
         ) : null}
 
         <form className="auth-form" action={saveLoyaltyProgram}>
+          <input name="configurationOptionsPresent" type="hidden" value="1" />
           {program ? (
             <input name="programId" type="hidden" value={program.id} />
           ) : null}
@@ -153,27 +167,30 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
             />
           </label>
 
+          <ProgramTypeControls
+            initialStatus={program?.status ?? "ACTIVE"}
+            initialType={program?.program_type ?? "STAMPS_PER_PURCHASE"}
+          />
+
+          <p className="enterprise-alert is-info" role="status">
+            El tipo de programa queda bloqueado cuando existen compras, puntos o recompensas. Los demás ajustes pueden seguir evolucionando.
+          </p>
+
+          <div className="admin-form-section"><h2 className="section-title">Terminología</h2>
+          <p className="field-hint">Define cómo se llamará la unidad en las pantallas del programa.</p>
           <div className="form-grid">
             <label className="field">
-              <span>Estado</span>
-              <select name="status" defaultValue={program?.status ?? "ACTIVE"}>
-                <option value="ACTIVE">Activo</option>
-                <option value="PAUSED">Pausado</option>
-              </select>
+              <span>Nombre singular</span>
+              <input name="unitNameSingular" maxLength={24} defaultValue={program?.unit_name_singular ?? "sello"} required />
             </label>
             <label className="field">
-              <span>Regla de acumulación</span>
-              <select
-                name="ruleType"
-                defaultValue={program?.rule_type ?? "PER_PURCHASE"}
-              >
-                <option value="PER_PURCHASE">Por compra</option>
-                <option value="PER_AMOUNT">Por monto</option>
-              </select>
+              <span>Nombre plural</span>
+              <input name="unitNamePlural" maxLength={24} defaultValue={program?.unit_name_plural ?? "sellos"} required />
             </label>
           </div>
+          </div>
 
-          <div className="admin-form-section"><h2 className="section-title">Regla por compra</h2>
+          <div className="admin-form-section program-type-purchase"><h2 className="section-title">Regla por compra</h2>
           <p className="field-hint">
             Estos valores se usan solamente cuando la regla seleccionada es por
             compra.
@@ -191,7 +208,6 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
                   program?.minimum_purchase_minor ?? 0,
                   currencyCode,
                 )}
-                required
               />
             </label>
             <label className="field">
@@ -202,14 +218,73 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
                 min={1}
                 max={1_000_000}
                 defaultValue={program?.stamps_per_purchase ?? 1}
-                required
               />
             </label>
           </div>
 
           </div>
 
-          <div className="admin-form-section"><h2 className="section-title">Regla por monto</h2>
+          <div className="admin-form-section program-type-lifetime"><h2 className="section-title">Puntos acumulativos</h2>
+          <p className="field-hint">
+            Aplica al tercer tipo. Los puntos no reinician, cada hito se entrega una sola vez y las compras futuras usan el monto configurado.
+          </p>
+          <p className="enterprise-alert is-warning" role="status">Esta primera entrega guarda la configuración en pausa. La activación se habilitará junto con el cálculo decimal y la generación de hitos.</p>
+          <div className="form-grid">
+            <label className="field">
+              <span>Monto entero por punto ({currencyCode})</span>
+              <input
+                name="pointsAmount"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                step={1}
+                defaultValue={program?.program_type === "LIFETIME_POINTS" && program.amount_per_stamp_minor != null
+                  ? String(Number(formatMinorUnitsForInput(program.amount_per_stamp_minor, currencyCode)))
+                  : "10"}
+              />
+            </label>
+            <label className="field">
+              <span>Puntos por cada sello importado</span>
+              <input
+                name="importStampToPointMultiplier"
+                type="number"
+                min={1}
+                max={1_000_000}
+                step={1}
+                defaultValue={program?.import_stamp_to_point_multiplier ?? 1}
+                required
+              />
+            </label>
+          </div>
+          <p className="field-hint">El cálculo operativo usará un decimal y truncará cada compra. Clientes y empleados verán enteros; administradores y exportaciones verán un decimal.</p>
+          </div>
+
+          <div className="admin-form-section program-type-lifetime"><h2 className="section-title">Recompensa de bienvenida</h2>
+          <label className="check-field">
+            <input name="welcomeRewardEnabled" type="checkbox" defaultChecked={program?.welcome_reward_enabled ?? false} />
+            <span>Otorgar una recompensa una sola vez al registrarse</span>
+          </label>
+          <div className="form-grid">
+            <label className="field">
+              <span>Nombre de la recompensa</span>
+              <input name="welcomeRewardName" maxLength={120} defaultValue={program?.welcome_reward_name ?? "Recompensa de bienvenida"} />
+            </label>
+            <label className="field">
+              <span>Vigencia en días</span>
+              <input name="welcomeRewardExpirationDays" type="number" min={1} max={3650} defaultValue={program?.welcome_reward_expiration_days ?? ""} placeholder="Sin expiración" />
+            </label>
+          </div>
+          <label className="field">
+            <span>Descripción</span>
+            <textarea name="welcomeRewardDescription" maxLength={500} defaultValue={program?.welcome_reward_description ?? "Describe el beneficio que recibe el cliente al registrarse."} rows={3} />
+          </label>
+          <label className="check-field">
+            <input name="grantWelcomeRewardToImports" type="checkbox" defaultChecked={program?.grant_welcome_reward_to_imports ?? false} />
+            <span>Entregar también la bienvenida a clientes importados</span>
+          </label>
+          </div>
+
+          <div className="admin-form-section program-type-amount"><h2 className="section-title">Regla por monto</h2>
           <p className="field-hint">
             Este importe se usa solamente cuando la regla seleccionada es por
             monto.
@@ -230,7 +305,6 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
                     )
                   : defaultAmountPerStamp
               }
-              required
             />
           </label>
           <label className="check-field">
@@ -244,7 +318,7 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
 
           </div>
 
-          <div className="admin-form-section"><h2 className="section-title">Premios por sellos</h2>
+          <div className="admin-form-section"><h2 className="section-title">Hitos y recompensas</h2>
           <RewardTiersEditor initialTiers={rewardTiers.map((tier) => ({
             id: tier.id,
             stampsRequired: tier.stamps_required,
@@ -252,6 +326,25 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
             description: tier.description,
             expirationDays: tier.expiration_days,
           }))} />
+          </div>
+
+          <div className="admin-form-section"><h2 className="section-title">Políticas operativas</h2>
+          <p className="field-hint">Estas opciones permiten adaptar el control administrativo sin cambiar el historial.</p>
+          <div className="program-policy-list">
+            <label className="check-field">
+              <input name="allowPurchaseCancellations" type="checkbox" defaultChecked={program?.allow_purchase_cancellations ?? true} />
+              <span>Permitir cancelaciones de compras</span>
+            </label>
+            <label className="check-field">
+              <input name="allowRewardCancellations" type="checkbox" defaultChecked={program?.allow_reward_cancellations ?? true} />
+              <span>Permitir cancelaciones manuales de recompensas</span>
+            </label>
+            <label className="check-field">
+              <input name="allowRedemptionReversals" type="checkbox" defaultChecked={program?.allow_redemption_reversals ?? true} />
+              <span>Permitir que Administradores reviertan canjes</span>
+            </label>
+          </div>
+          <p className="field-hint">Los ajustes manuales de puntos permanecen deshabilitados para el nuevo sistema acumulativo.</p>
           </div>
 
           <div className="admin-form-section"><h2 className="section-title">Términos de la tarjeta</h2>

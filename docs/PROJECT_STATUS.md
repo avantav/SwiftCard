@@ -2,13 +2,13 @@
 
 ## Current State
 
-- Current phase: Phase 8 customer QR and Apple Wallet rollout validation; production APNs validation, external retry scheduling, and Google Wallet remain.
-- Current task: Deploy the accumulated branch-editing and customer-identification QR work, then validate scanning and Wallet updates on real devices.
-- Last completed task: Added Admin-only branch editing for location, geofence, proximity and status with detailed validation and tenant-scoped persistence.
+- Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
+- Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
+- Last completed task: Added the visible, audited and backward-compatible configuration foundation for the third program type.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Admin general can edit a tenant branch safely while access-mode credentials remain isolated in their existing sensitive control.
-- Git status: Branch editing is locally validated; no unrelated worktree changes are present.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the latest local work is not pushed.
+- Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
+- Git status: Lifetime program configuration is locally validated; no unrelated worktree changes are present.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
 
 ## Completed Functionality
 
@@ -63,7 +63,9 @@
 - Admin can create the tenant's first loyalty program and edit, pause, or reactivate it from `/admin/program`.
 - Program money inputs use the tenant currency's minor-unit precision and never accept `tenant_id` from the form.
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
-- Admin can configure one to ten uniquely ordered reward levels with independent names, descriptions, and expiration rules.
+- Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
+- Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
+- Existing programs are backfilled to their current cyclic type; type changes are blocked after loyalty activity, reward catalogs no longer have a product-level count cap, and lifetime points remain forced to PAUSED until the decimal engine is connected.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
 - The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.
@@ -114,6 +116,7 @@
 
 ## Pending Functionality
 
+- Tenths-based lifetime point accounting, per-purchase truncation, one-time milestones, welcome/import generation, policy enforcement and Web Card/Apple Wallet progress for the new third program type.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
 - Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
@@ -133,7 +136,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 181 tests passed.
+- `npm run test:run`: passed; 184 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -141,7 +144,7 @@
 - Role/permission helper unit tests: passed.
 - Auth redirect helper tests: passed.
 - Tenant validation and server-only admin boundary tests: passed.
-- `npm run db:verify-rls`: passed against disposable PostgreSQL 16 through migration/test `0039`.
+- `npm run db:verify-rls`: passed against disposable PostgreSQL 16 through migration/test `0040`.
 - First-Administrator RPC integration assertions: passed.
 - Administrator password-reset integration assertions: passed.
 - Required password-change integration assertions: passed.
@@ -202,4 +205,4 @@
 
 ## Next Exact Step
 
-Deploy the branch editor and QR/scanner changes. Confirm an Admin general can edit and persist one branch in production, then refresh or remove/reinstall the Apple pass so it receives the visible barcode. Scan it from `/app/scan` on the employee phone, confirm the expected customer opens, and validate one stamp plus reward update on the real iPhone. Connect the protected retry endpoint to an external scheduler before production scale.
+Implement the additive engine migration for `LIFETIME_POINTS`: store point tenths exactly, truncate each purchase to one decimal, never reduce the balance modulo a cycle goal, generate each tier once per customer, and keep the program paused until focused SQL/RLS coverage passes. Then connect welcome registration/import behavior and update Web Card plus Apple Wallet projections. The separate QR/APNs deployment validation remains required before production scale.
