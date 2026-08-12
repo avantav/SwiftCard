@@ -284,7 +284,7 @@ Ejemplo: un sello cada $100; compra de $250; resultado de dos sellos y $50 de re
 
 ### Cambios de reglas
 
-El Admin general puede cambiar el tipo de programa con confirmación explícita. Ese cambio conserva saldos, recompensas e historial, se guarda primero en pausa y la nueva regla se aplica únicamente a compras futuras después de reactivar un tipo cíclico. El tipo de puntos acumulativos permanece pausado hasta que su motor esté habilitado. Los cambios de regla o niveles dentro del mismo tipo aplican inmediatamente; si generan recompensas, se crean sin duplicar niveles ya otorgados en el ciclo y se conserva el sobrante. Todo cambio queda auditado.
+El Admin general puede cambiar el tipo de programa con confirmación explícita. Ese cambio conserva recompensas e historial y se guarda primero en pausa. Al pasar de un programa de sellos a puntos acumulativos, cada saldo vigente de sellos se convierte con el multiplicador configurado de puntos por sello, el remanente monetario anterior se descarta y la conversión queda registrada individualmente en el ledger. La nueva regla se aplica únicamente a compras futuras después de reactivar un tipo cíclico. El tipo de puntos acumulativos permanece pausado hasta que su motor esté habilitado. Los cambios de regla o niveles dentro del mismo tipo aplican inmediatamente; si generan recompensas, se crean sin duplicar niveles ya otorgados en el ciclo y se conserva el sobrante. Todo cambio queda auditado.
 
 ## 13. Compras
 

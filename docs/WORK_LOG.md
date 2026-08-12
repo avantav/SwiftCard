@@ -4,15 +4,15 @@
 
 **Objective:** Let the Admin general change an existing loyalty program without deleting or rewriting customer history.
 
-**Changes Made:** Replaced the activity-based `TYPE_LOCKED` boundary with migration `0041`. The Admin selector now reveals a required confirmation when the type changes, forces the transition save to `PAUSED`, preserves existing balances and rewards, and records `LOYALTY_PROGRAM_TYPE_CHANGED` with old/new types and future-purchases scope. Historical purchases already retain their original calculation rule and program version. Lifetime points remain unactivatable until their engine is implemented.
+**Changes Made:** Migration `0041` replaced the activity-based `TYPE_LOCKED` boundary. Because `0041` is already online, additive migration `0042` now converts balances without rewriting it. The Admin selector reveals a required confirmation and forces the transition save to `PAUSED`. Entering lifetime points atomically converts every nonzero current stamp balance with the configured points-per-stamp multiplier, clears obsolete monetary remainder, writes a `PROGRAM_CHANGE` ledger boundary and rejects overflow. Existing rewards remain untouched, historical purchases retain their original calculation rule/version, and dedicated audit events record both the type change and conversion. `0042` also repairs a switch completed during the rollout gap. Lifetime points remain unactivatable until their engine is implemented.
 
 **Security Review:** The Server Action re-reads the current program through authenticated tenant RLS before accepting confirmation. The RPC continues to derive the active `ADMIN` and tenant from `auth.uid()`, rejects cross-tenant IDs, requires changed programs to be paused, and emits immutable audit data. Branch Administrators gain no new authority.
 
 **Design Review:** The changed state uses the existing warning alert and native required checkbox, explains preservation and future scope before save, and keeps the status visibly paused. Exact representative states were reviewed at 375, 768, 1280 and 1440 px with no overflow and a 44px confirmation target; the temporary route was removed.
 
-**Validation:** All 187 Vitest tests, `npm run lint`, `npm run typecheck` and the production webpack build passed. A PostgreSQL integration assertion was added for type mutation, balance/reward preservation, immutable purchase rule and audit metadata. The disposable Docker verifier could not run because its permission escalation timed out twice; it remains required before applying `0041`.
+**Validation:** All 187 Vitest tests, `npm run lint`, `npm run typecheck`, the production webpack build and disposable PostgreSQL/RLS suite through `0042` pass. PostgreSQL coverage verifies the mandatory paused boundary, cyclic balance preservation, stamp-to-point multiplication, remainder clearing, completed-cycle and reward preservation, immutable historical purchase rule, per-customer ledger entry and audit metadata. The conversion state was reviewed at 375, 768, 1280 and 1440 px without overflow; its temporary route was removed.
 
-**Migration:** Apply `0041_admin_program_type_changes.sql` before using the new control.
+**Migration:** `0040` and `0041` are confirmed online. Apply only `0042_stamp_to_point_balance_conversion.sql` for this change.
 
 ## 2026-08-12 - Apple Store-Card Preview Parity
 

@@ -58,7 +58,7 @@ export function ProgramTypeControls({
         >
           <p>
             {lifetimePoints
-              ? "El programa acumulativo se guardará pausado. Los saldos y recompensas actuales se conservarán para su conversión al activarlo."
+              ? "El programa acumulativo se guardará pausado. Los sellos actuales se convertirán a puntos con el multiplicador configurado abajo; las recompensas y el historial se conservarán."
               : "El programa se guardará pausado. La nueva regla se aplicará a compras futuras; los saldos, recompensas y movimientos anteriores se conservarán."}
           </p>
           <label className="check-field">
