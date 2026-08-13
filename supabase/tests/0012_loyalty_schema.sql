@@ -7,19 +7,9 @@ insert into public.loyalty_programs (
   '10000000-0000-0000-0000-000000000001', 'Programa A', 'PER_PURCHASE', 10000, 1, 10, 'Recompensa A'
 );
 
-do $$
-begin
-  begin
-    insert into public.loyalty_programs (
-      tenant_id, name, rule_type, amount_per_stamp_minor, reward_stamp_goal, reward_name
-    ) values (
-      '10000000-0000-0000-0000-000000000001', 'Programa duplicado', 'PER_AMOUNT', 10000, 10, 'Duplicada'
-    );
-    raise exception 'Second active loyalty program was accepted';
-  exception when unique_violation then null;
-  end;
-end;
-$$;
+-- Multiple active programs are valid after 0043 because each published card
+-- owns one. The card aggregate, not loyalty_programs alone, enforces the
+-- tenant's three-card limit.
 
 insert into public.customer_loyalty_balances (tenant_id, customer_id)
 values ('10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001');

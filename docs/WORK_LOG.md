@@ -1,5 +1,45 @@
 # Work Log
 
+## 2026-08-12 - Resumable Multi-card Configuration
+
+**Objective:** Let a tenant operate up to three distinct cards with their own reward programs, statistics and participating branches through one simple provider-neutral setup flow.
+
+**Changes Made:** Added migrations `0043` and `0044` for the card aggregate, one-to-one programs, transactional three-card limit, forced RLS, branch assignments, durable step completion, safe legacy backfill and card-scoped registration, scanning, purchase, adjustment, Web Card and Apple Wallet projections. Added `/admin/cards` with per-card metrics and a four-stage program/design/locations/publication assistant. The design stage uses one saved model and an Apple/Android preview toggle; legacy Program and Apple-only design pages redirect to the new flow. Employee registration and purchase selectors use a restricted RPC and only show card/branch combinations available to that operator.
+
+**Safety:** Draft creation and every save derive the tenant from the authenticated Admin. Published operations derive the program from the issued opaque card token and require the selected branch to participate. No frontend `tenant_id`, program, stamp count or reward count is authoritative. Existing tenants are backfilled into one published card without rewriting customer tokens or balances.
+
+**Validation:** Typecheck, lint, all 192 Vitest tests, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass. The wizard was reviewed at 375, 768, 1280 and 1440 px; all four stages remain visible on mobile, direct uploads remain contained and the temporary review route was removed.
+
+**Next Action:** Apply `0043`/`0044` to hosted Supabase with explicit deployment approval, smoke-test the complete flow there and refresh an existing signed Apple pass.
+
+## 2026-08-12 - Dynamic Apple Wallet Stamp Strip
+
+**Objective:** Reproduce a physical graphical stamp card inside Apple Wallet and refresh it when the customer's backend balance changes.
+
+**Research:** Apple's Wallet documentation confirms that pass images are packaged and signed server-side, an updated pass is a complete new `.pkpass` with the same pass type and serial number, and APNs only prompts the device to request it. Store-card strip artwork uses 375 × 144 with matching device scales. Current Pass Designer compatibility guidance also indicates that strip presentation can vary or be omitted on recent iOS and Apple Watch, so the graphic cannot be the only balance representation.
+
+**Changes Made:** Added a bounded Sharp/SVG renderer that generates `strip.png`, `strip@2x.png` and `strip@3x.png` from the authoritative current balance and cycle goal. Earned circles repeat the tenant logo or use initials; empty circles use a distinct dashed treatment; an uploaded strip becomes a darkened background. Pass generation invokes this renderer for both initial issuance and update requests, while an auxiliary field preserves the exact textual balance. The Admin preview and image guidance now describe and visualize the generated overlay.
+
+**Security And Correctness:** No browser-provided stamp value or customer-specific image is trusted or persisted. The existing server-only source loader derives tenant, customer, balance and program, and the existing signed-pass/APNs path delivers the replacement. Generation is capped at 24 indicators and three fixed image sizes.
+
+**Design Review:** The generated 375 × 144 PNG was inspected with six of ten branded circles. The Admin preview was reviewed at 375, 768, 1280 and 1440 px without horizontal overflow, hidden controls or loss of the textual fallback; temporary artifacts were removed.
+
+**Validation:** Focused renderer, payload and integration tests, `npm run lint`, `npm run typecheck`, all 189 Vitest tests and the production webpack build pass. Authorized ignored local Apple credentials produced a valid signed `.pkpass` ZIP containing all three generated strip assets, their manifest hashes, a signature and exact textual fallback in `pass.json`; no secret or validation route remains in the repository.
+
+**Migration:** None required.
+
+## 2026-08-12 - Branded Graphical Web Card Stamps
+
+**Objective:** Replace the Web Card's visible numeric stamp counter with a graphical loyalty-card treatment that fills with the tenant's identity.
+
+**Changes Made:** Replaced the numeric ratio and progress bar with circular stamp positions. Earned positions use the tenant's primary color and repeat its logo; tenants without a logo use their initials. Normal goals render one position per stamp, while goals above 24 use a bounded proportional representation so an extreme configuration cannot create an unbounded DOM. Exact earned and goal values remain exposed as the graphical progress accessible name.
+
+**Design Review:** The grid uses a maximum of five circles per row, distinguishes empty and earned positions by shape, fill and imagery rather than color alone, and keeps the existing Web Card hierarchy. The exact component was reviewed in Chrome at 375, 768, 1280 and 1440 px without overflow; the temporary review route was removed. Apple Wallet is unchanged because Apple controls its pass layout.
+
+**Validation:** Focused application-design coverage, `npm run lint`, `npm run typecheck`, all 187 Vitest tests and the production webpack build pass.
+
+**Migration:** None required.
+
 ## 2026-08-12 - Admin Program-Type Changes
 
 **Objective:** Let the Admin general change an existing loyalty program without deleting or rewriting customer history.

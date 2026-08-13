@@ -1,4 +1,5 @@
 import { SubmitButton } from "@/components/submit-button";
+import type { RegistrationScope } from "@/components/registration-scope-fields";
 import { requireInternalArea } from "@/lib/auth/server";
 import { confirmPurchase, previewPurchase } from "./actions";
 
@@ -7,9 +8,12 @@ type PurchasePageProps = { searchParams: Promise<Record<string, string | undefin
 export default async function PurchasePage({ searchParams }: PurchasePageProps) {
   const context = await requireInternalArea("APP");
   const params = await searchParams;
-  const customerId = params.customerId ?? "";
+  const customerCardId = params.customerCardId ?? "";
+  const loyaltyCardId = params.loyaltyCardId ?? "";
   const hasPreview = params.previewStamps !== undefined;
-  const { data: branches, error: branchesError } = await context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name");
+  const { data: rawScopes, error: branchesError } = await context.supabase.schema("app").rpc("get_staff_registration_scopes");
+  const cardScopes = ((rawScopes ?? []) as RegistrationScope[]).filter((scope) => scope.loyalty_card_id === loyaltyCardId);
+  const cardName = cardScopes[0]?.card_name;
 
   return <main className="operations-page">
     <header className="operations-page-header"><p>Operación</p><h1>Registrar compra</h1><span>Previsualiza el cálculo antes de confirmar la operación.</span></header>
@@ -20,14 +24,16 @@ export default async function PurchasePage({ searchParams }: PurchasePageProps) 
     <section className="operations-card" aria-labelledby="purchase-data-title">
       <div className="operations-card-header"><h2 id="purchase-data-title">Datos de la compra</h2><p>El backend volverá a calcular los sellos al confirmar.</p></div>
       <form className="operations-form" action={previewPurchase}>
-        <label className="field"><span>Cliente</span><input name="customerId" value={customerId} readOnly required /></label>
-        <label className="field"><span>Sucursal</span><select name="branchId" defaultValue={params.branchId ?? ""} required><option value="">Selecciona una sucursal</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label>
+        <input name="customerCardId" type="hidden" value={customerCardId} />
+        <input name="loyaltyCardId" type="hidden" value={loyaltyCardId} />
+        <label className="field"><span>Tarjeta identificada</span><input value={cardName ?? "Vuelve a escanear la tarjeta"} readOnly aria-invalid={!cardName} /></label>
+        <label className="field"><span>Sucursal participante</span><select name="branchId" defaultValue={params.branchId ?? ""} required disabled={!cardScopes.length}><option value="">Selecciona una sucursal</option>{cardScopes.map((scope) => <option key={scope.branch_id} value={scope.branch_id}>{scope.branch_name}</option>)}</select><small>Solo aparecen las ubicaciones asignadas a esta tarjeta y a tu cuenta.</small></label>
         <label className="field"><span>Monto en centavos</span><input name="amountMinor" type="number" inputMode="numeric" min="1" step="1" defaultValue={params.amountMinor ?? ""} required /></label>
-        <SubmitButton className={hasPreview ? "operations-secondary-button" : "operations-primary-button"}>{hasPreview ? "Actualizar previsualización" : "Previsualizar compra"}</SubmitButton>
+        <SubmitButton disabled={!customerCardId || !cardScopes.length} className={hasPreview ? "operations-secondary-button" : "operations-primary-button"}>{hasPreview ? "Actualizar previsualización" : "Previsualizar compra"}</SubmitButton>
       </form>
     </section>
     {hasPreview ? <section className="operations-card operations-confirm-card" aria-labelledby="confirm-purchase-title"><div className="operations-card-header"><h2 id="confirm-purchase-title">Confirmar operación</h2><p>Verifica el ticket. La compra no se podrá editar después.</p></div><form className="operations-form" action={confirmPurchase}>
-      <input type="hidden" name="customerId" value={customerId} /><input type="hidden" name="branchId" value={params.branchId ?? ""} /><input type="hidden" name="amountMinor" value={params.amountMinor ?? ""} />
+      <input type="hidden" name="customerCardId" value={customerCardId} /><input type="hidden" name="loyaltyCardId" value={loyaltyCardId} /><input type="hidden" name="branchId" value={params.branchId ?? ""} /><input type="hidden" name="amountMinor" value={params.amountMinor ?? ""} />
       <label className="field"><span>Número de ticket</span><input name="ticketNumber" required /></label>
       <SubmitButton className="operations-primary-button">Confirmar compra</SubmitButton>
     </form></section> : null}

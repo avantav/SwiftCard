@@ -28,6 +28,7 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
     {duplicate ? <p className="enterprise-alert is-error" role="alert">Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.</p> : null}
     {error ? <p className="enterprise-alert is-error" role="alert">{error}</p> : null}
     {!registrationCreated ? <form className="public-form" action={action}>
+      {registrationContext.cards.length === 1 ? <input name="loyaltyCardId" type="hidden" value={registrationContext.cards[0].id} /> : <fieldset className="public-card-choice"><legend>Elige tu tarjeta</legend>{registrationContext.cards.map((card) => <label key={card.id}><input name="loyaltyCardId" type="radio" value={card.id} required /><span><strong>{card.name}</strong><small>{card.description}</small></span></label>)}</fieldset>}
       <label className="field"><span>Nombre completo</span><input name="fullName" required autoComplete="name" /></label>
       <label className="field"><span>Teléfono</span><input name="phone" required type="tel" inputMode="tel" autoComplete="tel" /></label>
       <label className="field"><span>Correo electrónico <small>(opcional)</small></span><input name="email" type="email" inputMode="email" autoComplete="email" /></label>

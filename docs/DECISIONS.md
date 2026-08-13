@@ -190,3 +190,24 @@
 - Reason: A paused two-step transition gives the Admin the requested flexibility while preventing an accidental live rule switch and preserving the ledger as historical truth.
 - Consequences: Migrations `0041` and `0042` are required. Because `0041` was already online, additive migration `0042` also repairs a program that entered lifetime points before the conversion trigger was installed. Cyclic type changes can be reviewed and activated in a second save; a change to lifetime points immediately converts existing balances but cannot be activated yet. Existing rewards retain their original program/tier snapshots.
 - Status: Accepted.
+
+## DEC-0020 - Server-Rendered Graphical Stamp Strip For Apple Wallet
+
+- Date: 2026-08-12
+- Context: The customer-facing Apple Wallet pass should resemble a physical stamp card, with earned circular positions filled by the tenant identity instead of making a number the dominant representation.
+- Decision: For cyclic programs, render a customer-specific PNG strip on the trusted server from the current database balance and highest cycle goal. Produce Apple's 1x/2x/3x strip sizes, repeat the tenant logo or initials in earned positions, bound exceptionally large goals to 24 proportional indicators, include the generated assets in every newly signed `.pkpass`, and retain the exact balance as an auxiliary text field. A configured tenant strip remains an optional background underneath the generated progress.
+- Alternatives considered: Generate the image in the browser, store one image per customer in Storage, update only an image URL, encode circles as pass-field text, or remove the textual balance entirely.
+- Reason: Browser output cannot become trusted signed pass content, Apple pass images live inside the signed package, and the existing PassKit update service already regenerates the complete pass after transactional balance changes. A textual fallback preserves meaning when Wallet or Apple Watch omits or changes image presentation.
+- Consequences: Every pass request performs bounded image composition and signing without persisting customer-specific images. APNs remains only a change signal; the device downloads the complete replacement pass with the same pass type and serial number. Apple's current Pass Designer compatibility table limits store-card strip display on some recent OS versions, so exact presentation requires a refreshed pass on the target iPhone and must not be the only source of balance truth.
+- References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass), [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer), and [Adding a web service to update passes](https://developer.apple.com/documentation/walletpasses/adding-a-web-service-to-update-passes).
+- Status: Accepted.
+
+## DEC-0021 - Card-Owned Programs, Locations, Design And Statistics
+
+- Date: 2026-08-12
+- Context: A tenant needs up to three distinct loyalty cards, including branch-exclusive cards, without mixing balances, rules, visuals or reporting and without maintaining one designer per device.
+- Decision: Introduce a `loyalty_cards` configuration as the aggregate root. Every non-archived card owns exactly one loyalty program, one provider-neutral design and one or more branch assignments. A tenant can have at most three non-archived cards, enforced transactionally with an advisory lock. Creation immediately persists a `DRAFT`; program, design and locations are saved as independent completed stages, and publication requires all three. Existing tenant program/design/issued-card data backfills into one published card. In the MVP a customer still holds at most one issued card per tenant, but its opaque QR now identifies both customer and card so operations derive the correct program and allowed branches. Purchases, rewards and ledger activity carry the card scope for per-card statistics and history.
+- Alternatives considered: Keep the tenant-wide program and change only the UI, create separate Apple and Android card records, store unfinished setup only in browser state, or allow the client to submit a program/tenant as authority.
+- Reason: The aggregate prevents cross-card balance and reporting ambiguity, preserves the existing one-card-per-customer invariant, makes drafts resumable across devices and keeps wallet-specific rendering as an adapter over one business design.
+- Consequences: Migrations `0043` and `0044` are additive and must be applied before the new Admin route. Legacy `/admin/program` and `/admin/wallet` redirect to `/admin/cards`. Public and employee registration require a published card assigned to the selected branch. Google pass generation remains pending, but its preview uses the same saved design contract as Apple.
+- Status: Accepted.

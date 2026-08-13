@@ -89,6 +89,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement customer search and profile editing.
 - [x] [Terminada] Add the tenant-wide customer directory with status, card, loyalty and Apple Wallet diagnostics exclusively for the Admin general.
 - [x] [Terminada] Implement public web card by card token.
+- [x] [Terminada] Replace numeric cyclic progress on the Web Card with accessible branded stamp circles and a bounded proportional view for exceptionally large goals.
 
 ## Phase 3 - Motor De Fidelidad
 
@@ -189,9 +190,23 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add migration `0039` to restore the server-only sequence permission required when issuing a new pass after `0038`, with positive `service_role` insertion and negative browser-role regression coverage.
 - [x] [Terminada] Apply migration `0039` manually and confirm that production pass issuance works again.
 - [x] [Terminada] Preserve the configured QR barcode and branch locations in the final signed `.pkpass` through the PassKit generator setter APIs.
+- [x] [Terminada] Generate a per-customer branded graphical stamp strip on the server at 1x/2x/3x, replace it with each signed pass update, and retain exact textual progress as a compatibility fallback.
 - [ ] [Pendiente] Deploy the QR/scanner correction, refresh or reinstall the pass, validate scanning plus APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.
+
+## Cross-cutting - Multi-card configuration
+
+**Objective:** Let each tenant create up to three independently operated cards without splitting design by wallet provider.
+
+**Tasks**
+
+- [x] [Terminada] Add durable card drafts with a one-to-one program, a database-enforced three-card limit, staged completion flags, forced RLS and safe backfill of the current tenant configuration.
+- [x] [Terminada] Add `/admin/cards` with per-card statistics and a four-stage program, design, locations and publication assistant.
+- [x] [Terminada] Use one provider-neutral design with an accessible Apple/Android preview toggle; redirect the legacy program and Apple-only configuration pages.
+- [x] [Terminada] Scope public/employee registration, QR scanning, earning, adjustments, Web Card and Apple pass generation to the issued card and its participating branches.
+- [x] [Terminada] Apply migrations `0043` and `0044` in a disposable PostgreSQL instance and add SQL assertions to the full RLS harness.
+- [ ] [Pendiente] Validate the complete draft/resume/publish/register/purchase flow against a deployed Supabase project and refresh existing Apple passes.
 
 ## Phase 9 - Piloto
 

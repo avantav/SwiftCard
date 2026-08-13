@@ -144,10 +144,11 @@ describe("Apple Wallet integration boundaries", () => {
   });
 
   it("keeps the visual preview aligned with Apple's store-card layout", () => {
-    expect(appleServer).toContain('resizedPng(stripSource, 375, 144, "cover")');
-    expect(appleServer).toContain('resizedPng(stripSource, 750, 288, "cover")');
-    expect(appleServer).toContain('resizedPng(stripSource, 1125, 432, "cover")');
+    expect(appleServer).toContain("buildAppleWalletStampStrips");
+    expect(appleServer).toContain("stampBalance: input.stampBalance");
+    expect(appleServer).toContain('input.programType === "LIFETIME_POINTS"');
     expect(walletForm).toContain("apple-pass-preview-primary");
+    expect(walletForm).toContain("apple-pass-preview-stamps");
     expect(walletForm).toContain("apple-pass-preview-supporting-fields");
     expect(walletForm).toContain("/icons/wallet-preview-qr.svg");
     expect(styles).toContain("aspect-ratio: 375 / 144");

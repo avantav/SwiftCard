@@ -2,12 +2,12 @@
 
 ## Current State
 
-- Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
-- Last completed task: Added atomic existing-stamp conversion to the confirmed Admin transition into lifetime points.
+- Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
+- Current task: Deploy the validated additive multi-card migrations and complete the hosted draft/resume/publish/register/purchase smoke path.
+- Last completed task: Implemented the four-stage multi-card Admin flow and card-scoped registration, purchase, Web Card and Apple Wallet projections.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
-- Git status: The Admin program-type transition and additive stamp-to-point conversion pass the disposable PostgreSQL/RLS suite through `0042`; no unrelated worktree changes are present.
+- Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
+- Git status: Typecheck, lint, 192 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
 
 ## Completed Functionality
@@ -52,6 +52,10 @@
 - Atomic staff-to-branch assignment RPC with primary-branch promotion.
 - Admin-only branch assignment controls on `/admin/staff`.
 - Tenant-scoped `customers` and `customer_cards` schema with one card per customer.
+- Tenant-scoped `loyalty_cards` aggregate with a database-enforced limit of three non-archived cards, exactly one linked program, provider-neutral design, one-or-many branch assignments and durable staged drafts.
+- `/admin/cards` replaces the separate Program and Apple Wallet navigation entries, reports per-card emissions/purchases/money/units/rewards and provides four resumable stages: program, design, locations and publication.
+- Public and employee registration select only published cards participating in the chosen branch; QR scanning retains the issued card ID and purchase/adjustment authority derives its program and location scope on the backend.
+- Web Card and Apple Wallet now resolve colors, logo, reward catalog and proximity locations from the issued card instead of a tenant-wide latest program/design.
 - Per-tenant phone uniqueness and random rotatable public card token.
 - Anonymous role denied direct access to customer/card tables.
 - Shared phone normalization for Mexican and international formats.
@@ -99,6 +103,7 @@
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
+- The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.
 - A newly registered customer sees a direct generic Apple Wallet action when both signer configuration and tenant design are enabled; the success screen no longer routes through the Web Card.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
@@ -111,6 +116,7 @@
 - Migration `0039` restores `service_role` usage of the update-tag sequence so the initial pass endpoint can insert `wallet_passes` rows; browser roles remain denied.
 - Production migration `0039` was applied manually and the user confirmed Apple Wallet pass generation works again.
 - Signed Apple passes now retain their QR barcode and branch locations by applying both through the PassKit generator methods that persist method-owned properties into `pass.json`.
+- Signed Apple passes now generate customer-specific `strip.png`, `strip@2x.png` and `strip@3x.png` assets from the authoritative cyclic balance. Earned circles repeat the tenant logo or initials, large goals stay bounded at 24 positions, and exact textual progress remains in an auxiliary field for Wallet versions or devices that omit the strip.
 - Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.
 - Purchase, redemption and relevant administrative actions attempt production APNs delivery immediately without making application success depend on Apple availability.
 - APNs delivery uses HTTP/2, the existing pass certificate/private key and WWDR chain, an empty payload, Pass Type topic, bounded timeouts, invalid-token cleanup and per-device delivered tags.
@@ -138,7 +144,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 184 tests passed.
+- `npm run test:run`: passed; 189 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -185,6 +191,7 @@
 - Authenticated Administrator review passed at 375, 768, 1280, and 1440 px; public login passed at 375 and 1440 px. Because no active Manager/Employee or customer card exists yet, the exact production PWA and Web Card components were also reviewed with temporary representative data at 375 and 768 px, and all temporary routes were removed.
 - PWA install guidance and online/offline notices were visually reviewed with exact production styles at 375 and 768 px; launcher icons and the maskable safe area were inspected, all temporary review routes were removed, and live `/manifest.webmanifest`, `/sw.js`, and `/offline.html` responses were verified.
 - Tier editor and customer-card reward catalog were visually reviewed at 375, 768, 1280, and 1440 px; no overflow, hidden action, or one-off visual language was found, and the temporary review route was removed.
+- The branded Web Card stamp grid was visually reviewed at 375, 768, 1280 and 1440 px with a balanced five-column maximum, no overflow and no visible numeric progress; the temporary review route was removed.
 - Migration `0034` and its dedicated integration test passed cumulative 3/5/10 thresholds, current-cycle conversion, next-cycle rewards, remainder preservation, cancellation restoration, anonymous projection, direct-table denial, and duplicate-threshold rejection.
 - Migration `0035` and its integration test passed branch-Administrator scope, shared-account bypass denial, PIN uniqueness, lockout, unlock, revocation, branch isolation, and actor attribution.
 - Migration `0036` and its integration test passed Admin-only design mutation, Manager/anonymous denial, audit attribution, public availability filtering, and RLS/table-grant boundaries.
@@ -195,6 +202,8 @@
 - Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and manual fallback.
 - Admin customer-directory filter parsing, pagination preservation, tenant scoping, role denial and navigation visibility passed focused tests; the responsive table/card rules were reviewed at the required 375, 768, 1280 and 1440 px breakpoints.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
+- The graphical Apple Wallet strip generator passed exact 1x/2x/3x dimension checks and produces different PNG content when the customer balance changes. Its Admin preview was reviewed at 375, 768, 1280 and 1440 px without overflow; temporary review files and routes were removed.
+- Authorized ignored local Apple credentials produced a valid signed graphical `.pkpass` containing `strip.png`, `strip@2x.png`, `strip@3x.png`, manifest hashes, signature and the exact `6 de 10 sellos` auxiliary fallback; no secret or validation route was committed.
 - Authorized local Apple credentials produced a signed `.pkpass` ZIP with a matching, currently valid signer certificate; no secret was committed.
 - The Wallet Storage designer passed Chrome review at 375, 768, 1280, and 1440 px; a prerender-only browser client bug and responsive file-input overflow were found and fixed, and the temporary review route was removed.
 
@@ -207,4 +216,4 @@
 
 ## Next Exact Step
 
-Implement the additive engine migration for `LIFETIME_POINTS`: store point tenths exactly, truncate each purchase to one decimal, never reduce the balance modulo a cycle goal, generate each tier once per customer, and keep the program paused until focused SQL/RLS coverage passes. Then connect welcome registration/import behavior and update Web Card plus Apple Wallet projections. The separate QR/APNs deployment validation remains required before production scale.
+Apply validated migrations `0043` and `0044` to the hosted Supabase project with approval, then exercise create draft → resume → publish → register → scan → purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.

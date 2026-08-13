@@ -19,7 +19,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 ## 2. Objetivos del MVP
 
 - Crear y administrar tenants manualmente desde un panel Superadmin.  
-- Operar múltiples sucursales con una sola tarjeta por cliente y tenant.  
+- Operar hasta tres tipos de tarjeta por tenant; cada cliente elige una y la usa solo en sus sucursales participantes.
 - Registrar clientes por autoservicio o por empleado.  
 - Registrar compras con número de ticket y monto.  
 - Calcular sellos automáticamente según reglas configurables.  
@@ -40,9 +40,9 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Registro manual por empleado.  
 - Web Card, Apple Wallet y Google Wallet.  
 - QR seguro por tarjeta.  
-- Una tarjeta por cliente y tenant, válida en todas sus sucursales.  
+- Hasta tres configuraciones de tarjeta por tenant; una tarjeta emitida por cliente y tenant en el MVP.
 - Una moneda configurable por tenant.  
-- Un programa activo con uno o varios niveles de recompensa por tenant.
+- Un programa propio con uno o varios niveles de recompensa por cada tarjeta publicada.
 - Regla por compra o por monto.  
 - Remanente configurable.  
 - Recompensas acumulables y expiración configurable.  
@@ -203,17 +203,17 @@ El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers
 
 ### Autoservicio
 
-Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal, captura sus datos, el sistema valida formato y duplicados, crea el cliente y genera la tarjeta. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro se ofrecerá directamente **Agregar a Apple Wallet** cuando el tenant y el servidor estén listos; no se enviará al cliente a una pantalla intermedia de tarjeta actual. Un enlace inválido, de una sucursal inactiva o de un tenant suspendido no mostrará el formulario.
+Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal y, cuando la ubicación participa en más de una tarjeta publicada, elige cuál desea antes de capturar sus datos. El backend valida que esa tarjeta esté publicada y ligada a la sucursal, valida formato y duplicados, crea el cliente y genera la tarjeta emitida. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro se ofrecerá directamente **Agregar a Apple Wallet** cuando la tarjeta y el servidor estén listos; no se enviará al cliente a una pantalla intermedia. Un enlace inválido, una tarjeta no participante, una sucursal inactiva o un tenant suspendido no mostrará el formulario.
 
 ### Por empleado
 
-Desde la PWA, el empleado captura los datos y el sistema genera la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
+Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
 
 No habrá OTP, verificación por correo ni contraseña del cliente.
 
 ## 11. Tarjeta digital
 
-Cada cliente tendrá una sola tarjeta activa por tenant, válida en todas las sucursales.
+Cada cliente tendrá una sola tarjeta activa por tenant en el MVP. La tarjeta será válida únicamente en las sucursales seleccionadas en su configuración.
 
 Canales:
 
@@ -234,6 +234,13 @@ Contenido mínimo:
 - Términos y condiciones del programa.
 - Marca de agua Powered by SwiftWallet cuando el tenant no sea white-label.
 
+En la Web Card, los programas cíclicos representarán el avance mediante
+círculos de sello en lugar de un contador numérico visible. Cada círculo
+obtenido se llenará con el color principal y el logo del tenant; cuando no
+exista logo usará sus iniciales. Las metas excepcionalmente grandes usarán una
+representación proporcional acotada para conservar rendimiento y legibilidad,
+mientras el valor exacto permanecerá disponible para tecnologías de asistencia.
+
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
 
 El mismo identificador seguro se mostrará como QR real en la Web Card y como
@@ -241,13 +248,31 @@ barcode QR en Apple Wallet. La PWA operativa podrá leer ambos con la cámara
 tras una acción explícita del empleado y conservará captura manual como
 respaldo cuando el dispositivo niegue o no soporte la cámara.
 
-El Admin general podrá configurar por tenant la tarjeta Apple Wallet mediante una plantilla `storeCard`: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El diseño de Wallet es independiente del secreto de firma y no permite alterar libremente la estructura definida por Apple.
+El Admin general configurará cada tarjeta con un diseño neutral al proveedor: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El mismo formulario mostrará una vista previa alternable Apple/Android; no existirán diseñadores separados por dispositivo. La generación Apple seguirá usando una plantilla `storeCard` y adaptará el diseño común a la estructura controlada por Apple. El diseño es independiente del secreto de firma.
+
+En Apple Wallet, los programas cíclicos generarán en el servidor una imagen
+`strip` personalizada con el avance del cliente. Los círculos obtenidos
+mostrarán el logo del tenant o sus iniciales y la imagen se volverá a generar
+dentro del `.pkpass` firmado cuando cambie el saldo. El pase conservará además
+un campo textual exacto porque Wallet puede ajustar u omitir imágenes según la
+versión de iOS, Apple Watch y el dispositivo.
 
 El logo y la imagen principal se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.
 
+### Configuración administrativa de tarjetas
+
+El Admin general administrará las tarjetas desde `/admin/cards`. Puede conservar como máximo tres tarjetas no archivadas por tenant. Al iniciar una tarjeta, el backend crea inmediatamente un borrador y un programa pausado ligado de forma uno a uno. La configuración usa cuatro etapas simples:
+
+1. Programa y niveles de recompensa.
+2. Diseño único con vista previa alternable Apple/Android.
+3. Una o varias sucursales participantes.
+4. Revisión y publicación.
+
+Cada etapa confirmada se persiste de manera independiente; salir del asistente nunca elimina las etapas ya guardadas y el listado permite retomarlo. Solo una tarjeta con programa, diseño y al menos una sucursal completos puede publicarse. Las tarjetas mantienen estadísticas propias de emisiones, compras, monto, unidades y recompensas. El token QR identifica la tarjeta emitida, y el backend deriva desde ella el programa y las ubicaciones autorizadas; el frontend no puede elegir un `tenant_id` ni adjudicar unidades.
+
 ## 12. Programa de fidelidad
 
-Cada tenant tendrá un programa con uno o varios niveles de recompensa. La configuración ofrecerá tres tipos de programa:
+Cada tarjeta tendrá exactamente un programa con uno o varios niveles de recompensa. La configuración ofrecerá tres tipos de programa:
 
 - Sellos por compra: entrega una cantidad configurada por cada compra que alcance el mínimo y cierra ciclos en la meta mayor.
 - Sellos por monto: entrega sellos enteros por un monto configurado, con remanente opcional, y cierra ciclos en la meta mayor.

@@ -17,6 +17,7 @@ export type AppleWalletPassData = {
   labelColor: string;
   customerName: string;
   programName: string;
+  programType: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
   stampBalance: number;
   rewardGoal: number | null;
   availableRewards: number;
@@ -88,20 +89,20 @@ export function buildAppleWalletPassProps(
           changeMessage: "Ahora tienes %@ premios disponibles.",
         },
       ],
-      primaryFields: [
-        {
-          key: "stamp-balance",
-          label: "SELLOS",
-          value: input.stampBalance,
-          changeMessage: "Ahora tienes %@ sellos.",
-        },
-      ],
+      primaryFields: [],
       secondaryFields: [
         { key: "customer", label: "CLIENTE", value: input.customerName },
       ],
-      auxiliaryFields: input.rewardGoal
-        ? [{ key: "goal", label: "META", value: `${input.rewardGoal} sellos` }]
-        : [],
+      auxiliaryFields: [
+        {
+          key: "stamp-progress",
+          label: "PROGRESO",
+          value: input.rewardGoal
+            ? `${input.stampBalance} de ${input.rewardGoal} sellos`
+            : `${input.stampBalance} sellos`,
+          changeMessage: "Tu tarjeta ahora tiene %@.",
+        },
+      ],
       backFields: [
         { key: "program", label: "PROGRAMA", value: input.programName },
         {
