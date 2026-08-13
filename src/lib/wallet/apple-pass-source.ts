@@ -115,7 +115,7 @@ export async function loadAppleWalletPassSource(
       .maybeSingle(),
     supabase
       .from("loyalty_programs")
-      .select("id,name,reward_stamp_goal,terms_and_conditions,status,updated_at")
+      .select("id,name,program_type,reward_stamp_goal,terms_and_conditions,status,updated_at")
       .eq("tenant_id", card.tenant_id)
       .order("updated_at", { ascending: false })
       .limit(1)
@@ -232,6 +232,7 @@ export async function loadAppleWalletPassSource(
         labelColor: design.label_color,
         customerName: customer.full_name,
         programName: program.name,
+        programType: program.program_type,
         stampBalance: Number(balanceResult.data?.stamp_balance ?? 0),
         rewardGoal: program.reward_stamp_goal,
         availableRewards: rewardsResult.count ?? 0,

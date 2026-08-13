@@ -17,6 +17,7 @@ describe("Apple Wallet store card", () => {
         labelColor: "#FFFFFF",
         customerName: "Ana López",
         programName: "Club Café",
+        programType: "STAMPS_PER_PURCHASE",
         stampBalance: 4,
         rewardGoal: 10,
         availableRewards: 1,
@@ -32,7 +33,9 @@ describe("Apple Wallet store card", () => {
       },
       { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
     );
-    expect(props.storeCard.primaryFields[0]?.value).toBe(4);
+    expect(props.storeCard.primaryFields).toHaveLength(0);
+    expect(props.storeCard.auxiliaryFields[0]?.value).toBe("4 de 10 sellos");
+    expect(props.storeCard.auxiliaryFields[0]?.changeMessage).toContain("%@");
     expect(props.storeCard.backFields[1]?.value).toContain("3 sellos");
     expect(props.barcodes[0]?.message).toBe(
       "https://wallet.example.com/card/public-token",
@@ -58,9 +61,10 @@ describe("Apple Wallet store card", () => {
     pass.type = "storeCard";
     pass.setBarcodes(...props.barcodes);
     pass.setLocations(...props.locations);
-    pass.primaryFields.push(...storeCard.primaryFields);
+    pass.auxiliaryFields.push(...storeCard.auxiliaryFields);
     expect(pass.type).toBe("storeCard");
-    expect(pass.primaryFields[0]?.value).toBe(4);
+    expect(pass.primaryFields).toHaveLength(0);
+    expect(pass.auxiliaryFields[0]?.value).toBe("4 de 10 sellos");
     expect(pass.props.barcodes?.[0]?.message).toBe(
       "https://wallet.example.com/card/public-token",
     );
@@ -79,6 +83,7 @@ describe("Apple Wallet store card", () => {
       labelColor: "#FFFFFF",
       customerName: "Cliente",
       programName: "Programa",
+      programType: "STAMPS_PER_AMOUNT" as const,
       stampBalance: 0,
       rewardGoal: null,
       availableRewards: 0,

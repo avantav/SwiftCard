@@ -15,6 +15,12 @@ El flujo actual es:
 
 La notificación APNs no contiene saldo, cliente ni recompensas. Solo solicita a Wallet que consulte nuevamente el pase.
 
+Para programas cíclicos, cada `.pkpass` nuevo contiene imágenes `strip` 1x/2x/3x
+generadas en el servidor a partir del saldo actual. El archivo no se actualiza de
+forma independiente: la nueva imagen forma parte del pase completo firmado. Un
+campo auxiliar conserva el valor exacto cuando la versión de Wallet o el
+dispositivo no muestra el strip.
+
 ## Migraciones y reparación de emisión
 
 Aplicar, después de respaldar y revisar el proyecto correcto:
@@ -148,9 +154,14 @@ Ese endpoint procesa hasta 25 trabajos por llamada y nunca expone push tokens. H
 5. Abrir `/app/scan` en el teléfono operativo, conceder permiso de cámara y confirmar que el QR abre al cliente correcto.
 6. Registrar una compra que otorgue un sello.
 7. Confirmar que la operación finaliza aunque APNs falle.
-8. Confirmar que Wallet solicita la lista de seriales, descarga el pase y muestra el nuevo saldo.
+8. Confirmar que Wallet solicita la lista de seriales, descarga el pase y muestra un círculo adicional con el logo, además del nuevo progreso textual.
 9. Repetir con recompensa generada y canjeada.
 10. Revisar que no existan identificadores, tokens, secretos o datos de cliente en logs.
+
+La imagen `strip` no se muestra en Apple Watch y la matriz vigente de Pass
+Designer indica compatibilidad limitada según la versión de iOS. Por ello, la
+validación debe registrar el modelo y versión del iPhone y confirmar siempre el
+campo textual aunque la imagen no aparezca.
 
 Las notificaciones de actualización de pases funcionan únicamente contra APNs de producción y su entrega es best effort. La validación final requiere HTTPS público y un iPhone real.
 

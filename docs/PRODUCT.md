@@ -250,6 +250,13 @@ respaldo cuando el dispositivo niegue o no soporte la cámara.
 
 El Admin general podrá configurar por tenant la tarjeta Apple Wallet mediante una plantilla `storeCard`: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El diseño de Wallet es independiente del secreto de firma y no permite alterar libremente la estructura definida por Apple.
 
+En Apple Wallet, los programas cíclicos generarán en el servidor una imagen
+`strip` personalizada con el avance del cliente. Los círculos obtenidos
+mostrarán el logo del tenant o sus iniciales y la imagen se volverá a generar
+dentro del `.pkpass` firmado cuando cambie el saldo. El pase conservará además
+un campo textual exacto porque Wallet puede ajustar u omitir imágenes según la
+versión de iOS, Apple Watch y el dispositivo.
+
 El logo y la imagen principal se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.
 
 ## 12. Programa de fidelidad

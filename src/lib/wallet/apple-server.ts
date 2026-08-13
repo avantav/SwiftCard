@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { PKPass } from "passkit-generator";
 import sharp from "sharp";
+import { buildAppleWalletStampStrips } from "./apple-stamp-strip";
 import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
 import { walletProviderConfig } from "./service";
@@ -122,11 +123,16 @@ async function resizedPng(
     .toBuffer();
 }
 
-async function buildPassImages(logoUrl: string | null, stripUrl: string | null) {
+async function buildPassImages(
+  input: AppleWalletPassData,
+  logoUrl: string | null,
+  stripUrl: string | null,
+) {
   const fallback = await readFile(
     join(process.cwd(), "public", "icons", "apple-touch-icon.png"),
   );
-  const logoSource = (await fetchAllowedImage(logoUrl)) ?? fallback;
+  const tenantLogoSource = await fetchAllowedImage(logoUrl);
+  const logoSource = tenantLogoSource ?? fallback;
   const stripSource = await fetchAllowedImage(stripUrl);
   const entries = await Promise.all([
     resizedPng(logoSource, 29, 29, "contain"),
@@ -144,15 +150,28 @@ async function buildPassImages(logoUrl: string | null, stripUrl: string | null) 
     "logo@2x.png": entries[4],
     "logo@3x.png": entries[5],
   };
-  if (stripSource) {
-    const strips = await Promise.all([
+  const stampStrips = input.programType === "LIFETIME_POINTS"
+    ? {}
+    : await buildAppleWalletStampStrips({
+      backgroundColor: input.backgroundColor,
+      foregroundColor: input.foregroundColor,
+      stampBalance: input.stampBalance,
+      rewardGoal: input.rewardGoal,
+      tenantName: input.tenantName,
+      logoSource: tenantLogoSource,
+      backgroundSource: stripSource,
+    });
+  if (Object.keys(stampStrips).length) {
+    Object.assign(images, stampStrips);
+  } else if (stripSource) {
+    const staticStrips = await Promise.all([
       resizedPng(stripSource, 375, 144, "cover"),
       resizedPng(stripSource, 750, 288, "cover"),
       resizedPng(stripSource, 1125, 432, "cover"),
     ]);
-    images["strip.png"] = strips[0];
-    images["strip@2x.png"] = strips[1];
-    images["strip@3x.png"] = strips[2];
+    images["strip.png"] = staticStrips[0];
+    images["strip@2x.png"] = staticStrips[1];
+    images["strip@3x.png"] = staticStrips[2];
   }
   return images;
 }
@@ -162,7 +181,7 @@ export async function generateAppleWalletPass(
   assets: { logoUrl: string | null; stripUrl: string | null },
 ) {
   const signing = getAppleSigningConfig();
-  const images = await buildPassImages(assets.logoUrl, assets.stripUrl);
+  const images = await buildPassImages(input, assets.logoUrl, assets.stripUrl);
   const { barcodes, locations, storeCard, ...props } =
     buildAppleWalletPassProps(input, signing.identity);
   const pass = new PKPass(

@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-12 - Dynamic Apple Wallet Stamp Strip
+
+**Objective:** Reproduce a physical graphical stamp card inside Apple Wallet and refresh it when the customer's backend balance changes.
+
+**Research:** Apple's Wallet documentation confirms that pass images are packaged and signed server-side, an updated pass is a complete new `.pkpass` with the same pass type and serial number, and APNs only prompts the device to request it. Store-card strip artwork uses 375 × 144 with matching device scales. Current Pass Designer compatibility guidance also indicates that strip presentation can vary or be omitted on recent iOS and Apple Watch, so the graphic cannot be the only balance representation.
+
+**Changes Made:** Added a bounded Sharp/SVG renderer that generates `strip.png`, `strip@2x.png` and `strip@3x.png` from the authoritative current balance and cycle goal. Earned circles repeat the tenant logo or use initials; empty circles use a distinct dashed treatment; an uploaded strip becomes a darkened background. Pass generation invokes this renderer for both initial issuance and update requests, while an auxiliary field preserves the exact textual balance. The Admin preview and image guidance now describe and visualize the generated overlay.
+
+**Security And Correctness:** No browser-provided stamp value or customer-specific image is trusted or persisted. The existing server-only source loader derives tenant, customer, balance and program, and the existing signed-pass/APNs path delivers the replacement. Generation is capped at 24 indicators and three fixed image sizes.
+
+**Design Review:** The generated 375 × 144 PNG was inspected with six of ten branded circles. The Admin preview was reviewed at 375, 768, 1280 and 1440 px without horizontal overflow, hidden controls or loss of the textual fallback; temporary artifacts were removed.
+
+**Validation:** Focused renderer, payload and integration tests, `npm run lint`, `npm run typecheck`, all 189 Vitest tests and the production webpack build pass. Authorized ignored local Apple credentials produced a valid signed `.pkpass` ZIP containing all three generated strip assets, their manifest hashes, a signature and exact textual fallback in `pass.json`; no secret or validation route remains in the repository.
+
+**Migration:** None required.
+
 ## 2026-08-12 - Branded Graphical Web Card Stamps
 
 **Objective:** Replace the Web Card's visible numeric stamp counter with a graphical loyalty-card treatment that fills with the tenant's identity.

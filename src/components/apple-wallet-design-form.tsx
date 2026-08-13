@@ -248,9 +248,9 @@ export function AppleWalletDesignForm({
               },
               {
                 kind: "strip" as const,
-                label: "Imagen principal",
+                label: "Fondo de sellos",
                 hint:
-                  "Lienzo Apple: 375 × 144 pt. Deja la zona superior izquierda limpia y con contraste para el saldo.",
+                  "Lienzo Apple: 375 × 144 pt. El sistema oscurece este fondo y superpone los sellos del cliente.",
               },
             ]).map((asset) => (
               <div className="apple-wallet-upload-field" key={asset.kind}>
@@ -328,10 +328,16 @@ export function AppleWalletDesignForm({
                 src={previewStripUrl}
               />
             ) : null}
-            <p>
-              <span>SELLOS</span>
-              <strong>4</strong>
-            </p>
+            <div className="apple-pass-preview-stamps" role="img" aria-label="4 de 10 sellos acumulados">
+              {Array.from({ length: 10 }, (_, index) => (
+                <span className={index < 4 ? "is-filled" : ""} key={index}>
+                  {index < 4 ? previewLogoUrl
+                    ? <img alt="" src={previewLogoUrl} />
+                    : <small>SW</small>
+                    : null}
+                </span>
+              ))}
+            </div>
           </div>
           <div className="apple-pass-preview-content">
             <div className="apple-pass-preview-supporting-fields">
@@ -340,8 +346,8 @@ export function AppleWalletDesignForm({
                 <strong>Cliente ejemplo</strong>
               </p>
               <p>
-                <span>META</span>
-                <strong>10 sellos</strong>
+                <span>PROGRESO</span>
+                <strong>4 de 10 sellos</strong>
               </p>
             </div>
             <figure className="apple-pass-preview-code">
@@ -353,7 +359,7 @@ export function AppleWalletDesignForm({
           </div>
         </div>
         <p className="apple-wallet-preview-note">
-          Usa los mismos campos, orden, proporciones de imagen y colores del pase. Apple controla la tipografía y puede ajustar texto o recortes según la versión de iOS y el dispositivo.
+          La imagen de sellos se regenera cuando cambia el saldo. Apple controla la tipografía y puede ajustar, recortar u omitir imágenes según la versión de iOS y el dispositivo; el progreso textual permanece como respaldo.
         </p>
       </aside>
     </div>

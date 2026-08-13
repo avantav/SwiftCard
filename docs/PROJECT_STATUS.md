@@ -4,7 +4,7 @@
 
 - Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
-- Last completed task: Replaced the Web Card's numeric cyclic progress with branded graphical stamp circles.
+- Last completed task: Added per-customer graphical stamp images to signed Apple Wallet passes and updates.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
 - Git status: The Admin program-type transition and additive stamp-to-point conversion pass the disposable PostgreSQL/RLS suite through `0042`; no unrelated worktree changes are present.
@@ -112,6 +112,7 @@
 - Migration `0039` restores `service_role` usage of the update-tag sequence so the initial pass endpoint can insert `wallet_passes` rows; browser roles remain denied.
 - Production migration `0039` was applied manually and the user confirmed Apple Wallet pass generation works again.
 - Signed Apple passes now retain their QR barcode and branch locations by applying both through the PassKit generator methods that persist method-owned properties into `pass.json`.
+- Signed Apple passes now generate customer-specific `strip.png`, `strip@2x.png` and `strip@3x.png` assets from the authoritative cyclic balance. Earned circles repeat the tenant logo or initials, large goals stay bounded at 24 positions, and exact textual progress remains in an auxiliary field for Wallet versions or devices that omit the strip.
 - Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.
 - Purchase, redemption and relevant administrative actions attempt production APNs delivery immediately without making application success depend on Apple availability.
 - APNs delivery uses HTTP/2, the existing pass certificate/private key and WWDR chain, an empty payload, Pass Type topic, bounded timeouts, invalid-token cleanup and per-device delivered tags.
@@ -139,7 +140,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 187 tests passed.
+- `npm run test:run`: passed; 189 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -197,6 +198,8 @@
 - Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and manual fallback.
 - Admin customer-directory filter parsing, pagination preservation, tenant scoping, role denial and navigation visibility passed focused tests; the responsive table/card rules were reviewed at the required 375, 768, 1280 and 1440 px breakpoints.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
+- The graphical Apple Wallet strip generator passed exact 1x/2x/3x dimension checks and produces different PNG content when the customer balance changes. Its Admin preview was reviewed at 375, 768, 1280 and 1440 px without overflow; temporary review files and routes were removed.
+- Authorized ignored local Apple credentials produced a valid signed graphical `.pkpass` containing `strip.png`, `strip@2x.png`, `strip@3x.png`, manifest hashes, signature and the exact `6 de 10 sellos` auxiliary fallback; no secret or validation route was committed.
 - Authorized local Apple credentials produced a signed `.pkpass` ZIP with a matching, currently valid signer certificate; no secret was committed.
 - The Wallet Storage designer passed Chrome review at 375, 768, 1280, and 1440 px; a prerender-only browser client bug and responsive file-input overflow were found and fixed, and the temporary review route was removed.
 

@@ -12,13 +12,14 @@
 10. Imports: `1 imported stamp = N points` uses an integer multiplier; confirmation awards every reached milestone and does not accept historical reward status.
 11. Policies: purchase cancellation, manual reward cancellation and redemption reversal are configurable. Garmendia starts with the first two disabled and reversal enabled for Admin plus assigned Branch Administrator. Manual lifetime-point adjustments remain disabled.
 12. Operational flow: scanner or manual customer selection must open one customer view with available rewards plus register-purchase action; each redemption remains one reward per operation.
-13. Validation: lint, typecheck, all 187 Vitest tests, webpack production build and disposable PostgreSQL/RLS through `0042` pass. The conversion confirmation state was reviewed at 375, 768, 1280 and 1440 px without overflow; its temporary review route was removed.
+13. Validation: lint, typecheck, all 189 Vitest tests, webpack production build and disposable PostgreSQL/RLS through `0042` pass. The conversion confirmation state was reviewed at 375, 768, 1280 and 1440 px without overflow; its temporary review route was removed.
 14. PWA viewport: `/app` fixes the viewport at scale 1, disables user scaling, rejects pinch/double-tap zoom gestures and keeps all form controls at 16px. This is intentionally scoped away from `/admin`.
 15. Next exact implementation: add tenths-based lifetime balances and purchase/milestone SQL with cancellation-safe invariants, then welcome/import generation and card/Wallet projections. Only after those pass should the new type be allowed to become ACTIVE.
 16. Apple preview: the Admin mock now follows the official field hierarchy and `375 × 144 pt` strip proportion, and the real pass generator emits matching 1x/2x/3x strips. Exact OS rendering still requires Pass Designer or a real signed pass.
 17. Separate existing rollout: Apple QR/scanner deployment, real iPhone APNs validation, external retry cron and Google Wallet remain pending.
 18. Migration state: the user confirmed `0040` and `0041` are online. Do not edit either migration; apply only additive `0042_stamp_to_point_balance_conversion.sql` for the balance conversion.
 19. Web Card progress: cyclic programs now use up to 24 graphical stamp circles, five per row; earned circles show the tenant logo or initials, while assistive technology retains the exact numeric count. Apple Wallet keeps its provider-controlled field layout.
+20. Apple graphical progress: the signed pass now generates its own customer-specific strip at 1x/2x/3x from the current backend balance and repeats the tenant logo in earned circles. Each APNs refresh returns a complete newly signed pass with a new image. The exact auxiliary progress remains because current Apple documentation indicates that Wallet may omit strip images on some OS/device combinations; real-device validation is still required.
 
 ## Previous Apple Wallet Context
 

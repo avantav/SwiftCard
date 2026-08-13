@@ -190,3 +190,14 @@
 - Reason: A paused two-step transition gives the Admin the requested flexibility while preventing an accidental live rule switch and preserving the ledger as historical truth.
 - Consequences: Migrations `0041` and `0042` are required. Because `0041` was already online, additive migration `0042` also repairs a program that entered lifetime points before the conversion trigger was installed. Cyclic type changes can be reviewed and activated in a second save; a change to lifetime points immediately converts existing balances but cannot be activated yet. Existing rewards retain their original program/tier snapshots.
 - Status: Accepted.
+
+## DEC-0020 - Server-Rendered Graphical Stamp Strip For Apple Wallet
+
+- Date: 2026-08-12
+- Context: The customer-facing Apple Wallet pass should resemble a physical stamp card, with earned circular positions filled by the tenant identity instead of making a number the dominant representation.
+- Decision: For cyclic programs, render a customer-specific PNG strip on the trusted server from the current database balance and highest cycle goal. Produce Apple's 1x/2x/3x strip sizes, repeat the tenant logo or initials in earned positions, bound exceptionally large goals to 24 proportional indicators, include the generated assets in every newly signed `.pkpass`, and retain the exact balance as an auxiliary text field. A configured tenant strip remains an optional background underneath the generated progress.
+- Alternatives considered: Generate the image in the browser, store one image per customer in Storage, update only an image URL, encode circles as pass-field text, or remove the textual balance entirely.
+- Reason: Browser output cannot become trusted signed pass content, Apple pass images live inside the signed package, and the existing PassKit update service already regenerates the complete pass after transactional balance changes. A textual fallback preserves meaning when Wallet or Apple Watch omits or changes image presentation.
+- Consequences: Every pass request performs bounded image composition and signing without persisting customer-specific images. APNs remains only a change signal; the device downloads the complete replacement pass with the same pass type and serial number. Apple's current Pass Designer compatibility table limits store-card strip display on some recent OS versions, so exact presentation requires a refreshed pass on the target iPhone and must not be the only source of balance truth.
+- References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass), [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer), and [Adding a web service to update passes](https://developer.apple.com/documentation/walletpasses/adding-a-web-service-to-update-passes).
+- Status: Accepted.
