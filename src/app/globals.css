@@ -3068,7 +3068,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-weight: 700;
 }
 
-.wallet-progress > div:first-child {
+.wallet-progress-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3076,26 +3076,53 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 0.75rem;
 }
 
-.wallet-progress span {
+.wallet-progress-heading span {
   color: var(--enterprise-text-muted);
 }
 
-.wallet-progress strong {
-  font-variant-numeric: tabular-nums;
+.wallet-progress-heading strong {
+  font-size: 0.75rem;
 }
 
-.wallet-progress-track {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #eaecf0;
+.wallet-stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--stamp-columns), 46px);
+  justify-content: center;
+  gap: 12px;
 }
 
-.wallet-progress-track span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
+.wallet-stamp {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 2px solid var(--card-primary);
+  border-radius: 50%;
+  background: #f2f4f7;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+.wallet-stamp.is-filled {
   background: var(--card-primary);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 35%);
+}
+
+.wallet-stamp-logo {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  padding: 4px;
+  background: #fff;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 28%));
+  object-fit: contain;
+}
+
+.wallet-stamp-initials {
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .wallet-qr {

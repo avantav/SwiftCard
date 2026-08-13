@@ -2,6 +2,8 @@
 /* eslint-disable @next/next/no-img-element */
 import type { CSSProperties } from "react";
 
+const MAX_VISIBLE_STAMPS = 24;
+
 export type PublicCard = {
   tenant_name: string;
   branding_mode: string;
@@ -29,14 +31,39 @@ export type PublicCard = {
 };
 
 export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false, qrDataUrl }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean; qrDataUrl?: string | null }) {
-  const progress = card.reward_goal ? Math.min(100, Math.max(0, (card.stamp_balance / card.reward_goal) * 100)) : 0;
-  const brandStyle = { "--card-primary": card.primary_color, "--card-secondary": card.secondary_color } as CSSProperties;
+  const rewardGoal = Math.max(0, Math.trunc(card.reward_goal ?? 0));
+  const earnedStamps = Math.min(rewardGoal, Math.max(0, Math.trunc(card.stamp_balance)));
+  const visibleStampCount = Math.min(rewardGoal, MAX_VISIBLE_STAMPS);
+  const filledStampCount = rewardGoal <= MAX_VISIBLE_STAMPS
+    ? earnedStamps
+    : earnedStamps >= rewardGoal
+      ? visibleStampCount
+      : Math.floor((earnedStamps / rewardGoal) * visibleStampCount);
+  const brandStyle = {
+    "--card-primary": card.primary_color,
+    "--card-secondary": card.secondary_color,
+    "--stamp-columns": Math.min(5, visibleStampCount),
+  } as CSSProperties;
+  const tenantInitials = card.tenant_name.slice(0, 2).toUpperCase();
   return <main className="wallet-shell" style={brandStyle}>
     <section className="wallet-card" aria-labelledby="card-title">
       <header className="wallet-card-header"><div>{card.logo_url ? <img className="wallet-logo" src={card.logo_url} alt={`Logo de ${card.tenant_name}`} /> : <span className="wallet-tenant-mark" aria-hidden="true">{card.tenant_name.slice(0, 2).toUpperCase()}</span>}</div><span className="wallet-card-label">Tarjeta digital</span></header>
       <div className="wallet-card-body"><p>{card.program_name ?? "Programa de fidelidad"}</p><h1 id="card-title">{card.customer_name}</h1>
         {card.program_status === "PAUSED" ? <p className="wallet-program-status">Programa temporalmente pausado</p> : null}
-        {card.reward_goal ? <section className="wallet-progress" aria-label={`${card.stamp_balance} de ${card.reward_goal} sellos`}><div><span>Progreso</span><strong>{card.stamp_balance} / {card.reward_goal} sellos</strong></div><div className="wallet-progress-track"><span style={{ width: `${progress}%` }} /></div></section> : null}
+        {rewardGoal > 0 ? <section className="wallet-progress" aria-labelledby="wallet-progress-title">
+          <div className="wallet-progress-heading"><span id="wallet-progress-title">Tu tarjeta</span><strong>{earnedStamps >= rewardGoal ? "Tarjeta completa" : "Sigue acumulando"}</strong></div>
+          <div className="wallet-stamp-grid" role="img" aria-label={`${earnedStamps} de ${rewardGoal} sellos acumulados`}>
+            {Array.from({ length: visibleStampCount }, (_, index) => {
+              const filled = index < filledStampCount;
+              return <span className={`wallet-stamp${filled ? " is-filled" : ""}`} aria-hidden="true" key={index}>
+                {filled ? card.logo_url
+                  ? <img className="wallet-stamp-logo" src={card.logo_url} alt="" />
+                  : <span className="wallet-stamp-initials">{tenantInitials}</span>
+                  : null}
+              </span>;
+            })}
+          </div>
+        </section> : null}
         <div className="wallet-qr" aria-label="QR de la tarjeta">{qrDataUrl ? <div><img alt="Código QR para identificar esta tarjeta" height="172" src={qrDataUrl} width="172" /></div> : <div className="wallet-qr-unavailable" role="status">QR no disponible</div>}<p>{qrDataUrl ? "Presenta este código al personal" : "Solicita al personal que busque tu tarjeta por nombre o teléfono."}</p></div>
       </div>
     </section>

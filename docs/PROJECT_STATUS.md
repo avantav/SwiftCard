@@ -4,7 +4,7 @@
 
 - Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
-- Last completed task: Added atomic existing-stamp conversion to the confirmed Admin transition into lifetime points.
+- Last completed task: Replaced the Web Card's numeric cyclic progress with branded graphical stamp circles.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
 - Git status: The Admin program-type transition and additive stamp-to-point conversion pass the disposable PostgreSQL/RLS suite through `0042`; no unrelated worktree changes are present.
@@ -99,6 +99,7 @@
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
+- The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.
 - A newly registered customer sees a direct generic Apple Wallet action when both signer configuration and tenant design are enabled; the success screen no longer routes through the Web Card.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
@@ -138,7 +139,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 184 tests passed.
+- `npm run test:run`: passed; 187 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -185,6 +186,7 @@
 - Authenticated Administrator review passed at 375, 768, 1280, and 1440 px; public login passed at 375 and 1440 px. Because no active Manager/Employee or customer card exists yet, the exact production PWA and Web Card components were also reviewed with temporary representative data at 375 and 768 px, and all temporary routes were removed.
 - PWA install guidance and online/offline notices were visually reviewed with exact production styles at 375 and 768 px; launcher icons and the maskable safe area were inspected, all temporary review routes were removed, and live `/manifest.webmanifest`, `/sw.js`, and `/offline.html` responses were verified.
 - Tier editor and customer-card reward catalog were visually reviewed at 375, 768, 1280, and 1440 px; no overflow, hidden action, or one-off visual language was found, and the temporary review route was removed.
+- The branded Web Card stamp grid was visually reviewed at 375, 768, 1280 and 1440 px with a balanced five-column maximum, no overflow and no visible numeric progress; the temporary review route was removed.
 - Migration `0034` and its dedicated integration test passed cumulative 3/5/10 thresholds, current-cycle conversion, next-cycle rewards, remainder preservation, cancellation restoration, anonymous projection, direct-table denial, and duplicate-threshold rejection.
 - Migration `0035` and its integration test passed branch-Administrator scope, shared-account bypass denial, PIN uniqueness, lockout, unlock, revocation, branch isolation, and actor attribution.
 - Migration `0036` and its integration test passed Admin-only design mutation, Manager/anonymous denial, audit attribution, public availability filtering, and RLS/table-grant boundaries.

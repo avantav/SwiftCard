@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-12 - Branded Graphical Web Card Stamps
+
+**Objective:** Replace the Web Card's visible numeric stamp counter with a graphical loyalty-card treatment that fills with the tenant's identity.
+
+**Changes Made:** Replaced the numeric ratio and progress bar with circular stamp positions. Earned positions use the tenant's primary color and repeat its logo; tenants without a logo use their initials. Normal goals render one position per stamp, while goals above 24 use a bounded proportional representation so an extreme configuration cannot create an unbounded DOM. Exact earned and goal values remain exposed as the graphical progress accessible name.
+
+**Design Review:** The grid uses a maximum of five circles per row, distinguishes empty and earned positions by shape, fill and imagery rather than color alone, and keeps the existing Web Card hierarchy. The exact component was reviewed in Chrome at 375, 768, 1280 and 1440 px without overflow; the temporary review route was removed. Apple Wallet is unchanged because Apple controls its pass layout.
+
+**Validation:** Focused application-design coverage, `npm run lint`, `npm run typecheck`, all 187 Vitest tests and the production webpack build pass.
+
+**Migration:** None required.
+
 ## 2026-08-12 - Admin Program-Type Changes
 
 **Objective:** Let the Admin general change an existing loyalty program without deleting or rewriting customer history.

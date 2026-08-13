@@ -234,6 +234,13 @@ Contenido mínimo:
 - Términos y condiciones del programa.
 - Marca de agua Powered by SwiftWallet cuando el tenant no sea white-label.
 
+En la Web Card, los programas cíclicos representarán el avance mediante
+círculos de sello en lugar de un contador numérico visible. Cada círculo
+obtenido se llenará con el color principal y el logo del tenant; cuando no
+exista logo usará sus iniciales. Las metas excepcionalmente grandes usarán una
+representación proporcional acotada para conservar rendimiento y legibilidad,
+mientras el valor exacto permanecerá disponible para tecnologías de asistencia.
+
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
 
 El mismo identificador seguro se mostrará como QR real en la Web Card y como

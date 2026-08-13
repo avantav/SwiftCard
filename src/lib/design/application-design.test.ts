@@ -45,6 +45,11 @@ describe("application-wide design contract", () => {
     expect(cardPage).toContain("PublicWalletCard");
     expect(card).toContain('className="wallet-shell"');
     expect(card).toContain("--card-primary");
+    expect(card).toContain("MAX_VISIBLE_STAMPS");
+    expect(card).toContain('className="wallet-stamp-grid"');
+    expect(card).toContain("wallet-stamp-logo");
+    expect(card).toContain("sellos acumulados");
+    expect(styles).toContain(".wallet-stamp.is-filled");
     expect(card).toContain("Powered by SwiftWallet");
   });
 

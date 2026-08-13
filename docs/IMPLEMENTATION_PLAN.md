@@ -89,6 +89,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement customer search and profile editing.
 - [x] [Terminada] Add the tenant-wide customer directory with status, card, loyalty and Apple Wallet diagnostics exclusively for the Admin general.
 - [x] [Terminada] Implement public web card by card token.
+- [x] [Terminada] Replace numeric cyclic progress on the Web Card with accessible branded stamp circles and a bounded proportional view for exceptionally large goals.
 
 ## Phase 3 - Motor De Fidelidad
 

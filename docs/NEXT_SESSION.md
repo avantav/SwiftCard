@@ -18,6 +18,7 @@
 16. Apple preview: the Admin mock now follows the official field hierarchy and `375 × 144 pt` strip proportion, and the real pass generator emits matching 1x/2x/3x strips. Exact OS rendering still requires Pass Designer or a real signed pass.
 17. Separate existing rollout: Apple QR/scanner deployment, real iPhone APNs validation, external retry cron and Google Wallet remain pending.
 18. Migration state: the user confirmed `0040` and `0041` are online. Do not edit either migration; apply only additive `0042_stamp_to_point_balance_conversion.sql` for the balance conversion.
+19. Web Card progress: cyclic programs now use up to 24 graphical stamp circles, five per row; earned circles show the tenant logo or initials, while assistive technology retains the exact numeric count. Apple Wallet keeps its provider-controlled field layout.
 
 ## Previous Apple Wallet Context
 
