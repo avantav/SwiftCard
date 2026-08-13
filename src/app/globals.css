@@ -36,6 +36,496 @@
   --enterprise-sidebar-width: 248px;
 }
 
+/* Multi-card setup */
+.card-create-panel,
+.card-config-summary,
+.card-wizard-stage {
+  border: 1px solid var(--border, #e4e7ec);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 5%);
+}
+
+.card-create-panel {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(220px, 1fr) minmax(360px, 1.4fr);
+  align-items: end;
+}
+
+.card-create-panel h2,
+.card-section-heading h2,
+.card-config-summary h3,
+.card-stage-heading h2,
+.card-preview-heading h3 {
+  margin: 0;
+}
+
+.card-create-panel p,
+.card-section-heading p,
+.card-stage-heading p,
+.card-stage-heading span,
+.card-config-summary > small {
+  color: #667085;
+  margin: 4px 0 0;
+}
+
+.card-create-form {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  align-items: end;
+}
+
+.card-config-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.card-section-heading,
+.card-config-summary > header,
+.card-preview-heading,
+.card-stage-actions,
+.card-stage-save-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.card-config-summary {
+  background: #fff;
+  padding: 20px;
+}
+
+.card-config-summary header > div {
+  display: grid;
+  gap: 8px;
+}
+
+.card-config-stats,
+.card-review-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  margin: 20px 0 12px;
+  overflow: hidden;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #e4e7ec;
+}
+
+.card-config-stats > div,
+.card-review-grid > div {
+  background: #f9fafb;
+  padding: 14px;
+}
+
+.card-config-stats dt,
+.card-review-grid dt {
+  color: #667085;
+  font-size: 12px;
+}
+
+.card-config-stats dd,
+.card-review-grid dd {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-wizard-steps {
+  background: #fff;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.card-wizard-steps ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.card-wizard-steps li {
+  border-bottom: 3px solid transparent;
+}
+
+.card-wizard-steps li.is-current {
+  border-bottom-color: #149c91;
+  background: #f0fdfa;
+}
+
+.card-wizard-steps li > a,
+.card-wizard-steps li > span {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #667085;
+  min-height: 58px;
+  padding: 12px 16px;
+  text-decoration: none;
+}
+
+.card-wizard-steps li.is-current > a,
+.card-wizard-steps li.is-complete > a {
+  color: #111827;
+  font-weight: 600;
+}
+
+.card-wizard-steps li > a > span,
+.card-wizard-steps li > span > span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid #d0d5dd;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 12px;
+}
+
+.card-wizard-steps li.is-complete > a > span {
+  border-color: #abeFC6;
+  color: #087a55;
+  background: #ecfdf3;
+}
+
+.card-wizard-stage {
+  max-width: none;
+}
+
+.card-stage-heading {
+  border-bottom: 1px solid #e4e7ec;
+  margin: -24px -24px 24px;
+  padding: 20px 24px;
+}
+
+.card-stage-heading p {
+  color: #149c91;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.card-stage-actions {
+  border-top: 1px solid #e4e7ec;
+  margin-top: 8px;
+  padding-top: 20px;
+}
+
+.card-wizard-check {
+  min-height: 44px;
+  align-self: end;
+}
+
+.card-design-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 32px;
+  align-items: start;
+}
+
+.card-design-fields {
+  display: grid;
+  gap: 18px;
+}
+
+.card-design-fields .apple-wallet-upload-grid {
+  grid-template-columns: 1fr;
+}
+
+.card-color-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.card-color-fields input[type="color"] {
+  min-height: 44px;
+  width: 100%;
+}
+
+.card-provider-preview {
+  position: sticky;
+  top: 20px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.card-provider-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.card-provider-toggle button {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #475467;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.card-provider-toggle button[aria-pressed="true"] {
+  background: #149c91;
+  color: #fff;
+}
+
+.unified-wallet-preview {
+  position: relative;
+  overflow: hidden;
+  min-height: 390px;
+  padding: 20px;
+  border-radius: 18px;
+  background: var(--card-preview-background);
+  color: var(--card-preview-foreground);
+  box-shadow: 0 12px 24px rgb(16 24 40 / 12%);
+}
+
+.unified-wallet-preview.is-google {
+  border-radius: 14px;
+}
+
+.unified-wallet-preview header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.unified-wallet-preview header img,
+.unified-wallet-preview header > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  place-items: center;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 18%);
+  font-size: 12px;
+}
+
+.unified-wallet-stamps {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 42px 0 32px;
+}
+
+.unified-wallet-stamps span {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid rgb(255 255 255 / 65%);
+  border-radius: 50%;
+  color: var(--card-preview-background);
+  font-weight: 700;
+}
+
+.unified-wallet-stamps span.is-filled {
+  background: var(--card-preview-foreground);
+}
+
+.unified-wallet-meta {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.unified-wallet-meta p {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.unified-wallet-meta span {
+  color: var(--card-preview-label);
+  font-size: 10px;
+}
+
+.unified-wallet-qr {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 14px);
+  gap: 5px;
+  width: 54px;
+  height: 54px;
+  padding: 7px;
+  background: #fff;
+}
+
+.unified-wallet-strip-background {
+  position: absolute;
+  inset: 76px 0 auto;
+  width: 100%;
+  height: 178px;
+  object-fit: cover;
+  opacity: 0.32;
+}
+
+.unified-wallet-qr span {
+  border: 4px solid #111827;
+}
+
+.card-location-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.card-location-list legend {
+  margin-bottom: 12px;
+  font-weight: 650;
+}
+
+.card-location-option {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.card-location-option:has(input:checked) {
+  border-color: #149c91;
+  background: #f0fdfa;
+}
+
+.card-location-option input {
+  width: 18px;
+  height: 18px;
+}
+
+.card-location-option span {
+  display: grid;
+  gap: 2px;
+}
+
+.card-location-option small {
+  color: #667085;
+}
+
+.card-review-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.public-card-choice {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.public-card-choice legend {
+  margin-bottom: 8px;
+  font-weight: 650;
+}
+
+.public-card-choice label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+}
+
+.public-card-choice label:has(input:checked) {
+  border-color: #149c91;
+  background: #f0fdfa;
+}
+
+.public-card-choice label span {
+  display: grid;
+  gap: 2px;
+}
+
+.public-card-choice small {
+  color: #667085;
+}
+
+@media (max-width: 900px) {
+  .card-create-panel,
+  .card-design-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .card-provider-preview {
+    position: static;
+  }
+
+  .card-config-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .card-create-form,
+  .card-review-grid,
+  .card-color-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .card-section-heading,
+  .card-config-summary > header,
+  .card-preview-heading,
+  .card-stage-actions,
+  .card-stage-save-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .card-wizard-steps ol {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .card-wizard-steps li > a,
+  .card-wizard-steps li > span {
+    justify-content: center;
+    gap: 5px;
+    min-height: 62px;
+    padding: 8px 4px;
+    font-size: 11px;
+  }
+
+  .card-wizard-steps li > a > span,
+  .card-wizard-steps li > span > span {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+  }
+
+  .card-config-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .unified-wallet-preview {
+    min-height: 360px;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

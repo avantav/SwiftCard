@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-12 - Resumable Multi-card Configuration
+
+**Objective:** Let a tenant operate up to three distinct cards with their own reward programs, statistics and participating branches through one simple provider-neutral setup flow.
+
+**Changes Made:** Added migrations `0043` and `0044` for the card aggregate, one-to-one programs, transactional three-card limit, forced RLS, branch assignments, durable step completion, safe legacy backfill and card-scoped registration, scanning, purchase, adjustment, Web Card and Apple Wallet projections. Added `/admin/cards` with per-card metrics and a four-stage program/design/locations/publication assistant. The design stage uses one saved model and an Apple/Android preview toggle; legacy Program and Apple-only design pages redirect to the new flow. Employee registration and purchase selectors use a restricted RPC and only show card/branch combinations available to that operator.
+
+**Safety:** Draft creation and every save derive the tenant from the authenticated Admin. Published operations derive the program from the issued opaque card token and require the selected branch to participate. No frontend `tenant_id`, program, stamp count or reward count is authoritative. Existing tenants are backfilled into one published card without rewriting customer tokens or balances.
+
+**Validation:** Typecheck, lint, all 192 Vitest tests, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass. The wizard was reviewed at 375, 768, 1280 and 1440 px; all four stages remain visible on mobile, direct uploads remain contained and the temporary review route was removed.
+
+**Next Action:** Apply `0043`/`0044` to hosted Supabase with explicit deployment approval, smoke-test the complete flow there and refresh an existing signed Apple pass.
+
 ## 2026-08-12 - Dynamic Apple Wallet Stamp Strip
 
 **Objective:** Reproduce a physical graphical stamp card inside Apple Wallet and refresh it when the customer's backend balance changes.

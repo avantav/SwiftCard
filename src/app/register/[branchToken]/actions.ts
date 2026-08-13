@@ -9,6 +9,10 @@ function registrationRedirect(branchToken: string, params: Record<string, string
 }
 
 export async function registerCustomer(branchToken: string, formData: FormData) {
+  const loyaltyCardId = formData.get("loyaltyCardId");
+  if (typeof loyaltyCardId !== "string" || !loyaltyCardId) {
+    registrationRedirect(branchToken, { error: "Selecciona una tarjeta." });
+  }
   const validation = validatePublicCustomerRegistration(formData);
   if (!validation.ok) registrationRedirect(branchToken, { error: validation.errors.join(" ") });
 
@@ -21,6 +25,7 @@ export async function registerCustomer(branchToken: string, formData: FormData) 
 
   const { data, error } = await supabase.schema("app").rpc("register_public_customer", {
     target_branch_token: branchToken,
+    target_loyalty_card_id: loyaltyCardId,
     target_full_name: validation.data.fullName,
     target_normalized_phone: validation.data.phone,
     target_email: validation.data.email ?? "",

@@ -11,7 +11,7 @@ const adminNavigation = source("../../components/admin-navigation.tsx");
 const operationsNavigation = source("../../components/operations-navigation.tsx");
 const styles = source("../../app/globals.css");
 
-const adminPages = ["page.tsx", "branches/page.tsx", "staff/page.tsx", "program/page.tsx", "dashboard/page.tsx", "exports/page.tsx"].map((path) => source(`../../app/admin/${path}`));
+const adminPages = ["page.tsx", "branches/page.tsx", "staff/page.tsx", "cards/page.tsx", "cards/[cardId]/edit/page.tsx", "dashboard/page.tsx", "exports/page.tsx"].map((path) => source(`../../app/admin/${path}`));
 const operationsPages = ["page.tsx", "scan/page.tsx", "customers/page.tsx", "purchase/page.tsx", "redeem/page.tsx"].map((path) => source(`../../app/app/${path}`));
 const publicPages = ["../../app/page.tsx", "../../app/login/page.tsx", "../../app/change-password/page.tsx", "../../app/register/[branchToken]/page.tsx"].map(source);
 
@@ -23,13 +23,14 @@ describe("application-wide design contract", () => {
     expect(operationsLayout).toContain("OperationsNavigation");
     expect(operationsLayout).toContain("PwaController");
     expect(adminNavigation).toContain('role === "ADMIN"');
+    expect(adminNavigation).toContain('/admin/cards');
     expect(operationsNavigation).toContain('aria-label="Navegación operativa"');
     expect(operationsNavigation).toContain("Salir");
   });
 
   it("moves every authenticated page into its standard hierarchy", () => {
     for (const page of adminPages) {
-      expect(page).toContain('className="enterprise-page"');
+      expect(page).toContain('className="enterprise-page');
       expect(page).not.toContain('className="shell"');
     }
     for (const page of operationsPages) {

@@ -2,12 +2,12 @@
 
 ## Current State
 
-- Current phase: Cross-cutting Phase 3 extension for configurable lifetime-points programs; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Connect the persisted lifetime-points configuration to decimal purchase accounting, one-time milestone generation, registration/import rewards and customer-facing progress.
-- Last completed task: Added per-customer graphical stamp images to signed Apple Wallet passes and updates.
+- Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
+- Current task: Deploy the validated additive multi-card migrations and complete the hosted draft/resume/publish/register/purchase smoke path.
+- Last completed task: Implemented the four-stage multi-card Admin flow and card-scoped registration, purchase, Web Card and Apple Wallet projections.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Admin general can configure three program types, custom unit names, welcome/import behavior and correction policies; lifetime points remain safely forced to PAUSED until its engine is connected.
-- Git status: The Admin program-type transition and additive stamp-to-point conversion pass the disposable PostgreSQL/RLS suite through `0042`; no unrelated worktree changes are present.
+- Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
+- Git status: Typecheck, lint, 192 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
 
 ## Completed Functionality
@@ -52,6 +52,10 @@
 - Atomic staff-to-branch assignment RPC with primary-branch promotion.
 - Admin-only branch assignment controls on `/admin/staff`.
 - Tenant-scoped `customers` and `customer_cards` schema with one card per customer.
+- Tenant-scoped `loyalty_cards` aggregate with a database-enforced limit of three non-archived cards, exactly one linked program, provider-neutral design, one-or-many branch assignments and durable staged drafts.
+- `/admin/cards` replaces the separate Program and Apple Wallet navigation entries, reports per-card emissions/purchases/money/units/rewards and provides four resumable stages: program, design, locations and publication.
+- Public and employee registration select only published cards participating in the chosen branch; QR scanning retains the issued card ID and purchase/adjustment authority derives its program and location scope on the backend.
+- Web Card and Apple Wallet now resolve colors, logo, reward catalog and proximity locations from the issued card instead of a tenant-wide latest program/design.
 - Per-tenant phone uniqueness and random rotatable public card token.
 - Anonymous role denied direct access to customer/card tables.
 - Shared phone normalization for Mexican and international formats.
@@ -212,4 +216,4 @@
 
 ## Next Exact Step
 
-Implement the additive engine migration for `LIFETIME_POINTS`: store point tenths exactly, truncate each purchase to one decimal, never reduce the balance modulo a cycle goal, generate each tier once per customer, and keep the program paused until focused SQL/RLS coverage passes. Then connect welcome registration/import behavior and update Web Card plus Apple Wallet projections. The separate QR/APNs deployment validation remains required before production scale.
+Apply validated migrations `0043` and `0044` to the hosted Supabase project with approval, then exercise create draft → resume → publish → register → scan → purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.

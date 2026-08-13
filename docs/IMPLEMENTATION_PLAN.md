@@ -195,6 +195,19 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.
 
+## Cross-cutting - Multi-card configuration
+
+**Objective:** Let each tenant create up to three independently operated cards without splitting design by wallet provider.
+
+**Tasks**
+
+- [x] [Terminada] Add durable card drafts with a one-to-one program, a database-enforced three-card limit, staged completion flags, forced RLS and safe backfill of the current tenant configuration.
+- [x] [Terminada] Add `/admin/cards` with per-card statistics and a four-stage program, design, locations and publication assistant.
+- [x] [Terminada] Use one provider-neutral design with an accessible Apple/Android preview toggle; redirect the legacy program and Apple-only configuration pages.
+- [x] [Terminada] Scope public/employee registration, QR scanning, earning, adjustments, Web Card and Apple pass generation to the issued card and its participating branches.
+- [x] [Terminada] Apply migrations `0043` and `0044` in a disposable PostgreSQL instance and add SQL assertions to the full RLS harness.
+- [ ] [Pendiente] Validate the complete draft/resume/publish/register/purchase flow against a deployed Supabase project and refresh existing Apple passes.
+
 ## Phase 9 - Piloto
 
 **Objective:** Complete E2E, security, RLS, monitoring, backups, privacy, pilot tenant, and production checklist.

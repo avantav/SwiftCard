@@ -15,5 +15,8 @@ export async function resolveScannedCard(formData: FormData) {
   if (error || !result || result.result !== "FOUND") {
     redirect(`/app/scan?error=${encodeURIComponent("Esta tarjeta no pertenece a este negocio.")}`);
   }
-  redirect(`/app/purchase?customerId=${encodeURIComponent(result.customer_id)}`);
+  if (typeof result.loyalty_card_id !== "string") {
+    redirect(`/app/scan?error=${encodeURIComponent("Esta tarjeta no tiene un programa configurado.")}`);
+  }
+  redirect(`/app/purchase?${new URLSearchParams({ customerCardId: result.customer_card_id, loyaltyCardId: result.loyalty_card_id }).toString()}`);
 }

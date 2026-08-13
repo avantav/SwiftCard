@@ -72,7 +72,7 @@ export async function loadAppleWalletPassSource(
 
   const cardQuery = supabase
     .from("customer_cards")
-    .select("id,tenant_id,customer_id,public_token,status");
+    .select("id,tenant_id,customer_id,loyalty_card_id,public_token,status");
   const { data: card, error: cardError } = walletPass
     ? await cardQuery.eq("id", walletPass.customer_card_id).maybeSingle()
     : await cardQuery.eq("public_token", lookup.cardToken).maybeSingle();
@@ -81,10 +81,28 @@ export async function loadAppleWalletPassSource(
     return { ok: false, status: 404, message: "La tarjeta no está disponible." };
   }
 
+  const { data: cardConfiguration, error: cardConfigurationError } = await supabase
+    .from("loyalty_cards")
+    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url")
+    .eq("id", card.loyalty_card_id)
+    .eq("tenant_id", card.tenant_id)
+    .maybeSingle();
+  if (cardConfigurationError || !cardConfiguration) {
+    return { ok: false, status: 404, message: "La tarjeta no está disponible." };
+  }
+
+  const { data: assignments, error: assignmentsError } = await supabase
+    .from("loyalty_card_branches")
+    .select("branch_id")
+    .eq("loyalty_card_id", cardConfiguration.id);
+  if (assignmentsError) {
+    return { ok: false, status: 500, message: "No se pudo preparar la tarjeta para Apple Wallet." };
+  }
+  const branchIds = (assignments ?? []).map((assignment) => assignment.branch_id);
+
   const [
     tenantResult,
     customerResult,
-    designResult,
     balanceResult,
     programResult,
     branchesResult,
@@ -101,13 +119,6 @@ export async function loadAppleWalletPassSource(
       .eq("tenant_id", card.tenant_id)
       .maybeSingle(),
     supabase
-      .from("tenant_wallet_designs")
-      .select(
-        "apple_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,version",
-      )
-      .eq("tenant_id", card.tenant_id)
-      .maybeSingle(),
-    supabase
       .from("customer_loyalty_balances")
       .select("stamp_balance")
       .eq("customer_id", card.customer_id)
@@ -116,14 +127,13 @@ export async function loadAppleWalletPassSource(
     supabase
       .from("loyalty_programs")
       .select("id,name,program_type,reward_stamp_goal,terms_and_conditions,status,updated_at")
-      .eq("tenant_id", card.tenant_id)
-      .order("updated_at", { ascending: false })
-      .limit(1)
+      .eq("id", cardConfiguration.program_id)
       .maybeSingle(),
     supabase
       .from("branches")
       .select("name,latitude,longitude,proximity_message")
       .eq("tenant_id", card.tenant_id)
+      .in("id", branchIds.length ? branchIds : ["00000000-0000-0000-0000-000000000000"])
       .eq("status", "ACTIVE")
       .eq("proximity_enabled", true)
       .not("latitude", "is", null)
@@ -133,12 +143,11 @@ export async function loadAppleWalletPassSource(
 
   const tenant = tenantResult.data;
   const customer = customerResult.data;
-  const design = designResult.data;
+  const design = cardConfiguration;
   const program = programResult.data;
   if (
     tenantResult.error ||
     customerResult.error ||
-    designResult.error ||
     balanceResult.error ||
     programResult.error ||
     branchesResult.error ||
@@ -159,7 +168,8 @@ export async function loadAppleWalletPassSource(
     (tenant.status !== "ACTIVE" ||
       customer.status !== "ACTIVE" ||
       card.status !== "ACTIVE" ||
-      !design.apple_enabled)
+      design.status !== "PUBLISHED" ||
+      !design.wallet_enabled)
   ) {
     return {
       ok: false,
@@ -181,6 +191,7 @@ export async function loadAppleWalletPassSource(
       .select("id", { count: "exact", head: true })
       .eq("tenant_id", card.tenant_id)
       .eq("customer_id", card.customer_id)
+      .eq("loyalty_card_id", cardConfiguration.id)
       .eq("status", "AVAILABLE")
       .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`),
   ]);
@@ -252,7 +263,8 @@ export async function loadAppleWalletPassSource(
           (tenant.status !== "ACTIVE" ||
             customer.status !== "ACTIVE" ||
             card.status !== "ACTIVE" ||
-            !design.apple_enabled),
+            design.status !== "PUBLISHED" ||
+            !design.wallet_enabled),
         locations,
       },
       assets: {

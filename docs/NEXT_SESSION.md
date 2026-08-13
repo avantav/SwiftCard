@@ -1,5 +1,16 @@
 # Next Session
 
+1. New primary Admin flow: `/admin/cards` supports up to three non-archived card configurations per tenant. `/admin/program` and `/admin/wallet` redirect there.
+2. Aggregate: every `loyalty_cards` row owns one program, one neutral design and branch assignments. Existing program/design/issued-card data is backfilled into one published card by `0043`.
+3. Drafts: creation persists immediately; program, design and locations save independently; only a complete draft with at least one branch can publish.
+4. Operations: `0044` adds card-scoped public/employee registration, scan projection, purchase preview/confirmation, adjustments, Web Card and Apple Wallet availability. The frontend now carries `customerCardId`, never a selectable program or tenant.
+5. Customer invariant: this MVP still permits one issued card per customer and tenant. Multiple card configurations are alternatives selected at registration, not simultaneous cards for the same phone.
+6. Immediate release step: apply validated migrations `0043` and `0044` to hosted Supabase with approval, then smoke-test draft/resume/publish/register/scan/purchase and signed-pass refresh.
+7. Local validation completed: typecheck, lint, 192 Vitest tests, webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass. The wizard was visually reviewed at 375, 768, 1280 and 1440 px; the temporary route was removed.
+8. Google Wallet generation remains pending. The Admin Android toggle is a preview of the common design, not a claim that Google pass issuance is implemented.
+
+## Prior lifetime-points context
+
 1. Branch: `codex/swiftwallet-mvp`.
 2. Latest feature: migrations `0041`/`0042` and `/admin/program` let the Admin general change among the three explicit program types with confirmation, audit, current stamp-balance conversion and a mandatory paused transition.
 3. Compatibility: every existing program is backfilled to `STAMPS_PER_PURCHASE` or `STAMPS_PER_AMOUNT`; its current cyclic calculation remains unchanged.

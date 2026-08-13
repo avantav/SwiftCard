@@ -7,7 +7,6 @@
   - **Consequence:** The current deployed pass may still omit the visible QR, and failed immediate pushes can remain queued without an external scheduler.
   - **Recommendation:** Deploy the QR correction, refresh or reinstall the pass, scan it from the employee PWA, validate one stamp and reward update, then schedule the protected retry endpoint.
   - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
-  - **Status:** Active.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.
   - **Affected phase:** Phase 9 - Piloto.
@@ -17,6 +16,10 @@
   - **Status:** Active.
 
 ## Historical Blockers
+
+### MULTICARD-001 - Resolved locally
+
+Migrations `0043` and `0044`, their backfill, the focused SQL scenario and the complete historical migration/RLS harness pass in disposable PostgreSQL. Hosted deployment and real-device smoke testing remain release activities, not a local implementation blocker.
 
 ### XLSX-001 - Resolved
 
