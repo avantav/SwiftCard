@@ -7,11 +7,10 @@ import { signOut } from "@/app/logout/actions";
 import { changePinOperator } from "@/app/app/unlock/actions";
 import { EnterpriseIcon, type EnterpriseIconName } from "@/components/enterprise-navigation";
 
-const items: Array<{ href: string; label: string; icon: EnterpriseIconName; exact?: boolean }> = [
+const items: Array<{ href: string; label: string; icon: EnterpriseIconName; exact?: boolean; matches?: string[] }> = [
   { href: "/app", label: "Registro", icon: "user-plus", exact: true },
-  { href: "/app/scan", label: "Clientes", icon: "scan" },
-  { href: "/app/purchase", label: "Compra", icon: "cart" },
-  { href: "/app/redeem", label: "Canje", icon: "award" }
+  { href: "/app/scan", label: "Clientes", icon: "scan", matches: ["/app/scan", "/app/purchase", "/app/redeem"] },
+  { href: "/app/program", label: "Programa", icon: "award" }
 ];
 
 function OperationsLogout() {
@@ -32,7 +31,9 @@ export function OperationsNavigation({ accountKind, email, operatorName, role }:
     </header>
     {!isUnlock ? <nav aria-label="Navegación operativa" className="operations-bottom-nav">
       {items.map((item) => {
-        const active = item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const active = item.exact
+          ? pathname === item.href
+          : (item.matches ?? [item.href]).some((match) => pathname === match || pathname.startsWith(`${match}/`));
         return <Link aria-current={active ? "page" : undefined} className={active ? "is-active" : ""} href={item.href} key={item.href}><EnterpriseIcon name={item.icon} /><span>{item.label}</span></Link>;
       })}
     </nav> : null}

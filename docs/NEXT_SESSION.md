@@ -5,9 +5,10 @@
 3. Drafts: creation persists immediately; program, design and locations save independently; only a complete draft with at least one branch can publish.
 4. Operations: `0044` adds card-scoped public/employee registration, scan projection, purchase preview/confirmation, adjustments, Web Card and Apple Wallet availability. The frontend now carries `customerCardId`, never a selectable program or tenant.
 5. Customer invariant: this MVP still permits one issued card per customer and tenant. Multiple card configurations are alternatives selected at registration, not simultaneous cards for the same phone.
-6. Immediate release step: apply validated migrations `0043` and `0044` to hosted Supabase with approval, then smoke-test draft/resume/publish/register/scan/purchase and signed-pass refresh.
-7. Local validation completed: typecheck, lint, 192 Vitest tests, webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass. The wizard was visually reviewed at 375, 768, 1280 and 1440 px; the temporary route was removed.
-8. Google Wallet generation remains pending. The Admin Android toggle is a preview of the common design, not a claim that Google pass issuance is implemented.
+6. Employee operations: the bottom navigation now has exactly `Registro`, `Clientes` and `Programa`. Scan and search both open one mobile-first customer modal with balance, available rewards, inline single-reward redemption and the action to register a purchase. `/app/program` shows earning rules, reward tiers and terms.
+7. Immediate release step: apply validated migrations `0043`, `0044` and `0045` to hosted Supabase with approval, then smoke-test draft/resume/publish/register/scan/search/customer-modal/redeem/purchase and signed-pass refresh.
+8. Local validation completed: typecheck, lint, 196 Vitest tests, webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0045` pass. The customer modal and program tab were visually reviewed at 375, 768, 1280 and 1440 px; the temporary routes were removed.
+9. Google Wallet generation remains pending. The Admin Android toggle is a preview of the common design, not a claim that Google pass issuance is implemented.
 
 ## Prior lifetime-points context
 

@@ -19,7 +19,7 @@
 
 ### MULTICARD-001 - Resolved locally
 
-Migrations `0043` and `0044`, their backfill, the focused SQL scenario and the complete historical migration/RLS harness pass in disposable PostgreSQL. Hosted deployment and real-device smoke testing remain release activities, not a local implementation blocker.
+Migrations `0043`, `0044` and `0045`, their backfill/projections, the focused SQL scenarios and the complete historical migration/RLS harness pass in disposable PostgreSQL. Hosted deployment and real-device smoke testing remain release activities, not a local implementation blocker.
 
 ### XLSX-001 - Resolved
 

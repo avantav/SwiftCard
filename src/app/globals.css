@@ -2608,7 +2608,7 @@ textarea {
   inset: auto 0 0;
   display: grid;
   height: 72px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--enterprise-border);
   padding: 6px max(8px, calc((100vw - 720px) / 2)) max(6px, env(safe-area-inset-bottom));
   background: #fff;
@@ -3237,6 +3237,261 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .operations-edit-details .operations-form {
   padding-top: 12px;
+}
+
+.operations-customer-dialog-body {
+  align-content: start;
+}
+
+.operations-customer-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.operations-customer-summary > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 12px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.operations-customer-summary > div.has-reward {
+  border-color: #abefc6;
+  background: var(--enterprise-success-soft);
+}
+
+.operations-customer-summary span,
+.operations-customer-summary small {
+  overflow: hidden;
+  color: var(--enterprise-text-muted);
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operations-customer-summary strong {
+  overflow: hidden;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operations-redeem-form {
+  gap: 12px;
+}
+
+.operations-reward-choices {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.operations-reward-choices legend,
+.operations-program-content h2 {
+  margin: 0 0 8px;
+  color: var(--enterprise-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.operations-reward-choices label {
+  display: grid;
+  min-height: 56px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 11px 12px;
+  cursor: pointer;
+}
+
+.operations-reward-choices label:has(input:checked) {
+  border-color: var(--enterprise-primary);
+  background: var(--enterprise-primary-soft);
+}
+
+.operations-reward-choices input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--enterprise-primary);
+}
+
+.operations-reward-choices label > span {
+  display: grid;
+  gap: 2px;
+}
+
+.operations-reward-choices strong {
+  font-size: 0.82rem;
+}
+
+.operations-reward-choices small,
+.operations-reward-choices em {
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.operations-no-reward {
+  display: grid;
+  gap: 3px;
+  border: 1px dashed var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.operations-no-reward strong {
+  font-size: 0.86rem;
+}
+
+.operations-no-reward p {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.operations-customer-actions {
+  position: sticky;
+  z-index: 2;
+  bottom: -20px;
+  margin: 0 -20px -20px;
+  margin-top: auto;
+  border-top: 1px solid var(--enterprise-border);
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  background: #fff;
+}
+
+.operations-program-list {
+  display: grid;
+  gap: 12px;
+}
+
+.operations-program-card {
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  background: #fff;
+  box-shadow: var(--enterprise-shadow-card);
+}
+
+.operations-program-card > summary {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.operations-program-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.operations-program-card > summary > span:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.operations-program-card > summary small {
+  color: var(--enterprise-primary-hover);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.operations-program-card > summary strong {
+  overflow: hidden;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operations-program-card > summary > span:last-child {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary-hover);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.operations-program-content {
+  display: grid;
+  gap: 18px;
+  border-top: 1px solid var(--enterprise-border);
+  padding: 16px;
+}
+
+.operations-program-how p,
+.operations-program-terms p {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.operations-program-terms p {
+  white-space: pre-line;
+}
+
+.operations-program-rewards {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.operations-program-rewards li {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 10px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 10px;
+}
+
+.operations-program-rewards li > span {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary-hover);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.operations-program-rewards li > div {
+  display: grid;
+  gap: 2px;
+}
+
+.operations-program-rewards strong {
+  font-size: 0.8rem;
+}
+
+.operations-program-rewards p,
+.operations-program-rewards small {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
 }
 
 .operations-preview {
@@ -4537,6 +4792,27 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     max-height: calc(100dvh - 16px);
   }
 
+  .operations-customer-dialog {
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .operations-customer-dialog .operations-search-dialog-shell {
+    height: 100dvh;
+    max-height: none;
+  }
+
+  .operations-customer-dialog .operations-search-dialog-header {
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
+
+  .operations-customer-dialog-body {
+    padding-bottom: 16px;
+  }
+
   .operations-search-dialog-header,
   .operations-search-dialog-body {
     padding-right: 16px;
@@ -4550,6 +4826,19 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .operations-customer-heading .enterprise-badge {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .operations-customer-summary > div {
+    padding: 10px 8px;
+  }
+
+  .operations-customer-actions {
+    bottom: -16px;
+    margin-right: -16px;
+    margin-bottom: -16px;
+    margin-left: -16px;
+    padding-right: 16px;
+    padding-left: 16px;
   }
 
   .public-registration-share {

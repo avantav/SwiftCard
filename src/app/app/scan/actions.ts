@@ -24,7 +24,50 @@ export async function resolveScannedCard(formData: FormData) {
   if (typeof result.loyalty_card_id !== "string") {
     redirect(`/app/scan?error=${encodeURIComponent("Esta tarjeta no tiene un programa configurado.")}`);
   }
-  redirect(`/app/purchase?${new URLSearchParams({ customerCardId: result.customer_card_id, loyaltyCardId: result.loyalty_card_id }).toString()}`);
+  redirect(`/app/scan?${new URLSearchParams({ customerCardId: result.customer_card_id, loyaltyCardId: result.loyalty_card_id }).toString()}`);
+}
+
+export async function redeemCustomerReward(formData: FormData) {
+  const rewardId = String(formData.get("rewardId") ?? "").trim();
+  const branchId = String(formData.get("branchId") ?? "").trim();
+  const customerCardId = String(formData.get("customerCardId") ?? "").trim();
+  const loyaltyCardId = String(formData.get("loyaltyCardId") ?? "").trim();
+  const returnParams = { customerCardId, loyaltyCardId };
+  if (!rewardId || !branchId || !customerCardId || !loyaltyCardId) {
+    back({ ...returnParams, error: "Selecciona un premio y una sucursal." });
+  }
+
+  const context = await requireInternalArea("APP");
+  const { data: summaryData } = await context.supabase.schema("app").rpc("get_staff_customer_card_summary", {
+    target_customer_card_id: customerCardId,
+  });
+  const summary = Array.isArray(summaryData) ? summaryData[0] as {
+    available_rewards?: Array<{ id?: string }>;
+    customer_id?: string;
+    loyalty_card_id?: string;
+  } | undefined : undefined;
+  if (
+    !summary
+    || summary.loyalty_card_id !== loyaltyCardId
+    || !Array.isArray(summary.available_rewards)
+    || !summary.available_rewards.some((reward) => reward.id === rewardId)
+  ) {
+    back({ ...returnParams, error: "El premio ya no está disponible." });
+  }
+  const { data, error } = await context.supabase.schema("app").rpc("redeem_reward", {
+    target_reward_id: rewardId,
+    target_branch_id: branchId,
+    target_latitude: null,
+    target_longitude: null,
+  });
+  const result = Array.isArray(data) ? data[0] : null;
+  if (error || !result || result.result !== "REDEEMED") {
+    back({ ...returnParams, error: "El premio ya no está disponible." });
+  }
+  if (summary.customer_id) {
+    await dispatchAppleWalletUpdatesBestEffort({ limit: 1, customerId: summary.customer_id });
+  }
+  back({ ...returnParams, redeemed: "1" });
 }
 
 export async function updateCustomer(formData: FormData) {

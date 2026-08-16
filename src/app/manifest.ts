@@ -33,6 +33,13 @@ export default function manifest(): MetadataRoute.Manifest {
         description: "Escanear una tarjeta o buscar un cliente de SwiftWallet.",
         url: "/app/scan",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
+      },
+      {
+        name: "Consultar programa",
+        short_name: "Programa",
+        description: "Consultar premios y condiciones del programa.",
+        url: "/app/program",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
       }
     ]
   };

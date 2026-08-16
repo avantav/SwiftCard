@@ -28,6 +28,14 @@ describe("parseCardQrPayload", () => {
       new URL("../../components/customer-search-modal.tsx", import.meta.url),
       "utf8",
     );
+    const detailsModal = readFileSync(
+      new URL("../../components/customer-details-modal.tsx", import.meta.url),
+      "utf8",
+    );
+    const actions = readFileSync(
+      new URL("../../app/app/scan/actions.ts", import.meta.url),
+      "utf8",
+    );
 
     expect(scanner).toContain("BrowserQRCodeReader");
     expect(scanner).toContain("decodeFromConstraints");
@@ -45,5 +53,12 @@ describe("parseCardQrPayload", () => {
     expect(searchModal).toContain("Buscar cliente por nombre o teléfono");
     expect(searchModal).toContain('aria-haspopup="dialog"');
     expect(searchModal).toContain("operations-search-dialog-body");
+    expect(detailsModal).toContain("showModal()");
+    expect(detailsModal).toContain('href="/app/scan"');
+    expect(page).toContain("CustomerDetailsModal");
+    expect(page).toContain("Premios disponibles");
+    expect(page).toContain("Registrar compra");
+    expect(actions).toContain('redirect(`/app/scan?');
+    expect(actions).toContain("redeemCustomerReward");
   });
 });

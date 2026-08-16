@@ -221,3 +221,13 @@
 - Reason: One entry point reduces navigation and input ambiguity while preserving a usable fallback when camera access is denied or unsupported.
 - Consequences: QR payload parsing remains an internal camera boundary, not an employee-facing text input. Search continues through existing customer/card RLS, and purchase links carry the backend-derived issued-card and loyalty-card identifiers required by multi-card operations. The base screen avoids rendering result lists below the camera; long search/edit content scrolls inside the modal and page scrolling is locked while it is open.
 - Status: Accepted.
+
+## DEC-0023 - Customer-Centered Employee Operations
+
+- Date: 2026-08-15
+- Context: After identification, Compra and Canje still lived as independent bottom-navigation destinations and required the employee to reconstruct customer context. Employees also lacked one operational view of the published reward catalog and terms.
+- Decision: Keep exactly three employee tabs: `Registro`, `Clientes` and `Programa`. A successful QR scan or selected manual-search result opens a full-height mobile-first customer modal with identity, issued card, current balance, available rewards, one-reward redemption and a single dominant action to register a purchase. Compra and Canje remain protected internal workflows but are no longer standalone navigation tabs. Add a read-only program tab backed by authenticated, tenant-derived projections for earning rules, reward tiers and terms.
+- Alternatives considered: Keep four tabs, add a fifth information tab, navigate directly from identification to Compra, or duplicate customer/reward data in separate routes.
+- Reason: Point-of-sale work starts from a customer, not an operation category. Keeping the customer context visible reduces navigation, prevents accidental operation against the wrong customer and leaves the main scan surface compact.
+- Consequences: Migration `0045` is required before the new modal and program tab can load in a hosted environment. It accepts only an opaque issued-card identifier for the customer projection, derives tenant/operator authority from `auth.uid()` and current PIN context, and exposes no write authority. Existing `/app/purchase` and `/app/redeem` routes remain for compatibility, but only customer-context actions are shown in primary navigation.
+- Status: Accepted.

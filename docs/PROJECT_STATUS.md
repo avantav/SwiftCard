@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the validated additive multi-card migrations and complete the hosted draft/resume/publish/register/purchase smoke path.
-- Last completed task: Moved the integrated employee customer search into an accessible, internally scrollable modal and compacted the `/app/scan` camera view.
+- Current task: Deploy the validated additive multi-card and employee catalog migrations and complete the hosted draft/resume/publish/register/scan/customer-modal/purchase smoke path.
+- Last completed task: Unified scanned and searched customer results in one mobile-first reward/action modal, reduced employee navigation to three tabs and added the employee program catalog.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
-- Git status: Typecheck, lint, 193 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
+- Git status: Typecheck, lint, 196 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0045` pass locally.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the employee identification and modal-search commits are local and not pushed yet.
 
 ## Completed Functionality
@@ -83,10 +83,11 @@
 - Superadmin now uses a reusable enterprise shell with responsive navigation, active-route indication, account identity, visible logout, operational metrics, semantic tenant table, status actions, and explicit loading-result/error/empty/success treatments.
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
-- The employee PWA now uses a compact authenticated header, visible logout, four-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee PWA now uses a compact authenticated header, visible logout, three-item bottom navigation (`Registro`, `Clientes`, `Programa`), single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
 - The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
 - The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and uses integrated name/phone search as its fallback without exposing manual token or URL entry.
-- `/app/scan` is the single employee customer-identification view: its main surface stays focused on a compact camera scanner, while authorized name/phone search, results and Manager-only editing open in a bounded modal with internal scrolling. Search results resolve the issued loyalty card for the current operator scope and link to the card-scoped purchase flow. The separate `/app/customers` route, navigation item and PWA shortcut remain removed.
+- `/app/scan` is the single employee customer-identification view: its main surface stays focused on a compact camera scanner, while authorized name/phone search, results and Manager-only editing open in a bounded modal with internal scrolling. A successful scan or selected result opens one full-height mobile customer modal with card, balance, available rewards, one-at-a-time redemption and the card-scoped purchase action. The separate `/app/customers` route and the standalone Compra/Canje navigation tabs remain removed.
+- `/app/program` exposes every published card available to the current operator with its earning rule, active reward tiers, expiration rules and terms and conditions. Migration `0045` supplies tenant-derived read-only customer/program projections without accepting a browser tenant identifier.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.
@@ -217,4 +218,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043` and `0044` to the hosted Supabase project with approval, then exercise create draft → resume → publish → register → scan → purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.
+Apply validated migrations `0043`, `0044` and `0045` to the hosted Supabase project with approval, then exercise create draft → resume → publish → register → scan/search → customer modal → redeem/purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.

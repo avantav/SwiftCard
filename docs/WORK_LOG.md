@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-15 - Customer-Centered Employee Modal And Program Tab
+
+**Objective:** Make every scanned or searched customer open one mobile-first operational view, remove Compra/Canje as standalone tabs and expose program rewards and terms to employees.
+
+**Changes Made:** QR resolution and manual-search results now return to `/app/scan` with the issued-card context and open a full-height mobile dialog showing customer, card, balance and reward count. Available rewards can be selected and redeemed one at a time in the dialog; the dominant action continues to the existing card-scoped purchase preview. Added `/app/program` with expandable published-card summaries, earning rules, ordered reward tiers, expiration information and terms. Bottom navigation and PWA shortcuts now contain exactly Registro, Clientes and Programa; the protected purchase/redeem routes remain compatible but are no longer tabs.
+
+**Security And Correctness:** Additive migration `0045` introduces read-only security-definer projections that derive the active tenant and operator from `auth.uid()`/PIN context, filter programs by accessible active branches and accept only an opaque issued-card ID for customer lookup. The inline redemption action re-reads that summary, verifies the selected reward belongs to its available reward set, and still delegates the atomic state change to `app.redeem_reward`. Cross-tenant and anonymous SQL assertions pass; no browser tenant, program balance or reward state becomes authoritative.
+
+**Design Review:** The populated customer modal and program catalog were reviewed in Chrome at 375, 768, 1280 and 1440 px. On mobile the customer dialog occupies the full dynamic viewport, locks page scrolling, keeps its purchase action visible and uses internal scrolling only when reward content exceeds the viewport. The three-tab navigation, reward selection controls, catalog cards and terms remain legible with no horizontal overflow or hidden critical action. Temporary review routes were removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 196 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0045` pass. The final route tree includes `/app/program` and excludes all temporary visual-review routes.
+
+**Next Action:** Apply validated migrations `0043`, `0044` and `0045` to hosted Supabase with approval, then smoke-test scan and search into the customer modal, one reward redemption, purchase registration and Wallet refresh on the employee phone.
+
 ## 2026-08-15 - Modal Employee Customer Search
 
 **Objective:** Keep employee identification screens compact by moving manual customer search and its results out of the page flow.

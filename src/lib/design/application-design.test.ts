@@ -12,7 +12,7 @@ const operationsNavigation = source("../../components/operations-navigation.tsx"
 const styles = source("../../app/globals.css");
 
 const adminPages = ["page.tsx", "branches/page.tsx", "staff/page.tsx", "cards/page.tsx", "cards/[cardId]/edit/page.tsx", "dashboard/page.tsx", "exports/page.tsx"].map((path) => source(`../../app/admin/${path}`));
-const operationsPages = ["page.tsx", "scan/page.tsx", "purchase/page.tsx", "redeem/page.tsx"].map((path) => source(`../../app/app/${path}`));
+const operationsPages = ["page.tsx", "scan/page.tsx", "program/page.tsx", "purchase/page.tsx", "redeem/page.tsx"].map((path) => source(`../../app/app/${path}`));
 const publicPages = ["../../app/page.tsx", "../../app/login/page.tsx", "../../app/change-password/page.tsx", "../../app/register/[branchToken]/page.tsx"].map(source);
 
 describe("application-wide design contract", () => {

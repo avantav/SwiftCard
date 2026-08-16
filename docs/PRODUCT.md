@@ -479,15 +479,13 @@ Superadmin ve auditoría global; Administrador la del tenant; Encargado la de su
 
 ## 21. PWA
 
-Rutas operativas:
+La navegación operativa principal tendrá exactamente tres tabs:
 
-- Inicio.  
-- Identificar cliente mediante escáner o búsqueda.
-- Nuevo cliente.  
-- Registrar compra.  
-- Canjear.  
-- Historial reciente.  
-- Perfil y cambio de empleado.
+- Registro de cliente.
+- Clientes: escáner y búsqueda manual.
+- Programa: catálogo de premios, forma de acumulación y términos y condiciones.
+
+Registrar compra y canjear no serán tabs independientes. Después de escanear o seleccionar un resultado de búsqueda, la PWA abrirá un modal móvil único con identidad, tarjeta, saldo y premios disponibles. Desde ese modal el empleado podrá canjear una recompensa o continuar al registro de compra. Perfil, cierre de sesión y cambio de empleado permanecerán en la cabecera operativa.
 
 Requisitos:
 
@@ -499,7 +497,7 @@ Requisitos:
 - Confirmaciones para compras y canjes.  
 - Protección contra doble envío.  
 - Manejo claro de permisos de cámara y ubicación.
-- Resolución del cliente por escáner o búsqueda manual hacia una sola vista operativa con recompensas disponibles y acción para registrar compra. La búsqueda manual se abrirá en un modal con desplazamiento interno para mantener compacta la pantalla principal.
+- Resolución del cliente por escáner o búsqueda manual hacia un solo modal operativo con recompensas disponibles, canje de una recompensa y acción para registrar compra. La búsqueda manual se abrirá en otro modal con desplazamiento interno para mantener compacta la pantalla principal.
 
 ## 22. Apple Wallet y Google Wallet
 
