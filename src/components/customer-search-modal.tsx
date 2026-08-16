@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 
@@ -11,30 +13,20 @@ type CustomerSearchModalProps = {
 export function CustomerSearchModal({ children, initiallyOpen }: CustomerSearchModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const previousOverflowRef = useRef("");
-
-  function lockPageScroll() {
-    previousOverflowRef.current = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
-  }
+  const router = useRouter();
 
   function unlockPageScroll() {
     document.documentElement.style.overflow = previousOverflowRef.current;
   }
 
-  function openModal() {
-    const dialog = dialogRef.current;
-    if (!dialog || dialog.open) return;
-    lockPageScroll();
-    dialog.showModal();
-    dialog.querySelector<HTMLInputElement>('input[name="q"]')?.focus();
-  }
-
   function closeModal() {
     dialogRef.current?.close();
+    router.replace("/app/scan");
   }
 
   useEffect(() => {
     const dialog = dialogRef.current;
+    if (!initiallyOpen && dialog?.open) dialog.close();
     if (initiallyOpen && dialog) {
       if (dialog.open) dialog.removeAttribute("open");
       previousOverflowRef.current = document.documentElement.style.overflow;
@@ -48,19 +40,21 @@ export function CustomerSearchModal({ children, initiallyOpen }: CustomerSearchM
   }, [initiallyOpen]);
 
   return <>
-    <button
+    <Link
       aria-haspopup="dialog"
       className="operations-secondary-button operations-search-trigger"
-      onClick={openModal}
-      type="button"
+      href="/app/scan?searchModal=1"
     >
       Buscar cliente por nombre o teléfono
-    </button>
+    </Link>
     <dialog
       aria-labelledby="customer-search-title"
       className="operations-search-dialog"
       open={initiallyOpen || undefined}
-      onCancel={unlockPageScroll}
+      onCancel={(event) => {
+        event.preventDefault();
+        closeModal();
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) closeModal();
       }}

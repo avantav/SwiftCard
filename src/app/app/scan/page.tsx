@@ -14,6 +14,7 @@ type ScanPageProps = {
     loyaltyCardId?: string;
     q?: string;
     redeemed?: string;
+    searchModal?: string;
     updated?: string;
   }>;
 };
@@ -169,11 +170,11 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
     <section className="operations-card operations-scan-card" aria-labelledby="scan-title">
       <div className="operations-card-header"><h2>Escanear tarjeta</h2><p>Usa el QR de Apple Wallet o de la tarjeta web.</p></div>
       <CustomerCardScanner />
-      <CustomerSearchModal initiallyOpen={Boolean(search || params.updated) && !hasCustomerSelection}>
+      <CustomerSearchModal initiallyOpen={Boolean(params.searchModal || search || params.updated) && !hasCustomerSelection}>
         {params.updated ? <p className="operations-alert is-success" role="status">Cliente actualizado.</p> : null}
         {search && params.error ? <p className="operations-alert is-error" role="alert">{params.error}</p> : null}
         <form className="operations-search-form" method="get">
-          <label className="field"><span>Teléfono o nombre</span><input name="q" defaultValue={search} inputMode="search" /></label>
+          <label className="field"><span>Teléfono o nombre</span><input name="q" defaultValue={search} inputMode="search" required /></label>
           <button className="operations-primary-button" type="submit">Buscar</button>
         </form>
         {searchFailed ? <p className="operations-alert is-error" role="alert">No se pudo completar la búsqueda. Actualiza la página.</p> : null}

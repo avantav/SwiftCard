@@ -4,7 +4,7 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy the validated additive multi-card and employee catalog migrations and complete the hosted draft/resume/publish/register/scan/customer-modal/purchase smoke path.
-- Last completed task: Unified scanned and searched customer results in one mobile-first reward/action modal, reduced employee navigation to three tabs and added the employee program catalog.
+- Last completed task: Made the employee customer-search trigger route-backed so it reliably opens, closes and reopens the mobile search modal even when direct client-side dialog opening is unavailable.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
 - Git status: Typecheck, lint, 196 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0045` pass locally.

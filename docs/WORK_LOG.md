@@ -1,5 +1,13 @@
 # Work Log
 
+## 2026-08-15 - Reliable Customer Search Trigger
+
+**Objective:** Fix the employee “Buscar cliente por nombre o teléfono” action when client-side dialog opening does not run.
+
+**Changes Made:** Replaced the JavaScript-only trigger with a route-backed link to `/app/scan?searchModal=1`. The scan page now treats that explicit state like a submitted query and opens the native dialog after navigation. Closing through the visible button, Escape or backdrop returns to clean `/app/scan`, so the trigger can always open the modal again. The empty search field is now required before submission.
+
+**Correctness:** Customer queries, RLS and Manager-only editing remain unchanged. The explicit URL state contains no customer or tenant data and provides a normal navigation fallback if client hydration is delayed.
+
 ## 2026-08-15 - Customer-Centered Employee Modal And Program Tab
 
 **Objective:** Make every scanned or searched customer open one mobile-first operational view, remove Compra/Canje as standalone tabs and expose program rewards and terms to employees.

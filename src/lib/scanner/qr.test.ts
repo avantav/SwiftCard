@@ -52,7 +52,10 @@ describe("parseCardQrPayload", () => {
     expect(searchModal).toContain("showModal()");
     expect(searchModal).toContain("Buscar cliente por nombre o teléfono");
     expect(searchModal).toContain('aria-haspopup="dialog"');
+    expect(searchModal).toContain('href="/app/scan?searchModal=1"');
+    expect(searchModal).toContain('router.replace("/app/scan")');
     expect(searchModal).toContain("operations-search-dialog-body");
+    expect(page).toContain("params.searchModal");
     expect(detailsModal).toContain("showModal()");
     expect(detailsModal).toContain('href="/app/scan"');
     expect(page).toContain("CustomerDetailsModal");
