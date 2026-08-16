@@ -128,6 +128,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and integrate name/phone customer search as a bounded modal fallback without manual token or URL entry.
 - [x] [Terminada] Implement purchase and redemption mobile flows.
 - [x] [Terminada] Consolidate scan/search results, customer balance, available rewards, one-at-a-time redemption and the purchase entry action in one mobile-first customer modal; reduce the bottom navigation to Registro, Clientes and Programa.
+- [x] [Terminada] Convert the customer modal into a three-step guided operation: overview, minimal purchase/reward input and explicit authoritative confirmation; keep large search result sets clear and vertically bounded.
 - [x] [Terminada] Offer an expandable card-claim QR from the identified-customer modal only while Apple has no active device registration for that issued card.
 - [x] [Terminada] Add an employee-readable, tenant-derived program catalog with earning rules, reward tiers and terms and conditions.
 - [x] [Terminada] Add strict/flexible geolocation handling.

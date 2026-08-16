@@ -251,3 +251,13 @@
 - Reason: Apple device registration is stronger evidence of an added pass than generation alone. Keeping the option inside the existing modal preserves customer context and avoids another navigation destination.
 - Consequences: Migration `0047` is required in hosted environments. Device identifiers and push-token data remain inaccessible; the projection returns only a boolean and the already possession-safe opaque card token after reusing tenant/operator authorization from the staff customer summary.
 - Status: Accepted.
+
+## DEC-0026 - Guided Customer Operation Modal
+
+- Date: 2026-08-15
+- Context: Putting purchase and redemption controls in one customer view removed navigation, but exposed too many choices at once and made the next action unclear after scanning or searching.
+- Decision: Use one three-step mobile modal for both operations. Step one shows customer identity, card balance, reward availability and the operation choice. Step two asks only for the selected reward and branch, or purchase branch and readable currency amount. Step three shows an authoritative preview and requires explicit confirmation. Long customer searches keep the query form visible and identify every result with name, phone and card.
+- Alternatives considered: Return to separate Compra/Canje tabs, place every field in one scrolling modal, or confirm operations immediately from the overview.
+- Reason: Progressive disclosure keeps customer context visible while reducing error-prone choices and making irreversible actions explicit.
+- Consequences: Purchase amounts are converted exactly to minor units on the server and previews are recalculated before confirmation. Existing protected RPCs and legacy routes remain compatible; no migration is required.
+- Status: Accepted.

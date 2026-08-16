@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-15 - Guided Customer Purchase And Reward Flow
+
+**Objective:** Make scan and search lead to an immediately understandable customer operation, even when search returns many matches.
+
+**Changes Made:** Replaced the mixed customer controls with a three-step mobile modal: overview and operation choice, minimal operation-specific inputs, then explicit confirmation. Purchase entry uses a readable tenant-currency amount and displays the backend preview before confirmation; reward redemption identifies one reward and branch before its own confirmation. Search keeps its form visible, reports the result count and labels every result with name, phone and card while containing long lists in vertical scrolling.
+
+**Security And Correctness:** Tenant currency, customer/card scope, purchase calculation and final mutation remain server-derived. Both preview and confirmation call the existing protected RPCs, confirmation recalculates the purchase, and reward execution retains the existing authenticated action boundary. Exact string-to-minor-unit conversion avoids floating-point money arithmetic.
+
+**Design Review:** Overview, purchase steps and reward steps were reviewed at 375 px; the overview was also reviewed at 768, 1280 and 1440 px, and 12-result search states at 375 and 768 px. The mobile customer modal uses the full viewport, actions stay prominent, long search results scroll internally without horizontal overflow and no temporary review route remains.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 206 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass.
+
+**Next Action:** Apply validated migrations `0043` through `0047` to hosted Supabase, then smoke-test scan/search, purchase preview/confirmation and reward confirmation on the employee phone.
+
 ## 2026-08-15 - Wallet-Aware QR Delivery From Customer Search
 
 **Objective:** Let an employee regenerate the customer card handoff QR after search or scan when the card has not actually been added to Apple Wallet.

@@ -488,7 +488,7 @@ La navegación operativa principal tendrá exactamente tres tabs:
 - Clientes: escáner y búsqueda manual.
 - Programa: catálogo de premios, forma de acumulación y términos y condiciones.
 
-Registrar compra y canjear no serán tabs independientes. Después de escanear o seleccionar un resultado de búsqueda, la PWA abrirá un modal móvil único con identidad, tarjeta, saldo y premios disponibles. Desde ese modal el empleado podrá canjear una recompensa o continuar al registro de compra. Perfil, cierre de sesión y cambio de empleado permanecerán en la cabecera operativa.
+Registrar compra y canjear no serán tabs independientes. Después de escanear o seleccionar un resultado de búsqueda, la PWA abrirá un modal móvil guiado: el primer paso muestra identidad, tarjeta, saldo, premios disponibles y las dos operaciones; el segundo captura únicamente los datos de compra o canje; el tercero presenta un resumen y exige confirmación explícita. Los montos se capturan en la moneda legible del tenant y el backend conserva la autoridad de cálculo. Perfil, cierre de sesión y cambio de empleado permanecerán en la cabecera operativa.
 
 Requisitos:
 
@@ -500,7 +500,7 @@ Requisitos:
 - Confirmaciones para compras y canjes.  
 - Protección contra doble envío.  
 - Manejo claro de permisos de cámara y ubicación.
-- Resolución del cliente por escáner o búsqueda manual hacia un solo modal operativo con recompensas disponibles, canje de una recompensa y acción para registrar compra. La búsqueda manual se abrirá en otro modal con desplazamiento interno para mantener compacta la pantalla principal.
+- Resolución del cliente por escáner o búsqueda manual hacia un solo modal operativo de tres pasos. La búsqueda manual se abrirá en otro modal con formulario fijo, conteo visible y resultados identificables por nombre, teléfono y tarjeta; las listas largas tendrán únicamente desplazamiento vertical interno.
 
 ## 22. Apple Wallet y Google Wallet
 
