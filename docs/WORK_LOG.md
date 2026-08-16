@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-15 - Wallet-Aware QR Delivery From Customer Search
+
+**Objective:** Let an employee regenerate the customer card handoff QR after search or scan when the card has not actually been added to Apple Wallet.
+
+**Changes Made:** The identified-customer modal now queries a bounded delivery projection alongside its existing customer summary. Without an active Apple device registration it shows a collapsed “Generar QR para agregar tarjeta” control; expanding it reveals a high-contrast QR and same-device fallback to the existing claim/terms screen. Once Apple registers the pass on an active device, the generator is replaced by a compact Wallet-added status.
+
+**Security And Correctness:** Additive migration `0047` accepts only the issued-card UUID already used by the customer summary, reuses that summary's tenant/operator authorization, and returns only the opaque public token plus an installation boolean. Apple device identifiers, encrypted push tokens and registration rows remain denied to browser roles. Cross-tenant and anonymous SQL assertions pass.
+
+**Design Review:** Closed state was reviewed at 375, 768, 1280 and 1440 px, and expanded QR state at 375 and 768 px. The collapsed option adds one compact block to the customer modal; expanded content remains inside the modal's existing bounded scroll region, with the complete QR and fallback action visible and no horizontal overflow. Temporary review routes and attributes were removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 201 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass.
+
+**Next Action:** Apply validated migrations `0043` through `0047` to hosted Supabase, verify the option before installation on a real iPhone, add the pass, reopen the same customer and confirm the generator is hidden.
+
 ## 2026-08-15 - Customer Card QR Handoff And Terms Acceptance
 
 **Objective:** Repair the 404 after employee registration and let the customer accept program terms and add the issued card from one phone-first screen.

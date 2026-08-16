@@ -241,3 +241,13 @@
 - Reason: The customer should make the consent action on their own device, while the backend retains evidence of exactly which terms version was accepted and direct endpoint access cannot bypass it.
 - Consequences: Migration `0046` is required before the claim form and Apple Wallet download work in a hosted environment. The public link remains an opaque possession token and exposes no tenant ID, phone, internal card ID or balance. Production QR generation uses the configured HTTPS public origin; local development may use the current request host so another device on the LAN can scan it.
 - Status: Accepted.
+
+## DEC-0025 - Wallet-Aware Repeat Delivery From Customer Search
+
+- Date: 2026-08-15
+- Context: A customer may leave registration without adding the card, then return later and be found by employee search or scan. Staff needed a repeatable handoff without showing redundant controls after Wallet confirms installation.
+- Decision: Add an authenticated read-only projection that accepts only the issued-card UUID already authorized by the customer summary, returns the opaque card token and reports Apple installation only when an active Wallet device registration exists. When not installed, the customer modal exposes a collapsed “Generar QR para agregar tarjeta” section using the same terms-and-claim flow; after registration, it shows status and hides the QR option.
+- Alternatives considered: Always show the QR, treat pass generation as installation, read Wallet device tables directly from the browser, or add a separate delivery page.
+- Reason: Apple device registration is stronger evidence of an added pass than generation alone. Keeping the option inside the existing modal preserves customer context and avoids another navigation destination.
+- Consequences: Migration `0047` is required in hosted environments. Device identifiers and push-token data remain inaccessible; the projection returns only a boolean and the already possession-safe opaque card token after reusing tenant/operator authorization from the staff customer summary.
+- Status: Accepted.

@@ -7,9 +7,10 @@
 5. Customer invariant: this MVP still permits one issued card per customer and tenant. Multiple card configurations are alternatives selected at registration, not simultaneous cards for the same phone.
 6. Employee operations: the bottom navigation now has exactly `Registro`, `Clientes` and `Programa`. Scan and search both open one mobile-first customer modal with balance, available rewards, inline single-reward redemption and the action to register a purchase. `/app/program` shows earning rules, reward tiers and terms.
 7. Customer handoff: employee registration returns to `/app`, shows an immediately rendered QR to the possession-based claim URL, and lets the customer review and accept current terms before adding Apple Wallet or opening Web Card on one compact screen. Migration `0046` stores a versioned immutable terms snapshot and gates initial Apple issuance.
-8. Immediate release step: apply validated migrations `0043`, `0044`, `0045` and `0046` to hosted Supabase with approval, then smoke-test draft/resume/publish/register/handoff/accept/add-card/scan/search/customer-modal/redeem/purchase and signed-pass refresh.
-9. Local validation completed: typecheck, lint, 200 Vitest tests, webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0046` pass. The handoff and claim screens were visually reviewed at 375, 768, 1280 and 1440 px; the temporary routes were removed.
-10. Google Wallet generation remains pending. The Admin Android toggle is a preview of the common design, not a claim that Google pass issuance is implemented.
+8. Repeat delivery: migration `0047` reports whether Apple has an active device registration for the authorized issued card. The customer modal shows a collapsed QR generator only while that registration is absent, and reuses the same claim/terms screen.
+9. Immediate release step: apply validated migrations `0043` through `0047` to hosted Supabase with approval, then smoke-test draft/resume/publish/register/handoff/accept/add-card/scan/search/repeat-delivery/customer-modal/redeem/purchase and signed-pass refresh.
+10. Local validation completed: typecheck, lint, 201 Vitest tests, webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass. Handoff, claim and closed/open repeat-delivery states were visually reviewed at 375, 768, 1280 and 1440 px; the temporary routes were removed.
+11. Google Wallet generation remains pending. The Admin Android toggle is a preview of the common design, not a claim that Google pass issuance is implemented.
 
 ## Prior lifetime-points context
 

@@ -2,8 +2,11 @@ import Link from "next/link";
 import { CustomerCardScanner } from "@/components/customer-card-scanner";
 import { CustomerDetailsModal } from "@/components/customer-details-modal";
 import { CustomerSearchModal } from "@/components/customer-search-modal";
+import { CustomerWalletQrDelivery } from "@/components/customer-wallet-qr-delivery";
 import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
+import { resolveCustomerCardHandoffOrigin } from "@/lib/customers/card-handoff-origin";
+import { createCustomerCardClaimQrDataUrl } from "@/lib/customers/card-qr";
 import { normalizePhone } from "@/lib/customers/phone";
 import { redeemCustomerReward, updateCustomer } from "./actions";
 
@@ -63,6 +66,11 @@ type CustomerSummary = {
   stamp_balance: number;
   unit_name_plural: string;
   unit_name_singular: string;
+};
+
+type CustomerWalletDelivery = {
+  apple_wallet_added: boolean;
+  card_token: string;
 };
 
 function rewardsFrom(value: unknown): RewardSummary[] {
@@ -139,14 +147,20 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
 
   let customerSummary: CustomerSummary | null = null;
   let customerSummaryFailed = false;
+  let walletDelivery: CustomerWalletDelivery | null = null;
+  let walletDeliveryFailed = false;
+  let walletDeliveryQrDataUrl: string | null = null;
   let branches: Array<{ id: string; name: string }> = [];
   if (hasCustomerSelection) {
     await context.supabase.schema("app").rpc("expire_due_rewards");
-    const [summaryResult, branchesResult] = await Promise.all([
+    const [summaryResult, branchesResult, walletDeliveryResult] = await Promise.all([
       context.supabase.schema("app").rpc("get_staff_customer_card_summary", {
         target_customer_card_id: selectedCustomerCardId,
       }),
       context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name"),
+      context.supabase.schema("app").rpc("get_staff_customer_wallet_delivery", {
+        target_customer_card_id: selectedCustomerCardId,
+      }),
     ]);
     const summary = Array.isArray(summaryResult.data) ? summaryResult.data[0] as CustomerSummary | undefined : undefined;
     if (summaryResult.error || !summary || summary.loyalty_card_id !== selectedLoyaltyCardId) {
@@ -156,6 +170,24 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
     }
     if (branchesResult.error) customerSummaryFailed = true;
     branches = branchesResult.data ?? [];
+    const delivery = Array.isArray(walletDeliveryResult.data)
+      ? walletDeliveryResult.data[0] as CustomerWalletDelivery | undefined
+      : undefined;
+    if (walletDeliveryResult.error || !delivery) {
+      walletDeliveryFailed = true;
+    } else {
+      walletDelivery = delivery;
+      if (!delivery.apple_wallet_added) {
+        try {
+          const origin = await resolveCustomerCardHandoffOrigin();
+          walletDeliveryQrDataUrl = origin
+            ? await createCustomerCardClaimQrDataUrl(origin, delivery.card_token)
+            : null;
+        } catch {
+          walletDeliveryQrDataUrl = null;
+        }
+      }
+    }
   }
 
   const rewards = rewardsFrom(customerSummary?.available_rewards);
@@ -213,6 +245,7 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
           <div><span>Saldo</span><strong>{customerSummary.stamp_balance}</strong><small>{customerSummary.stamp_balance === 1 ? customerSummary.unit_name_singular : customerSummary.unit_name_plural}</small></div>
           <div className={rewards.length ? "has-reward" : undefined}><span>Premios</span><strong>{rewards.length}</strong><small>{rewards.length === 1 ? "disponible" : "disponibles"}</small></div>
         </section>
+        {walletDeliveryFailed ? <p className="operations-alert is-warning" role="status">No se pudo consultar si la tarjeta ya está agregada a Wallet.</p> : walletDelivery?.apple_wallet_added ? <p className="operations-wallet-added" role="status">✓ Tarjeta agregada a Apple Wallet</p> : walletDelivery ? <CustomerWalletQrDelivery cardToken={walletDelivery.card_token} qrDataUrl={walletDeliveryQrDataUrl} /> : null}
         {rewards.length ? <form action={redeemCustomerReward} className="operations-form operations-redeem-form">
           <input name="customerCardId" type="hidden" value={selectedCustomerCardId} />
           <input name="loyaltyCardId" type="hidden" value={selectedLoyaltyCardId} />

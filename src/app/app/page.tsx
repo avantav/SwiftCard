@@ -1,10 +1,9 @@
-import { headers } from "next/headers";
 import { EmployeeRegistrationHandoff } from "@/components/employee-registration-handoff";
 import { RegistrationScopeFields, type RegistrationScope } from "@/components/registration-scope-fields";
 import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
+import { resolveCustomerCardHandoffOrigin } from "@/lib/customers/card-handoff-origin";
 import { isCustomerCardToken } from "@/lib/customers/card-qr";
-import { resolvePublicOrigin } from "@/lib/public-origin";
 import { registerEmployeeCustomer } from "./register/actions";
 
 type EmployeeAppPageProps = { searchParams: Promise<{ created?: string; duplicate?: string; error?: string; cardToken?: string }> };
@@ -13,20 +12,7 @@ export default async function EmployeeAppPage({ searchParams }: EmployeeAppPageP
   const context = await requireInternalArea("APP");
   const { created, duplicate, error, cardToken } = await searchParams;
   if (created === "1" && cardToken && isCustomerCardToken(cardToken)) {
-    let claimOrigin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
-    if (!claimOrigin && process.env.NODE_ENV !== "production") {
-      const requestHeaders = await headers();
-      const host = requestHeaders.get("host");
-      const protocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim() || "http";
-      try {
-        const requestOrigin = host ? new URL(`${protocol}://${host}`) : null;
-        claimOrigin = requestOrigin && ["http:", "https:"].includes(requestOrigin.protocol)
-          ? requestOrigin.origin
-          : null;
-      } catch {
-        claimOrigin = null;
-      }
-    }
+    const claimOrigin = await resolveCustomerCardHandoffOrigin();
     return <main className="operations-page operations-handoff-page">
       <EmployeeRegistrationHandoff cardToken={cardToken} origin={claimOrigin} />
     </main>;

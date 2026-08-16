@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the validated additive multi-card, employee catalog and card-terms migrations and complete the hosted draft/resume/publish/register/handoff/claim/scan/customer-modal/purchase smoke path.
-- Last completed task: Repaired employee-registration completion, added an immediately rendered customer handoff QR and consolidated current terms acceptance plus Wallet/Web Card delivery into one mobile screen.
+- Current task: Deploy the validated additive multi-card, employee catalog, card-terms and Wallet-aware repeat-delivery migrations and complete the hosted draft/resume/publish/register/handoff/claim/scan/customer-modal/purchase smoke path.
+- Last completed task: Added a collapsed QR delivery option to the identified-customer modal only when Apple has not registered the issued pass on an active device.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
-- Git status: Typecheck, lint, 200 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0046` pass locally.
+- Git status: Typecheck, lint, 201 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass locally.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the employee identification and modal-search commits are local and not pushed yet.
 
 ## Completed Functionality
@@ -87,6 +87,7 @@
 - The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
 - The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and uses integrated name/phone search as its fallback without exposing manual token or URL entry.
 - `/app/scan` is the single employee customer-identification view: its main surface stays focused on a compact camera scanner, while authorized name/phone search, results and Manager-only editing open in a bounded modal with internal scrolling. A successful scan or selected result opens one full-height mobile customer modal with card, balance, available rewards, one-at-a-time redemption and the card-scoped purchase action. The separate `/app/customers` route and the standalone Compra/Canje navigation tabs remain removed.
+- The identified-customer modal consults migration `0047` for a backend-derived Apple device-registration state. When no active registration exists it offers an expandable claim QR and same-device fallback; once registered, it hides QR generation and shows the Wallet-added state without exposing device identifiers or push tokens.
 - `/app/program` exposes every published card available to the current operator with its earning rule, active reward tiers, expiration rules and terms and conditions. Migration `0045` supplies tenant-derived read-only customer/program projections without accepting a browser tenant identifier.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
@@ -220,4 +221,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043`, `0044`, `0045` and `0046` to the hosted Supabase project with approval, then exercise create draft → resume → publish → employee register → scan handoff QR → accept terms → add Wallet/Web Card → scan/search → customer modal → redeem/purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.
+Apply validated migrations `0043` through `0047` to the hosted Supabase project with approval, then exercise create draft → resume → publish → employee register → scan handoff QR → accept terms → add Wallet/Web Card → scan/search → repeat-delivery state → customer modal → redeem/purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.

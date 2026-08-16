@@ -3361,6 +3361,98 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   line-height: 1.45;
 }
 
+.operations-wallet-added {
+  margin: 0;
+  border: 1px solid #abefc6;
+  border-radius: var(--enterprise-radius-md);
+  padding: 10px 12px;
+  background: var(--enterprise-success-soft);
+  color: var(--enterprise-success);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.operations-wallet-delivery {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 14px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.operations-wallet-delivery > div {
+  display: grid;
+  gap: 3px;
+}
+
+.operations-wallet-delivery > div > p,
+.operations-wallet-delivery > div > h3,
+.operations-wallet-delivery > div > span {
+  margin: 0;
+}
+
+.operations-wallet-delivery > div > p {
+  color: var(--enterprise-primary-hover);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.operations-wallet-delivery > div > h3 {
+  font-size: 0.86rem;
+}
+
+.operations-wallet-delivery > div > span {
+  color: var(--enterprise-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.operations-wallet-delivery details > summary {
+  list-style: none;
+}
+
+.operations-wallet-delivery details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.operations-wallet-delivery-qr {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  border-top: 1px solid var(--enterprise-border);
+  padding-top: 12px;
+  text-align: center;
+}
+
+.operations-wallet-delivery-qr img {
+  display: block;
+  width: min(100%, 220px);
+  height: auto;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 8px;
+  background: #fff;
+}
+
+.operations-wallet-delivery-qr p {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.operations-wallet-delivery-qr a {
+  min-height: 44px;
+  padding: 12px 8px;
+  color: var(--enterprise-primary-hover);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 .operations-customer-actions {
   position: sticky;
   z-index: 2;

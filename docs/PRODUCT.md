@@ -107,6 +107,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 
 - Escanear tarjetas.  
 - Buscar clientes por teléfono o nombre.  
+- Generar desde el cliente encontrado un QR de entrega cuando la tarjeta todavía no esté registrada en Wallet.
 - Registrar clientes y compras.  
 - Canjear una recompensa por confirmación.  
 - Ver sellos, recompensas y actividad reciente.
@@ -207,7 +208,7 @@ Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el te
 
 ### Por empleado
 
-Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
+Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Si posteriormente se localiza al cliente por búsqueda o escaneo y Apple todavía no ha registrado la tarjeta en un dispositivo, el mismo modal permitirá volver a generar ese QR; la opción se ocultará después del registro de Wallet. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
 
 No habrá OTP, verificación por correo ni contraseña del cliente.
 
