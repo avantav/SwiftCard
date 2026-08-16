@@ -2572,10 +2572,25 @@ textarea {
   white-space: nowrap;
 }
 
-.operations-brand .enterprise-brand-mark {
+.operations-tenant-mark {
+  display: grid;
   width: 34px;
   height: 34px;
   flex-basis: 34px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: 10px;
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary-hover);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.operations-tenant-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .operations-logout {
@@ -2648,39 +2663,6 @@ textarea {
   gap: 10px;
   margin: 0 auto;
   padding: 14px 20px 0;
-}
-
-.pwa-connection-state {
-  display: inline-flex;
-  min-height: 28px;
-  width: fit-content;
-  align-items: center;
-  gap: 7px;
-  margin: 0 0 0 auto;
-  border: 1px solid;
-  border-radius: 999px;
-  padding: 4px 9px;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.pwa-connection-state > span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.pwa-connection-state.is-online {
-  border-color: #abefc6;
-  background: var(--enterprise-success-soft);
-  color: var(--enterprise-success);
-}
-
-.pwa-connection-state.is-offline {
-  border-color: #fedf89;
-  background: var(--enterprise-warning-soft);
-  color: var(--enterprise-warning);
 }
 
 .pwa-notice {

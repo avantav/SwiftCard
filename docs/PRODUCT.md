@@ -488,6 +488,8 @@ La navegación operativa principal tendrá exactamente tres tabs:
 - Clientes: escáner y búsqueda manual.
 - Programa: catálogo de premios, forma de acumulación y términos y condiciones.
 
+La cabecera operativa mostrará el logo y nombre del tenant como identidad principal. Solo conservará la identidad del operador cuando sea necesaria para una sesión compartida y las acciones de cambio de usuario o salida. El estado normal en línea no ocupará espacio; la conexión se comunicará únicamente cuando esté ausente y bloquee operaciones.
+
 Registrar compra y canjear no serán tabs independientes. Después de escanear o seleccionar un resultado de búsqueda, la PWA abrirá un modal móvil guiado: el primer paso muestra identidad, tarjeta, saldo, premios disponibles y las dos operaciones; el segundo captura únicamente los datos de compra o canje; el tercero presenta un resumen y exige confirmación explícita. Los montos se capturan en la moneda legible del tenant y el backend conserva la autoridad de cálculo. Perfil, cierre de sesión y cambio de empleado permanecerán en la cabecera operativa.
 
 Requisitos:

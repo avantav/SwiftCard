@@ -21,10 +21,14 @@ describe("application-wide design contract", () => {
     expect(adminLayout).toContain("AdminNavigation");
     expect(operationsLayout).toContain('requireInternalArea("APP", { allowLockedShared: true })');
     expect(operationsLayout).toContain("OperationsNavigation");
+    expect(operationsLayout).toContain('.select("name,logo_url")');
     expect(operationsLayout).toContain("PwaController");
     expect(adminNavigation).toContain('role === "ADMIN"');
     expect(adminNavigation).toContain('/admin/cards');
     expect(operationsNavigation).toContain('aria-label="Navegación operativa"');
+    expect(operationsNavigation).toContain("tenantLogoUrl");
+    expect(operationsNavigation).toContain("tenantName");
+    expect(operationsNavigation).not.toContain("SwiftWallet</strong>");
     expect(operationsNavigation).toContain("Salir");
   });
 

@@ -124,6 +124,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 **Tasks**
 
 - [x] [Terminada] Add manifest, adaptive launcher icons, install metadata, secure service-worker registration, installation guidance, and online-only connection states.
+- [x] [Terminada] Brand the shared employee header with the tenant logo/name and remove persistent positive connectivity and redundant account copy while retaining actionable offline, install and session states.
 - [x] [Terminada] Implement scanner route and QR parsing.
 - [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and integrate name/phone customer search as a bounded modal fallback without manual token or URL entry.
 - [x] [Terminada] Implement purchase and redemption mobile flows.

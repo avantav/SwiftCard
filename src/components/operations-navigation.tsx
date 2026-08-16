@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useFormStatus } from "react-dom";
@@ -18,12 +19,16 @@ function OperationsLogout() {
   return <button className="operations-logout" disabled={pending} type="submit"><EnterpriseIcon name="logout" /><span>{pending ? "Saliendo…" : "Salir"}</span></button>;
 }
 
-export function OperationsNavigation({ accountKind, email, operatorName, role }: { accountKind: "INDIVIDUAL" | "BRANCH_SHARED"; email: string | null; operatorName: string | null; role: "MANAGER" | "EMPLOYEE" }) {
+export function OperationsNavigation({ accountKind, operatorName, tenantLogoUrl, tenantName }: { accountKind: "INDIVIDUAL" | "BRANCH_SHARED"; operatorName: string | null; tenantLogoUrl: string | null; tenantName: string }) {
   const pathname = usePathname();
   const isUnlock = pathname === "/app/unlock";
+  const tenantInitials = tenantName.split(/\s+/).map((word) => word[0]).join("").slice(0, 2).toUpperCase();
   return <>
     <header className="operations-header">
-      <Link className="operations-brand" href={isUnlock ? "/app/unlock" : "/app"}><span className="enterprise-brand-mark" aria-hidden="true"><span /></span><span><strong>SwiftWallet</strong><small>{operatorName ?? (role === "MANAGER" ? "Administrador de sucursal" : "Empleado")} · {email ?? "Operación"}</small></span></Link>
+      <Link aria-label={`${tenantName} · Inicio`} className="operations-brand" href={isUnlock ? "/app/unlock" : "/app"}>
+        <span className="operations-tenant-mark">{tenantLogoUrl ? <Image alt="" height={34} src={tenantLogoUrl} unoptimized width={34} /> : <span aria-hidden="true">{tenantInitials || "SW"}</span>}</span>
+        <span><strong>{tenantName}</strong>{operatorName ? <small>{operatorName}</small> : null}</span>
+      </Link>
       <div className="operations-session-actions">
         {accountKind === "BRANCH_SHARED" && operatorName ? <form action={changePinOperator}><button className="operations-logout" type="submit"><EnterpriseIcon name="users" /><span>Cambiar usuario</span></button></form> : null}
         <form action={signOut}><OperationsLogout /></form>

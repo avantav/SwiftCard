@@ -4,7 +4,7 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy the validated additive multi-card, employee catalog, card-terms and Wallet-aware repeat-delivery migrations and complete the hosted draft/resume/publish/register/handoff/claim/scan/customer-modal/purchase smoke path.
-- Last completed task: Reworked scan/search operations into a guided three-step customer modal with clear reward and purchase confirmations and scalable search results.
+- Last completed task: Simplified every employee screen header to show tenant logo/name and removed persistent online and redundant account information.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
 - Git status: Typecheck, lint, 206 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass locally.
@@ -84,6 +84,7 @@
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
 - The employee PWA now uses a compact authenticated header, visible logout, three-item bottom navigation (`Registro`, `Clientes`, `Programa`), single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee header derives the current tenant logo and name on the authenticated server boundary, shows an operator name only for an active shared-PIN session, and keeps connectivity UI hidden during normal online operation; offline blocking and relevant installation guidance remain visible.
 - The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
 - The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and uses integrated name/phone search as its fallback without exposing manual token or URL entry.
 - `/app/scan` is the single employee customer-identification view: its main surface stays focused on a compact camera scanner, while authorized name/phone search, results and Manager-only editing open in a bounded modal with a sticky form, result count and internal vertical scrolling. A successful scan or selected result opens one full-height mobile customer modal whose three guided steps cover customer overview, minimal operation input and explicit server-authoritative confirmation for either purchase or one-at-a-time redemption. The separate `/app/customers` route and the standalone Compra/Canje navigation tabs remain removed.

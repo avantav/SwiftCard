@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-15 - Tenant-Branded Employee Header
+
+**Objective:** Make every employee screen clearly belong to the current business while removing non-actionable status and duplicated account information.
+
+**Changes Made:** The shared employee layout now reads the authenticated tenant's name and logo and passes them to the operational header. The header replaces SwiftWallet, role and email copy with tenant identity, falling back to tenant initials when no logo exists; only a shared-PIN operator name remains when attribution matters. The PWA controller no longer renders an “En línea” badge or an empty status region, while offline blocking and relevant installation guidance remain available.
+
+**Security And Correctness:** Tenant branding is selected server-side using the tenant ID derived from the authenticated staff context under existing RLS. The browser cannot select a tenant, and no new write path, grant or migration was added.
+
+**Design Review:** The shared header was reviewed at 375, 768, 1280 and 1440 px. Tenant identity remains legible, session actions retain 44px targets, the mobile name can wrap without horizontal overflow, and normal online operation begins directly with page content. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 206 Vitest tests and the production webpack build pass. No database migration is required.
+
+**Next Action:** Smoke-test a tenant with a real configured logo and both individual and shared-PIN employee sessions on the installed phone.
+
 ## 2026-08-15 - Guided Customer Purchase And Reward Flow
 
 **Objective:** Make scan and search lead to an immediately understandable customer operation, even when search returns many matches.
