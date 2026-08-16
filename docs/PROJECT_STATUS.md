@@ -8,7 +8,7 @@
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
 - Git status: Typecheck, lint, 193 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the employee identification consolidation commit is local and not pushed yet.
+- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the employee identification and modal-search commits are local and not pushed yet.
 
 ## Completed Functionality
 
