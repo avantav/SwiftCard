@@ -1,8 +1,8 @@
-export function AppleWalletAddButton({ cardToken }: { cardToken: string }) {
+export function AppleWalletAddButton({ accepted = false, cardToken }: { accepted?: boolean; cardToken: string }) {
   return (
     <a
       className="public-apple-wallet-button"
-      href={`/api/wallet/apple/${encodeURIComponent(cardToken)}`}
+      href={accepted ? `/api/wallet/apple/${encodeURIComponent(cardToken)}` : `/card/${encodeURIComponent(cardToken)}?claim=1`}
     >
       <svg
         aria-hidden="true"

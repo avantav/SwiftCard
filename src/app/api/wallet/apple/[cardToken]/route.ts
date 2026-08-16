@@ -35,6 +35,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
   if (!loaded.ok) return unavailable(loaded.message, loaded.status);
   const { source } = loaded;
   const supabase = createSupabaseAdminClient();
+  const { data: termsAccepted, error: termsError } = await supabase
+    .schema("app")
+    .rpc("public_card_terms_are_accepted", { target_card_token: cardToken });
+  if (termsError || termsAccepted !== true) {
+    return unavailable("Debes aceptar los términos y condiciones antes de agregar la tarjeta.", 403);
+  }
 
   try {
     const pass = await generateAppleWalletPass(source.passData, source.assets);

@@ -3372,6 +3372,99 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   background: #fff;
 }
 
+.operations-handoff {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.operations-handoff-page {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.operations-handoff-success {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--enterprise-success-soft);
+  color: var(--enterprise-success);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.operations-handoff .operations-card-header {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.operations-handoff .operations-card-header > p,
+.operations-handoff .operations-card-header > h2,
+.operations-handoff .operations-card-header > span {
+  margin: 0;
+}
+
+.operations-handoff .operations-card-header > p {
+  color: var(--enterprise-primary-hover);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.operations-handoff .operations-card-header > h2 {
+  font-size: 1.1rem;
+}
+
+.operations-handoff .operations-card-header > span {
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.operations-handoff-qr {
+  display: grid;
+  width: min(100%, 260px);
+  min-height: 260px;
+  place-items: center;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 10px;
+  background: #fff;
+}
+
+.operations-handoff-qr img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.operations-handoff-qr p {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+}
+
+.operations-handoff-steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.operations-handoff > .operations-primary-button,
+.operations-handoff > .operations-secondary-button {
+  max-width: 360px;
+}
+
 .operations-program-list {
   display: grid;
   gap: 12px;
@@ -3797,6 +3890,154 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   padding: 10px 12px;
   background: var(--enterprise-warning-soft);
   color: #8a3f06;
+}
+
+.customer-claim-shell {
+  --claim-primary: #149c91;
+  --claim-secondary: #111827;
+  align-items: center;
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+.customer-claim-card {
+  width: min(100%, 480px);
+  overflow: hidden;
+  padding: 0;
+}
+
+.customer-claim-header {
+  display: flex;
+  min-height: 74px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--claim-secondary);
+  color: var(--claim-primary);
+}
+
+.customer-claim-header > img,
+.customer-claim-header > span:first-child {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.customer-claim-header > span:first-child {
+  background: rgb(255 255 255 / 14%);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.customer-claim-header > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.customer-claim-header p,
+.customer-claim-header small {
+  overflow: hidden;
+  margin: 0;
+  color: #fff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customer-claim-header p {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.customer-claim-header small {
+  font-size: 0.7rem;
+  opacity: 0.78;
+}
+
+.customer-claim-body {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.customer-claim-body > p,
+.customer-claim-body > h1 {
+  margin: 0;
+}
+
+.customer-claim-body > h1 {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.customer-claim-body > h1 + p {
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.customer-claim-terms {
+  display: grid;
+  max-height: min(26dvh, 190px);
+  gap: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 12px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.customer-claim-terms h2,
+.customer-claim-terms p {
+  margin: 0;
+}
+
+.customer-claim-terms h2 {
+  font-size: 0.82rem;
+}
+
+.customer-claim-terms p {
+  color: var(--enterprise-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.customer-claim-form,
+.customer-claim-accepted {
+  display: grid;
+  gap: 10px;
+}
+
+.customer-claim-form .public-primary-button,
+.customer-claim-accepted .public-primary-button,
+.customer-claim-accepted .public-apple-wallet-button {
+  width: 100%;
+  max-width: none;
+}
+
+.customer-claim-accepted > p {
+  margin: 0;
+  color: var(--enterprise-success);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.customer-claim-later {
+  min-height: 44px;
+  padding: 12px 8px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.74rem;
+  font-weight: 650;
+  text-align: center;
+  text-decoration: underline;
 }
 
 .public-unavailable-card {
@@ -4719,6 +4960,20 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
   .operations-page {
     padding: 20px 16px 28px;
+  }
+
+  .operations-handoff-page {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .operations-handoff-page .operations-handoff {
+    gap: 10px;
+  }
+
+  .operations-handoff-page .operations-handoff-qr {
+    width: min(100%, 232px);
+    min-height: 232px;
   }
 
   .admin-status-summary {

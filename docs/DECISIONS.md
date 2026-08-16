@@ -231,3 +231,13 @@
 - Reason: Point-of-sale work starts from a customer, not an operation category. Keeping the customer context visible reduces navigation, prevents accidental operation against the wrong customer and leaves the main scan surface compact.
 - Consequences: Migration `0045` is required before the new modal and program tab can load in a hosted environment. It accepts only an opaque issued-card identifier for the customer projection, derives tenant/operator authority from `auth.uid()` and current PIN context, and exposes no write authority. Existing `/app/purchase` and `/app/redeem` routes remain for compatibility, but only customer-context actions are shown in primary navigation.
 - Status: Accepted.
+
+## DEC-0024 - Versioned Customer Card Handoff
+
+- Date: 2026-08-15
+- Context: Employee registration redirected to a nonexistent `/app/register` page, and Wallet issuance could begin without a customer-facing acceptance step. The point-of-sale handoff also needed to work from a LAN development origin and stay compact on a customer phone.
+- Decision: Return successful employee registration to `/app`, render a QR for an absolute possession-based `/card/{token}?claim=1` link, and place tenant identity, current program terms, required acceptance and the one Wallet/Web Card action on a single mobile-first screen. Persist the accepted program version and an immutable terms snapshot, and gate the initial Apple Wallet endpoint on that acceptance.
+- Alternatives considered: Keep a success link without QR, ask the employee to accept on the customer's behalf, store only a boolean, or let the public form download the pass before acceptance.
+- Reason: The customer should make the consent action on their own device, while the backend retains evidence of exactly which terms version was accepted and direct endpoint access cannot bypass it.
+- Consequences: Migration `0046` is required before the claim form and Apple Wallet download work in a hosted environment. The public link remains an opaque possession token and exposes no tenant ID, phone, internal card ID or balance. Production QR generation uses the configured HTTPS public origin; local development may use the current request host so another device on the LAN can scan it.
+- Status: Accepted.

@@ -86,6 +86,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement self-service registration by branch token.
 - [x] [Terminada] Expose each active branch registration link with copy, PNG QR download, and inactive-link handling in the Admin UI.
 - [x] [Terminada] Implement employee registration.
+- [x] [Terminada] Return employee registration to the real PWA route and show a customer handoff QR that opens one mobile terms-and-card screen.
 - [x] [Terminada] Implement customer search and profile editing.
 - [x] [Terminada] Add the tenant-wide customer directory with status, card, loyalty and Apple Wallet diagnostics exclusively for the Admin general.
 - [x] [Terminada] Implement public web card by card token.
@@ -187,6 +188,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Render the opaque card token as a real, high-contrast QR on the Web Card.
 - [x] [Terminada] Implement tenant-owned Apple Wallet `storeCard` design and signed `.pkpass` generation behind server-only config.
 - [x] [Terminada] Offer the signed Apple pass directly after public registration without routing the customer through the Web Card.
+- [x] [Terminada] Persist a versioned terms snapshot from the possession-based card claim screen and reject initial Apple Wallet downloads until the current terms are accepted.
 - [x] [Terminada] Add direct Admin uploads for tenant Wallet images through a public-read, tenant-scoped Supabase Storage bucket with RLS-protected writes and bounded raster formats.
 - [x] [Terminada] Implement Apple Wallet device registrations, stable per-pass authentication, encrypted push tokens, update tags, durable outbox, updated-pass delivery, immediate production APNs dispatch, invalid-token cleanup, and a protected retry endpoint.
 - [x] [Terminada] Add migration `0039` to restore the server-only sequence permission required when issuing a new pass after `0038`, with positive `service_role` insertion and negative browser-role regression coverage.

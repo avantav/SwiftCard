@@ -1,7 +1,10 @@
-import Link from "next/link";
+import { headers } from "next/headers";
+import { EmployeeRegistrationHandoff } from "@/components/employee-registration-handoff";
 import { RegistrationScopeFields, type RegistrationScope } from "@/components/registration-scope-fields";
 import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
+import { isCustomerCardToken } from "@/lib/customers/card-qr";
+import { resolvePublicOrigin } from "@/lib/public-origin";
 import { registerEmployeeCustomer } from "./register/actions";
 
 type EmployeeAppPageProps = { searchParams: Promise<{ created?: string; duplicate?: string; error?: string; cardToken?: string }> };
@@ -9,12 +12,30 @@ type EmployeeAppPageProps = { searchParams: Promise<{ created?: string; duplicat
 export default async function EmployeeAppPage({ searchParams }: EmployeeAppPageProps) {
   const context = await requireInternalArea("APP");
   const { created, duplicate, error, cardToken } = await searchParams;
+  if (created === "1" && cardToken && isCustomerCardToken(cardToken)) {
+    let claimOrigin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
+    if (!claimOrigin && process.env.NODE_ENV !== "production") {
+      const requestHeaders = await headers();
+      const host = requestHeaders.get("host");
+      const protocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim() || "http";
+      try {
+        const requestOrigin = host ? new URL(`${protocol}://${host}`) : null;
+        claimOrigin = requestOrigin && ["http:", "https:"].includes(requestOrigin.protocol)
+          ? requestOrigin.origin
+          : null;
+      } catch {
+        claimOrigin = null;
+      }
+    }
+    return <main className="operations-page operations-handoff-page">
+      <EmployeeRegistrationHandoff cardToken={cardToken} origin={claimOrigin} />
+    </main>;
+  }
   const { data: rawScopes, error: scopesError } = await context.supabase.schema("app").rpc("get_staff_registration_scopes");
   const scopes = (rawScopes ?? []) as RegistrationScope[];
 
   return <main className="operations-page">
     <header className="operations-page-header"><p>Operación</p><h1>Registrar cliente</h1><span>Crea su perfil y tarjeta digital desde el punto de atención.</span></header>
-    {created && cardToken ? <div className="operations-alert is-success" role="status"><strong>Cliente registrado.</strong><span>La tarjeta ya está disponible.</span><Link href={`/card/${encodeURIComponent(cardToken)}`}>Abrir tarjeta</Link></div> : null}
     {duplicate ? <p className="operations-alert is-error" role="alert">Este teléfono ya está registrado en este tenant.</p> : null}
     {error ? <p className="operations-alert is-error" role="alert">{error}</p> : null}
     {scopesError ? <p className="operations-alert is-error" role="alert">No se pudieron cargar las tarjetas y sucursales. Actualiza la página.</p> : null}

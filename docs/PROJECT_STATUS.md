@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the validated additive multi-card and employee catalog migrations and complete the hosted draft/resume/publish/register/scan/customer-modal/purchase smoke path.
-- Last completed task: Made the employee customer-search trigger route-backed so it reliably opens, closes and reopens the mobile search modal even when direct client-side dialog opening is unavailable.
+- Current task: Deploy the validated additive multi-card, employee catalog and card-terms migrations and complete the hosted draft/resume/publish/register/handoff/claim/scan/customer-modal/purchase smoke path.
+- Last completed task: Repaired employee-registration completion, added an immediately rendered customer handoff QR and consolidated current terms acceptance plus Wallet/Web Card delivery into one mobile screen.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
-- Git status: Typecheck, lint, 196 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0045` pass locally.
+- Git status: Typecheck, lint, 200 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0046` pass locally.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the employee identification and modal-search commits are local and not pushed yet.
 
 ## Completed Functionality
@@ -101,12 +101,14 @@
 - Admin general can copy each active branch's public registration link, download its PNG QR, and open the destination from `/admin/branches`; the link is derived from the server-configured public HTTPS origin.
 - Admin general has an exclusive `/admin/customers` directory with bounded name/phone search, status filter, 50-row pagination, registration source, customer/card state, loyalty balances, available rewards and Apple Wallet generation diagnostics; Branch Administrators are redirected before data queries and do not see the navigation entry.
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
+- Employee registration now returns to the real `/app` route and replaces the dead `/app/register` destination with a compact delivery state. Its QR uses the configured public HTTPS origin in production and the current request host during local LAN development, so the customer opens the issued card on their own phone.
+- The card claim screen keeps tenant identity, current terms, required acceptance and the Wallet/Web Card action together. Migration `0046` stores the accepted program version and immutable terms snapshot behind forced RLS, and the initial Apple endpoint rejects direct downloads until the current terms are accepted.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.
-- A newly registered customer sees a direct generic Apple Wallet action when both signer configuration and tenant design are enabled; the success screen no longer routes through the Web Card.
+- A newly registered customer sees one terms-and-card claim screen; after accepting the current version, it continues directly to Apple Wallet when both signer configuration and tenant design are enabled or to the Web Card fallback.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
 - The Admin Wallet designer uploads PNG/JPEG/WebP assets of at most 5 MB directly to the public-read `wallet-assets` Supabase bucket, under generated `tenant_id/apple` paths.
@@ -218,4 +220,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043`, `0044` and `0045` to the hosted Supabase project with approval, then exercise create draft → resume → publish → register → scan/search → customer modal → redeem/purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.
+Apply validated migrations `0043`, `0044`, `0045` and `0046` to the hosted Supabase project with approval, then exercise create draft → resume → publish → employee register → scan handoff QR → accept terms → add Wallet/Web Card → scan/search → customer modal → redeem/purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.

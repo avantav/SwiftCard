@@ -203,11 +203,11 @@ El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers
 
 ### Autoservicio
 
-Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal y, cuando la ubicación participa en más de una tarjeta publicada, elige cuál desea antes de capturar sus datos. El backend valida que esa tarjeta esté publicada y ligada a la sucursal, valida formato y duplicados, crea el cliente y genera la tarjeta emitida. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro se ofrecerá directamente **Agregar a Apple Wallet** cuando la tarjeta y el servidor estén listos; no se enviará al cliente a una pantalla intermedia. Un enlace inválido, una tarjeta no participante, una sucursal inactiva o un tenant suspendido no mostrará el formulario.
+Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal y, cuando la ubicación participa en más de una tarjeta publicada, elige cuál desea antes de capturar sus datos. El backend valida que esa tarjeta esté publicada y ligada a la sucursal, valida formato y duplicados, crea el cliente y genera la tarjeta emitida. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro, una sola pantalla mostrará los términos vigentes, solicitará su aceptación y ofrecerá **Agregar a Apple Wallet** cuando la tarjeta y el servidor estén listos; si Apple no está disponible, abrirá la Web Card. Un enlace inválido, una tarjeta no participante, una sucursal inactiva o un tenant suspendido no mostrará el formulario.
 
 ### Por empleado
 
-Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
+Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
 
 No habrá OTP, verificación por correo ni contraseña del cliente.
 
@@ -242,6 +242,8 @@ representación proporcional acotada para conservar rendimiento y legibilidad,
 mientras el valor exacto permanecerá disponible para tecnologías de asistencia.
 
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
+
+La primera incorporación a Wallet exigirá aceptar la versión vigente de los términos. El backend guardará la versión, una copia inmutable del texto y la fecha de aceptación asociadas a la tarjeta emitida; una descarga directa del pase sin esa aceptación será rechazada. Si los términos cambian, la nueva versión deberá aceptarse antes de una nueva incorporación.
 
 El mismo identificador seguro se mostrará como QR real en la Web Card y como
 barcode QR en Apple Wallet. La PWA operativa podrá leer ambos con la cámara

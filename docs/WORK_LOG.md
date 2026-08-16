@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-15 - Customer Card QR Handoff And Terms Acceptance
+
+**Objective:** Repair the 404 after employee registration and let the customer accept program terms and add the issued card from one phone-first screen.
+
+**Changes Made:** Successful employee registration now returns to `/app` instead of the nonexistent `/app/register` page. The success state renders an absolute QR for the issued card claim URL, using the configured HTTPS origin in production and the current request host during local LAN development. Scanning opens one compact tenant-branded screen with the current terms, a required checkbox and one Apple Wallet/Web Card action. Existing public registration and Web Card Apple actions use the same claim boundary.
+
+**Security And Correctness:** Additive migration `0046` persists the program version, an immutable terms snapshot and acceptance time against the issued card behind forced RLS and no direct browser grants. Public RPCs derive all tenant/card/program scope from the opaque card token. The Apple download endpoint rechecks current-version acceptance and rejects direct bypass attempts; stale versions return to the current claim screen.
+
+**Design Review:** The exact handoff and claim components were reviewed in Chrome at 375, 768, 1280 and 1440 px. At 375 px the QR, three handoff steps and both actions fit within the viewport; the claim screen keeps its only long content in a bounded terms region and leaves acceptance plus the primary action visible. No horizontal overflow, gradients, hidden critical action or temporary review route remains.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 200 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0046` pass.
+
+**Next Action:** Apply validated migrations `0043` through `0046` to hosted Supabase with approval, then register a customer from the employee PWA, scan the handoff QR on a real phone, accept terms and add the signed card.
+
 ## 2026-08-15 - Reliable Customer Search Trigger
 
 **Objective:** Fix the employee “Buscar cliente por nombre o teléfono” action when client-side dialog opening does not run.

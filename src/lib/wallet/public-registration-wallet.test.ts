@@ -25,6 +25,7 @@ describe("Apple Wallet after public registration", () => {
     expect(registrationPage).toContain('created === "1"');
     expect(registrationPage).not.toContain("/card/");
     expect(success).toContain("AppleWalletAddButton");
+    expect(button).toContain("?claim=1");
     expect(button).toContain("/api/wallet/apple/");
     expect(button).toContain("public-apple-wallet-icon");
     expect(button).toContain("Apple Wallet");

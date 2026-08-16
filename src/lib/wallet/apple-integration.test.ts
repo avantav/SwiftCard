@@ -127,7 +127,7 @@ describe("Apple Wallet integration boundaries", () => {
   it("only exposes the public download when the server and tenant are ready", () => {
     expect(migration).toContain("public_apple_wallet_is_enabled");
     expect(publicCard).toContain("appleWalletAvailable && cardToken");
-    expect(publicCard).toContain("/api/wallet/apple/");
+    expect(publicCard).toContain("?claim=1");
   });
 
   it("uploads tenant images to an RLS-scoped Supabase Storage bucket", () => {
