@@ -499,7 +499,7 @@ Requisitos:
 - Confirmaciones para compras y canjes.  
 - Protección contra doble envío.  
 - Manejo claro de permisos de cámara y ubicación.
-- Resolución del cliente por escáner o búsqueda manual hacia una sola vista operativa con recompensas disponibles y acción para registrar compra.
+- Resolución del cliente por escáner o búsqueda manual hacia una sola vista operativa con recompensas disponibles y acción para registrar compra. La búsqueda manual se abrirá en un modal con desplazamiento interno para mantener compacta la pantalla principal.
 
 ## 22. Apple Wallet y Google Wallet
 

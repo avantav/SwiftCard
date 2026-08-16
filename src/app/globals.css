@@ -2958,14 +2958,14 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .operations-scanner {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .operations-camera {
   position: relative;
   width: 100%;
-  max-width: 520px;
-  aspect-ratio: 4 / 3;
+  max-width: 440px;
+  aspect-ratio: 16 / 10;
   margin-inline: auto;
   overflow: hidden;
   border: 1px solid var(--enterprise-border);
@@ -3028,6 +3028,101 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   gap: 12px;
 }
 
+.operations-camera-actions > :only-child {
+  grid-column: 1 / -1;
+}
+
+.operations-search-trigger {
+  margin-top: 12px;
+}
+
+.operations-search-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(calc(100% - 32px), 680px);
+  max-width: none;
+  max-height: min(88dvh, 760px);
+  margin: auto;
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 0;
+  background: #fff;
+  box-shadow: var(--enterprise-shadow-menu);
+  color: var(--enterprise-text);
+}
+
+.operations-search-dialog:not(:modal)[open] {
+  z-index: 60;
+  box-shadow: var(--enterprise-shadow-menu), 0 0 0 100vmax rgb(12 22 24 / 62%);
+}
+
+.operations-search-dialog::backdrop {
+  background: rgb(12 22 24 / 62%);
+}
+
+.operations-search-dialog-shell {
+  display: grid;
+  max-height: min(88dvh, 760px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.operations-search-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--enterprise-border);
+  padding: 16px 20px;
+}
+
+.operations-search-dialog-header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.operations-search-dialog-header p,
+.operations-search-dialog-header h2 {
+  margin: 0;
+}
+
+.operations-search-dialog-header p {
+  color: var(--enterprise-primary-hover);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.operations-search-dialog-header h2 {
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.operations-modal-close {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-md);
+  padding: 8px 12px;
+  background: #fff;
+  color: var(--enterprise-text);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.operations-modal-close:hover {
+  background: var(--enterprise-surface-subtle);
+}
+
+.operations-search-dialog-body {
+  display: grid;
+  min-height: 0;
+  gap: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+}
+
 .operations-search-form {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -3051,6 +3146,10 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   padding: 28px;
   background: rgb(255 255 255 / 55%);
   text-align: center;
+}
+
+.operations-search-empty {
+  min-height: 180px;
 }
 
 .operations-empty-state h2 {
@@ -4427,6 +4526,21 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
   .operations-search-form .operations-primary-button {
     width: 100%;
+  }
+
+  .operations-search-dialog {
+    width: calc(100% - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  .operations-search-dialog-shell {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .operations-search-dialog-header,
+  .operations-search-dialog-body {
+    padding-right: 16px;
+    padding-left: 16px;
   }
 
   .operations-customer-heading {

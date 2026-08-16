@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-15 - Modal Employee Customer Search
+
+**Objective:** Keep employee identification screens compact by moving manual customer search and its results out of the page flow.
+
+**Changes Made:** Replaced the inline search/results block on `/app/scan` with an accessible native dialog opened by one secondary action. The modal reopens automatically after GET searches and Manager edits, focuses the search field after entering modal mode, locks page scrolling, closes through its visible action, Escape or backdrop, and contains long results/edit forms in an overscroll-bounded internal region. The camera viewport is slightly shorter and its single open action now uses the available width.
+
+**Security And Correctness:** Search queries, customer/card RLS, operator card scopes, Manager-only mutation and multi-card purchase links are unchanged. The modal changes presentation only and introduces no new database authority or migration.
+
+**Design Review:** The base scan view and populated modal were reviewed in Chrome at 375, 768, 1280 and 1440 px. The modal stays centered, fits the mobile viewport with 44px controls, preserves visible headings and status text, dims the inactive surface and keeps overflow internal. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 193 Vitest tests and the production webpack build pass. The final build excludes both the temporary review route and the retired `/app/customers` route.
+
 ## 2026-08-15 - Unified Employee Scan And Customer Search
 
 **Objective:** Replace manual QR/URL entry with customer search on the employee scan screen and remove the separate search page.

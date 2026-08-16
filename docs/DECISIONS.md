@@ -216,8 +216,8 @@
 
 - Date: 2026-08-15
 - Context: Employees had separate scanner and customer-search routes, while the scanner also exposed a manual token/URL field that duplicated the secure camera path and added an implementation-facing control to the operational UI.
-- Decision: Make `/app/scan` the single employee customer-identification view. Keep explicit rear-camera scanning, replace manual token/URL entry with authorized name-or-exact-phone search, resolve search results to the issued loyalty card and current operator scope, and remove the separate `/app/customers` route, navigation item and PWA shortcut. Preserve Manager-only customer editing inside the integrated results.
+- Decision: Make `/app/scan` the single employee customer-identification view. Keep explicit rear-camera scanning, replace manual token/URL entry with authorized name-or-exact-phone search in a bounded native modal, resolve search results to the issued loyalty card and current operator scope, and remove the separate `/app/customers` route, navigation item and PWA shortcut. Preserve Manager-only customer editing inside the modal results.
 - Alternatives considered: Keep both routes, keep manual token entry as a third path, or move camera scanning into the former customer-search page.
 - Reason: One entry point reduces navigation and input ambiguity while preserving a usable fallback when camera access is denied or unsupported.
-- Consequences: QR payload parsing remains an internal camera boundary, not an employee-facing text input. Search continues through existing customer/card RLS, and purchase links carry the backend-derived issued-card and loyalty-card identifiers required by multi-card operations.
+- Consequences: QR payload parsing remains an internal camera boundary, not an employee-facing text input. Search continues through existing customer/card RLS, and purchase links carry the backend-derived issued-card and loyalty-card identifiers required by multi-card operations. The base screen avoids rendering result lists below the camera; long search/edit content scrolls inside the modal and page scrolling is locked while it is open.
 - Status: Accepted.

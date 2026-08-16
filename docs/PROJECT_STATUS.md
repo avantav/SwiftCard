@@ -4,7 +4,7 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy the validated additive multi-card migrations and complete the hosted draft/resume/publish/register/purchase smoke path.
-- Last completed task: Consolidated employee QR scanning and customer search into `/app/scan`, removed manual token/URL entry and retired the separate `/app/customers` route.
+- Last completed task: Moved the integrated employee customer search into an accessible, internally scrollable modal and compacted the `/app/scan` camera view.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
 - Git status: Typecheck, lint, 193 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
@@ -86,7 +86,7 @@
 - The employee PWA now uses a compact authenticated header, visible logout, four-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
 - The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
 - The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and uses integrated name/phone search as its fallback without exposing manual token or URL entry.
-- `/app/scan` is the single employee customer-identification view: authorized search results resolve the issued loyalty card for the current operator scope, link to the card-scoped purchase flow, and retain Manager-only customer editing. The separate `/app/customers` route, navigation item and PWA shortcut were removed.
+- `/app/scan` is the single employee customer-identification view: its main surface stays focused on a compact camera scanner, while authorized name/phone search, results and Manager-only editing open in a bounded modal with internal scrolling. Search results resolve the issued loyalty card for the current operator scope and link to the card-scoped purchase flow. The separate `/app/customers` route, navigation item and PWA shortcut remain removed.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.

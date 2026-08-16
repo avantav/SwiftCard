@@ -24,6 +24,10 @@ describe("parseCardQrPayload", () => {
       new URL("../../app/app/scan/page.tsx", import.meta.url),
       "utf8",
     );
+    const searchModal = readFileSync(
+      new URL("../../components/customer-search-modal.tsx", import.meta.url),
+      "utf8",
+    );
 
     expect(scanner).toContain("BrowserQRCodeReader");
     expect(scanner).toContain("decodeFromConstraints");
@@ -34,8 +38,12 @@ describe("parseCardQrPayload", () => {
     expect(scanner).not.toContain("Captura manual");
     expect(scanner).not.toContain("Código o enlace de la tarjeta");
     expect(scanner).toContain("navigator.onLine");
-    expect(page).toContain("Buscar cliente");
     expect(page).toContain("customerCardId");
     expect(page).toContain("loyaltyCardId");
+    expect(page).toContain("CustomerSearchModal");
+    expect(searchModal).toContain("showModal()");
+    expect(searchModal).toContain("Buscar cliente por nombre o teléfono");
+    expect(searchModal).toContain('aria-haspopup="dialog"');
+    expect(searchModal).toContain("operations-search-dialog-body");
   });
 });
