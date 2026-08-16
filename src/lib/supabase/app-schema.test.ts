@@ -15,7 +15,6 @@ const appRpcSources = [
   "src/app/admin/program/actions.ts",
   "src/app/admin/staff/assignments.ts",
   "src/app/api/admin/exports/route.ts",
-  "src/app/app/customers/actions.ts",
   "src/app/app/purchase/actions.ts",
   "src/app/app/redeem/actions.ts",
   "src/app/app/redeem/page.tsx",

@@ -28,17 +28,10 @@ export default function manifest(): MetadataRoute.Manifest {
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
       },
       {
-        name: "Escanear tarjeta",
-        short_name: "Escanear",
-        description: "Escanear una tarjeta digital de SwiftWallet.",
-        url: "/app/scan",
-        icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
-      },
-      {
-        name: "Buscar clientes",
+        name: "Identificar cliente",
         short_name: "Clientes",
-        description: "Buscar clientes del tenant activo.",
-        url: "/app/customers",
+        description: "Escanear una tarjeta o buscar un cliente de SwiftWallet.",
+        url: "/app/scan",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
       }
     ]

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-15 - Unified Employee Scan And Customer Search
+
+**Objective:** Replace manual QR/URL entry with customer search on the employee scan screen and remove the separate search page.
+
+**Changes Made:** Consolidated rear-camera scanning and authorized name/exact-phone search in `/app/scan`; removed the visible manual token/URL field, `/app/customers`, its bottom-navigation item and its PWA shortcut. Search results now resolve each active issued card against the operator's published card/branch scope and open the multi-card purchase flow with `customerCardId` and `loyaltyCardId`. Manager-only customer editing moved into the integrated results and retains the active query after success or error.
+
+**Security And Correctness:** QR tokens still travel only from the camera decoder to the established tenant-scoped scan RPC. Search continues through authenticated customer/card RLS and the existing staff registration-scope RPC; the browser cannot choose tenant, program or awarded units. Inactive or unavailable cards do not expose a purchase action.
+
+**Design Review:** The PWA now has four bottom-navigation items and one customer-identification destination. Camera, search, result and empty/error treatments reuse established operational patterns. The integrated populated state was reviewed in Chrome at 375, 768, 1280 and 1440 px without overflow, hidden controls or sub-44px critical mobile actions; the temporary review route was removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 193 Vitest tests and the production webpack build pass. The final build route map excludes `/app/customers`. No database migration is required.
+
+**Next Action:** Apply validated migrations `0043` and `0044` to hosted Supabase with approval, then smoke-test the complete multi-card flow including customer identification by both camera and search.
+
 ## 2026-08-12 - Resumable Multi-card Configuration
 
 **Objective:** Let a tenant operate up to three distinct cards with their own reward programs, statistics and participating branches through one simple provider-neutral setup flow.

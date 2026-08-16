@@ -245,8 +245,9 @@ El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, 
 
 El mismo identificador seguro se mostrará como QR real en la Web Card y como
 barcode QR en Apple Wallet. La PWA operativa podrá leer ambos con la cámara
-tras una acción explícita del empleado y conservará captura manual como
-respaldo cuando el dispositivo niegue o no soporte la cámara.
+tras una acción explícita del empleado y conservará la búsqueda por nombre o
+teléfono como respaldo cuando el dispositivo niegue o no soporte la cámara. La
+interfaz no permitirá capturar manualmente tokens ni enlaces de tarjeta.
 
 El Admin general configurará cada tarjeta con un diseño neutral al proveedor: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El mismo formulario mostrará una vista previa alternable Apple/Android; no existirán diseñadores separados por dispositivo. La generación Apple seguirá usando una plantilla `storeCard` y adaptará el diseño común a la estructura controlada por Apple. El diseño es independiente del secreto de firma.
 
@@ -481,8 +482,7 @@ Superadmin ve auditoría global; Administrador la del tenant; Encargado la de su
 Rutas operativas:
 
 - Inicio.  
-- Escanear.  
-- Buscar cliente.  
+- Identificar cliente mediante escáner o búsqueda.
 - Nuevo cliente.  
 - Registrar compra.  
 - Canjear.  

@@ -211,3 +211,13 @@
 - Reason: The aggregate prevents cross-card balance and reporting ambiguity, preserves the existing one-card-per-customer invariant, makes drafts resumable across devices and keeps wallet-specific rendering as an adapter over one business design.
 - Consequences: Migrations `0043` and `0044` are additive and must be applied before the new Admin route. Legacy `/admin/program` and `/admin/wallet` redirect to `/admin/cards`. Public and employee registration require a published card assigned to the selected branch. Google pass generation remains pending, but its preview uses the same saved design contract as Apple.
 - Status: Accepted.
+
+## DEC-0022 - Unified Employee Customer Identification
+
+- Date: 2026-08-15
+- Context: Employees had separate scanner and customer-search routes, while the scanner also exposed a manual token/URL field that duplicated the secure camera path and added an implementation-facing control to the operational UI.
+- Decision: Make `/app/scan` the single employee customer-identification view. Keep explicit rear-camera scanning, replace manual token/URL entry with authorized name-or-exact-phone search, resolve search results to the issued loyalty card and current operator scope, and remove the separate `/app/customers` route, navigation item and PWA shortcut. Preserve Manager-only customer editing inside the integrated results.
+- Alternatives considered: Keep both routes, keep manual token entry as a third path, or move camera scanning into the former customer-search page.
+- Reason: One entry point reduces navigation and input ambiguity while preserving a usable fallback when camera access is denied or unsupported.
+- Consequences: QR payload parsing remains an internal camera boundary, not an employee-facing text input. Search continues through existing customer/card RLS, and purchase links carry the backend-derived issued-card and loyalty-card identifiers required by multi-card operations.
+- Status: Accepted.

@@ -4,7 +4,6 @@ import { BrowserQRCodeReader, type IScannerControls } from "@zxing/browser";
 import { useEffect, useRef, useState } from "react";
 import { resolveScannedCard } from "@/app/app/scan/actions";
 import { parseCardQrPayload } from "@/lib/scanner/qr";
-import { SubmitButton } from "./submit-button";
 
 type ScannerState = "idle" | "starting" | "scanning" | "submitting" | "error";
 
@@ -25,7 +24,7 @@ export function CustomerCardScanner() {
     scanLockedRef.current = false;
     setState(nextState);
     if (nextState === "idle") {
-      setMessage("La cámara está cerrada. Puedes abrirla o capturar el código manualmente.");
+      setMessage("La cámara está cerrada. Puedes abrirla o buscar al cliente por nombre o teléfono.");
     }
   }
 
@@ -34,7 +33,7 @@ export function CustomerCardScanner() {
   async function startCamera() {
     if (!navigator.mediaDevices?.getUserMedia || !videoRef.current) {
       setState("error");
-      setMessage("Este navegador no permite usar la cámara. Captura el código manualmente.");
+      setMessage("Este navegador no permite usar la cámara. Busca al cliente por nombre o teléfono.");
       return;
     }
 
@@ -99,8 +98,8 @@ export function CustomerCardScanner() {
       setState("error");
       setMessage(
         error instanceof DOMException && error.name === "NotAllowedError"
-          ? "No se concedió acceso a la cámara. Habilítalo en el navegador o captura el código manualmente."
-          : "No se pudo iniciar la cámara. Revisa que otra aplicación no la esté usando o captura el código manualmente.",
+          ? "No se concedió acceso a la cámara. Habilítalo en el navegador o busca al cliente."
+          : "No se pudo iniciar la cámara. Revisa que otra aplicación no la esté usando o busca al cliente.",
       );
     }
   }
@@ -145,27 +144,9 @@ export function CustomerCardScanner() {
           </button>
         ) : null}
       </div>
-      <div className="operations-manual-scan">
-        <div className="operations-card-header">
-          <h2>Captura manual</h2>
-          <p>Usa esta opción si la cámara no está disponible.</p>
-        </div>
-        <form className="operations-form" action={resolveScannedCard} ref={formRef}>
-          <label className="field">
-            <span>Código o enlace de la tarjeta</span>
-            <input
-              autoComplete="off"
-              name="payload"
-              placeholder="Pega el contenido del QR"
-              ref={payloadRef}
-              required
-            />
-          </label>
-          <SubmitButton className="operations-primary-button">
-            Validar tarjeta
-          </SubmitButton>
-        </form>
-      </div>
+      <form action={resolveScannedCard} aria-hidden="true" ref={formRef}>
+        <input name="payload" ref={payloadRef} type="hidden" />
+      </form>
     </div>
   );
 }

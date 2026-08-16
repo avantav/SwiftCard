@@ -9,8 +9,7 @@ import { EnterpriseIcon, type EnterpriseIconName } from "@/components/enterprise
 
 const items: Array<{ href: string; label: string; icon: EnterpriseIconName; exact?: boolean }> = [
   { href: "/app", label: "Registro", icon: "user-plus", exact: true },
-  { href: "/app/scan", label: "Escanear", icon: "scan" },
-  { href: "/app/customers", label: "Clientes", icon: "search" },
+  { href: "/app/scan", label: "Clientes", icon: "scan" },
   { href: "/app/purchase", label: "Compra", icon: "cart" },
   { href: "/app/redeem", label: "Canje", icon: "award" }
 ];

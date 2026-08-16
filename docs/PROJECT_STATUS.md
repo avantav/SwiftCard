@@ -4,10 +4,10 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy the validated additive multi-card migrations and complete the hosted draft/resume/publish/register/purchase smoke path.
-- Last completed task: Implemented the four-stage multi-card Admin flow and card-scoped registration, purchase, Web Card and Apple Wallet projections.
+- Last completed task: Consolidated employee QR scanning and customer search into `/app/scan`, removed manual token/URL entry and retired the separate `/app/customers` route.
 - Current branch: `codex/swiftwallet-mvp`.
 - Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
-- Git status: Typecheck, lint, 192 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
+- Git status: Typecheck, lint, 193 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
 - Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
 
 ## Completed Functionality
@@ -83,9 +83,10 @@
 - Superadmin now uses a reusable enterprise shell with responsive navigation, active-route indication, account identity, visible logout, operational metrics, semantic tenant table, status actions, and explicit loading-result/error/empty/success treatments.
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
-- The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee PWA now uses a compact authenticated header, visible logout, four-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
 - The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
-- The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and retains manual entry as a fallback.
+- The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and uses integrated name/phone search as its fallback without exposing manual token or URL entry.
+- `/app/scan` is the single employee customer-identification view: authorized search results resolve the issued loyalty card for the current operator scope, link to the card-scoped purchase flow, and retain Manager-only customer editing. The separate `/app/customers` route, navigation item and PWA shortcut were removed.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.
@@ -144,7 +145,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 189 tests passed.
+- `npm run test:run`: passed; 193 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -199,7 +200,7 @@
 - Migration `0038` and its integration test passed encrypted/idempotent device registration, transactional customer and tenant update queuing, service-role-only claims, authenticated-role denial, per-device delivery tags, outbox completion, unregister cleanup and no work for uninstalled passes.
 - Migration `0039` and its integration test passed a new `wallet_passes` insertion as `service_role`, automatic positive `update_tag` allocation, and denial of sequence access to `authenticated`.
 - Apple Wallet update cryptography, APNs response classification, PassKit web-service boundaries and production route build passed focused and full test coverage.
-- Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and manual fallback.
+- Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and integrated customer-search fallback.
 - Admin customer-directory filter parsing, pagination preservation, tenant scoping, role denial and navigation visibility passed focused tests; the responsive table/card rules were reviewed at the required 375, 768, 1280 and 1440 px breakpoints.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
 - The graphical Apple Wallet strip generator passed exact 1x/2x/3x dimension checks and produces different PNG content when the customer balance changes. Its Admin preview was reviewed at 375, 768, 1280 and 1440 px without overflow; temporary review files and routes were removed.

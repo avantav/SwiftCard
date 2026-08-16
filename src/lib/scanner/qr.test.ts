@@ -15,9 +15,13 @@ describe("parseCardQrPayload", () => {
     expect(parseCardQrPayload("short-token")).toMatchObject({ ok: false });
   });
 
-  it("connects the operational scanner to the rear camera with a manual fallback", () => {
+  it("connects the operational scanner to the rear camera without exposing manual QR input", () => {
     const scanner = readFileSync(
       new URL("../../components/customer-card-scanner.tsx", import.meta.url),
+      "utf8",
+    );
+    const page = readFileSync(
+      new URL("../../app/app/scan/page.tsx", import.meta.url),
       "utf8",
     );
 
@@ -26,7 +30,12 @@ describe("parseCardQrPayload", () => {
     expect(scanner).toContain('facingMode: { ideal: "environment" }');
     expect(scanner).toContain("requestSubmit()");
     expect(scanner).toContain("activeControls.stop()");
-    expect(scanner).toContain("Captura manual");
+    expect(scanner).toContain('type="hidden"');
+    expect(scanner).not.toContain("Captura manual");
+    expect(scanner).not.toContain("Código o enlace de la tarjeta");
     expect(scanner).toContain("navigator.onLine");
+    expect(page).toContain("Buscar cliente");
+    expect(page).toContain("customerCardId");
+    expect(page).toContain("loyaltyCardId");
   });
 });

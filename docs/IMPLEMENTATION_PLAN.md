@@ -124,7 +124,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 
 - [x] [Terminada] Add manifest, adaptive launcher icons, install metadata, secure service-worker registration, installation guidance, and online-only connection states.
 - [x] [Terminada] Implement scanner route and QR parsing.
-- [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and a manual input fallback.
+- [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and integrate name/phone customer search as its fallback without manual token or URL entry.
 - [x] [Terminada] Implement purchase and redemption mobile flows.
 - [x] [Terminada] Add strict/flexible geolocation handling.
 - [x] [Terminada] Add double-submit protection.
