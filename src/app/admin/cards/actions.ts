@@ -94,6 +94,10 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
   if (error || data !== "SAVED") {
     redirectCardError(cardId, 1, "No se pudo guardar el programa de esta tarjeta.");
   }
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 25,
+    tenantId: context.tenantId!,
+  });
   redirectAfterSave(cardId, 2, formData);
 }
 
@@ -142,6 +146,10 @@ export async function saveCardLocations(cardId: string, formData: FormData) {
   if (error || data !== "SAVED") {
     redirectCardError(cardId, 3, "No se pudieron guardar las sucursales.");
   }
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 25,
+    tenantId: context.tenantId!,
+  });
   redirectAfterSave(cardId, 4, formData);
 }
 

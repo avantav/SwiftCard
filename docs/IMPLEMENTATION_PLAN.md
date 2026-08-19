@@ -198,6 +198,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Apply migration `0039` manually and confirm that production pass issuance works again.
 - [x] [Terminada] Preserve the configured QR barcode and branch locations in the final signed `.pkpass` through the PassKit generator setter APIs.
 - [x] [Terminada] Generate a per-customer branded graphical stamp strip on the server at 1x/2x/3x, replace it with each signed pass update, and retain exact textual progress as a compatibility fallback.
+- [x] [Terminada] Align the multi-card Admin preview with the signed Apple `storeCard`, use each program's actual goal and unit names, and transactionally queue plus immediately dispatch installed-pass updates after card design, program or location changes.
 - [ ] [Pendiente] Deploy the QR/scanner correction, refresh or reinstall the pass, validate scanning plus APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.

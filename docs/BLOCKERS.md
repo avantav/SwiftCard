@@ -2,10 +2,10 @@
 
 ## Active Blockers
 
-- **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The visible QR and employee camera corrections are implemented and locally validated; deployment, pass refresh/reinstallation, real-device scan, APNs validation, an external retry cron and Google Wallet remain pending. No secrets are present in the repository.
+- **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The visible QR, employee camera and card-owned design/update corrections through local migration `0048` are validated; hosted deployment, pass refresh/reinstallation, real-device scan, APNs validation, an external retry cron and Google Wallet remain pending. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
   - **Consequence:** The current deployed pass may still omit the visible QR, and failed immediate pushes can remain queued without an external scheduler.
-  - **Recommendation:** Deploy the QR correction, refresh or reinstall the pass, scan it from the employee PWA, validate one stamp and reward update, then schedule the protected retry endpoint.
+  - **Recommendation:** Deploy application code and migrations through `0048`, refresh or reinstall the pass, edit its design and program, confirm automatic refresh on iPhone, scan it from the employee PWA, validate one stamp/reward update, then schedule the protected retry endpoint.
   - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.
@@ -19,7 +19,7 @@
 
 ### MULTICARD-001 - Resolved locally
 
-Migrations `0043` through `0047`, their backfill/projections/terms acceptance/Wallet delivery state, the focused SQL scenarios and the complete historical migration/RLS harness pass in disposable PostgreSQL. Hosted deployment and real-device smoke testing remain release activities, not a local implementation blocker.
+Migrations `0043` through `0048`, their backfill/projections/terms acceptance/Wallet delivery/design-update state, the focused SQL scenarios and the complete historical migration/RLS harness pass in disposable PostgreSQL. Hosted deployment and real-device smoke testing remain release activities, not a local implementation blocker.
 
 ### XLSX-001 - Resolved
 

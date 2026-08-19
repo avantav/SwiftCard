@@ -261,3 +261,14 @@
 - Reason: Progressive disclosure keeps customer context visible while reducing error-prone choices and making irreversible actions explicit.
 - Consequences: Purchase amounts are converted exactly to minor units on the server and previews are recalculated before confirmation. Existing protected RPCs and legacy routes remain compatible; no migration is required.
 - Status: Accepted.
+
+## DEC-0027 - Card-Owned Apple Preview And Update Propagation
+
+- Date: 2026-08-18
+- Context: After multi-card configuration moved design into `loyalty_cards`, the Admin preview still rendered a generic hard-coded 4-of-10 card and the Apple update triggers still observed only the legacy tenant-wide design table. Saving a card design could therefore call the dispatcher without creating outbox work, while program and location saves could queue work without attempting immediate delivery.
+- Decision: Make the multi-card Apple preview consume the saved program goal, unit names, card design and the same tenant asset fallbacks used by pass generation. Share progress copy and bounded stamp-slot calculations between preview and signed pass code, preserve Apple's `storeCard` front hierarchy and 375 × 144 strip proportion, and identify Android as conceptual until generation exists. Add a card-scoped transactional queue function plus triggers for `loyalty_cards` design/status and `loyalty_card_branches` changes, then attempt immediate APNs dispatch after program, design and location saves.
+- Alternatives considered: Continue the generic preview, restore writes to `tenant_wallet_designs`, update every installed pass in the tenant for each card edit, or rely only on the future external retry cron.
+- Reason: One card-owned source prevents preview/pass drift, targeted queueing avoids unnecessary updates to other cards and immediate dispatch matches the current no-cron hosting constraint without coupling configuration success to Apple availability.
+- Consequences: Additive migration `0048` must be deployed before card design/location edits update installed passes. Existing passes still require a successful Apple device registration, and failed APNs work remains durable for the protected retry endpoint. Apple owns final rendering; according to current Pass Designer compatibility documentation, store-card logo and strip images may be omitted on iOS 26 or later, so the textual progress field remains mandatory.
+- References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
+- Status: Accepted.

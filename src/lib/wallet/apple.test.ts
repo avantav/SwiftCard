@@ -18,6 +18,8 @@ describe("Apple Wallet store card", () => {
         customerName: "Ana López",
         programName: "Club Café",
         programType: "STAMPS_PER_PURCHASE",
+        unitNameSingular: "sello",
+        unitNamePlural: "sellos",
         stampBalance: 4,
         rewardGoal: 10,
         availableRewards: 1,
@@ -84,6 +86,8 @@ describe("Apple Wallet store card", () => {
       customerName: "Cliente",
       programName: "Programa",
       programType: "STAMPS_PER_AMOUNT" as const,
+      unitNameSingular: "visita",
+      unitNamePlural: "visitas",
       stampBalance: 0,
       rewardGoal: null,
       availableRewards: 0,
@@ -99,5 +103,6 @@ describe("Apple Wallet store card", () => {
       teamIdentifier: "TEAM123",
     });
     expect(JSON.stringify(props)).not.toContain("SwiftWallet");
+    expect(props.storeCard.auxiliaryFields[0]?.value).toBe("0 visitas");
   });
 });

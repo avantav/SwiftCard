@@ -4,6 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRef, useState, type CSSProperties } from "react";
 import type { AppleWalletDesignValues } from "@/components/apple-wallet-design-form";
+import { AppleStoreCardPreview } from "@/components/apple-store-card-preview";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import {
   APPLE_WALLET_ASSET_BUCKET,
@@ -12,7 +13,25 @@ import {
   type AppleWalletAssetKind,
 } from "@/lib/wallet/assets";
 
-export function CardDesignEditor({ initial, tenantId }: { initial: AppleWalletDesignValues; tenantId: string }) {
+type CardDesignPreviewContext = {
+  tenantName: string;
+  programName: string;
+  rewardGoal: number | null;
+  unitNameSingular: string;
+  unitNamePlural: string;
+  fallbackLogoImageUrl: string;
+  fallbackStripImageUrl: string;
+};
+
+export function CardDesignEditor({
+  initial,
+  preview,
+  tenantId,
+}: {
+  initial: AppleWalletDesignValues;
+  preview: CardDesignPreviewContext;
+  tenantId: string;
+}) {
   const [design, setDesign] = useState(initial);
   const [provider, setProvider] = useState<"APPLE" | "GOOGLE">("APPLE");
   const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
@@ -29,6 +48,21 @@ export function CardDesignEditor({ initial, tenantId }: { initial: AppleWalletDe
     "--card-preview-foreground": design.foregroundColor,
     "--card-preview-label": design.labelColor,
   } as CSSProperties;
+  const effectiveDesign = {
+    ...design,
+    logoImageUrl: design.logoImageUrl || preview.fallbackLogoImageUrl,
+    stripImageUrl: design.stripImageUrl || preview.fallbackStripImageUrl,
+  };
+  const previewGoal = Math.max(1, preview.rewardGoal ?? 10);
+  const previewBalance = Math.min(
+    previewGoal,
+    Math.max(1, Math.floor(previewGoal * 0.4)),
+  );
+  const googleVisibleStamps = Math.min(previewGoal, 10);
+  const googleFilledStamps = Math.min(
+    googleVisibleStamps,
+    Math.max(1, Math.round((previewBalance / previewGoal) * googleVisibleStamps)),
+  );
   const isUploading = Object.values(uploads).some((upload) => upload.status === "uploading");
 
   async function uploadAsset(kind: AppleWalletAssetKind, file: File) {
@@ -123,25 +157,40 @@ export function CardDesignEditor({ initial, tenantId }: { initial: AppleWalletDe
       </div>
       <aside className="card-provider-preview" aria-labelledby="card-preview-heading">
         <div className="card-preview-heading">
-          <div><p className="enterprise-breadcrumb">Vista previa</p><h3 id="card-preview-heading">Un diseño, dos wallets</h3></div>
+          <div><p className="enterprise-breadcrumb">Vista previa</p><h3 id="card-preview-heading">{provider === "APPLE" ? "Apple Wallet · storeCard" : "Google Wallet · vista conceptual"}</h3></div>
           <div className="card-provider-toggle" role="group" aria-label="Proveedor de vista previa">
             <button aria-pressed={provider === "APPLE"} onClick={() => setProvider("APPLE")} type="button">Apple</button>
             <button aria-pressed={provider === "GOOGLE"} onClick={() => setProvider("GOOGLE")} type="button">Android</button>
           </div>
         </div>
-        <div className={`unified-wallet-preview is-${provider.toLowerCase()}`} style={style}>
-          {design.stripImageUrl ? <img alt="Imagen principal de la tarjeta" className="unified-wallet-strip-background" src={design.stripImageUrl} /> : null}
-          <header>
-            {design.logoImageUrl ? <img alt="Logo de la tarjeta" src={design.logoImageUrl} /> : <span aria-hidden="true">SW</span>}
-            <strong>{design.logoText || "Tu negocio"}</strong>
-          </header>
-          <div className="unified-wallet-stamps" role="img" aria-label="4 de 10 sellos acumulados">
-            {Array.from({ length: 10 }, (_, index) => <span className={index < 4 ? "is-filled" : ""} key={index}>{index < 4 ? "✓" : ""}</span>)}
+        {provider === "APPLE" ? (
+          <AppleStoreCardPreview
+            design={effectiveDesign}
+            programName={preview.programName}
+            rewardGoal={preview.rewardGoal}
+            tenantName={preview.tenantName}
+            unitNamePlural={preview.unitNamePlural}
+            unitNameSingular={preview.unitNameSingular}
+          />
+        ) : (
+          <div className="unified-wallet-preview is-google" style={style}>
+            {effectiveDesign.stripImageUrl ? <img alt="Imagen principal de la tarjeta" className="unified-wallet-strip-background" src={effectiveDesign.stripImageUrl} /> : null}
+            <header>
+              {effectiveDesign.logoImageUrl ? <img alt="Logo de la tarjeta" src={effectiveDesign.logoImageUrl} /> : <span aria-hidden="true">SW</span>}
+              <strong>{design.logoText || preview.tenantName}</strong>
+            </header>
+            <div className="unified-wallet-stamps" role="img" aria-label={`${previewBalance} de ${previewGoal} ${preview.unitNamePlural}`}>
+              {Array.from({ length: googleVisibleStamps }, (_, index) => <span className={index < googleFilledStamps ? "is-filled" : ""} key={index}>{index < googleFilledStamps ? "✓" : ""}</span>)}
+            </div>
+            <div className="unified-wallet-meta"><p><span>CLIENTE</span><strong>Cliente ejemplo</strong></p><p><span>PROGRESO</span><strong>{previewBalance} de {previewGoal} {preview.unitNamePlural}</strong></p></div>
+            <div className="unified-wallet-qr" aria-hidden="true"><span /><span /><span /></div>
           </div>
-          <div className="unified-wallet-meta"><p><span>CLIENTE</span><strong>Cliente ejemplo</strong></p><p><span>PROGRESO</span><strong>4 de 10 sellos</strong></p></div>
-          <div className="unified-wallet-qr" aria-hidden="true"><span /><span /><span /></div>
-        </div>
-        <p className="field-hint">El mismo diseño alimenta ambos proveedores; cada wallet adapta tipografía y espaciado.</p>
+        )}
+        <p className="field-hint">
+          {provider === "APPLE"
+            ? "La estructura, campos, colores, QR y proporción 375 × 144 corresponden al storeCard firmado. Apple controla el render final y en iOS 26 o posterior puede omitir las imágenes logo y strip; el progreso textual permanece visible."
+            : "Vista conceptual del diseño compartido. La emisión de Google Wallet aún no está implementada en este MVP."}
+        </p>
       </aside>
     </div>
   );

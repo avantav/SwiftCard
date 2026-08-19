@@ -4951,16 +4951,30 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 }
 
 .apple-pass-preview-stamps {
-  display: grid;
-  grid-template-columns: repeat(5, 34px);
-  justify-content: center;
-  gap: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--apple-pass-stamp-gap, 10px);
+  width: 100%;
 }
 
-.apple-pass-preview-stamps > span {
+.apple-pass-preview-stamp-row {
   display: grid;
-  width: 34px;
-  height: 34px;
+  grid-template-columns: repeat(
+    var(--apple-pass-stamp-row-columns, 5),
+    minmax(0, var(--apple-pass-stamp-diameter, 34px))
+  );
+  width: 100%;
+  justify-content: center;
+  column-gap: var(--apple-pass-stamp-gap, 10px);
+}
+
+.apple-pass-preview-stamp-row > span {
+  display: grid;
+  width: 100%;
+  max-width: var(--apple-pass-stamp-diameter, 34px);
+  height: auto;
+  aspect-ratio: 1;
   place-items: center;
   overflow: hidden;
   border: 2px dashed var(--apple-pass-foreground);
@@ -4968,15 +4982,15 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   background: rgb(255 255 255 / 16%);
 }
 
-.apple-pass-preview-stamps > span.is-filled {
+.apple-pass-preview-stamp-row > span.is-filled {
   border-style: solid;
   background: var(--apple-pass-foreground);
   box-shadow: 0 0 0 1px #fff;
 }
 
 .apple-pass-preview-stamps img {
-  width: 26px;
-  height: 26px;
+  width: 76%;
+  height: 76%;
   border-radius: 50%;
   background: #fff;
   object-fit: contain;
@@ -4986,6 +5000,16 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   color: var(--apple-pass-background);
   font-size: 0.48rem;
   font-weight: 700;
+}
+
+.apple-pass-preview-program-name {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--apple-pass-foreground);
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .apple-pass-preview-content {

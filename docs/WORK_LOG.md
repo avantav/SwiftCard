@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-18 - SWIF-15 Apple Card Design Propagation
+
+**Objective:** Make card program/design changes appear in the Admin preview and propagate them to already installed Apple Wallet passes.
+
+**Changes Made:** Replaced the multi-card wizard's generic hard-coded preview with an Apple `storeCard` representation driven by the saved reward goal, unit names, colors and effective card/tenant images. Preview and pass generation now share progress wording and bounded stamp-slot calculations. Apple Wallet payloads use the program's configured unit names instead of hard-coded “sellos”. Added migration `0048` to queue only installed passes issued from a changed `loyalty_cards` design/status or branch assignment, and added immediate dispatch after program and location saves alongside the existing design/publish dispatch.
+
+**Security And Correctness:** The new queue function is trigger-only, security-definer, revoked from browser and service roles, filters passes through the issued card's server-owned `loyalty_card_id`, requires an active device registration and keeps update tags/outbox work transactional. APNs failure still cannot roll back configuration changes.
+
+**Design Review:** The real production editor was reviewed through a temporary route at 375, 768, 1280 and 1440 px. The Apple preview matches the signed pass's header, strip, combined supporting row and QR hierarchy, stays responsive through the 24-slot bound and clearly states that Apple may omit logo/strip assets on iOS 26+. Android remains explicitly conceptual. No horizontal overflow or hidden control was found, and the temporary route was removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 208 Vitest tests, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0048` pass.
+
+**Next Action:** Deploy migrations `0043` through `0048` with approval, edit a published card on the hosted environment and confirm the installed iPhone pass refreshes its colors, text and supported assets.
+
 ## 2026-08-15 - Tenant-Branded Employee Header
 
 **Objective:** Make every employee screen clearly belong to the current business while removing non-actionable status and duplicated account information.
