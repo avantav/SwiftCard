@@ -1,8 +1,8 @@
 "use client";
 
-/* Administrators may preview validated tenant-hosted HTTPS images. */
+/* Administrators may preview validated local files and tenant-hosted HTTPS images. */
 /* eslint-disable @next/next/no-img-element */
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { AppleWalletDesignValues } from "@/components/apple-wallet-design-form";
 import { AppleStoreCardPreview } from "@/components/apple-store-card-preview";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -34,7 +34,10 @@ export function CardDesignEditor({
 }) {
   const [design, setDesign] = useState(initial);
   const [provider, setProvider] = useState<"APPLE" | "GOOGLE">("APPLE");
+  const editorRef = useRef<HTMLDivElement>(null);
   const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
+  const localPreviewUrls = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
+  const [localPreviews, setLocalPreviews] = useState<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
   const [uploads, setUploads] = useState<Record<AppleWalletAssetKind, { status: "idle" | "uploading" | "success" | "error"; message: string }>>({
     logo: { status: "idle", message: "" },
     strip: { status: "idle", message: "" },
@@ -50,8 +53,8 @@ export function CardDesignEditor({
   } as CSSProperties;
   const effectiveDesign = {
     ...design,
-    logoImageUrl: design.logoImageUrl || preview.fallbackLogoImageUrl,
-    stripImageUrl: design.stripImageUrl || preview.fallbackStripImageUrl,
+    logoImageUrl: localPreviews.logo || design.logoImageUrl || preview.fallbackLogoImageUrl,
+    stripImageUrl: localPreviews.strip || design.stripImageUrl || preview.fallbackStripImageUrl,
   };
   const previewGoal = Math.max(1, preview.rewardGoal ?? 10);
   const previewBalance = Math.min(
@@ -64,6 +67,46 @@ export function CardDesignEditor({
     Math.max(1, Math.round((previewBalance / previewGoal) * googleVisibleStamps)),
   );
   const isUploading = Object.values(uploads).some((upload) => upload.status === "uploading");
+  const hasUnsavedChanges = localPreviews.logo !== null
+    || localPreviews.strip !== null
+    || Object.keys(initial).some((key) => (
+      design[key as keyof AppleWalletDesignValues]
+        !== initial[key as keyof AppleWalletDesignValues]
+    ));
+
+  useEffect(() => {
+    const form = editorRef.current?.closest("form");
+    if (!form) return;
+    const preventSubmitWhileUploading = (event: SubmitEvent) => {
+      if (isUploading) event.preventDefault();
+    };
+    form.addEventListener("submit", preventSubmitWhileUploading, true);
+    return () => form.removeEventListener("submit", preventSubmitWhileUploading, true);
+  }, [isUploading]);
+
+  useEffect(() => {
+    const previewUrls = localPreviewUrls.current;
+    return () => {
+      Object.values(previewUrls).forEach((url) => {
+        if (url) URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
+
+  function setLocalPreview(kind: AppleWalletAssetKind, file: File) {
+    const previous = localPreviewUrls.current[kind];
+    if (previous) URL.revokeObjectURL(previous);
+    const url = URL.createObjectURL(file);
+    localPreviewUrls.current[kind] = url;
+    setLocalPreviews((current) => ({ ...current, [kind]: url }));
+  }
+
+  function clearLocalPreview(kind: AppleWalletAssetKind) {
+    const url = localPreviewUrls.current[kind];
+    if (url) URL.revokeObjectURL(url);
+    localPreviewUrls.current[kind] = null;
+    setLocalPreviews((current) => ({ ...current, [kind]: null }));
+  }
 
   async function uploadAsset(kind: AppleWalletAssetKind, file: File) {
     const validationError = validateAppleWalletAssetFile(file);
@@ -71,6 +114,7 @@ export function CardDesignEditor({
       setUploads((current) => ({ ...current, [kind]: { status: "error", message: validationError } }));
       return;
     }
+    setLocalPreview(kind, file);
     setUploads((current) => ({ ...current, [kind]: { status: "uploading", message: "Subiendo imagen…" } }));
     const supabase = createSupabaseBrowserClient();
     const path = createAppleWalletAssetPath(tenantId, kind, file.type as "image/png" | "image/jpeg" | "image/webp");
@@ -80,6 +124,7 @@ export function CardDesignEditor({
       upsert: false,
     });
     if (error) {
+      clearLocalPreview(kind);
       setUploads((current) => ({ ...current, [kind]: { status: "error", message: "No se pudo subir la imagen. Confirma que Storage esté configurado." } }));
       return;
     }
@@ -95,6 +140,7 @@ export function CardDesignEditor({
   }
 
   function clearAsset(kind: AppleWalletAssetKind) {
+    clearLocalPreview(kind);
     const pendingPath = pendingPaths.current[kind];
     if (pendingPath) {
       pendingPaths.current[kind] = null;
@@ -105,7 +151,7 @@ export function CardDesignEditor({
   }
 
   return (
-    <div className="card-design-layout">
+    <div aria-busy={isUploading} className="card-design-layout" ref={editorRef}>
       <div className="card-design-fields">
         <label className="check-field card-wizard-check">
           <input
@@ -118,11 +164,12 @@ export function CardDesignEditor({
         </label>
         <label className="field">
           <span>Texto de marca</span>
-          <input maxLength={60} name="logoText" onChange={(event) => update("logoText", event.target.value)} required value={design.logoText} />
+          <input maxLength={60} name="logoText" onChange={(event) => update("logoText", event.target.value)} onInput={(event) => update("logoText", event.currentTarget.value)} required value={design.logoText} />
         </label>
         <label className="field">
-          <span>Descripción</span>
-          <input maxLength={120} name="description" onChange={(event) => update("description", event.target.value)} required value={design.description} />
+          <span>Descripción del pase</span>
+          <input maxLength={120} name="description" onChange={(event) => update("description", event.target.value)} onInput={(event) => update("description", event.currentTarget.value)} required value={design.description} />
+          <small>Apple usa este texto como metadato; no aparece en el frente de la tarjeta.</small>
         </label>
         <div className="card-color-fields">
           {([
@@ -132,7 +179,7 @@ export function CardDesignEditor({
           ] as const).map(([key, label]) => (
             <label className="field" key={key}>
               <span>{label}</span>
-              <input name={key} onChange={(event) => update(key, event.target.value.toUpperCase())} type="color" value={design[key]} />
+              <input name={key} onChange={(event) => update(key, event.target.value.toUpperCase())} onInput={(event) => update(key, event.currentTarget.value.toUpperCase())} type="color" value={design[key]} />
               <small>{design[key]}</small>
             </label>
           ))}
@@ -146,18 +193,59 @@ export function CardDesignEditor({
             {([
               { kind: "logo" as const, label: "Logo", hint: "Preferentemente horizontal o cuadrado, con fondo transparente." },
               { kind: "strip" as const, label: "Imagen principal", hint: "Se usa como fondo visual detrás de los sellos." },
-            ]).map((asset) => <div className="apple-wallet-upload-field" key={asset.kind}>
-              <label className="field" htmlFor={`card-${asset.kind}-file`}><span>{asset.label}</span><input accept="image/png,image/jpeg,image/webp" disabled={uploads[asset.kind].status === "uploading"} id={`card-${asset.kind}-file`} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadAsset(asset.kind, file); event.target.value = ""; }} type="file" /><small>{asset.hint}</small></label>
-              {(asset.kind === "logo" ? design.logoImageUrl : design.stripImageUrl) ? <button className="secondary-button" onClick={() => clearAsset(asset.kind)} type="button">Quitar imagen</button> : null}
-              {uploads[asset.kind].message ? <p className={`apple-wallet-upload-status is-${uploads[asset.kind].status}`} role={uploads[asset.kind].status === "error" ? "alert" : "status"}>{uploads[asset.kind].message}</p> : null}
-            </div>)}
+            ]).map((asset) => {
+              const imageUrl = asset.kind === "logo"
+                ? effectiveDesign.logoImageUrl
+                : effectiveDesign.stripImageUrl;
+              return (
+                <div className="apple-wallet-upload-field" key={asset.kind}>
+                  <label className="field" htmlFor={`card-${asset.kind}-file`}>
+                    <span>{asset.label}</span>
+                    <input
+                      accept="image/png,image/jpeg,image/webp"
+                      disabled={uploads[asset.kind].status === "uploading"}
+                      id={`card-${asset.kind}-file`}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) void uploadAsset(asset.kind, file);
+                        event.target.value = "";
+                      }}
+                      type="file"
+                    />
+                    <small>{asset.hint}</small>
+                  </label>
+                  {imageUrl ? (
+                    <div className={`card-upload-image-preview is-${asset.kind}`}>
+                      <img
+                        alt={asset.kind === "logo" ? "Logo usado en la vista previa" : "Imagen principal usada en la vista previa"}
+                        src={imageUrl}
+                      />
+                      <span>{localPreviews[asset.kind] ? "Vista previa local" : "Imagen actual"}</span>
+                    </div>
+                  ) : null}
+                  {(asset.kind === "logo" ? design.logoImageUrl : design.stripImageUrl) ? (
+                    <button className="secondary-button" onClick={() => clearAsset(asset.kind)} type="button">
+                      Quitar imagen
+                    </button>
+                  ) : null}
+                  {uploads[asset.kind].message ? (
+                    <p
+                      className={`apple-wallet-upload-status is-${uploads[asset.kind].status}`}
+                      role={uploads[asset.kind].status === "error" ? "alert" : "status"}
+                    >
+                      {uploads[asset.kind].message}
+                    </p>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
           {isUploading ? <p className="enterprise-alert is-info" role="status">Espera a que terminen las cargas antes de guardar.</p> : null}
         </div>
       </div>
       <aside className="card-provider-preview" aria-labelledby="card-preview-heading">
         <div className="card-preview-heading">
-          <div><p className="enterprise-breadcrumb">Vista previa</p><h3 id="card-preview-heading">{provider === "APPLE" ? "Apple Wallet · storeCard" : "Google Wallet · vista conceptual"}</h3></div>
+          <div><p className="enterprise-breadcrumb">Vista previa en vivo</p><h3 id="card-preview-heading">{provider === "APPLE" ? "Apple Wallet · storeCard" : "Google Wallet · vista conceptual"}</h3><small className={hasUnsavedChanges ? "is-dirty" : ""} role="status">{hasUnsavedChanges ? "Mostrando cambios sin guardar" : "Mostrando el diseño guardado"}</small></div>
           <div className="card-provider-toggle" role="group" aria-label="Proveedor de vista previa">
             <button aria-pressed={provider === "APPLE"} onClick={() => setProvider("APPLE")} type="button">Apple</button>
             <button aria-pressed={provider === "GOOGLE"} onClick={() => setProvider("GOOGLE")} type="button">Android</button>
@@ -186,6 +274,10 @@ export function CardDesignEditor({
             <div className="unified-wallet-qr" aria-hidden="true"><span /><span /><span /></div>
           </div>
         )}
+        <dl className="card-preview-metadata">
+          <div><dt>Descripción del pase</dt><dd>{design.description || "Sin descripción"}</dd></div>
+          <div><dt>Disponibilidad</dt><dd>{design.appleEnabled ? "Descarga habilitada" : "Descarga deshabilitada"}</dd></div>
+        </dl>
         <p className="field-hint">
           {provider === "APPLE"
             ? "La estructura, campos, colores, QR y proporción 375 × 144 corresponden al storeCard firmado. Apple controla el render final y en iOS 26 o posterior puede omitir las imágenes logo y strip; el progreso textual permanece visible."

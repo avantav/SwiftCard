@@ -70,6 +70,11 @@ describe("multi-card loyalty boundary", () => {
     expect(designEditor).toContain("APPLE_WALLET_ASSET_BUCKET");
     expect(designEditor).toContain("createAppleWalletAssetPath(tenantId");
     expect(designEditor).toContain("AppleStoreCardPreview");
+    expect(designEditor).toContain("URL.createObjectURL(file)");
+    expect(designEditor).toContain("localPreviews.logo || design.logoImageUrl");
+    expect(designEditor).toContain("preventSubmitWhileUploading");
+    expect(designEditor).toContain("Mostrando cambios sin guardar");
+    expect(designEditor).toContain("onInput=");
     expect(wizard).toContain("rewardGoal");
     expect(applePreview).toContain("appleWalletStampSlots");
     expect(applePreview).toContain("appleWalletProgressText");

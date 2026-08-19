@@ -258,6 +258,50 @@
   background: #f9fafb;
 }
 
+.card-preview-heading > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.card-preview-heading small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.card-preview-heading small.is-dirty {
+  color: var(--enterprise-warning);
+}
+
+.card-preview-metadata {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  border-top: 1px solid var(--enterprise-border);
+  padding-top: 14px;
+}
+
+.card-preview-metadata > div {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 12px;
+}
+
+.card-preview-metadata dt {
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.card-preview-metadata dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--enterprise-text);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-align: right;
+}
+
 .card-provider-toggle {
   display: inline-flex;
   padding: 3px;
@@ -4820,6 +4864,51 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .apple-wallet-upload-status.is-success {
   color: var(--enterprise-success);
+}
+
+.card-upload-image-preview {
+  position: relative;
+  display: grid;
+  min-height: 92px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-surface);
+}
+
+.card-upload-image-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.card-upload-image-preview.is-logo img {
+  max-width: 220px;
+  max-height: 92px;
+  padding: 12px;
+  object-fit: contain;
+}
+
+.card-upload-image-preview.is-strip {
+  min-height: 0;
+  aspect-ratio: 375 / 144;
+}
+
+.card-upload-image-preview.is-strip img {
+  object-fit: cover;
+}
+
+.card-upload-image-preview span {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  border-radius: var(--enterprise-radius-sm);
+  padding: 4px 7px;
+  background: rgb(17 24 39 / 82%);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 650;
 }
 
 .apple-wallet-preview-panel {

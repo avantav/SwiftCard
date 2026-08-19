@@ -4,9 +4,9 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy validated migrations `0043` through `0048` and complete the hosted multi-card plus Apple pass refresh smoke path.
-- Last completed task: Repaired card-owned Apple design propagation and replaced the generic Admin card mock with a program-aware `storeCard` preview.
+- Last completed task: Repaired the multi-card design editor so unsaved text, colors and locally selected images appear immediately in its program-aware `storeCard` preview.
 - Current branch: `SWIF-15`.
-- Last stable feature: Card design, program and location saves now queue and immediately attempt installed Apple pass updates; the Admin preview uses the configured program goal, unit names, colors and effective tenant/card assets.
+- Last stable feature: Card design, program and location saves queue and immediately attempt installed Apple pass updates; before saving, the Admin preview now renders edited fields and local logo/strip object URLs, labels its unsaved state and blocks form submission during an active upload.
 - Git status: Typecheck, lint, 208 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0048` pass locally.
 - Remote backup: `SWIF-15` is local and not pushed yet.
 
@@ -123,7 +123,7 @@
 - Production migration `0039` was applied manually and the user confirmed Apple Wallet pass generation works again.
 - Signed Apple passes now retain their QR barcode and branch locations by applying both through the PassKit generator methods that persist method-owned properties into `pass.json`.
 - Signed Apple passes now generate customer-specific `strip.png`, `strip@2x.png` and `strip@3x.png` assets from the authoritative cyclic balance. Earned circles repeat the tenant logo or initials, large goals stay bounded at 24 positions, and exact textual progress remains in an auxiliary field for Wallet versions or devices that omit the strip.
-- The multi-card design editor now previews the same Apple `storeCard` field hierarchy, 375 × 144 strip proportion, QR treatment, bounded stamp-slot calculation and configured unit copy used by signed passes. It uses card assets with the same tenant fallback as pass generation and explicitly explains Apple's iOS 26+ image limitations.
+- The multi-card design editor now previews the same Apple `storeCard` field hierarchy, 375 × 144 strip proportion, QR treatment, bounded stamp-slot calculation and configured unit copy used by signed passes. Text and color inputs update during interaction, newly selected logo/strip files use short-lived local object URLs before upload/save, current image thumbnails remain visible, and the editor explicitly distinguishes unsaved changes and Apple's iOS 26+ image limitations.
 - Migration `0048` observes design/status changes on `loyalty_cards` and assignment changes on `loyalty_card_branches`, queues only installed passes issued from the affected card and preserves the service-role-only outbox boundary. Program, design and location saves all attempt immediate APNs dispatch after the transaction commits.
 - Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.
 - Purchase, redemption and relevant administrative actions attempt production APNs delivery immediately without making application success depend on Apple availability.
