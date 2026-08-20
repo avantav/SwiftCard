@@ -15,6 +15,7 @@
     "db:bootstrap:superadmin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.1.1",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.8",
     "@zxing/browser": "^0.1.5",
@@ -30,6 +31,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/google.maps": "^3.65.5",
     "@types/node": "22.12.0",
     "@types/qrcode": "^1.5.6",
     "@types/react": "19.1.12",

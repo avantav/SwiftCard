@@ -361,6 +361,8 @@ Requiere permiso de ubicación, compara contra la sucursal y bloquea operaciones
 
 La regla se aplicará a compras y canjes.
 
+El Admin configura cada sucursal buscando el negocio o la dirección en Google Maps, seleccionando el punto y ajustando visualmente el radio; las coordenadas no se capturan manualmente. El modo estricto solo puede activarse cuando todas las sucursales activas tienen coordenadas. En modo flexible el operador puede adjuntar el GPS para diagnóstico sin bloquear la operación.
+
 ## 15. Recompensas
 
 El programa permite configurar uno o más niveles sin un límite funcional de catálogo, ordenados por unidades requeridas. Cada nivel puede representar un premio pequeño o el premio principal.

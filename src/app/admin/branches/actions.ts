@@ -393,3 +393,25 @@ export async function configureBranchAccess(formData: FormData) {
 
   redirect("/admin/branches?accessUpdated=1");
 }
+
+export async function configureTenantGeofencing(formData: FormData) {
+  const targetMode = String(formData.get("locationValidationMode") ?? "");
+  if (targetMode !== "STRICT" && targetMode !== "FLEXIBLE") {
+    redirectWithError("El modo de validación de ubicación no es válido.");
+  }
+  const context = await requireInternalArea("ADMIN");
+  if (context.access.role !== "ADMIN") {
+    redirectWithError("Solo el Administrador general puede cambiar el geofence.");
+  }
+  const { data, error } = await context.supabase
+    .schema("app")
+    .rpc("set_tenant_location_validation_mode", { target_mode: targetMode });
+  if (error) redirectWithError("No se pudo actualizar la validación de ubicación.");
+  if (data === "MISSING_COORDINATES") {
+    redirectWithError("Todas las sucursales activas deben tener una ubicación seleccionada antes de activar el geofence.");
+  }
+  if (data !== "UPDATED" && data !== "UNCHANGED") {
+    redirectWithError("No tienes permiso para cambiar la validación de ubicación.");
+  }
+  redirect("/admin/branches?geofenceUpdated=1");
+}

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-20 - Google Maps Branch Picker And Operational Geofencing
+
+**Objective:** Replace manual branch coordinates with place/map selection and make the existing geofence usable and diagnosable in real employee operations.
+
+**Changes Made:** Added Google Places Autocomplete (New), an interactive branch map, map-click/current-location adjustment, selected address/coordinates summary and a live radius circle to branch create/edit. Added an Admin status/control that distinguishes Apple Wallet proximity from operational geofencing. Migration `0050` adds an audited Admin-only mode RPC, refuses strict activation until every active branch has coordinates, prevents coordinate-less active branches while strict and hardens distance validation to the selected tenant branch. The primary scanner flow and compatibility purchase/redeem routes now capture browser GPS, normalize it server-side, pass it to the database and explain permission, timeout and outside-radius failures.
+
+**Security And Correctness:** Tenant and role authority stay server-derived. The map only supplies candidate branch coordinates; the existing PostgreSQL triggers remain authoritative for operations. Strict mode changes require an active tenant Admin, are audited and cannot leave active branches without coordinates. Browser coordinates are range-validated, and the database validates tenant/branch/status plus distance.
+
+**Design Review:** The real picker and geofence control were reviewed through a temporary route at 375, 768, 1280 and 1440 px, including the missing-key state. They reuse enterprise tokens, cards, fields, alerts and 44px actions; the control, selected-location summary and GPS panel collapse to one column on mobile while preserving bounded 300/240px map heights, visible status and no horizontal overflow. The temporary route was removed. A real Google tile/place smoke test remains external because no Maps key is configured locally.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 216 Vitest tests, `npm run build`, `git diff --check` and the complete disposable PostgreSQL migration/RLS suite through `0050` pass.
+
+**Next Action:** Configure a billing-enabled, HTTP-referrer-restricted `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` with Maps JavaScript API and Places API (New), deploy migration `0050`, select every active branch on the hosted map and test inside/outside strict operations over HTTPS on the employee phone.
+
 ## 2026-08-20 - SWIF-15 Lifetime Points Engine And Card Design
 
 **Objective:** Make the non-resetting points program publishable and usable end to end without showing stamp circles on point cards.

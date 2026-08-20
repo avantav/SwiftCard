@@ -3,6 +3,11 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { validateEmployeeCustomerRegistration } from "@/lib/customers/employee-registration";
+import {
+  GEOFENCE_REJECTION_MESSAGE,
+  isGeofenceRejection,
+  readOperationCoordinates,
+} from "@/lib/geofencing/operation-location";
 import { parsePurchaseAmount } from "@/lib/loyalty/purchase-amount";
 import { parseCardQrPayload } from "@/lib/scanner/qr";
 import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
@@ -43,6 +48,8 @@ export async function redeemCustomerReward(formData: FormData) {
   if (!rewardId || !branchId || !customerCardId || !loyaltyCardId) {
     back({ ...returnParams, flow: "reward", error: "Selecciona un premio y una sucursal." });
   }
+  const coordinates = readOperationCoordinates(formData);
+  if (!coordinates.ok) back({ ...confirmationParams, error: coordinates.error });
 
   const context = await requireInternalArea("APP");
   const { data: summaryData } = await context.supabase.schema("app").rpc("get_staff_customer_card_summary", {
@@ -64,12 +71,12 @@ export async function redeemCustomerReward(formData: FormData) {
   const { data, error } = await context.supabase.schema("app").rpc("redeem_reward", {
     target_reward_id: rewardId,
     target_branch_id: branchId,
-    target_latitude: null,
-    target_longitude: null,
+    target_latitude: coordinates.data.latitude,
+    target_longitude: coordinates.data.longitude,
   });
   const result = Array.isArray(data) ? data[0] : null;
   if (error || !result || result.result !== "REDEEMED") {
-    back({ ...confirmationParams, error: "El premio ya no está disponible." });
+    back({ ...confirmationParams, error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : "El premio ya no está disponible." });
   }
   if (summary.customer_id) {
     await dispatchAppleWalletUpdatesBestEffort({ limit: 1, customerId: summary.customer_id });
@@ -131,18 +138,20 @@ export async function confirmCustomerPurchase(formData: FormData) {
   if (!customerCardId || !loyaltyCardId || !branchId || !ticketNumber || amountMinor === null) {
     back({ ...confirmationParams, error: "Revisa el monto, la sucursal y el número de ticket." });
   }
+  const coordinates = readOperationCoordinates(formData);
+  if (!coordinates.ok) back({ ...confirmationParams, error: coordinates.error });
 
   const { data, error } = await context.supabase.schema("app").rpc("confirm_card_purchase", {
     target_customer_card_id: customerCardId,
     target_branch_id: branchId,
     target_ticket_number: ticketNumber,
     target_amount_minor: amountMinor,
-    target_latitude: null,
-    target_longitude: null,
+    target_latitude: coordinates.data.latitude,
+    target_longitude: coordinates.data.longitude,
   });
   const result = Array.isArray(data) ? data[0] : null;
   if (error || !result || result.result !== "CONFIRMED") {
-    back({ ...confirmationParams, error: result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
+    back({ ...confirmationParams, error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
   }
   await dispatchAppleWalletUpdatesBestEffort({ limit: 1 });
   back({ ...returnParams, purchaseConfirmed: "1", rewards: String(result.rewards_generated), stamps: String(result.stamps_awarded) });

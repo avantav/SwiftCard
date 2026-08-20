@@ -30,6 +30,10 @@ describe("guided customer operations", () => {
     expect(scanActions).toContain("confirm_card_purchase");
     expect(scanActions).toContain("parsePurchaseAmount");
     expect(scanActions).toContain("DUPLICATE_TICKET");
+    expect(scanActions).toContain("readOperationCoordinates");
+    expect(scanActions).toContain("isGeofenceRejection");
+    expect(scanPage).toContain("OperationLocationSubmit");
+    expect(scanPage).toContain("location_validation_mode");
   });
 
   it("keeps large customer result sets readable inside the bounded search modal", () => {

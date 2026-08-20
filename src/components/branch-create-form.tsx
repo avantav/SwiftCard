@@ -7,6 +7,7 @@ import {
   type BranchCreateFieldErrors,
 } from "@/lib/admin/branches";
 import { BranchAccessFields } from "@/components/branch-access-fields";
+import { BranchLocationPicker } from "@/components/branch-location-picker";
 import { SubmitButton } from "@/components/submit-button";
 
 function FieldError({ id, messages }: { id: string; messages?: string[] }) {
@@ -32,13 +33,6 @@ export function BranchCreateForm() {
   const errors: BranchCreateFieldErrors = state.fieldErrors;
   const fieldMessages = Object.values(errors).flatMap((messages) => messages ?? []);
   const nameErrorId = `${id}-name-error`;
-  const addressHintId = `${id}-address-hint`;
-  const addressErrorId = `${id}-address-error`;
-  const latitudeHintId = `${id}-latitude-hint`;
-  const latitudeErrorId = `${id}-latitude-error`;
-  const longitudeErrorId = `${id}-longitude-error`;
-  const radiusHintId = `${id}-radius-hint`;
-  const radiusErrorId = `${id}-radius-error`;
   const proximityHintId = `${id}-proximity-hint`;
   const proximityErrorId = `${id}-proximity-error`;
 
@@ -82,89 +76,13 @@ export function BranchCreateForm() {
         <FieldError id={nameErrorId} messages={errors.name} />
       </label>
 
-      <label className="field">
-        <span>Dirección</span>
-        <input
-          aria-describedby={describedBy(
-            addressHintId,
-            addressErrorId,
-            Boolean(errors.address?.length),
-          )}
-          aria-invalid={Boolean(errors.address?.length)}
-          autoComplete="street-address"
-          defaultValue={state.values.address}
-          maxLength={300}
-          name="address"
-        />
-        <span className="field-hint" id={addressHintId}>
-          Opcional. Máximo 300 caracteres.
-        </span>
-        <FieldError id={addressErrorId} messages={errors.address} />
-      </label>
-
-      <div className="form-grid">
-        <label className="field">
-          <span>Latitud</span>
-          <input
-            aria-describedby={describedBy(
-              latitudeHintId,
-              latitudeErrorId,
-              Boolean(errors.latitude?.length),
-            )}
-            aria-invalid={Boolean(errors.latitude?.length)}
-            defaultValue={state.values.latitude}
-            max={90}
-            min={-90}
-            name="latitude"
-            step="any"
-            type="number"
-          />
-          <span className="field-hint" id={latitudeHintId}>
-            Opcional; si la capturas, la longitud también es obligatoria.
-          </span>
-          <FieldError id={latitudeErrorId} messages={errors.latitude} />
-        </label>
-        <label className="field">
-          <span>Longitud</span>
-          <input
-            aria-describedby={errors.longitude?.length ? longitudeErrorId : undefined}
-            aria-invalid={Boolean(errors.longitude?.length)}
-            defaultValue={state.values.longitude}
-            max={180}
-            min={-180}
-            name="longitude"
-            step="any"
-            type="number"
-          />
-          <FieldError id={longitudeErrorId} messages={errors.longitude} />
-        </label>
-      </div>
-
-      <label className="field">
-        <span>Radio de geofence (metros)</span>
-        <input
-          aria-describedby={describedBy(
-            radiusHintId,
-            radiusErrorId,
-            Boolean(errors.geofenceRadiusMeters?.length),
-          )}
-          aria-invalid={Boolean(errors.geofenceRadiusMeters?.length)}
-          defaultValue={state.values.geofenceRadiusMeters}
-          max={100000}
-          min={1}
-          name="geofenceRadiusMeters"
-          required
-          step={1}
-          type="number"
-        />
-        <span className="field-hint" id={radiusHintId}>
-          Número entero entre 1 y 100000 metros.
-        </span>
-        <FieldError
-          id={radiusErrorId}
-          messages={errors.geofenceRadiusMeters}
-        />
-      </label>
+      <BranchLocationPicker
+        defaultAddress={state.values.address}
+        defaultLatitude={state.values.latitude}
+        defaultLongitude={state.values.longitude}
+        defaultRadius={state.values.geofenceRadiusMeters}
+        errors={errors}
+      />
 
       <label className="check-field branch-proximity-field">
         <input

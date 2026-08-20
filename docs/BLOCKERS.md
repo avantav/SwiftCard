@@ -2,6 +2,12 @@
 
 ## Active Blockers
 
+- **MAPS-001:** The Google Maps branch picker is implemented, but neither `.env.local` nor the documented hosted configuration currently provides `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`.
+  - **Affected area:** Admin branch location search and map selection.
+  - **Consequence:** The UI preserves existing coordinates and explains the missing configuration, but cannot load Places suggestions or map tiles until a key is supplied.
+  - **Recommendation:** In Google Cloud enable Maps JavaScript API and Places API (New), attach billing, restrict a browser key to the exact local/production HTTP referrers, set the environment variable and redeploy.
+  - **Work that can continue:** Migration deployment, branch data review and all non-map functionality.
+
 - **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The visible QR, employee camera, card-owned updates and lifetime-points design through local migration `0049` are validated; hosted deployment, pass refresh/reinstallation, real-device scan, APNs validation, an external retry cron and Google Wallet remain pending. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
   - **Consequence:** The current deployed pass may still omit the visible QR, and failed immediate pushes can remain queued without an external scheduler.

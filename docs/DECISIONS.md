@@ -273,6 +273,17 @@
 - References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
 - Status: Accepted.
 
+## DEC-0029 - Map-Selected Branches And Explicit Strict Geofencing
+
+- Date: 2026-08-20
+- Context: Branches required manual latitude/longitude, tenant mode remained `FLEXIBLE`, and every employee purchase/redemption submitted null coordinates. Correct branch coordinates alone therefore could not make geofencing operate.
+- Decision: Use Google Places Autocomplete (New) plus Maps JavaScript API as the branch-location picker, persist only formatted address and selected coordinates in the existing schema, and visualize the configured radius. Keep existing tenants flexible until an Admin explicitly enables strict validation. Refuse activation while an active branch lacks coordinates; once strict, prevent active branches from losing coordinates. Capture browser GPS on every confirmation route and retain PostgreSQL triggers as the final inside/outside authority. Treat Apple Wallet proximity as a separate notification feature.
+- Alternatives considered: Continue manual coordinates, enable strict mode automatically for every existing tenant, trust a client-side distance calculation, or treat Wallet proximity as operational geofencing.
+- Reason: Map selection reduces coordinate errors, explicit activation avoids breaking deployed tenants, and server-side distance enforcement prevents browser tampering while making the previously dormant feature observable.
+- Consequences: Deployment requires migration `0050`, HTTPS geolocation and a billing-enabled browser key restricted to exact HTTP referrers with Maps JavaScript API and Places API (New). Without the key, existing coordinates are preserved and the Admin sees a configuration error; no secret or unrestricted server credential is needed in the browser.
+- References: [Place Autocomplete Widget](https://developers.google.com/maps/documentation/javascript/place-autocomplete-new), [Load the Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/load-maps-js-api), and [API security best practices](https://developers.google.com/maps/api-security-best-practices).
+- Status: Accepted.
+
 ## DEC-0028 - Decimal Non-Resetting Lifetime Points
 
 - Date: 2026-08-20

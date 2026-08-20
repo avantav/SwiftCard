@@ -132,7 +132,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Convert the customer modal into a three-step guided operation: overview, minimal purchase/reward input and explicit authoritative confirmation; keep large search result sets clear and vertically bounded.
 - [x] [Terminada] Offer an expandable card-claim QR from the identified-customer modal only while Apple has no active device registration for that issued card.
 - [x] [Terminada] Add an employee-readable, tenant-derived program catalog with earning rules, reward tiers and terms and conditions.
-- [x] [Terminada] Add strict/flexible geolocation handling.
+- [x] [Terminada] Add strict/flexible geolocation handling, Google Maps branch selection, Admin activation control and browser GPS capture for purchases/redemptions.
 - [x] [Terminada] Add double-submit protection.
 
 ## Phase 5 - Operaciones Administrativas

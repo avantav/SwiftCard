@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy validated migrations `0043` through `0049` and complete the hosted lifetime-points plus Apple pass refresh smoke path.
-- Last completed task: Enabled the non-resetting lifetime-points engine, one-time milestones and point-specific Web/Apple card designs.
+- Current task: Configure the restricted Google Maps browser key, deploy validated migrations `0043` through `0050` and complete the hosted geofence/lifetime-points/Apple smoke paths.
+- Last completed task: Added Google Maps branch selection, Admin-controlled strict geofencing and real browser GPS on every purchase/redemption confirmation route.
 - Current branch: `SWIF-15`.
-- Last stable feature: `LIFETIME_POINTS` calculates and persists tenths per purchase without carry or reset, grants each milestone once, exposes integer customer/employee balances and one-decimal Admin/export totals, and replaces stamp circles with balance plus next-hito progress.
-- Git status: Typecheck, lint, 211 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0049` pass locally.
+- Last stable feature: Migration `0050` lets only the active tenant Admin enable strict validation after every active branch has map coordinates; operation forms capture browser GPS and the database blocks missing or out-of-radius purchases/canjes.
+- Git status: Typecheck, lint, 216 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0050` pass locally.
 - Remote backup: `SWIF-15` is local and not pushed yet.
 
 ## Completed Functionality
@@ -46,6 +46,9 @@
 - Branch IDs are generated on the trusted server before insertion, so creation no longer depends on an RLS-filtered `INSERT ... RETURNING` response to continue shared-account compensation safely.
 - Admin general can edit branch name, address, coordinates, geofence radius, proximity activation/message and status inline from `/admin/branches`; validation retains submitted values, deactivation requires confirmation, and the write matches both branch ID and the authenticated tenant under RLS.
 - Branch location/proximity/status changes continue through the existing Apple Wallet outbox trigger and immediate best-effort dispatcher; shared-access mode and credentials remain in their separate confirmed control.
+- Branch create/edit now uses Google Places Autocomplete (New), an interactive Google map, point adjustment, current-position assistance and a visual radius circle instead of manual coordinate inputs. Existing coordinates remain preserved if Maps configuration is unavailable.
+- `/admin/branches` clearly separates Apple Wallet proximity from operational geofencing and lets only the tenant Admin enable or disable strict GPS validation. Activation is refused until every active branch has coordinates and every change is audited.
+- Purchase and reward confirmations in the primary scanner modal and compatibility routes capture browser geolocation, send normalized coordinates to the existing authoritative RPCs and show actionable permission, timeout and outside-radius errors. Flexible mode permits submission and can retain optional diagnostic GPS; strict mode requires it.
 - Admin-only `/admin/staff` creation for Manager and Employee accounts.
 - Server-only Auth provisioning with profile cleanup compensation.
 - Tenant and creator derived from the authenticated Admin context.
@@ -225,4 +228,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043` through `0049` to the hosted Supabase project with approval, then exercise create lifetime-points draft → configure amount and milestones → publish → register → purchase with a fractional tenth result → verify integer Web/Apple/employee display, decimal Admin report, one-time rewards and automatic Apple refresh. The separate welcome/import work and APNs/Google rollout validation remain required before production scale.
+Configure `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` locally and in Hostinger with Maps JavaScript API plus Places API (New), billing and exact HTTP-referrer restrictions. Apply validated migrations `0043` through `0050` with approval, select every active branch location, activate geofencing, then test one inside-radius and one outside-radius operation on an HTTPS phone. Continue the lifetime-points and Apple refresh smoke path afterward.

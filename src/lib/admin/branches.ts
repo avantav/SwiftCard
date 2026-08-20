@@ -457,6 +457,16 @@ export function describeBranchPersistenceError(
     };
   }
 
+  if (code === "23514" && message.includes("strict geofencing requires branch coordinates")) {
+    return {
+      formError: "La validación GPS está activa y esta sucursal necesita una ubicación.",
+      fieldErrors: {
+        latitude: ["Busca y selecciona el lugar en el mapa antes de guardar."],
+        longitude: ["Busca y selecciona el lugar en el mapa antes de guardar."],
+      },
+    };
+  }
+
   if (code === "23514" && message.includes("latitude")) {
     return {
       formError: "La base de datos rechazó la ubicación de la sucursal.",

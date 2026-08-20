@@ -1,4 +1,4 @@
-import { SubmitButton } from "@/components/submit-button";
+import { OperationLocationSubmit } from "@/components/operation-location-submit";
 import { requireInternalArea } from "@/lib/auth/server";
 import { redeemReward } from "./actions";
 
@@ -9,9 +9,10 @@ export default async function RedeemPage({ searchParams }: RedeemPageProps) {
   const params = await searchParams;
   await context.supabase.schema("app").rpc("expire_due_rewards");
   const now = new Date().toISOString();
-  const [{ data: rewards, error: rewardsError }, { data: branches, error: branchesError }] = await Promise.all([
+  const [{ data: rewards, error: rewardsError }, { data: branches, error: branchesError }, { data: tenant }] = await Promise.all([
     context.supabase.from("rewards").select("id,name,description,customer_id").eq("status", "AVAILABLE").or(`expires_at.is.null,expires_at.gt.${now}`).order("created_at"),
-    context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name")
+    context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name"),
+    context.supabase.from("tenants").select("location_validation_mode").eq("id", context.tenantId).maybeSingle(),
   ]);
 
   return <main className="operations-page">
@@ -24,7 +25,7 @@ export default async function RedeemPage({ searchParams }: RedeemPageProps) {
       <form className="operations-form" action={redeemReward}>
         <label className="field"><span>Recompensa</span><select name="rewardId" required defaultValue=""><option value="">Selecciona una recompensa</option>{rewards.map((reward) => <option key={reward.id} value={reward.id}>{reward.name} · Cliente {reward.customer_id.slice(0, 8)}</option>)}</select></label>
         <label className="field"><span>Sucursal</span><select name="branchId" required defaultValue=""><option value="">Selecciona una sucursal</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label>
-        <SubmitButton className="operations-primary-button">Confirmar canje</SubmitButton>
+        <OperationLocationSubmit locationRequired={tenant?.location_validation_mode === "STRICT"}>Confirmar canje</OperationLocationSubmit>
       </form>
     </section>}
   </main>;
