@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy validated migrations `0043` through `0048` and complete the hosted multi-card plus Apple pass refresh smoke path.
-- Last completed task: Repaired the multi-card design editor so unsaved text, colors and locally selected images appear immediately in its program-aware `storeCard` preview.
+- Current task: Deploy validated migrations `0043` through `0049` and complete the hosted lifetime-points plus Apple pass refresh smoke path.
+- Last completed task: Enabled the non-resetting lifetime-points engine, one-time milestones and point-specific Web/Apple card designs.
 - Current branch: `SWIF-15`.
-- Last stable feature: Card design, program and location saves queue and immediately attempt installed Apple pass updates; before saving, the Admin preview now renders edited fields and local logo/strip object URLs, labels its unsaved state and blocks form submission during an active upload.
-- Git status: Typecheck, lint, 208 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0048` pass locally.
+- Last stable feature: `LIFETIME_POINTS` calculates and persists tenths per purchase without carry or reset, grants each milestone once, exposes integer customer/employee balances and one-decimal Admin/export totals, and replaces stamp circles with balance plus next-hito progress.
+- Git status: Typecheck, lint, 211 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0049` pass locally.
 - Remote backup: `SWIF-15` is local and not pushed yet.
 
 ## Completed Functionality
@@ -69,7 +69,7 @@
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
 - Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
 - Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
-- Existing programs are backfilled to their current cyclic type; Admin type changes require confirmation, preserve historical data and begin paused. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs the same conversion if the type changed after online migration `0041` but before `0042`. Reward catalogs have no product-level count cap, and lifetime points remain forced to PAUSED until the decimal engine is connected.
+- Existing programs are backfilled to their current cyclic type; Admin type changes preserve historical data. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs transitions made during the earlier rollout, while `0049` enables decimal purchases, non-resetting balances and one-time milestones. Reward catalogs have no product-level count cap.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
 - The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.
@@ -132,7 +132,8 @@
 
 ## Pending Functionality
 
-- Tenths-based lifetime point accounting, per-purchase truncation, one-time milestones, welcome/import generation, policy enforcement and Web Card/Apple Wallet progress for the new third program type.
+- Configurable welcome-reward generation and imported-stamp conversion/milestone generation for lifetime-points programs.
+- Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
 - Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
@@ -224,4 +225,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043` through `0048` to the hosted Supabase project with approval, then exercise create draft → resume → publish → employee register → scan handoff QR → accept terms → add Wallet/Web Card → edit program/design/locations → confirm automatic Apple refresh → scan/search → customer modal → redeem/purchase. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.
+Apply validated migrations `0043` through `0049` to the hosted Supabase project with approval, then exercise create lifetime-points draft → configure amount and milestones → publish → register → purchase with a fractional tenth result → verify integer Web/Apple/employee display, decimal Admin report, one-time rewards and automatic Apple refresh. The separate welcome/import work and APNs/Google rollout validation remain required before production scale.

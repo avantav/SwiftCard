@@ -272,3 +272,13 @@
 - Consequences: Additive migration `0048` must be deployed before card design/location edits update installed passes. Existing passes still require a successful Apple device registration, and failed APNs work remains durable for the protected retry endpoint. Apple owns final rendering; according to current Pass Designer compatibility documentation, store-card logo and strip images may be omitted on iOS 26 or later, so the textual progress field remains mandatory.
 - References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
 - Status: Accepted.
+
+## DEC-0028 - Decimal Non-Resetting Lifetime Points
+
+- Date: 2026-08-20
+- Context: The configured `LIFETIME_POINTS` type was intentionally paused because the existing balance, purchase, ledger, reward and Wallet paths assumed whole cyclic stamps and reset progress at the highest tier.
+- Decision: Store lifetime progress authoritatively in integer tenths alongside the existing whole-unit compatibility columns. For every purchase, calculate `floor(amount_minor * 10 / amount_per_point_minor)`, discard any smaller fraction without carry, never apply a cycle modulo and grant each active reward tier at most once per customer. Customer and employee projections expose the whole part; Admin metrics and purchase exports expose one decimal. Web Card, Apple payload and Admin Wallet previews render accumulated balance plus the next milestone instead of stamp circles. Type changes require explicit Admin confirmation, preserve history/rewards and convert existing whole stamps through the configured multiplier.
+- Alternatives considered: Reuse `stamp_balance` with floating-point values, round each purchase, model each decimal as a separate stamp, continue resetting at the highest tier, or keep the type configurable but permanently paused.
+- Reason: Integer tenths provide deterministic accounting without floating-point drift, retain backward compatibility for cyclic programs and match the product's different visibility requirements. A separate milestone path avoids applying cancellation and reset assumptions from the cyclic reward engine.
+- Consequences: Additive migration `0049` is required before the UI can publish this type. Lifetime purchases, manual reward cancellation and point adjustments are initially definitive and database-blocked. Welcome reward and imported-stamp conversion/milestone generation remain separate follow-up work. Existing Apple installations still require hosted deployment and a successful PassKit refresh to display the new layout.
+- Status: Accepted.

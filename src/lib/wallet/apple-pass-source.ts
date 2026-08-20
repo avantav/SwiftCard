@@ -120,7 +120,7 @@ export async function loadAppleWalletPassSource(
       .maybeSingle(),
     supabase
       .from("customer_loyalty_balances")
-      .select("stamp_balance")
+      .select("stamp_balance,lifetime_points_tenths")
       .eq("customer_id", card.customer_id)
       .eq("tenant_id", card.tenant_id)
       .maybeSingle(),
@@ -246,7 +246,9 @@ export async function loadAppleWalletPassSource(
         programType: program.program_type,
         unitNameSingular: program.unit_name_singular,
         unitNamePlural: program.unit_name_plural,
-        stampBalance: Number(balanceResult.data?.stamp_balance ?? 0),
+        stampBalance: program.program_type === "LIFETIME_POINTS"
+          ? Math.floor(Number(balanceResult.data?.lifetime_points_tenths ?? 0) / 10)
+          : Number(balanceResult.data?.stamp_balance ?? 0),
         rewardGoal: program.reward_stamp_goal,
         availableRewards: rewardsResult.count ?? 0,
         termsAndConditions:

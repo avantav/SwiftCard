@@ -7,6 +7,10 @@ function amount(value: number | string | null | undefined, currency: string) {
   return new Intl.NumberFormat("es-MX", { style: "currency", currency }).format(Number(value ?? 0) / 100);
 }
 
+function units(value: number | string | null | undefined) {
+  return Number(value ?? 0).toFixed(1);
+}
+
 export default async function DashboardPage({ searchParams }: DashboardProps) {
   const context = await requireInternalArea("ADMIN");
   const params = await searchParams;
@@ -37,13 +41,13 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
       <article className="enterprise-metric"><span>Clientes</span><strong>{failed ? "—" : metrics?.customer_count ?? 0}</strong><small>En el alcance seleccionado</small></article>
       <article className="enterprise-metric"><span>Compras</span><strong>{failed ? "—" : metrics?.purchase_count ?? 0}</strong><small>Operaciones confirmadas</small></article>
       <article className="enterprise-metric"><span>Monto</span><strong className="enterprise-metric-text">{failed ? "—" : amount(metrics?.purchase_amount_minor, currency)}</strong><small>Total procesado</small></article>
-      <article className="enterprise-metric"><span>Sellos</span><strong>{failed ? "—" : metrics?.stamps_awarded ?? 0}</strong><small>Sellos otorgados</small></article>
+      <article className="enterprise-metric"><span>Unidades</span><strong>{failed ? "—" : units(metrics?.stamps_awarded)}</strong><small>Sellos o puntos otorgados</small></article>
       <article className="enterprise-metric"><span>Generadas</span><strong>{failed ? "—" : metrics?.rewards_generated ?? 0}</strong><small>Recompensas creadas</small></article>
       <article className="enterprise-metric"><span>Canjeadas</span><strong>{failed ? "—" : metrics?.rewards_redeemed ?? 0}</strong><small>Recompensas utilizadas</small></article>
     </section>
     <section className="enterprise-data-panel" aria-labelledby="branch-comparison-title">
       <div className="enterprise-panel-header"><div><h2 id="branch-comparison-title">Comparación por sucursal</h2><p>{branchMetrics.length} {branchMetrics.length === 1 ? "resultado" : "resultados"}</p></div></div>
-      {failed ? <div className="enterprise-empty-state is-error admin-compact-empty" role="alert"><h3>Comparación no disponible</h3><p>Actualiza la página para volver a intentarlo.</p></div> : branchMetrics.length ? <div className="enterprise-table-wrap"><table className="enterprise-table"><caption className="sr-only">Métricas operativas por sucursal</caption><thead><tr><th scope="col">Sucursal</th><th scope="col">Clientes</th><th scope="col">Compras</th><th scope="col">Monto</th><th scope="col">Sellos</th></tr></thead><tbody>{branchMetrics.map((branch) => <tr key={branch.branch_id}><td data-label="Sucursal"><strong>{branch.branch_name}</strong></td><td data-label="Clientes" className="enterprise-number">{branch.customer_count}</td><td data-label="Compras" className="enterprise-number">{branch.purchase_count}</td><td data-label="Monto" className="enterprise-number">{amount(branch.purchase_amount_minor, currency)}</td><td data-label="Sellos" className="enterprise-number">{branch.stamps_awarded}</td></tr>)}</tbody></table></div> : <div className="enterprise-empty-state admin-compact-empty"><h3>Sin actividad para comparar</h3><p>Ajusta el rango de fechas o registra operaciones en una sucursal.</p></div>}
+      {failed ? <div className="enterprise-empty-state is-error admin-compact-empty" role="alert"><h3>Comparación no disponible</h3><p>Actualiza la página para volver a intentarlo.</p></div> : branchMetrics.length ? <div className="enterprise-table-wrap"><table className="enterprise-table"><caption className="sr-only">Métricas operativas por sucursal</caption><thead><tr><th scope="col">Sucursal</th><th scope="col">Clientes</th><th scope="col">Compras</th><th scope="col">Monto</th><th scope="col">Unidades</th></tr></thead><tbody>{branchMetrics.map((branch) => <tr key={branch.branch_id}><td data-label="Sucursal"><strong>{branch.branch_name}</strong></td><td data-label="Clientes" className="enterprise-number">{branch.customer_count}</td><td data-label="Compras" className="enterprise-number">{branch.purchase_count}</td><td data-label="Monto" className="enterprise-number">{amount(branch.purchase_amount_minor, currency)}</td><td data-label="Unidades" className="enterprise-number">{units(branch.stamps_awarded)}</td></tr>)}</tbody></table></div> : <div className="enterprise-empty-state admin-compact-empty"><h3>Sin actividad para comparar</h3><p>Ajusta el rango de fechas o registra operaciones en una sucursal.</p></div>}
     </section>
   </main>;
 }

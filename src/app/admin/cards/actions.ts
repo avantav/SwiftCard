@@ -51,24 +51,45 @@ export async function createCardDraft(formData: FormData) {
 export async function saveCardProgram(cardId: string, formData: FormData) {
   const context = await requireTenantAdmin();
   if (!UUID.test(cardId)) redirect("/admin/cards");
-  const { data: tenant, error: tenantError } = await context.supabase
-    .from("tenants")
-    .select("currency_code")
-    .eq("id", context.tenantId)
-    .maybeSingle();
-  if (tenantError || !tenant?.currency_code) {
+  const [{ data: tenant, error: tenantError }, { data: card, error: cardError }] = await Promise.all([
+    context.supabase.from("tenants").select("currency_code").eq("id", context.tenantId).maybeSingle(),
+    context.supabase.from("loyalty_cards").select("program_id").eq("id", cardId).eq("tenant_id", context.tenantId).maybeSingle(),
+  ]);
+  if (tenantError || !tenant?.currency_code || cardError || !card?.program_id) {
     redirectCardError(cardId, 1, "No se pudo determinar la moneda del negocio.");
   }
 
   formData.set("status", "PAUSED");
+  const programType = String(formData.get("programType") ?? "");
+  const { data: currentProgram, error: programError } = await context.supabase
+    .from("loyalty_programs")
+    .select("program_type")
+    .eq("id", card.program_id)
+    .eq("tenant_id", context.tenantId)
+    .maybeSingle();
+  if (programError || !currentProgram?.program_type) {
+    redirectCardError(cardId, 1, "No se pudo comprobar el programa actual.");
+  }
+  if (
+    currentProgram.program_type !== programType
+    && formData.get("confirmProgramTypeChange") !== "on"
+  ) {
+    redirectCardError(cardId, 1, "Confirma el cambio de tipo de programa antes de guardar.");
+  }
+  const singular = String(formData.get("unitNameSingular") ?? "").trim().toLowerCase();
+  const plural = String(formData.get("unitNamePlural") ?? "").trim().toLowerCase();
+  if (programType === "LIFETIME_POINTS" && singular === "sello" && plural === "sellos") {
+    formData.set("unitNameSingular", "punto");
+    formData.set("unitNamePlural", "puntos");
+  } else if (programType !== "LIFETIME_POINTS" && singular === "punto" && plural === "puntos") {
+    formData.set("unitNameSingular", "sello");
+    formData.set("unitNamePlural", "sellos");
+  }
   const validation = validateLoyaltyProgramForm(formData, tenant.currency_code);
   if (!validation.ok) {
     redirectCardError(cardId, 1, validation.errors[0] ?? "Revisa el programa.");
   }
   const input = validation.data;
-  if (input.programType === "LIFETIME_POINTS") {
-    redirectCardError(cardId, 1, "Selecciona un programa de sellos para esta versión.");
-  }
   const { data, error } = await context.supabase.schema("app").rpc(
     "save_loyalty_card_program",
     {

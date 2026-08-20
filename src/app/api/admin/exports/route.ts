@@ -45,13 +45,16 @@ export async function GET(request: Request) {
     rows = (response.data ?? []) as Array<Record<string, unknown>>;
     columns = ["full_name", "normalized_phone", "email", "status", "registration_method", "source_branch_id", "created_at"];
   } else if (type === "purchases") {
-    let query = context.supabase.from("purchases").select("ticket_number,amount_minor,stamps_awarded,status,branch_id,staff_profile_id,created_at").order("created_at");
+    let query = context.supabase.from("purchases").select("ticket_number,amount_minor,units_awarded_tenths,status,branch_id,staff_profile_id,created_at").order("created_at");
     if (branchId) query = query.eq("branch_id", branchId);
     if (from) query = query.gte("created_at", `${from}T00:00:00Z`);
     if (to) query = query.lt("created_at", `${to}T00:00:00Z`);
     const response = await query;
-    rows = (response.data ?? []) as Array<Record<string, unknown>>;
-    columns = ["ticket_number", "amount_minor", "stamps_awarded", "status", "branch_id", "staff_profile_id", "created_at"];
+    rows = ((response.data ?? []) as Array<Record<string, unknown>>).map((row) => {
+      const { units_awarded_tenths: tenths, ...purchase } = row;
+      return { ...purchase, units_awarded: Number(tenths ?? 0) / 10 };
+    });
+    columns = ["ticket_number", "amount_minor", "units_awarded", "status", "branch_id", "staff_profile_id", "created_at"];
   } else if (type === "rewards") {
     const response = await context.supabase.from("rewards").select("name,description,status,customer_id,program_id,created_at,expires_at").order("created_at");
     rows = (response.data ?? []) as Array<Record<string, unknown>>;

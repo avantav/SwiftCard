@@ -49,6 +49,9 @@ function earningDescription(program: ProgramCatalogItem) {
     return `${program.stamps_per_purchase} ${units}${minimum}.`;
   }
   const amount = money(program.amount_per_stamp_minor, program.currency_code);
+  if (program.program_type === "LIFETIME_POINTS") {
+    return `1 ${program.unit_name_singular} por cada ${amount}; el saldo nunca se reinicia y cada compra se trunca a un decimal.`;
+  }
   return `1 ${program.unit_name_singular} por cada ${amount}${program.carry_remainder ? "; el monto restante se conserva" : ""}.`;
 }
 

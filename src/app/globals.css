@@ -382,6 +382,34 @@
   background: var(--card-preview-foreground);
 }
 
+.unified-wallet-points {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 7px;
+  margin: 34px 0 28px;
+}
+
+.unified-wallet-points > span,
+.unified-wallet-points > small {
+  color: var(--card-preview-label);
+  font-size: 10px;
+}
+
+.unified-wallet-points > strong {
+  font-size: 2.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.unified-wallet-points > div {
+  background: rgb(255 255 255 / 28%);
+}
+
+.unified-wallet-points i {
+  background: var(--card-preview-foreground);
+}
+
 .unified-wallet-meta {
   position: relative;
   z-index: 1;
@@ -4474,6 +4502,63 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   margin: 24px 0;
 }
 
+.wallet-points-progress {
+  display: grid;
+  gap: 14px;
+  margin: 24px 0;
+  border: 1px solid var(--enterprise-border);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.wallet-points-balance {
+  display: grid;
+  gap: 2px;
+}
+
+.wallet-points-balance > span,
+.wallet-points-balance > small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+}
+
+.wallet-points-balance > strong {
+  color: var(--card-primary);
+  font-size: 2.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.wallet-points-track,
+.unified-wallet-points > div,
+.apple-pass-preview-points > div {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--enterprise-border);
+}
+
+.wallet-points-track > span,
+.unified-wallet-points i,
+.apple-pass-preview-points i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--card-primary);
+}
+
+.wallet-points-progress > p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.wallet-points-progress > p span {
+  color: var(--enterprise-text-muted);
+}
+
 .wallet-program-status {
   width: fit-content;
   margin: 12px 0 0 !important;
@@ -5099,6 +5184,32 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 1.25rem;
   font-weight: 600;
   text-align: center;
+}
+
+.apple-pass-preview-points {
+  display: grid;
+  width: min(82%, 300px);
+  gap: 6px;
+  text-align: center;
+}
+
+.apple-pass-preview-points > strong {
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.apple-pass-preview-points > div {
+  background: rgb(255 255 255 / 28%);
+}
+
+.apple-pass-preview-points i {
+  background: var(--apple-pass-foreground);
+}
+
+.apple-pass-preview-points > small {
+  font-size: 0.58rem;
+  font-weight: 600;
 }
 
 .apple-pass-preview-content {

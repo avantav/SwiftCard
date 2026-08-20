@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-20 - SWIF-15 Lifetime Points Engine And Card Design
+
+**Objective:** Make the non-resetting points program publishable and usable end to end without showing stamp circles on point cards.
+
+**Changes Made:** Added migration `0049` with authoritative tenths on balances, purchases and ledger entries; per-purchase truncation without carry; non-resetting milestone generation; card-scoped stamp-to-point conversion; integer customer/employee projections; one-decimal Admin metrics and purchase exports; and database enforcement that disables lifetime purchase/reward cancellation and manual point adjustments. Enabled the mode in the card wizard with explicit type-change confirmation and automatic default unit naming. Web Card, Apple pass payload and Apple/Android previews now show accumulated points, next-milestone progress and the all-hitos-complete state instead of stamp circles.
+
+**Security And Correctness:** All calculations and milestone authority remain in security-definer database functions scoped from the issued card and authenticated staff. No frontend `tenant_id` or awarded-unit value is trusted. The full historical migration/RLS suite proves that cyclic stamp purchases remain compatible and that 1.5 plus 0.7 points persists as 2.2 while customer/employee projections show 2.
+
+**Design Review:** The point Web Card and Apple preview were rendered with representative data at 375, 768, 1280 and 1440 px. Balance hierarchy, progress, reward catalog, responsive wrapping, contrast and completion copy remain legible without horizontal overflow. The temporary review route was removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 211 Vitest tests, `npm run build` and the complete disposable PostgreSQL migration/RLS suite through `0049` pass.
+
+**Next Action:** With approval, deploy migrations through `0049` and run a hosted purchase/milestone/Admin-decimal/Apple-refresh smoke test. Welcome rewards and import conversion remain follow-up work.
+
 ## 2026-08-18 - SWIF-15 Apple Card Design Propagation
 
 **Objective:** Make card program/design changes appear in the Admin preview and propagate them to already installed Apple Wallet passes.

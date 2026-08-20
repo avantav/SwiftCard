@@ -269,7 +269,7 @@ export default async function CustomerDirectoryPage({
                     <th scope="col">Sucursal de alta</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Tarjeta</th>
-                    <th scope="col">Sellos</th>
+                    <th scope="col">Saldo</th>
                     <th scope="col">Premios</th>
                     <th scope="col">Apple Wallet</th>
                     <th scope="col">Registro</th>
@@ -314,7 +314,7 @@ export default async function CustomerDirectoryPage({
                             </span>
                           ) : "—"}
                         </td>
-                        <td className="enterprise-number" data-label="Sellos">{balancesResult.error ? "—" : balances.get(customer.id) ?? 0}</td>
+                        <td className="enterprise-number" data-label="Saldo">{balancesResult.error ? "—" : balances.get(customer.id) ?? 0}</td>
                         <td className="enterprise-number" data-label="Premios">{rewardsResult.error ? "—" : rewards.get(customer.id) ?? 0}</td>
                         <td data-label="Apple Wallet"><span className={`enterprise-badge ${wallet.className}`}>{wallet.label}</span></td>
                         <td data-label="Registro">

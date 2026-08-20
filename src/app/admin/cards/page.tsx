@@ -37,6 +37,7 @@ export default async function CardsPage({ searchParams }: CardsPageProps) {
   const statsByCard = new Map(stats);
   const currency = tenant?.currency_code ?? "MXN";
   const money = (value: number | string | undefined) => new Intl.NumberFormat("es-MX", { style: "currency", currency }).format(Number(value ?? 0) / 100);
+  const units = (value: number | string | undefined) => Number(value ?? 0).toFixed(1);
 
   return <main className="enterprise-page">
     <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración · {tenant?.name ?? "Negocio"}</p><h1 id="cards-title">Tarjetas</h1><p>Crea hasta tres experiencias, cada una con programa, diseño, sucursales y métricas propias.</p></div></header>
@@ -61,7 +62,7 @@ export default async function CardsPage({ searchParams }: CardsPageProps) {
             <div><dt>Tarjetas emitidas</dt><dd>{Number(cardStats?.issued_cards ?? 0)}</dd></div>
             <div><dt>Compras</dt><dd>{Number(cardStats?.purchase_count ?? 0)}</dd></div>
             <div><dt>Monto</dt><dd>{money(cardStats?.purchase_amount_minor)}</dd></div>
-            <div><dt>Sellos</dt><dd>{Number(cardStats?.units_awarded ?? 0)}</dd></div>
+            <div><dt>Unidades</dt><dd>{units(cardStats?.units_awarded)}</dd></div>
             <div><dt>Recompensas</dt><dd>{Number(cardStats?.rewards_generated ?? 0)}</dd></div>
           </dl>
           <small>Actualizada {new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short" }).format(new Date(card.updated_at))}</small>
