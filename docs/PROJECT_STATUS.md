@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the validated additive multi-card migrations and complete the hosted draft/resume/publish/register/purchase smoke path.
-- Last completed task: Implemented the four-stage multi-card Admin flow and card-scoped registration, purchase, Web Card and Apple Wallet projections.
-- Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Admin general can create up to three durable card drafts, give each its own cyclic reward program, unified Apple/Android design and participating branches, then publish it and inspect card-specific metrics.
-- Git status: Typecheck, lint, 192 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0044` pass locally.
-- Remote backup: branch tracks `origin/codex/swiftwallet-mvp`; the new lifetime-configuration work is not pushed yet.
+- Current task: Deploy validated migrations `0043` through `0048` and complete the hosted multi-card plus Apple pass refresh smoke path.
+- Last completed task: Repaired the multi-card design editor so unsaved text, colors and locally selected images appear immediately in its program-aware `storeCard` preview.
+- Current branch: `SWIF-15`.
+- Last stable feature: Card design, program and location saves queue and immediately attempt installed Apple pass updates; before saving, the Admin preview now renders edited fields and local logo/strip object URLs, labels its unsaved state and blocks form submission during an active upload.
+- Git status: Typecheck, lint, 208 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0048` pass locally.
+- Remote backup: `SWIF-15` is local and not pushed yet.
 
 ## Completed Functionality
 
@@ -83,9 +83,13 @@
 - Superadmin now uses a reusable enterprise shell with responsive navigation, active-route indication, account identity, visible logout, operational metrics, semantic tenant table, status actions, and explicit loading-result/error/empty/success treatments.
 - Tenant creation, Administrator setup, branding, import upload, and import mapping routes now retain the same enterprise hierarchy and pending-submit behavior.
 - Administrator now uses the shared dark enterprise sidebar, role-aware navigation, overview, operational lists, responsive dashboard table, consistent filters, forms, data states, and visible logout.
-- The employee PWA now uses a compact authenticated header, visible logout, five-item bottom navigation, single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee PWA now uses a compact authenticated header, visible logout, three-item bottom navigation (`Registro`, `Clientes`, `Programa`), single-column task flows, 48px primary actions, responsive customer cards, and explicit preview/confirmation states.
+- The employee header derives the current tenant logo and name on the authenticated server boundary, shows an operator name only for an active shared-PIN session, and keeps connectivity UI hidden during normal online operation; offline blocking and relevant installation guidance remain visible.
 - The employee PWA prevents focus, pinch and double-tap zoom: its form controls render at 16px, its route-specific viewport is fixed at scale 1 and its application shell accepts only pan gestures. The Admin interface keeps its unrestricted root viewport.
-- The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and retains manual entry as a fallback.
+- The employee scanner now requests the rear camera only after an explicit action, continuously reads QR codes, validates the payload before submission, explains permission/device/offline failures, stops capture after success, and uses integrated name/phone search as its fallback without exposing manual token or URL entry.
+- `/app/scan` is the single employee customer-identification view: its main surface stays focused on a compact camera scanner, while authorized name/phone search, results and Manager-only editing open in a bounded modal with a sticky form, result count and internal vertical scrolling. A successful scan or selected result opens one full-height mobile customer modal whose three guided steps cover customer overview, minimal operation input and explicit server-authoritative confirmation for either purchase or one-at-a-time redemption. The separate `/app/customers` route and the standalone Compra/Canje navigation tabs remain removed.
+- The identified-customer modal consults migration `0047` for a backend-derived Apple device-registration state. When no active registration exists it offers an expandable claim QR and same-device fallback; once registered, it hides QR generation and shows the Wallet-added state without exposing device identifiers or push tokens.
+- `/app/program` exposes every published card available to the current operator with its earning rule, active reward tiers, expiration rules and terms and conditions. Migration `0045` supplies tenant-derived read-only customer/program projections without accepting a browser tenant identifier.
 - The employee PWA now ships 192px, 512px, maskable Android, and Apple touch icons; standalone metadata; launcher shortcuts; secure worker headers; Android/Chromium install affordance; iPhone/iPad home-screen guidance; and safe-area viewport metadata.
 - The PWA exposes an accessible live connection indicator, blocks operational form submissions while offline, and falls back to a cached static connection notice without caching tenant data, sessions, authenticated routes, or operational responses.
 - Supabase browser, server, and middleware clients share one SwiftWallet-specific auth cookie name and tokens-only encoding to reduce request headers and prevent local `431 Request Header Fields Too Large` failures after authentication.
@@ -99,12 +103,14 @@
 - Admin general can copy each active branch's public registration link, download its PNG QR, and open the destination from `/admin/branches`; the link is derived from the server-configured public HTTPS origin.
 - Admin general has an exclusive `/admin/customers` directory with bounded name/phone search, status filter, 50-row pagination, registration source, customer/card state, loyalty balances, available rewards and Apple Wallet generation diagnostics; Branch Administrators are redirected before data queries and do not see the navigation entry.
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
+- Employee registration now returns to the real `/app` route and replaces the dead `/app/register` destination with a compact delivery state. Its QR uses the configured public HTTPS origin in production and the current request host during local LAN development, so the customer opens the issued card on their own phone.
+- The card claim screen keeps tenant identity, current terms, required acceptance and the Wallet/Web Card action together. Migration `0046` stores the accepted program version and immutable terms snapshot behind forced RLS, and the initial Apple endpoint rejects direct downloads until the current terms are accepted.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.
-- A newly registered customer sees a direct generic Apple Wallet action when both signer configuration and tenant design are enabled; the success screen no longer routes through the Web Card.
+- A newly registered customer sees one terms-and-card claim screen; after accepting the current version, it continues directly to Apple Wallet when both signer configuration and tenant design are enabled or to the Web Card fallback.
 - The Node-only Apple endpoint derives tenant, customer, program, balance, tiers, rewards, terms, and up to ten branch locations from the public card token, then emits a non-cacheable signed `.pkpass` and records pass status.
 - Remote pass images require HTTPS plus an exact server allowlist, accepted raster content, a 5 MB limit, a 40 MP decode limit, no redirects, and a five-second timeout; invalid assets fall back safely.
 - The Admin Wallet designer uploads PNG/JPEG/WebP assets of at most 5 MB directly to the public-read `wallet-assets` Supabase bucket, under generated `tenant_id/apple` paths.
@@ -117,6 +123,8 @@
 - Production migration `0039` was applied manually and the user confirmed Apple Wallet pass generation works again.
 - Signed Apple passes now retain their QR barcode and branch locations by applying both through the PassKit generator methods that persist method-owned properties into `pass.json`.
 - Signed Apple passes now generate customer-specific `strip.png`, `strip@2x.png` and `strip@3x.png` assets from the authoritative cyclic balance. Earned circles repeat the tenant logo or initials, large goals stay bounded at 24 positions, and exact textual progress remains in an auxiliary field for Wallet versions or devices that omit the strip.
+- The multi-card design editor now previews the same Apple `storeCard` field hierarchy, 375 × 144 strip proportion, QR treatment, bounded stamp-slot calculation and configured unit copy used by signed passes. Text and color inputs update during interaction, newly selected logo/strip files use short-lived local object URLs before upload/save, current image thumbnails remain visible, and the editor explicitly distinguishes unsaved changes and Apple's iOS 26+ image limitations.
+- Migration `0048` observes design/status changes on `loyalty_cards` and assignment changes on `loyalty_card_branches`, queues only installed passes issued from the affected card and preserves the service-role-only outbox boundary. Program, design and location saves all attempt immediate APNs dispatch after the transaction commits.
 - Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.
 - Purchase, redemption and relevant administrative actions attempt production APNs delivery immediately without making application success depend on Apple availability.
 - APNs delivery uses HTTP/2, the existing pass certificate/private key and WWDR chain, an empty payload, Pass Type topic, bounded timeouts, invalid-token cleanup and per-device delivered tags.
@@ -144,7 +152,7 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 189 tests passed.
+- `npm run test:run`: passed; 193 tests passed.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -199,7 +207,7 @@
 - Migration `0038` and its integration test passed encrypted/idempotent device registration, transactional customer and tenant update queuing, service-role-only claims, authenticated-role denial, per-device delivery tags, outbox completion, unregister cleanup and no work for uninstalled passes.
 - Migration `0039` and its integration test passed a new `wallet_passes` insertion as `service_role`, automatic positive `update_tag` allocation, and denial of sequence access to `authenticated`.
 - Apple Wallet update cryptography, APNs response classification, PassKit web-service boundaries and production route build passed focused and full test coverage.
-- Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and manual fallback.
+- Customer QR generation produces a bounded PNG from only the opaque token; PassKit output preserves barcode/location properties; the operational scanner covers rear-camera configuration, automatic submission, offline denial and integrated customer-search fallback.
 - Admin customer-directory filter parsing, pagination preservation, tenant scoping, role denial and navigation visibility passed focused tests; the responsive table/card rules were reviewed at the required 375, 768, 1280 and 1440 px breakpoints.
 - Apple Wallet design/payload/integration tests passed; a disposable certificate smoke test produced a signed `.pkpass` ZIP.
 - The graphical Apple Wallet strip generator passed exact 1x/2x/3x dimension checks and produces different PNG content when the customer balance changes. Its Admin preview was reviewed at 375, 768, 1280 and 1440 px without overflow; temporary review files and routes were removed.
@@ -216,4 +224,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043` and `0044` to the hosted Supabase project with approval, then exercise create draft → resume → publish → register → scan → purchase → Apple refresh there. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.
+Apply validated migrations `0043` through `0048` to the hosted Supabase project with approval, then exercise create draft → resume → publish → employee register → scan handoff QR → accept terms → add Wallet/Web Card → edit program/design/locations → confirm automatic Apple refresh → scan/search → customer modal → redeem/purchase. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.

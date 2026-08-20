@@ -24,6 +24,7 @@ describe("PWA runtime contract", () => {
     expect(controller).toContain('window.addEventListener("offline"');
     expect(controller).toContain('document.addEventListener("submit", blockOfflineSubmission, true)');
     expect(controller).toContain("operaciones bloqueadas");
+    expect(controller).not.toContain('{online ? "En línea"');
   });
 
   it("keeps tenant and session data out of offline storage", () => {

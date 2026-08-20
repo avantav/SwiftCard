@@ -31,6 +31,13 @@ const serviceSequenceMigration = readFileSync(
   ),
   "utf8",
 );
+const cardConfigurationUpdateMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0048_apple_wallet_card_configuration_updates.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -64,6 +71,10 @@ const appleServer = readFileSync(
 );
 const walletForm = readFileSync(
   new URL("../../components/apple-wallet-design-form.tsx", import.meta.url),
+  "utf8",
+);
+const cardPreview = readFileSync(
+  new URL("../../components/apple-store-card-preview.tsx", import.meta.url),
   "utf8",
 );
 const styles = readFileSync(
@@ -115,6 +126,12 @@ describe("Apple Wallet integration boundaries", () => {
     expect(apns).toContain("api.push.apple.com");
     expect(apns).toContain('"apns-push-type": "background"');
     expect(apns).toContain('const payload = "{}"');
+    expect(cardConfigurationUpdateMigration).toContain(
+      "queue_apple_wallet_card_updates",
+    );
+    expect(cardConfigurationUpdateMigration).toContain(
+      "apple_wallet_loyalty_card_changed",
+    );
   });
 
   it("lets only the server role allocate update tags during pass issuance", () => {
@@ -127,7 +144,7 @@ describe("Apple Wallet integration boundaries", () => {
   it("only exposes the public download when the server and tenant are ready", () => {
     expect(migration).toContain("public_apple_wallet_is_enabled");
     expect(publicCard).toContain("appleWalletAvailable && cardToken");
-    expect(publicCard).toContain("/api/wallet/apple/");
+    expect(publicCard).toContain("?claim=1");
   });
 
   it("uploads tenant images to an RLS-scoped Supabase Storage bucket", () => {
@@ -147,10 +164,12 @@ describe("Apple Wallet integration boundaries", () => {
     expect(appleServer).toContain("buildAppleWalletStampStrips");
     expect(appleServer).toContain("stampBalance: input.stampBalance");
     expect(appleServer).toContain('input.programType === "LIFETIME_POINTS"');
-    expect(walletForm).toContain("apple-pass-preview-primary");
-    expect(walletForm).toContain("apple-pass-preview-stamps");
-    expect(walletForm).toContain("apple-pass-preview-supporting-fields");
-    expect(walletForm).toContain("/icons/wallet-preview-qr.svg");
+    expect(cardPreview).toContain("apple-pass-preview-primary");
+    expect(cardPreview).toContain("apple-pass-preview-stamps");
+    expect(cardPreview).toContain("apple-pass-preview-supporting-fields");
+    expect(cardPreview).toContain("/icons/wallet-preview-qr.svg");
+    expect(cardPreview).toContain("appleWalletStampSlots");
+    expect(cardPreview).toContain("appleWalletProgressText");
     expect(styles).toContain("aspect-ratio: 375 / 144");
     expect(styles).toMatch(
       /font-family:\s*-apple-system, BlinkMacSystemFont, "SF Pro Text"/,

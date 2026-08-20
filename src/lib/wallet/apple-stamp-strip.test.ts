@@ -3,6 +3,8 @@ import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
   APPLE_WALLET_MAX_VISIBLE_STAMPS,
+  appleWalletStampLayout,
+  appleWalletStampRows,
   appleWalletStampSlots,
   buildAppleWalletStampStrips,
 } from "./apple-stamp-strip";
@@ -28,6 +30,13 @@ describe("Apple Wallet graphical stamp strip", () => {
     expect(appleWalletStampSlots(100, 100).filled).toBe(
       APPLE_WALLET_MAX_VISIBLE_STAMPS,
     );
+    expect(appleWalletStampLayout(10)).toEqual({
+      columns: 5,
+      diameter: 46,
+      gap: 14,
+    });
+    expect(appleWalletStampLayout(24).columns).toBe(8);
+    expect(appleWalletStampRows(6, 5)).toEqual([[0, 1, 2, 3, 4], [5]]);
   });
 
   it("renders current customer progress into every signed-pass strip scale", async () => {

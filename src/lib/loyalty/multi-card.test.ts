@@ -17,6 +17,21 @@ const designEditor = readFileSync(
   new URL("../../components/card-design-editor.tsx", import.meta.url),
   "utf8",
 );
+const applePreview = readFileSync(
+  new URL("../../components/apple-store-card-preview.tsx", import.meta.url),
+  "utf8",
+);
+const cardActions = readFileSync(
+  new URL("../../app/admin/cards/actions.ts", import.meta.url),
+  "utf8",
+);
+const walletCardUpdates = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0048_apple_wallet_card_configuration_updates.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 
 describe("multi-card loyalty boundary", () => {
   it("owns a program and limits each tenant to three durable cards", () => {
@@ -54,5 +69,23 @@ describe("multi-card loyalty boundary", () => {
     expect(designEditor).toContain('setProvider("GOOGLE")');
     expect(designEditor).toContain("APPLE_WALLET_ASSET_BUCKET");
     expect(designEditor).toContain("createAppleWalletAssetPath(tenantId");
+    expect(designEditor).toContain("AppleStoreCardPreview");
+    expect(designEditor).toContain("URL.createObjectURL(file)");
+    expect(designEditor).toContain("localPreviews.logo || design.logoImageUrl");
+    expect(designEditor).toContain("preventSubmitWhileUploading");
+    expect(designEditor).toContain("Mostrando cambios sin guardar");
+    expect(designEditor).toContain("onInput=");
+    expect(wizard).toContain("rewardGoal");
+    expect(applePreview).toContain("appleWalletStampSlots");
+    expect(applePreview).toContain("appleWalletProgressText");
+    expect(applePreview).toContain("apple-pass-preview-supporting-fields");
+  });
+
+  it("queues and immediately dispatches installed pass updates after card edits", () => {
+    expect(walletCardUpdates).toContain("queue_apple_wallet_card_updates");
+    expect(walletCardUpdates).toContain("apple_wallet_loyalty_card_changed");
+    expect(walletCardUpdates).toContain("apple_wallet_loyalty_card_branch_changed");
+    expect(walletCardUpdates).toContain("issued.loyalty_card_id = target_loyalty_card_id");
+    expect(cardActions.match(/dispatchAppleWalletUpdatesBestEffort/g)).toHaveLength(5);
   });
 });

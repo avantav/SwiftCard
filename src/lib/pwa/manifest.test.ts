@@ -17,7 +17,7 @@ describe("PWA manifest", () => {
       expect.objectContaining({ src: "/icons/icon-512.png", sizes: "512x512", purpose: "any" }),
       expect.objectContaining({ src: "/icons/icon-maskable-512.png", sizes: "512x512", purpose: "maskable" })
     ]));
-    expect(value.shortcuts?.map((shortcut) => shortcut.url)).toEqual(["/app", "/app/scan", "/app/customers"]);
+    expect(value.shortcuts?.map((shortcut) => shortcut.url)).toEqual(["/app", "/app/scan", "/app/program"]);
   });
 
   it("ships valid PNG dimensions for Android and Apple launchers", () => {

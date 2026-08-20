@@ -86,6 +86,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement self-service registration by branch token.
 - [x] [Terminada] Expose each active branch registration link with copy, PNG QR download, and inactive-link handling in the Admin UI.
 - [x] [Terminada] Implement employee registration.
+- [x] [Terminada] Return employee registration to the real PWA route and show a customer handoff QR that opens one mobile terms-and-card screen.
 - [x] [Terminada] Implement customer search and profile editing.
 - [x] [Terminada] Add the tenant-wide customer directory with status, card, loyalty and Apple Wallet diagnostics exclusively for the Admin general.
 - [x] [Terminada] Implement public web card by card token.
@@ -123,9 +124,14 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 **Tasks**
 
 - [x] [Terminada] Add manifest, adaptive launcher icons, install metadata, secure service-worker registration, installation guidance, and online-only connection states.
+- [x] [Terminada] Brand the shared employee header with the tenant logo/name and remove persistent positive connectivity and redundant account copy while retaining actionable offline, install and session states.
 - [x] [Terminada] Implement scanner route and QR parsing.
-- [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and a manual input fallback.
+- [x] [Terminada] Add rear-camera QR scanning with explicit permission/error/offline states and integrate name/phone customer search as a bounded modal fallback without manual token or URL entry.
 - [x] [Terminada] Implement purchase and redemption mobile flows.
+- [x] [Terminada] Consolidate scan/search results, customer balance, available rewards, one-at-a-time redemption and the purchase entry action in one mobile-first customer modal; reduce the bottom navigation to Registro, Clientes and Programa.
+- [x] [Terminada] Convert the customer modal into a three-step guided operation: overview, minimal purchase/reward input and explicit authoritative confirmation; keep large search result sets clear and vertically bounded.
+- [x] [Terminada] Offer an expandable card-claim QR from the identified-customer modal only while Apple has no active device registration for that issued card.
+- [x] [Terminada] Add an employee-readable, tenant-derived program catalog with earning rules, reward tiers and terms and conditions.
 - [x] [Terminada] Add strict/flexible geolocation handling.
 - [x] [Terminada] Add double-submit protection.
 
@@ -185,12 +191,14 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Render the opaque card token as a real, high-contrast QR on the Web Card.
 - [x] [Terminada] Implement tenant-owned Apple Wallet `storeCard` design and signed `.pkpass` generation behind server-only config.
 - [x] [Terminada] Offer the signed Apple pass directly after public registration without routing the customer through the Web Card.
+- [x] [Terminada] Persist a versioned terms snapshot from the possession-based card claim screen and reject initial Apple Wallet downloads until the current terms are accepted.
 - [x] [Terminada] Add direct Admin uploads for tenant Wallet images through a public-read, tenant-scoped Supabase Storage bucket with RLS-protected writes and bounded raster formats.
 - [x] [Terminada] Implement Apple Wallet device registrations, stable per-pass authentication, encrypted push tokens, update tags, durable outbox, updated-pass delivery, immediate production APNs dispatch, invalid-token cleanup, and a protected retry endpoint.
 - [x] [Terminada] Add migration `0039` to restore the server-only sequence permission required when issuing a new pass after `0038`, with positive `service_role` insertion and negative browser-role regression coverage.
 - [x] [Terminada] Apply migration `0039` manually and confirm that production pass issuance works again.
 - [x] [Terminada] Preserve the configured QR barcode and branch locations in the final signed `.pkpass` through the PassKit generator setter APIs.
 - [x] [Terminada] Generate a per-customer branded graphical stamp strip on the server at 1x/2x/3x, replace it with each signed pass update, and retain exact textual progress as a compatibility fallback.
+- [x] [Terminada] Align the multi-card Admin preview with the signed Apple `storeCard`, reflect unsaved text, color and locally selected image changes immediately, use each program's actual goal and unit names, and transactionally queue plus immediately dispatch installed-pass updates after card design, program or location changes.
 - [ ] [Pendiente] Deploy the QR/scanner correction, refresh or reinstall the pass, validate scanning plus APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.

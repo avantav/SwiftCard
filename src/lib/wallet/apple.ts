@@ -1,4 +1,8 @@
 import { hexToAppleRgb } from "./design";
+import {
+  appleWalletProgressText,
+  appleWalletRewardTierText,
+} from "./apple-card-content";
 
 export type AppleWalletLocation = {
   latitude: number;
@@ -18,6 +22,8 @@ export type AppleWalletPassData = {
   customerName: string;
   programName: string;
   programType: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
+  unitNameSingular: string;
+  unitNamePlural: string;
   stampBalance: number;
   rewardGoal: number | null;
   availableRewards: number;
@@ -52,8 +58,12 @@ export function buildAppleWalletPassProps(
   );
   const rewardCatalog = tiers
     .map(
-      (tier) =>
-        `${tier.stampsRequired} sellos · ${tier.name}: ${tier.description}`,
+      (tier) => appleWalletRewardTierText({
+        required: tier.stampsRequired,
+        name: tier.name,
+        description: tier.description,
+        unitNamePlural: input.unitNamePlural,
+      }),
     )
     .join("\n");
 
@@ -97,9 +107,12 @@ export function buildAppleWalletPassProps(
         {
           key: "stamp-progress",
           label: "PROGRESO",
-          value: input.rewardGoal
-            ? `${input.stampBalance} de ${input.rewardGoal} sellos`
-            : `${input.stampBalance} sellos`,
+          value: appleWalletProgressText({
+            balance: input.stampBalance,
+            goal: input.rewardGoal,
+            unitNameSingular: input.unitNameSingular,
+            unitNamePlural: input.unitNamePlural,
+          }),
           changeMessage: "Tu tarjeta ahora tiene %@.",
         },
       ],
@@ -107,7 +120,7 @@ export function buildAppleWalletPassProps(
         { key: "program", label: "PROGRAMA", value: input.programName },
         {
           key: "reward-tiers",
-          label: "PREMIOS POR SELLOS",
+          label: `PREMIOS POR ${input.unitNamePlural.toLocaleUpperCase("es-MX")}`,
           value: rewardCatalog || "Consulta los premios vigentes con el negocio.",
         },
         {

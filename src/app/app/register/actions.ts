@@ -5,7 +5,7 @@ import { requireInternalArea } from "@/lib/auth/server";
 import { validateEmployeeCustomerRegistration } from "@/lib/customers/employee-registration";
 
 function redirectWithParams(params: Record<string, string>): never {
-  redirect(`/app/register?${new URLSearchParams(params).toString()}`);
+  redirect(`/app?${new URLSearchParams(params).toString()}`);
 }
 
 export async function registerEmployeeCustomer(formData: FormData) {

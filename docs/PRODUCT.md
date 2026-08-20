@@ -107,6 +107,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 
 - Escanear tarjetas.  
 - Buscar clientes por teléfono o nombre.  
+- Generar desde el cliente encontrado un QR de entrega cuando la tarjeta todavía no esté registrada en Wallet.
 - Registrar clientes y compras.  
 - Canjear una recompensa por confirmación.  
 - Ver sellos, recompensas y actividad reciente.
@@ -203,11 +204,11 @@ El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers
 
 ### Autoservicio
 
-Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal y, cuando la ubicación participa en más de una tarjeta publicada, elige cuál desea antes de capturar sus datos. El backend valida que esa tarjeta esté publicada y ligada a la sucursal, valida formato y duplicados, crea el cliente y genera la tarjeta emitida. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro se ofrecerá directamente **Agregar a Apple Wallet** cuando la tarjeta y el servidor estén listos; no se enviará al cliente a una pantalla intermedia. Un enlace inválido, una tarjeta no participante, una sucursal inactiva o un tenant suspendido no mostrará el formulario.
+Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal y, cuando la ubicación participa en más de una tarjeta publicada, elige cuál desea antes de capturar sus datos. El backend valida que esa tarjeta esté publicada y ligada a la sucursal, valida formato y duplicados, crea el cliente y genera la tarjeta emitida. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro, una sola pantalla mostrará los términos vigentes, solicitará su aceptación y ofrecerá **Agregar a Apple Wallet** cuando la tarjeta y el servidor estén listos; si Apple no está disponible, abrirá la Web Card. Un enlace inválido, una tarjeta no participante, una sucursal inactiva o un tenant suspendido no mostrará el formulario.
 
 ### Por empleado
 
-Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
+Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Si posteriormente se localiza al cliente por búsqueda o escaneo y Apple todavía no ha registrado la tarjeta en un dispositivo, el mismo modal permitirá volver a generar ese QR; la opción se ocultará después del registro de Wallet. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
 
 No habrá OTP, verificación por correo ni contraseña del cliente.
 
@@ -243,10 +244,13 @@ mientras el valor exacto permanecerá disponible para tecnologías de asistencia
 
 El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
 
+La primera incorporación a Wallet exigirá aceptar la versión vigente de los términos. El backend guardará la versión, una copia inmutable del texto y la fecha de aceptación asociadas a la tarjeta emitida; una descarga directa del pase sin esa aceptación será rechazada. Si los términos cambian, la nueva versión deberá aceptarse antes de una nueva incorporación.
+
 El mismo identificador seguro se mostrará como QR real en la Web Card y como
 barcode QR en Apple Wallet. La PWA operativa podrá leer ambos con la cámara
-tras una acción explícita del empleado y conservará captura manual como
-respaldo cuando el dispositivo niegue o no soporte la cámara.
+tras una acción explícita del empleado y conservará la búsqueda por nombre o
+teléfono como respaldo cuando el dispositivo niegue o no soporte la cámara. La
+interfaz no permitirá capturar manualmente tokens ni enlaces de tarjeta.
 
 El Admin general configurará cada tarjeta con un diseño neutral al proveedor: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El mismo formulario mostrará una vista previa alternable Apple/Android; no existirán diseñadores separados por dispositivo. La generación Apple seguirá usando una plantilla `storeCard` y adaptará el diseño común a la estructura controlada por Apple. El diseño es independiente del secreto de firma.
 
@@ -478,16 +482,15 @@ Superadmin ve auditoría global; Administrador la del tenant; Encargado la de su
 
 ## 21. PWA
 
-Rutas operativas:
+La navegación operativa principal tendrá exactamente tres tabs:
 
-- Inicio.  
-- Escanear.  
-- Buscar cliente.  
-- Nuevo cliente.  
-- Registrar compra.  
-- Canjear.  
-- Historial reciente.  
-- Perfil y cambio de empleado.
+- Registro de cliente.
+- Clientes: escáner y búsqueda manual.
+- Programa: catálogo de premios, forma de acumulación y términos y condiciones.
+
+La cabecera operativa mostrará el logo y nombre del tenant como identidad principal. Solo conservará la identidad del operador cuando sea necesaria para una sesión compartida y las acciones de cambio de usuario o salida. El estado normal en línea no ocupará espacio; la conexión se comunicará únicamente cuando esté ausente y bloquee operaciones.
+
+Registrar compra y canjear no serán tabs independientes. Después de escanear o seleccionar un resultado de búsqueda, la PWA abrirá un modal móvil guiado: el primer paso muestra identidad, tarjeta, saldo, premios disponibles y las dos operaciones; el segundo captura únicamente los datos de compra o canje; el tercero presenta un resumen y exige confirmación explícita. Los montos se capturan en la moneda legible del tenant y el backend conserva la autoridad de cálculo. Perfil, cierre de sesión y cambio de empleado permanecerán en la cabecera operativa.
 
 Requisitos:
 
@@ -499,7 +502,7 @@ Requisitos:
 - Confirmaciones para compras y canjes.  
 - Protección contra doble envío.  
 - Manejo claro de permisos de cámara y ubicación.
-- Resolución del cliente por escáner o búsqueda manual hacia una sola vista operativa con recompensas disponibles y acción para registrar compra.
+- Resolución del cliente por escáner o búsqueda manual hacia un solo modal operativo de tres pasos. La búsqueda manual se abrirá en otro modal con formulario fijo, conteo visible y resultados identificables por nombre, teléfono y tarjeta; las listas largas tendrán únicamente desplazamiento vertical interno.
 
 ## 22. Apple Wallet y Google Wallet
 

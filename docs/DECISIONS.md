@@ -211,3 +211,64 @@
 - Reason: The aggregate prevents cross-card balance and reporting ambiguity, preserves the existing one-card-per-customer invariant, makes drafts resumable across devices and keeps wallet-specific rendering as an adapter over one business design.
 - Consequences: Migrations `0043` and `0044` are additive and must be applied before the new Admin route. Legacy `/admin/program` and `/admin/wallet` redirect to `/admin/cards`. Public and employee registration require a published card assigned to the selected branch. Google pass generation remains pending, but its preview uses the same saved design contract as Apple.
 - Status: Accepted.
+
+## DEC-0022 - Unified Employee Customer Identification
+
+- Date: 2026-08-15
+- Context: Employees had separate scanner and customer-search routes, while the scanner also exposed a manual token/URL field that duplicated the secure camera path and added an implementation-facing control to the operational UI.
+- Decision: Make `/app/scan` the single employee customer-identification view. Keep explicit rear-camera scanning, replace manual token/URL entry with authorized name-or-exact-phone search in a bounded native modal, resolve search results to the issued loyalty card and current operator scope, and remove the separate `/app/customers` route, navigation item and PWA shortcut. Preserve Manager-only customer editing inside the modal results.
+- Alternatives considered: Keep both routes, keep manual token entry as a third path, or move camera scanning into the former customer-search page.
+- Reason: One entry point reduces navigation and input ambiguity while preserving a usable fallback when camera access is denied or unsupported.
+- Consequences: QR payload parsing remains an internal camera boundary, not an employee-facing text input. Search continues through existing customer/card RLS, and purchase links carry the backend-derived issued-card and loyalty-card identifiers required by multi-card operations. The base screen avoids rendering result lists below the camera; long search/edit content scrolls inside the modal and page scrolling is locked while it is open.
+- Status: Accepted.
+
+## DEC-0023 - Customer-Centered Employee Operations
+
+- Date: 2026-08-15
+- Context: After identification, Compra and Canje still lived as independent bottom-navigation destinations and required the employee to reconstruct customer context. Employees also lacked one operational view of the published reward catalog and terms.
+- Decision: Keep exactly three employee tabs: `Registro`, `Clientes` and `Programa`. A successful QR scan or selected manual-search result opens a full-height mobile-first customer modal with identity, issued card, current balance, available rewards, one-reward redemption and a single dominant action to register a purchase. Compra and Canje remain protected internal workflows but are no longer standalone navigation tabs. Add a read-only program tab backed by authenticated, tenant-derived projections for earning rules, reward tiers and terms.
+- Alternatives considered: Keep four tabs, add a fifth information tab, navigate directly from identification to Compra, or duplicate customer/reward data in separate routes.
+- Reason: Point-of-sale work starts from a customer, not an operation category. Keeping the customer context visible reduces navigation, prevents accidental operation against the wrong customer and leaves the main scan surface compact.
+- Consequences: Migration `0045` is required before the new modal and program tab can load in a hosted environment. It accepts only an opaque issued-card identifier for the customer projection, derives tenant/operator authority from `auth.uid()` and current PIN context, and exposes no write authority. Existing `/app/purchase` and `/app/redeem` routes remain for compatibility, but only customer-context actions are shown in primary navigation.
+- Status: Accepted.
+
+## DEC-0024 - Versioned Customer Card Handoff
+
+- Date: 2026-08-15
+- Context: Employee registration redirected to a nonexistent `/app/register` page, and Wallet issuance could begin without a customer-facing acceptance step. The point-of-sale handoff also needed to work from a LAN development origin and stay compact on a customer phone.
+- Decision: Return successful employee registration to `/app`, render a QR for an absolute possession-based `/card/{token}?claim=1` link, and place tenant identity, current program terms, required acceptance and the one Wallet/Web Card action on a single mobile-first screen. Persist the accepted program version and an immutable terms snapshot, and gate the initial Apple Wallet endpoint on that acceptance.
+- Alternatives considered: Keep a success link without QR, ask the employee to accept on the customer's behalf, store only a boolean, or let the public form download the pass before acceptance.
+- Reason: The customer should make the consent action on their own device, while the backend retains evidence of exactly which terms version was accepted and direct endpoint access cannot bypass it.
+- Consequences: Migration `0046` is required before the claim form and Apple Wallet download work in a hosted environment. The public link remains an opaque possession token and exposes no tenant ID, phone, internal card ID or balance. Production QR generation uses the configured HTTPS public origin; local development may use the current request host so another device on the LAN can scan it.
+- Status: Accepted.
+
+## DEC-0025 - Wallet-Aware Repeat Delivery From Customer Search
+
+- Date: 2026-08-15
+- Context: A customer may leave registration without adding the card, then return later and be found by employee search or scan. Staff needed a repeatable handoff without showing redundant controls after Wallet confirms installation.
+- Decision: Add an authenticated read-only projection that accepts only the issued-card UUID already authorized by the customer summary, returns the opaque card token and reports Apple installation only when an active Wallet device registration exists. When not installed, the customer modal exposes a collapsed “Generar QR para agregar tarjeta” section using the same terms-and-claim flow; after registration, it shows status and hides the QR option.
+- Alternatives considered: Always show the QR, treat pass generation as installation, read Wallet device tables directly from the browser, or add a separate delivery page.
+- Reason: Apple device registration is stronger evidence of an added pass than generation alone. Keeping the option inside the existing modal preserves customer context and avoids another navigation destination.
+- Consequences: Migration `0047` is required in hosted environments. Device identifiers and push-token data remain inaccessible; the projection returns only a boolean and the already possession-safe opaque card token after reusing tenant/operator authorization from the staff customer summary.
+- Status: Accepted.
+
+## DEC-0026 - Guided Customer Operation Modal
+
+- Date: 2026-08-15
+- Context: Putting purchase and redemption controls in one customer view removed navigation, but exposed too many choices at once and made the next action unclear after scanning or searching.
+- Decision: Use one three-step mobile modal for both operations. Step one shows customer identity, card balance, reward availability and the operation choice. Step two asks only for the selected reward and branch, or purchase branch and readable currency amount. Step three shows an authoritative preview and requires explicit confirmation. Long customer searches keep the query form visible and identify every result with name, phone and card.
+- Alternatives considered: Return to separate Compra/Canje tabs, place every field in one scrolling modal, or confirm operations immediately from the overview.
+- Reason: Progressive disclosure keeps customer context visible while reducing error-prone choices and making irreversible actions explicit.
+- Consequences: Purchase amounts are converted exactly to minor units on the server and previews are recalculated before confirmation. Existing protected RPCs and legacy routes remain compatible; no migration is required.
+- Status: Accepted.
+
+## DEC-0027 - Card-Owned Apple Preview And Update Propagation
+
+- Date: 2026-08-18
+- Context: After multi-card configuration moved design into `loyalty_cards`, the Admin preview still rendered a generic hard-coded 4-of-10 card and the Apple update triggers still observed only the legacy tenant-wide design table. Saving a card design could therefore call the dispatcher without creating outbox work, while program and location saves could queue work without attempting immediate delivery.
+- Decision: Make the multi-card Apple preview consume the saved program goal, unit names, card design and the same tenant asset fallbacks used by pass generation. Share progress copy and bounded stamp-slot calculations between preview and signed pass code, preserve Apple's `storeCard` front hierarchy and 375 × 144 strip proportion, and identify Android as conceptual until generation exists. Add a card-scoped transactional queue function plus triggers for `loyalty_cards` design/status and `loyalty_card_branches` changes, then attempt immediate APNs dispatch after program, design and location saves.
+- Alternatives considered: Continue the generic preview, restore writes to `tenant_wallet_designs`, update every installed pass in the tenant for each card edit, or rely only on the future external retry cron.
+- Reason: One card-owned source prevents preview/pass drift, targeted queueing avoids unnecessary updates to other cards and immediate dispatch matches the current no-cron hosting constraint without coupling configuration success to Apple availability.
+- Consequences: Additive migration `0048` must be deployed before card design/location edits update installed passes. Existing passes still require a successful Apple device registration, and failed APNs work remains durable for the protected retry endpoint. Apple owns final rendering; according to current Pass Designer compatibility documentation, store-card logo and strip images may be omitted on iOS 26 or later, so the textual progress field remains mandatory.
+- References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
+- Status: Accepted.

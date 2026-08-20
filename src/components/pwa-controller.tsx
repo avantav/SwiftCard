@@ -106,17 +106,15 @@ export function PwaController() {
 
   const showInstallHelp = !installed && !helpDismissed && (installPrompt !== null || showIosHelp);
 
+  if (online && !showInstallHelp) return null;
+
   return (
     <section aria-label="Estado de la aplicación" className="pwa-status-region">
-      <p aria-live="polite" className={`pwa-connection-state ${online ? "is-online" : "is-offline"}`}>
-        <span aria-hidden="true" />
-        {online ? "En línea" : "Sin conexión · operaciones bloqueadas"}
-      </p>
       {!online ? (
         <div className="pwa-notice is-offline" role="alert">
           <div>
-            <strong>Recupera la conexión para continuar</strong>
-            <p>SwiftWallet no enviará operaciones ni guardará datos del tenant en este dispositivo mientras estés sin conexión.</p>
+            <strong>Sin conexión · operaciones bloqueadas</strong>
+            <p>Recupera la conexión para continuar.</p>
           </div>
         </div>
       ) : null}

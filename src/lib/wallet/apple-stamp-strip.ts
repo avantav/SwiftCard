@@ -1,6 +1,15 @@
 import sharp from "sharp";
+import {
+  appleWalletStampLayout,
+  appleWalletStampSlots,
+} from "./apple-stamp-layout";
 
-export const APPLE_WALLET_MAX_VISIBLE_STAMPS = 24;
+export {
+  APPLE_WALLET_MAX_VISIBLE_STAMPS,
+  appleWalletStampLayout,
+  appleWalletStampRows,
+  appleWalletStampSlots,
+} from "./apple-stamp-layout";
 
 const stripSizes = [
   { name: "strip.png", width: 375, height: 144 },
@@ -31,36 +40,13 @@ function escapeXml(value: string) {
     .replaceAll("'", "&apos;");
 }
 
-export function appleWalletStampSlots(stampBalance: number, rewardGoal: number | null) {
-  const goal = Math.max(0, Math.trunc(rewardGoal ?? 0));
-  if (!goal) return { goal: 0, earned: 0, visible: 0, filled: 0 };
-  const earned = Math.min(goal, Math.max(0, Math.trunc(stampBalance)));
-  const visible = Math.min(goal, APPLE_WALLET_MAX_VISIBLE_STAMPS);
-  const proportional = Math.round((earned / goal) * visible);
-  const filled = goal <= APPLE_WALLET_MAX_VISIBLE_STAMPS
-    ? earned
-    : earned === 0
-      ? 0
-      : earned >= goal
-        ? visible
-        : Math.min(visible - 1, Math.max(1, proportional));
-  return { goal, earned, visible, filled };
-}
-
-function stampLayout(visible: number) {
-  if (visible <= 5) return { columns: visible, diameter: 54, gap: 14 };
-  if (visible <= 10) return { columns: 5, diameter: 46, gap: 14 };
-  if (visible <= 16) return { columns: 8, diameter: 34, gap: 10 };
-  return { columns: 8, diameter: 32, gap: 10 };
-}
-
 async function renderStampStrip(
   input: StampStripInput,
   size: (typeof stripSizes)[number],
 ) {
   const scale = size.width / 375;
   const progress = appleWalletStampSlots(input.stampBalance, input.rewardGoal);
-  const layout = stampLayout(progress.visible);
+  const layout = appleWalletStampLayout(progress.visible);
   const rows = Math.ceil(progress.visible / layout.columns);
   const diameter = layout.diameter * scale;
   const gap = layout.gap * scale;

@@ -1,5 +1,123 @@
 # Work Log
 
+## 2026-08-18 - SWIF-15 Apple Card Design Propagation
+
+**Objective:** Make card program/design changes appear in the Admin preview and propagate them to already installed Apple Wallet passes.
+
+**Changes Made:** Replaced the multi-card wizard's generic hard-coded preview with an Apple `storeCard` representation driven by the saved reward goal, unit names, colors and effective card/tenant images. Text and color controls now update during interaction; selected logo/strip files get short-lived local object URLs so their thumbnail and card preview appear before upload or save. The panel identifies unsaved state, exposes description/availability metadata and prevents saving during an active upload. Preview and pass generation share progress wording and bounded stamp-slot calculations. Apple Wallet payloads use the program's configured unit names instead of hard-coded “sellos”. Added migration `0048` to queue only installed passes issued from a changed `loyalty_cards` design/status or branch assignment, and added immediate dispatch after program and location saves alongside the existing design/publish dispatch.
+
+**Security And Correctness:** The new queue function is trigger-only, security-definer, revoked from browser and service roles, filters passes through the issued card's server-owned `loyalty_card_id`, requires an active device registration and keeps update tags/outbox work transactional. APNs failure still cannot roll back configuration changes.
+
+**Design Review:** The real production editor was reviewed through a temporary route at 375, 768, 1280 and 1440 px. The Apple preview matches the signed pass's header, strip, combined supporting row and QR hierarchy, stays responsive through the 24-slot bound and clearly states that Apple may omit logo/strip assets on iOS 26+. Android remains explicitly conceptual. Browser interaction confirmed that brand text, description, background color and a newly selected local logo update before saving, and that submission is prevented while the upload is pending. No horizontal overflow or hidden control was found, and the temporary route was removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 208 Vitest tests, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0048` pass.
+
+**Next Action:** Deploy migrations `0043` through `0048` with approval, edit a published card on the hosted environment and confirm the installed iPhone pass refreshes its colors, text and supported assets.
+
+## 2026-08-15 - Tenant-Branded Employee Header
+
+**Objective:** Make every employee screen clearly belong to the current business while removing non-actionable status and duplicated account information.
+
+**Changes Made:** The shared employee layout now reads the authenticated tenant's name and logo and passes them to the operational header. The header replaces SwiftWallet, role and email copy with tenant identity, falling back to tenant initials when no logo exists; only a shared-PIN operator name remains when attribution matters. The PWA controller no longer renders an “En línea” badge or an empty status region, while offline blocking and relevant installation guidance remain available.
+
+**Security And Correctness:** Tenant branding is selected server-side using the tenant ID derived from the authenticated staff context under existing RLS. The browser cannot select a tenant, and no new write path, grant or migration was added.
+
+**Design Review:** The shared header was reviewed at 375, 768, 1280 and 1440 px. Tenant identity remains legible, session actions retain 44px targets, the mobile name can wrap without horizontal overflow, and normal online operation begins directly with page content. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 206 Vitest tests and the production webpack build pass. No database migration is required.
+
+**Next Action:** Smoke-test a tenant with a real configured logo and both individual and shared-PIN employee sessions on the installed phone.
+
+## 2026-08-15 - Guided Customer Purchase And Reward Flow
+
+**Objective:** Make scan and search lead to an immediately understandable customer operation, even when search returns many matches.
+
+**Changes Made:** Replaced the mixed customer controls with a three-step mobile modal: overview and operation choice, minimal operation-specific inputs, then explicit confirmation. Purchase entry uses a readable tenant-currency amount and displays the backend preview before confirmation; reward redemption identifies one reward and branch before its own confirmation. Search keeps its form visible, reports the result count and labels every result with name, phone and card while containing long lists in vertical scrolling.
+
+**Security And Correctness:** Tenant currency, customer/card scope, purchase calculation and final mutation remain server-derived. Both preview and confirmation call the existing protected RPCs, confirmation recalculates the purchase, and reward execution retains the existing authenticated action boundary. Exact string-to-minor-unit conversion avoids floating-point money arithmetic.
+
+**Design Review:** Overview, purchase steps and reward steps were reviewed at 375 px; the overview was also reviewed at 768, 1280 and 1440 px, and 12-result search states at 375 and 768 px. The mobile customer modal uses the full viewport, actions stay prominent, long search results scroll internally without horizontal overflow and no temporary review route remains.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 206 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass.
+
+**Next Action:** Apply validated migrations `0043` through `0047` to hosted Supabase, then smoke-test scan/search, purchase preview/confirmation and reward confirmation on the employee phone.
+
+## 2026-08-15 - Wallet-Aware QR Delivery From Customer Search
+
+**Objective:** Let an employee regenerate the customer card handoff QR after search or scan when the card has not actually been added to Apple Wallet.
+
+**Changes Made:** The identified-customer modal now queries a bounded delivery projection alongside its existing customer summary. Without an active Apple device registration it shows a collapsed “Generar QR para agregar tarjeta” control; expanding it reveals a high-contrast QR and same-device fallback to the existing claim/terms screen. Once Apple registers the pass on an active device, the generator is replaced by a compact Wallet-added status.
+
+**Security And Correctness:** Additive migration `0047` accepts only the issued-card UUID already used by the customer summary, reuses that summary's tenant/operator authorization, and returns only the opaque public token plus an installation boolean. Apple device identifiers, encrypted push tokens and registration rows remain denied to browser roles. Cross-tenant and anonymous SQL assertions pass.
+
+**Design Review:** Closed state was reviewed at 375, 768, 1280 and 1440 px, and expanded QR state at 375 and 768 px. The collapsed option adds one compact block to the customer modal; expanded content remains inside the modal's existing bounded scroll region, with the complete QR and fallback action visible and no horizontal overflow. Temporary review routes and attributes were removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 201 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0047` pass.
+
+**Next Action:** Apply validated migrations `0043` through `0047` to hosted Supabase, verify the option before installation on a real iPhone, add the pass, reopen the same customer and confirm the generator is hidden.
+
+## 2026-08-15 - Customer Card QR Handoff And Terms Acceptance
+
+**Objective:** Repair the 404 after employee registration and let the customer accept program terms and add the issued card from one phone-first screen.
+
+**Changes Made:** Successful employee registration now returns to `/app` instead of the nonexistent `/app/register` page. The success state renders an absolute QR for the issued card claim URL, using the configured HTTPS origin in production and the current request host during local LAN development. Scanning opens one compact tenant-branded screen with the current terms, a required checkbox and one Apple Wallet/Web Card action. Existing public registration and Web Card Apple actions use the same claim boundary.
+
+**Security And Correctness:** Additive migration `0046` persists the program version, an immutable terms snapshot and acceptance time against the issued card behind forced RLS and no direct browser grants. Public RPCs derive all tenant/card/program scope from the opaque card token. The Apple download endpoint rechecks current-version acceptance and rejects direct bypass attempts; stale versions return to the current claim screen.
+
+**Design Review:** The exact handoff and claim components were reviewed in Chrome at 375, 768, 1280 and 1440 px. At 375 px the QR, three handoff steps and both actions fit within the viewport; the claim screen keeps its only long content in a bounded terms region and leaves acceptance plus the primary action visible. No horizontal overflow, gradients, hidden critical action or temporary review route remains.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 200 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0046` pass.
+
+**Next Action:** Apply validated migrations `0043` through `0046` to hosted Supabase with approval, then register a customer from the employee PWA, scan the handoff QR on a real phone, accept terms and add the signed card.
+
+## 2026-08-15 - Reliable Customer Search Trigger
+
+**Objective:** Fix the employee “Buscar cliente por nombre o teléfono” action when client-side dialog opening does not run.
+
+**Changes Made:** Replaced the JavaScript-only trigger with a route-backed link to `/app/scan?searchModal=1`. The scan page now treats that explicit state like a submitted query and opens the native dialog after navigation. Closing through the visible button, Escape or backdrop returns to clean `/app/scan`, so the trigger can always open the modal again. The empty search field is now required before submission.
+
+**Correctness:** Customer queries, RLS and Manager-only editing remain unchanged. The explicit URL state contains no customer or tenant data and provides a normal navigation fallback if client hydration is delayed.
+
+## 2026-08-15 - Customer-Centered Employee Modal And Program Tab
+
+**Objective:** Make every scanned or searched customer open one mobile-first operational view, remove Compra/Canje as standalone tabs and expose program rewards and terms to employees.
+
+**Changes Made:** QR resolution and manual-search results now return to `/app/scan` with the issued-card context and open a full-height mobile dialog showing customer, card, balance and reward count. Available rewards can be selected and redeemed one at a time in the dialog; the dominant action continues to the existing card-scoped purchase preview. Added `/app/program` with expandable published-card summaries, earning rules, ordered reward tiers, expiration information and terms. Bottom navigation and PWA shortcuts now contain exactly Registro, Clientes and Programa; the protected purchase/redeem routes remain compatible but are no longer tabs.
+
+**Security And Correctness:** Additive migration `0045` introduces read-only security-definer projections that derive the active tenant and operator from `auth.uid()`/PIN context, filter programs by accessible active branches and accept only an opaque issued-card ID for customer lookup. The inline redemption action re-reads that summary, verifies the selected reward belongs to its available reward set, and still delegates the atomic state change to `app.redeem_reward`. Cross-tenant and anonymous SQL assertions pass; no browser tenant, program balance or reward state becomes authoritative.
+
+**Design Review:** The populated customer modal and program catalog were reviewed in Chrome at 375, 768, 1280 and 1440 px. On mobile the customer dialog occupies the full dynamic viewport, locks page scrolling, keeps its purchase action visible and uses internal scrolling only when reward content exceeds the viewport. The three-tab navigation, reward selection controls, catalog cards and terms remain legible with no horizontal overflow or hidden critical action. Temporary review routes were removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 196 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0045` pass. The final route tree includes `/app/program` and excludes all temporary visual-review routes.
+
+**Next Action:** Apply validated migrations `0043`, `0044` and `0045` to hosted Supabase with approval, then smoke-test scan and search into the customer modal, one reward redemption, purchase registration and Wallet refresh on the employee phone.
+
+## 2026-08-15 - Modal Employee Customer Search
+
+**Objective:** Keep employee identification screens compact by moving manual customer search and its results out of the page flow.
+
+**Changes Made:** Replaced the inline search/results block on `/app/scan` with an accessible native dialog opened by one secondary action. The modal reopens automatically after GET searches and Manager edits, focuses the search field after entering modal mode, locks page scrolling, closes through its visible action, Escape or backdrop, and contains long results/edit forms in an overscroll-bounded internal region. The camera viewport is slightly shorter and its single open action now uses the available width.
+
+**Security And Correctness:** Search queries, customer/card RLS, operator card scopes, Manager-only mutation and multi-card purchase links are unchanged. The modal changes presentation only and introduces no new database authority or migration.
+
+**Design Review:** The base scan view and populated modal were reviewed in Chrome at 375, 768, 1280 and 1440 px. The modal stays centered, fits the mobile viewport with 44px controls, preserves visible headings and status text, dims the inactive surface and keeps overflow internal. The temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 193 Vitest tests and the production webpack build pass. The final build excludes both the temporary review route and the retired `/app/customers` route.
+
+## 2026-08-15 - Unified Employee Scan And Customer Search
+
+**Objective:** Replace manual QR/URL entry with customer search on the employee scan screen and remove the separate search page.
+
+**Changes Made:** Consolidated rear-camera scanning and authorized name/exact-phone search in `/app/scan`; removed the visible manual token/URL field, `/app/customers`, its bottom-navigation item and its PWA shortcut. Search results now resolve each active issued card against the operator's published card/branch scope and open the multi-card purchase flow with `customerCardId` and `loyaltyCardId`. Manager-only customer editing moved into the integrated results and retains the active query after success or error.
+
+**Security And Correctness:** QR tokens still travel only from the camera decoder to the established tenant-scoped scan RPC. Search continues through authenticated customer/card RLS and the existing staff registration-scope RPC; the browser cannot choose tenant, program or awarded units. Inactive or unavailable cards do not expose a purchase action.
+
+**Design Review:** The PWA now has four bottom-navigation items and one customer-identification destination. Camera, search, result and empty/error treatments reuse established operational patterns. The integrated populated state was reviewed in Chrome at 375, 768, 1280 and 1440 px without overflow, hidden controls or sub-44px critical mobile actions; the temporary review route was removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 193 Vitest tests and the production webpack build pass. The final build route map excludes `/app/customers`. No database migration is required.
+
+**Next Action:** Apply validated migrations `0043` and `0044` to hosted Supabase with approval, then smoke-test the complete multi-card flow including customer identification by both camera and search.
+
 ## 2026-08-12 - Resumable Multi-card Configuration
 
 **Objective:** Let a tenant operate up to three distinct cards with their own reward programs, statistics and participating branches through one simple provider-neutral setup flow.
