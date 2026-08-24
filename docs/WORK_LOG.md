@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-24 - Shared PIN Unlock Navigation And Keypad
+
+**Objective:** Make shared-account operator PIN login reliably enter the employee area and replace the free-text password control with a purpose-built numeric pad.
+
+**Changes Made:** The unlock action now returns an explicit success/error state and writes the HttpOnly operator cookie before navigation. On success, the client performs a full replacement navigation to `/app`, ensuring the protected tree reads the new cookie instead of reusing its locked layout context. The new six-position keypad supports touch, number keys, Backspace and Escape, masks every digit, clears failed attempts and retains the existing five-attempt lockout messages.
+
+**Security And Accessibility:** The operator token remains server-only and the PIN is submitted only in the form body; no local/session storage or token exposure was added. Every keypad control has a large touch target and keyboard focus, the digit count is announced without revealing values, delete has an accessible name and submission remains disabled until all six digits are present.
+
+**Design Review:** The unlock screen was reviewed at 375, 768, 1280 and 1440 px. The six indicators, 3×4 keypad and primary action remain within the existing operations card without horizontal overflow; the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 226 Vitest tests across 66 files and the Next.js production build pass. The database schema was unchanged; the complete migration/RLS harness through `0053` remains green from the immediately preceding validated commit.
+
+**Next Action:** Deploy the application commit and verify one real shared branch account on a phone: enter a valid PIN, confirm `/app` opens and the operator name appears in the header, then exercise invalid PIN, backspace, clearing and user switching.
+
 ## 2026-08-24 - Casa Garmendia One-Time Import Profile
 
 **Objective:** Import the legacy Casa Garmendia customer workbook into its existing lifetime-points card, translate prior stamps through the supplied non-linear equivalence table, grant matching rewards and preserve a safe path to recover imported cards.

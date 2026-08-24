@@ -9,19 +9,28 @@ import {
 } from "@/lib/auth/pin-session";
 import { requireInternalArea } from "@/lib/auth/server";
 
-function back(error: string): never {
-  redirect(`/app/unlock?error=${encodeURIComponent(error)}`);
-}
+export type PinUnlockState = {
+  attempt: number;
+  error: string | null;
+  status: "IDLE" | "ERROR" | "SUCCESS";
+};
 
-export async function unlockWithPin(formData: FormData) {
+export async function unlockWithPin(
+  previousState: PinUnlockState,
+  formData: FormData,
+): Promise<PinUnlockState> {
   const pin = formData.get("pin");
   if (!isSixDigitPin(pin)) {
-    back("Ingresa un PIN de seis dígitos.");
+    return {
+      attempt: previousState.attempt + 1,
+      error: "Ingresa un PIN de seis dígitos.",
+      status: "ERROR",
+    };
   }
 
   const context = await requireInternalArea("APP", { allowLockedShared: true });
   if (context.accountKind !== "BRANCH_SHARED") {
-    redirect("/app");
+    return { attempt: previousState.attempt + 1, error: null, status: "SUCCESS" };
   }
 
   const { data, error } = await context.supabase
@@ -30,18 +39,30 @@ export async function unlockWithPin(formData: FormData) {
   const result = Array.isArray(data) ? data[0] : null;
 
   if (error || !result) {
-    back("No se pudo validar el PIN.");
+    return {
+      attempt: previousState.attempt + 1,
+      error: "No se pudo validar el PIN.",
+      status: "ERROR",
+    };
   }
   if (result.result === "LOCKED") {
-    back("El acceso por PIN está bloqueado durante cinco minutos.");
+    return {
+      attempt: previousState.attempt + 1,
+      error: "El acceso por PIN está bloqueado durante cinco minutos.",
+      status: "ERROR",
+    };
   }
   if (result.result !== "UNLOCKED" || typeof result.session_token !== "string") {
-    back("El PIN no es válido.");
+    return {
+      attempt: previousState.attempt + 1,
+      error: "El PIN no es válido.",
+      status: "ERROR",
+    };
   }
 
   const cookieStore = await cookies();
   cookieStore.set(PIN_SESSION_COOKIE, result.session_token, pinSessionCookieOptions);
-  redirect("/app");
+  return { attempt: previousState.attempt + 1, error: null, status: "SUCCESS" };
 }
 
 export async function changePinOperator() {

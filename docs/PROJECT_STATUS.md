@@ -4,11 +4,11 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy migration `0053` and the Casa Garmendia import profile after reconciling hosted migration history, then execute the one-time import with the real non-empty workbook.
-- Last completed task: Added the tenant-Admin Casa Garmendia profile for one-time stamp-to-point import, equivalent rewards and imported-card recovery.
+- Last completed task: Repaired shared-account PIN unlock navigation and replaced the password textbox with an accessible six-digit numeric pad.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: `/admin/imports` auto-maps the Casa Garmendia workbook, previews invalid rows and atomically converts each valid legacy balance to lifetime points plus every equivalent reward exactly once.
-- Git status: Lint, typecheck, all 225 Vitest tests, production build and database/RLS validation through `0053` pass locally; final totals are recorded in the latest work log.
-- Remote backup: The Casa Garmendia import work is committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` and `0053` remain undeployed.
+- Last stable feature: `/app/unlock` confirms the HttpOnly PIN session before a full navigation to `/app`, clears failed attempts and supports touch or physical-keyboard entry without a free-text PIN field.
+- Git status: Lint, typecheck, all 226 Vitest tests and the production build pass locally; database/RLS validation through unchanged migration `0053` remains green from the preceding commit.
+- Remote backup: The PIN unlock repair is committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` and `0053` remain undeployed.
 
 ## Completed Functionality
 

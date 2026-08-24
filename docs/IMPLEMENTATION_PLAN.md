@@ -61,6 +61,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement tenant staff account provisioning.
 - [x] [Terminada] Implement staff branch assignments and primary branch management.
 - [x] [Terminada] Add branch-scoped Administrator semantics, per-branch employee access modes, shared branch accounts, PIN operators, revocable PIN sessions, and individual actor attribution.
+- [x] [Terminada] Replace free-text shared-account PIN entry with an accessible numeric pad and navigate only after the HttpOnly operator cookie is confirmed.
 
 **Acceptance Criteria**
 

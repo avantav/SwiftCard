@@ -3289,6 +3289,102 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   padding: 24px;
 }
 
+.operations-pin-form {
+  gap: 20px;
+}
+
+.operations-pin-entry {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.operations-pin-label {
+  color: var(--enterprise-text);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.operations-pin-entry small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+}
+
+.operations-pin-dots {
+  display: grid;
+  width: min(100%, 336px);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.operations-pin-dots > span {
+  display: grid;
+  min-height: 52px;
+  place-items: center;
+  border: 1px solid var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-surface-subtle);
+}
+
+.operations-pin-dots > span::after {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: transparent;
+  content: "";
+}
+
+.operations-pin-dots > span.is-filled {
+  border-color: var(--enterprise-primary);
+  background: var(--enterprise-primary-soft);
+}
+
+.operations-pin-dots > span.is-filled::after {
+  background: var(--enterprise-primary);
+}
+
+.operations-pin-keypad {
+  display: grid;
+  width: min(100%, 336px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.operations-pin-keypad button {
+  min-height: 60px;
+  border: 1px solid var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-surface);
+  color: var(--enterprise-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.operations-pin-keypad button:hover:not(:disabled) {
+  border-color: var(--enterprise-primary);
+  background: var(--enterprise-primary-soft);
+}
+
+.operations-pin-keypad button:active:not(:disabled) {
+  background: var(--enterprise-primary);
+  color: #ffffff;
+}
+
+.operations-pin-keypad button.is-action {
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.operations-pin-keypad button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
 .operations-form {
   display: grid;
   gap: 16px;

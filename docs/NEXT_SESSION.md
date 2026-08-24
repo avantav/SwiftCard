@@ -21,7 +21,8 @@
 19. Migration-history caution: hosted `supabase_migrations.schema_migrations` currently records only through `0034`, although later objects were applied manually. Do not run the bulk remote migration script until versions `0035` onward are reconciled; `0051` was intentionally applied as one targeted idempotent grant without altering that history.
 20. Immediate release step: obtain the real workbook (the three current Downloads copies are 0 bytes), reconcile hosted migration history, deploy migrations through `0053`, verify the target card has active tiers 100/200/300/400/500/650/860, preview all errors and only then confirm the one-time import.
 21. Local validation completed: lint, typecheck, all 225 Vitest tests in 66 files, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0053` pass. Responsive review also passed at 375, 768, 1280 and 1440 px.
-22. Google Wallet generation remains pending. The Admin Android toggle is explicitly labeled as a conceptual preview, not a claim that Google pass issuance is implemented.
+22. Shared PIN unlock: `/app/unlock` now uses a six-digit keypad with clear/backspace and physical-keyboard support. The server action returns success only after writing the HttpOnly operator cookie; the client then performs a full replacement navigation to `/app`, avoiding reuse of the locked layout context. Failed attempts clear the entered PIN and keep existing database lockout behavior.
+23. Google Wallet generation remains pending. The Admin Android toggle is explicitly labeled as a conceptual preview, not a claim that Google pass issuance is implemented.
 
 ## Prior lifetime-points context
 

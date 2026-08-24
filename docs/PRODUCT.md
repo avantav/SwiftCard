@@ -168,7 +168,7 @@ Cada sucursal configurará un modo exclusivo para usuarios operativos:
 - `INDIVIDUAL_CREDENTIALS`: cada empleado usa su propio correo y contraseña, conservando el comportamiento original.
 - `SHARED_ACCOUNT_PIN`: la sucursal usa una sola cuenta común de correo y contraseña y cada mesero se identifica después con un PIN personal de seis dígitos.
 
-La cuenta compartida pertenece a una sola sucursal. El PIN queda hasheado, es único dentro de esa sucursal y nunca sustituye la atribución individual: clientes registrados, compras, canjes, ledger y auditoría guardan al operador PIN. Cinco intentos fallidos bloquean el acceso PIN durante cinco minutos. La sesión del operador termina al cambiar usuario, cerrar el navegador o después de ocho horas sin actividad.
+La cuenta compartida pertenece a una sola sucursal. El PIN queda hasheado, es único dentro de esa sucursal y nunca sustituye la atribución individual: clientes registrados, compras, canjes, ledger y auditoría guardan al operador PIN. El desbloqueo usa un teclado numérico de seis posiciones, no conserva el PIN en almacenamiento del navegador y abre el área operativa solamente después de que el servidor haya confirmado la cookie HttpOnly. Cinco intentos fallidos bloquean el acceso PIN durante cinco minutos. La sesión del operador termina al cambiar usuario, cerrar el navegador o después de ocho horas sin actividad.
 
 Solo el Admin general configura o rota la credencial compartida. El Admin general y los Administradores asignados a la sucursal administran usuarios PIN. Cambiar el modo revoca las sesiones incompatibles sin borrar el historial.
 
