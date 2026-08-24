@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-24 - Apple Wallet Terms Verification Permission
+
+**Objective:** Resolve the false “Debes aceptar los términos” response after a customer had already accepted the current program version.
+
+**Changes Made:** Confirmed in hosted data that both recent cards had immutable acceptance rows for the current program version. Identified that the Apple issuance route uses the server-only Supabase role while migration `0046` granted the verification function only to `anon` and `authenticated`. Added migration `0051` granting the exact function to `service_role`, added a SQL role-execution assertion and separated database verification failures from a genuine false acceptance result in the endpoint.
+
+**Hosted Resolution:** Applied only the idempotent `0051` grant because hosted migration history records through `0034` while later schema was applied manually. Requested a PostgREST schema reload and verified with the service role that the most recent card now returns accepted without an error. No customer, balance or acceptance data was modified.
+
+**Validation:** `git diff --check`, `npm run typecheck`, `npm run lint`, all 216 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0051` pass.
+
+**Next Action:** Deploy the endpoint error-handling change, retry adding the accepted card on the iPhone and reconcile hosted migration history before using the bulk remote migration runner.
+
 ## 2026-08-20 - Google Maps Branch Picker And Operational Geofencing
 
 **Objective:** Replace manual branch coordinates with place/map selection and make the existing geofence usable and diagnosable in real employee operations.
