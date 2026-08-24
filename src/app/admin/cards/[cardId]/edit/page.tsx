@@ -10,7 +10,7 @@ import { publishCard, saveCardDesign, saveCardLocations, saveCardProgram } from 
 
 type EditPageProps = {
   params: Promise<{ cardId: string }>;
-  searchParams: Promise<{ step?: string; error?: string; saved?: string; created?: string }>;
+  searchParams: Promise<{ step?: string; error?: string; saved?: string; created?: string; resumed?: string }>;
 };
 type CardRow = {
   id: string; name: string; status: "DRAFT" | "PUBLISHED"; program_id: string;
@@ -65,6 +65,7 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
       return <li className={`${requestedStep === number ? "is-current" : ""}${complete ? " is-complete" : ""}`} key={label}>{available ? <Link aria-current={requestedStep === number ? "step" : undefined} href={`/admin/cards/${card.id}/edit?step=${number}`}><span>{complete ? "✓" : number}</span>{label}</Link> : <span><span>{number}</span>{label}</span>}</li>;
     })}</ol></nav>
     {query.created ? <p className="enterprise-alert is-info" role="status">Borrador creado. Puedes salir y retomarlo desde Tarjetas.</p> : null}
+    {query.resumed ? <p className="enterprise-alert is-info" role="status">Ya existía un borrador con este nombre. Continuarás desde la etapa guardada.</p> : null}
     {query.saved ? <p className="enterprise-alert is-success" role="status">Etapa guardada en el borrador.</p> : null}
     {query.error ? <p className="enterprise-alert is-error" role="alert">{query.error}</p> : null}
 

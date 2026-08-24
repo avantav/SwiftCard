@@ -19,6 +19,14 @@ const qrDialogSource = readFileSync(
   join(process.cwd(), "src/components/admin-customer-qr-dialog.tsx"),
   "utf8",
 );
+const actionsSource = readFileSync(
+  join(process.cwd(), "src/app/admin/customers/actions.ts"),
+  "utf8",
+);
+const lifecycleMigration = readFileSync(
+  join(process.cwd(), "supabase/migrations/0052_admin_card_customer_lifecycle.sql"),
+  "utf8",
+);
 
 describe("admin customer directory", () => {
   it("normalizes bounded filters and pagination", () => {
@@ -79,5 +87,19 @@ describe("admin customer directory", () => {
     expect(qrDialogSource).toContain("Generando QR");
     expect(qrDialogSource).toContain("href={claimPath}");
     expect(qrDialogSource).toContain("revisar los términos");
+  });
+
+  it("limits customer lifecycle actions to the general tenant Admin", () => {
+    expect(pageSource).toContain("setAdminCustomerStatus");
+    expect(pageSource).toContain("deleteAdminCustomer");
+    expect(pageSource).toContain("Eliminar cliente");
+    expect(actionsSource).toContain("canViewTenantCustomers(context.access)");
+    expect(actionsSource).toContain('rpc(\n    "set_admin_customer_status"');
+    expect(actionsSource).toContain('rpc(\n    "delete_admin_customer"');
+    expect(lifecycleMigration).toContain("function app.set_admin_customer_status");
+    expect(lifecycleMigration).toContain("function app.delete_admin_customer");
+    expect(lifecycleMigration).toContain("and sp.role = 'ADMIN'");
+    expect(lifecycleMigration).toContain("return 'HAS_HISTORY'");
+    expect(lifecycleMigration).toContain("'CUSTOMER_DELETED'");
   });
 });

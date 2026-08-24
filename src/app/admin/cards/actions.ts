@@ -39,13 +39,62 @@ export async function createCardDraft(formData: FormData) {
     { target_name: name },
   );
   const row = Array.isArray(data) ? data[0] : null;
-  if (error || row?.result !== "CREATED" || !row.loyalty_card_id) {
+  if (error || !["CREATED", "EXISTS"].includes(row?.result) || !row.loyalty_card_id) {
     const message = row?.result === "LIMIT_REACHED"
       ? "Ya tienes tres tarjetas. Archiva una antes de crear otra."
       : "No se pudo crear el borrador.";
     redirect(`/admin/cards?error=${encodeURIComponent(message)}`);
   }
-  redirect(cardPath(row.loyalty_card_id, 1, { created: "1" }));
+  redirect(cardPath(row.loyalty_card_id, 1, { [row.result === "EXISTS" ? "resumed" : "created"]: "1" }));
+}
+
+export async function archiveCard(cardId: string) {
+  const context = await requireTenantAdmin();
+  if (!UUID.test(cardId)) redirect("/admin/cards");
+  const { data, error } = await context.supabase.schema("app").rpc(
+    "archive_loyalty_card",
+    { target_card_id: cardId },
+  );
+  if (error || !["DISCARDED", "DEACTIVATED"].includes(data)) {
+    redirect(`/admin/cards?error=${encodeURIComponent("No se pudo desactivar la tarjeta.")}`);
+  }
+  await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId: context.tenantId! });
+  redirect(`/admin/cards?${data === "DISCARDED" ? "discarded" : "deactivated"}=1`);
+}
+
+export async function restoreCard(cardId: string) {
+  const context = await requireTenantAdmin();
+  if (!UUID.test(cardId)) redirect("/admin/cards");
+  const { data, error } = await context.supabase.schema("app").rpc(
+    "restore_loyalty_card",
+    { target_card_id: cardId },
+  );
+  if (error || data !== "RESTORED") {
+    const message = data === "LIMIT_REACHED"
+      ? "Ya tienes tres tarjetas activas o en borrador. Desactiva una antes de reactivar esta."
+      : data === "DUPLICATE"
+        ? "Ya existe un borrador activo con el mismo nombre."
+        : "No se pudo reactivar la tarjeta.";
+    redirect(`/admin/cards?error=${encodeURIComponent(message)}`);
+  }
+  await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId: context.tenantId! });
+  redirect("/admin/cards?restored=1");
+}
+
+export async function deleteCard(cardId: string) {
+  const context = await requireTenantAdmin();
+  if (!UUID.test(cardId)) redirect("/admin/cards");
+  const { data, error } = await context.supabase.schema("app").rpc(
+    "delete_archived_loyalty_card",
+    { target_card_id: cardId },
+  );
+  if (error || data !== "DELETED") {
+    const message = data === "HAS_HISTORY"
+      ? "No se puede eliminar porque tiene tarjetas emitidas o historial. Puedes mantenerla desactivada."
+      : "No se pudo eliminar la tarjeta.";
+    redirect(`/admin/cards?error=${encodeURIComponent(message)}`);
+  }
+  redirect("/admin/cards?deleted=1");
 }
 
 export async function saveCardProgram(cardId: string, formData: FormData) {

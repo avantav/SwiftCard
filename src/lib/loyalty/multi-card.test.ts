@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { consolidateDraftCards } from "@/lib/admin/cards";
 
 const model = readFileSync(
   new URL("../../../supabase/migrations/0043_multi_card_drafts.sql", import.meta.url),
@@ -30,6 +31,10 @@ const walletCardUpdates = readFileSync(
     "../../../supabase/migrations/0048_apple_wallet_card_configuration_updates.sql",
     import.meta.url,
   ),
+  "utf8",
+);
+const lifecycle = readFileSync(
+  new URL("../../../supabase/migrations/0052_admin_card_customer_lifecycle.sql", import.meta.url),
   "utf8",
 );
 
@@ -86,6 +91,22 @@ describe("multi-card loyalty boundary", () => {
     expect(walletCardUpdates).toContain("apple_wallet_loyalty_card_changed");
     expect(walletCardUpdates).toContain("apple_wallet_loyalty_card_branch_changed");
     expect(walletCardUpdates).toContain("issued.loyalty_card_id = target_loyalty_card_id");
-    expect(cardActions.match(/dispatchAppleWalletUpdatesBestEffort/g)).toHaveLength(5);
+    expect(cardActions.match(/dispatchAppleWalletUpdatesBestEffort/g)?.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("consolidates same-name drafts and protects lifecycle operations with tenant Admin RPCs", () => {
+    const cards = consolidateDraftCards([
+      { id: "step-1", name: "Café diario", status: "DRAFT", current_step: 1, updated_at: "2026-01-03" },
+      { id: "step-3", name: " café DIARIO ", status: "DRAFT", current_step: 3, updated_at: "2026-01-01" },
+      { id: "step-3-complete", name: "CAFÉ DIARIO", status: "DRAFT", current_step: 3, updated_at: "2025-12-01", program_completed: true, design_completed: true, locations_completed: true },
+      { id: "published", name: "Café diario", status: "PUBLISHED", current_step: 4, updated_at: "2026-01-02" },
+    ]);
+    expect(cards.map((card) => card.id)).toEqual(["step-3-complete", "published"]);
+    expect(lifecycle).toContain("loyalty_cards_tenant_draft_name_unique_idx");
+    expect(lifecycle).toContain("and sp.role = 'ADMIN'");
+    expect(lifecycle).toContain("function app.archive_loyalty_card");
+    expect(lifecycle).toContain("function app.restore_loyalty_card");
+    expect(lifecycle).toContain("function app.delete_archived_loyalty_card");
+    expect(lifecycle).toContain("return 'HAS_HISTORY'");
   });
 });

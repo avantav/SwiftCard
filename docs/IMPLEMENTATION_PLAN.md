@@ -213,6 +213,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add `/admin/cards` with per-card statistics and a four-stage program, design, locations and publication assistant.
 - [x] [Terminada] Use one provider-neutral design with an accessible Apple/Android preview toggle; redirect the legacy program and Apple-only configuration pages.
 - [x] [Terminada] Scope public/employee registration, QR scanning, earning, adjustments, Web Card and Apple pass generation to the issued card and its participating branches.
+- [x] [Terminada] Consolidate same-name drafts, resume the canonical draft and give only the tenant Admin reversible discard/deactivate/reactivate actions plus guarded permanent deletion for cards and customers without operational history.
 - [x] [Terminada] Apply migrations `0043` and `0044` in a disposable PostgreSQL instance and add SQL assertions to the full RLS harness.
 - [ ] [Pendiente] Validate the complete draft/resume/publish/register/purchase flow against a deployed Supabase project and refresh existing Apple passes.
 

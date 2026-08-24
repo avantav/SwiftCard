@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the Admin customer QR and Apple Wallet terms error-handling changes, reconcile hosted migration history, configure the restricted Google Maps browser key and complete the hosted smoke paths.
-- Last completed task: Added on-demand customer card delivery QR access to the Admin customer directory.
-- Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Active customer rows expose a tenant-scoped “Mostrar QR” dialog that generates the existing possession-based card claim QR only when requested.
-- Git status: Typecheck, lint, all 217 application tests and the production build pass locally; the complete database/RLS suite through `0051` passed in the preceding change.
-- Remote backup: The `0051` and Admin customer QR commits are local on `codex/swiftwallet-mvp` and not pushed; the targeted hosted database grant is already live.
+- Current task: Deploy migration `0052` and the Admin lifecycle UI, then reconcile hosted migration history and complete the remaining hosted smoke paths.
+- Last completed task: Consolidated duplicate card drafts and added Admin-only card/customer lifecycle controls with history-safe deletion.
+- Current branch: `codex/customer-wallet-fixes`.
+- Last stable feature: The card editor presents one canonical same-name draft and lets the tenant Admin discard, deactivate, reactivate or safely delete cards; the customer directory offers deactivation and guarded deletion only to that same role.
+- Git status: Typecheck, lint, all 219 application tests, the production build and the complete database/RLS suite through `0052` pass locally.
+- Remote backup: Commits through the Admin customer QR are local on `codex/customer-wallet-fixes` and not pushed; migration `0052` remains local and the targeted hosted `0051` grant is already live.
 
 ## Completed Functionality
 
@@ -29,6 +29,8 @@
 - Open redirect protection for auth redirects.
 - Server-only Supabase admin client guarded by `server-only`.
 - Minimal `/superadmin/tenants/new` form and server action for tenant creation.
+- Same-name card drafts are consolidated and future creation resumes the canonical draft instead of creating another row.
+- Admin-only reversible card archival/reactivation and customer deactivation/reactivation, with permanent deletion restricted to records without immutable operational history.
 - Tenant creation input validation tests.
 - Disposable PostgreSQL RLS harness available through `npm run db:verify-rls`.
 - Positive and negative RLS assertions for tenant, branch, status, and role boundaries.
