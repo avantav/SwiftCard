@@ -87,6 +87,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Configurar programa, niveles de recompensa, términos, branding y geolocalización.
 - Consultar, editar, desactivar y, cuando no exista historial operativo, eliminar clientes.
 - Descartar, desactivar, reactivar y eliminar configuraciones de tarjeta sin historial.
+- Ejecutar el perfil de importación única autorizado para su propio tenant cuando exista.
 - Cancelar compras.  
 - Ajustar sellos.  
 - Cancelar recompensas y revertir canjes.  
@@ -195,7 +196,7 @@ Restricción de duplicados:
 
 El mismo teléfono puede existir en tenants diferentes.
 
-Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.** No se mostrará la tarjeta automáticamente.
+Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.** No se mostrará la tarjeta automáticamente, salvo para un cliente identificado por el perfil de importación Casa Garmendia que seleccione su misma tarjeta y proporcione el nombre importado: en ese caso continuará al flujo de recuperación y aceptación de términos sin crear un duplicado.
 
 Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
 
@@ -432,7 +433,7 @@ Toda cancelación requiere motivo y conserva la compra original con estado CANCE
 
 ## 18. Importación de clientes
 
-Solo el Superadmin podrá importar CSV o Excel durante el MVP.
+Solo el Superadmin podrá usar el importador genérico CSV o Excel durante el MVP. Como excepción explícita, el Admin general de Casa Garmendia tendrá un perfil fijo y de un solo uso en `/admin/imports`; el Administrador de sucursal no podrá verlo ni ejecutarlo.
 
 Campos:
 
@@ -445,6 +446,10 @@ Campos:
 Flujo: subir, mapear columnas, validar, previsualizar, confirmar y mostrar resumen. Se guardará historial con archivo, usuario, fecha, importados, duplicados y errores.
 
 Cuando el programa use puntos acumulativos, la configuración incluirá una equivalencia entera `1 sello importado = N puntos`. La confirmación importará los puntos resultantes y generará automáticamente todos los hitos alcanzados. La misma recompensa de bienvenida podrá incluir o excluir importados mediante una opción fija del programa.
+
+El perfil Casa Garmendia mapeará automáticamente `Nombre`, `Apellido`, `Email`, `Teléfono`, `Fecha de Nacimiento` y `Estampillas Actuales`. La conversión conservará el mayor hito alcanzado: 0–2 sellos = 0 puntos; 3 = 100; 4–5 = 200; 6 = 300; 7–9 = 400; 10–12 = 500; 13–14 = 650; y 15 = 860. Valores fuera de 0–15 serán errores de previsualización. Cada importado recibirá el premio de registro **Churro individual** y todos los premios configurados en los hitos alcanzados de 100, 200, 300, 400, 500, 650 y 860 puntos.
+
+La confirmación será atómica, auditada y ligada a una tarjeta publicada de puntos y una sucursal participante. Cada cliente conservará un identificador interno de importación. Ese identificador permitirá recuperar la tarjeta emitida al repetir el registro con teléfono y nombre coincidentes, y permitirá que un empleado vuelva a mostrar el QR de entrega incluso si Wallet registró una instalación anterior; ambos caminos conducen a la aceptación vigente de términos.
 
 ## 19. Dashboard y exportaciones
 

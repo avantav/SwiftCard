@@ -81,6 +81,7 @@ type CustomerSummary = {
 type CustomerWalletDelivery = {
   apple_wallet_added: boolean;
   card_token: string;
+  repeat_delivery_allowed: boolean;
 };
 
 function rewardsFrom(value: unknown): RewardSummary[] {
@@ -199,7 +200,7 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
       walletDeliveryFailed = true;
     } else {
       walletDelivery = delivery;
-      if (!delivery.apple_wallet_added) {
+      if (!delivery.apple_wallet_added || delivery.repeat_delivery_allowed) {
         try {
           const origin = await resolveCustomerCardHandoffOrigin();
           walletDeliveryQrDataUrl = origin
@@ -289,7 +290,7 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
         {!selectedFlow ? <>
           <section className="operations-flow-intro"><p>Información del cliente</p><h3>¿Qué deseas hacer?</h3><span>Revisa el saldo y los premios antes de elegir una operación.</span></section>
           {rewards.length ? <section className="operations-reward-summary" aria-labelledby="available-rewards-title"><div><h3 id="available-rewards-title">Premios disponibles</h3><span>El canje siempre solicitará confirmación.</span></div><ul>{rewards.map((reward) => <li key={reward.id}><strong>{reward.name}</strong><span>{reward.description || "Premio disponible para canje."}</span><small>{expirationLabel(reward.expires_at)}</small></li>)}</ul></section> : <div className="operations-no-reward"><strong>Aún no tiene premios disponibles</strong><p>Registra una compra para que continúe acumulando {customerSummary.unit_name_plural}.</p></div>}
-          {walletDeliveryFailed ? <p className="operations-alert is-warning" role="status">No se pudo consultar si la tarjeta ya está agregada a Wallet.</p> : walletDelivery?.apple_wallet_added ? <p className="operations-wallet-added" role="status">✓ Tarjeta agregada a Apple Wallet</p> : walletDelivery ? <CustomerWalletQrDelivery cardToken={walletDelivery.card_token} qrDataUrl={walletDeliveryQrDataUrl} /> : null}
+          {walletDeliveryFailed ? <p className="operations-alert is-warning" role="status">No se pudo consultar si la tarjeta ya está agregada a Wallet.</p> : walletDelivery ? <>{walletDelivery.apple_wallet_added ? <p className="operations-wallet-added" role="status">✓ Tarjeta agregada a Apple Wallet</p> : null}{!walletDelivery.apple_wallet_added || walletDelivery.repeat_delivery_allowed ? <CustomerWalletQrDelivery cardToken={walletDelivery.card_token} qrDataUrl={walletDeliveryQrDataUrl} repeatDelivery={walletDelivery.repeat_delivery_allowed} /> : null}</> : null}
           <div className="operations-customer-actions operations-flow-actions">
             {rewards.length ? <Link className="operations-secondary-button" href={customerFlowHref(selectedCustomerCardId, selectedLoyaltyCardId, { flow: "reward" })}>Canjear un premio</Link> : null}
             {canPurchase ? <Link className="operations-primary-button" href={customerFlowHref(selectedCustomerCardId, selectedLoyaltyCardId, { flow: "purchase" })}>Registrar compra</Link> : <p className="operations-result-note">El programa no admite compras en tus sucursales en este momento.</p>}

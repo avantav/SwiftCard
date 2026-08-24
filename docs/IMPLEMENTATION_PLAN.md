@@ -175,6 +175,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement import schema and Superadmin upload flow.
 - [x] [Terminada] Implement column mapping and validation preview without customer mutation.
 - [x] [Terminada] Implement atomic import confirmation with duplicate/error summary.
+- [x] [Terminada] Add the one-time Casa Garmendia tenant-Admin profile with fixed Excel mapping, legacy-stamp milestone conversion, imported welcome/milestone rewards and terms-gated card recovery.
 - [x] [Terminada] Implement tenant suspension and reactivation controls.
 - [x] [Terminada] Implement branding mode controls.
 

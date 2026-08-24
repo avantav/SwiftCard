@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-08-24 - Casa Garmendia One-Time Import Profile
+
+**Objective:** Import the legacy Casa Garmendia customer workbook into its existing lifetime-points card, translate prior stamps through the supplied non-linear equivalence table, grant matching rewards and preserve a safe path to recover imported cards.
+
+**Changes Made:** Added `/admin/imports` exclusively for the tenant's general Admin with automatic mapping for Nombre, Apellido, Email, Teléfono, Fecha de Nacimiento and Estampillas Actuales. The profile previews invalid rows, combines first/last name and uses the greatest reached milestone from 0 to 15 stamps. Migration `0053` binds the preview to one published points card and participating branch, creates customers/cards/balances/ledger entries, grants Churro individual plus reached configured tiers and enforces one confirmed use. Imported customers retain `customer_import_id`; matching public registration resumes the claim/terms flow, and employee search can always regenerate its claim QR.
+
+**Security And Correctness:** Tenant, Admin role, card, active program, required thresholds, branch assignment and single-use state are revalidated inside the atomic RPC. Prepared rows are bounded and revalidated; duplicates are skipped without overwriting existing customers; audit metadata contains counts and IDs rather than customer PII. Public recovery requires the same imported card plus exact phone and accent-insensitive normalized name, and never bypasses current terms acceptance.
+
+**Design Review:** The profile, equivalence table, upload form, preview/error state and irreversible confirmation were reviewed at 375, 768, 1280 and 1440 px. The table becomes labeled row blocks on mobile, controls retain usable touch sizing, the single primary action remains clear and no horizontal overflow or temporary review route remains.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 225 Vitest tests across 66 files, the Next.js production build and the full disposable PostgreSQL migration/RLS harness through `0053` pass. Responsive review passed at 375, 768, 1280 and 1440 px without horizontal overflow or an alternate visual language.
+
+**External Input:** `EquivalenciasSdL.pdf` was read successfully. All three matching `.xlsx` files in Downloads hash as empty 0-byte files, so no real customer PII was processed and a non-empty original is still required before production confirmation.
+
+**Next Action:** Obtain the real workbook, deploy reviewed migrations through `0053` after reconciling hosted history, verify the seven target tiers, inspect the complete preview and confirm exactly once.
+
 ## 2026-08-24 - Admin Card And Customer Lifecycle
 
 **Objective:** Collapse repeated drafts of the same card into one entry and give only the tenant Admin safe controls to discard/deactivate cards and deactivate or delete customers.

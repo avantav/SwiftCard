@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy migration `0052` and the Admin lifecycle UI, then reconcile hosted migration history and complete the remaining hosted smoke paths.
-- Last completed task: Consolidated duplicate card drafts and added Admin-only card/customer lifecycle controls with history-safe deletion.
+- Current task: Deploy migration `0053` and the Casa Garmendia import profile after reconciling hosted migration history, then execute the one-time import with the real non-empty workbook.
+- Last completed task: Added the tenant-Admin Casa Garmendia profile for one-time stamp-to-point import, equivalent rewards and imported-card recovery.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: The card editor presents one canonical same-name draft and lets the tenant Admin discard, deactivate, reactivate or safely delete cards; the customer directory offers deactivation and guarded deletion only to that same role.
-- Git status: Typecheck, lint, all 219 application tests, the production build and the complete database/RLS suite through `0052` pass locally.
-- Remote backup: Commits through the Admin customer QR are local on `codex/customer-wallet-fixes` and not pushed; migration `0052` remains local and the targeted hosted `0051` grant is already live.
+- Last stable feature: `/admin/imports` auto-maps the Casa Garmendia workbook, previews invalid rows and atomically converts each valid legacy balance to lifetime points plus every equivalent reward exactly once.
+- Git status: Lint, typecheck, all 225 Vitest tests, production build and database/RLS validation through `0053` pass locally; final totals are recorded in the latest work log.
+- Remote backup: The Casa Garmendia import work is committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` and `0053` remain undeployed.
 
 ## Completed Functionality
 
@@ -17,6 +17,8 @@
 - Executable implementation plan started.
 - Next.js 16 App Router scaffold.
 - Base routes: `/`, `/superadmin`, `/admin`, `/app`, `/register/[branchToken]`, `/card/[cardToken]`.
+- Admin-only `/admin/imports` profile for Casa Garmendia with fixed six-column mapping, one-time confirmation and tenant/card/branch-derived database authority.
+- Imported customer identification enables terms-gated public recovery and repeat employee QR delivery without issuing a second card.
 - Health endpoint: `/api/health`.
 - Vitest health endpoint test.
 - Supabase environment template and config helpers without secrets.

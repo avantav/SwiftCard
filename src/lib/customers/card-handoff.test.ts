@@ -56,13 +56,13 @@ describe("employee customer card handoff", () => {
     expect(appleRoute).toContain("No se pudo verificar la aceptación de los términos");
   });
 
-  it("offers the same claim QR after search only when Wallet has no device registration", () => {
+  it("offers the claim QR when Wallet is absent or imported redelivery is allowed", () => {
     expect(staffDeliveryMigration).toContain("function app.get_staff_customer_wallet_delivery");
     expect(staffDeliveryMigration).toContain("public.apple_wallet_registrations");
     expect(staffDeliveryMigration).toContain("app.get_staff_customer_card_summary");
     expect(staffDeliveryMigration).not.toContain("target_tenant_id");
     expect(scanPage).toContain("get_staff_customer_wallet_delivery");
-    expect(scanPage).toContain("walletDelivery?.apple_wallet_added");
+    expect(scanPage).toContain("!walletDelivery.apple_wallet_added || walletDelivery.repeat_delivery_allowed");
     expect(scanPage).toContain("CustomerWalletQrDelivery");
     expect(searchDelivery).toContain("Generar QR para agregar tarjeta");
     expect(searchDelivery).toContain("customerCardClaimPath");

@@ -14,6 +14,7 @@ export function AdminNavigation({ email, role }: { email: string | null; role: "
     ...(configuration.length ? [{ label: "Configuración", items: configuration }] : []),
     { label: "Datos", items: [
       ...(role === "ADMIN" ? [{ href: "/admin/customers", label: "Clientes", icon: "users" as const }] : []),
+      ...(role === "ADMIN" ? [{ href: "/admin/imports", label: "Importar clientes", icon: "import" as const }] : []),
       { href: "/admin/exports", label: "Exportaciones", icon: "download" }
     ] }
   ];

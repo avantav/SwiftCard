@@ -303,3 +303,13 @@
 - Reason: One canonical draft removes confusing duplicates without losing the most advanced work. Reversible status changes cover normal administration, while guarded deletion supports clean setup/test records without weakening financial, reward, consent or Wallet traceability.
 - Consequences: Additive migration `0052` must be deployed before the new actions work or existing duplicate drafts are physically consolidated. Records with history remain deactivatable but intentionally cannot be deleted. Administradores de sucursal receive no lifecycle controls and backend calls return unavailable even if invoked directly.
 - Status: Accepted.
+
+## DEC-0031 - Tenant-Bound One-Time Casa Garmendia Import
+
+- Date: 2026-08-24
+- Context: Casa Garmendia must migrate one legacy stamp workbook into an already configured non-resetting points card, preserve the supplied non-linear reward equivalences and let imported customers recover the already issued card without creating duplicates. The generic import is Superadmin-only and its old uniform stamp balance does not model this conversion.
+- Decision: Add one fixed profile visible only to the active general Admin of the matching tenant. Auto-map the six supplied columns, reject malformed/duplicate/out-of-range rows during preview and convert each 0–15 stamp value to the greatest reached milestone in the supplied table. Confirm in one database transaction against a published lifetime-points card and participating branch, grant Churro individual plus every configured reached tier and enforce one confirmed profile per tenant. Persist the import identifier on each new customer. Public recovery requires exact phone, normalized imported name, same card/branch and privacy consent before redirecting to the claim/terms screen; authorized employees may regenerate that claim QR for an imported card even after an earlier Wallet registration.
+- Alternatives considered: Use a uniform stamp multiplier, rewrite the uploaded spreadsheet, expose the generic Superadmin import to all tenant Admins, create a new card on duplicate registration, or reveal an imported card from phone alone without a name match.
+- Reason: A named fixed profile represents the real one-off business rule without weakening the generic multi-tenant importer. Database-side card, branch, role, threshold and single-use checks prevent frontend manipulation, while the imported identifier makes recovery explicit and auditable.
+- Consequences: Migration `0053` must be deployed after `0052`. The target program must contain active tiers at 100, 200, 300, 400, 500, 650 and 860. The current workbook copies are empty and must be replaced before real confirmation; confirmation cannot be repeated after success.
+- Status: Accepted.
