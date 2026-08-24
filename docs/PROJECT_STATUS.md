@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the Apple Wallet terms error-handling change, reconcile hosted migration history, configure the restricted Google Maps browser key and complete the hosted geofence/lifetime-points/Apple smoke paths.
-- Last completed task: Fixed Apple Wallet terms verification for the server-only role and applied the targeted permission to hosted Supabase.
+- Current task: Deploy the Admin customer QR and Apple Wallet terms error-handling changes, reconcile hosted migration history, configure the restricted Google Maps browser key and complete the hosted smoke paths.
+- Last completed task: Added on-demand customer card delivery QR access to the Admin customer directory.
 - Current branch: `codex/swiftwallet-mvp`.
-- Last stable feature: Migration `0051` authorizes the server-only Apple issuance path to verify current terms; the endpoint now distinguishes verification failures from genuinely unaccepted terms.
-- Git status: Typecheck, lint, all 216 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0051` pass locally.
-- Remote backup: The `0051` code and documentation change is local on `codex/swiftwallet-mvp` and not pushed; the targeted hosted database grant is already live.
+- Last stable feature: Active customer rows expose a tenant-scoped “Mostrar QR” dialog that generates the existing possession-based card claim QR only when requested.
+- Git status: Typecheck, lint, all 217 application tests and the production build pass locally; the complete database/RLS suite through `0051` passed in the preceding change.
+- Remote backup: The `0051` and Admin customer QR commits are local on `codex/swiftwallet-mvp` and not pushed; the targeted hosted database grant is already live.
 
 ## Completed Functionality
 
@@ -105,6 +105,7 @@
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 - Admin general can copy each active branch's public registration link, download its PNG QR, and open the destination from `/admin/branches`; the link is derived from the server-configured public HTTPS origin.
 - Admin general has an exclusive `/admin/customers` directory with bounded name/phone search, status filter, 50-row pagination, registration source, customer/card state, loyalty balances, available rewards and Apple Wallet generation diagnostics; Branch Administrators are redirected before data queries and do not see the navigation entry.
+- Each active customer with an active issued card now has a “Mostrar QR” action in that directory. It opens an accessible dialog and generates the existing terms-and-Wallet claim QR on demand, avoiding bulk QR work while keeping the opaque token tenant-scoped by the Admin query.
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
 - Employee registration now returns to the real `/app` route and replaces the dead `/app/register` destination with a compact delivery state. Its QR uses the configured public HTTPS origin in production and the current request host during local LAN development, so the customer opens the issued card on their own phone.
 - The card claim screen keeps tenant identity, current terms, required acceptance and the Wallet/Web Card action together. Migration `0046` stores the accepted program version and immutable terms snapshot behind forced RLS, and the initial Apple endpoint rejects direct downloads until the current terms are accepted.

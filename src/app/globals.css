@@ -2506,6 +2506,126 @@ textarea {
   overflow-wrap: anywhere;
 }
 
+.admin-customer-card-actions {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-customer-qr-trigger {
+  min-height: 40px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.enterprise-dialog {
+  width: min(calc(100% - 32px), 440px);
+  max-height: calc(100dvh - 32px);
+  border: 0;
+  border-radius: var(--enterprise-radius-lg);
+  padding: 0;
+  background: var(--enterprise-surface);
+  box-shadow: var(--enterprise-shadow-menu);
+  color: var(--enterprise-text);
+}
+
+.enterprise-dialog::backdrop {
+  background: rgb(15 23 42 / 58%);
+}
+
+.enterprise-dialog-shell {
+  display: grid;
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+
+.enterprise-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--enterprise-border);
+  padding: 18px 20px;
+}
+
+.enterprise-dialog-header p,
+.enterprise-dialog-header h2 {
+  margin: 0;
+}
+
+.enterprise-dialog-header p {
+  color: var(--enterprise-primary);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.enterprise-dialog-header h2 {
+  margin-top: 4px;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.enterprise-dialog-close {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-sm);
+  padding: 0 12px;
+  background: var(--enterprise-surface);
+  color: var(--enterprise-text);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.enterprise-dialog-close:hover {
+  border-color: var(--enterprise-primary);
+  color: var(--enterprise-primary);
+}
+
+.enterprise-dialog-close:focus-visible {
+  outline: 2px solid var(--enterprise-focus);
+  outline-offset: 2px;
+}
+
+.admin-customer-qr-body {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.admin-customer-qr-body img {
+  display: block;
+  width: min(240px, 100%);
+  height: auto;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+}
+
+.admin-customer-qr-body > p {
+  max-width: 340px;
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.admin-customer-qr-body .enterprise-secondary-action {
+  min-height: 44px;
+}
+
+@media (max-width: 639px) {
+  .admin-customer-qr-trigger {
+    min-height: 44px;
+  }
+}
+
 .admin-customer-date,
 .admin-customer-method {
   display: block;
