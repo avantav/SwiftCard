@@ -2,7 +2,7 @@
 
 ## Active Blockers
 
-- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and targeted `0051`/`0056` changes are live; canonical history through local migration `0057` is not reconciled.
+- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and targeted `0051`/`0054`/`0056` changes are live; canonical history through local migration `0057` is not reconciled.
   - **Affected area:** Repeatable remote database deployment.
   - **Consequence:** The bulk migration runner would try to replay migrations `0035` onward and may stop on objects that already exist.
   - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0057`, then repair canonical migration history before using `npm run db:push:remote`. Deploy the new application code before applying `0057`, because that migration queues installed passes to fetch the new progress layout.

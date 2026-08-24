@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-24 - Hosted Welcome Reward Activation Repair
+
+**Objective:** Fix the error shown when enabling the optional welcome reward on the deployed lifetime-points card.
+
+**Root Cause:** The hosted application sent the 16-parameter `save_loyalty_card_program` request introduced by `0054`, while PostgREST still exposed only the prior 12-parameter function. The hosted `rewards` table also lacked `is_welcome_reward`, confirming that the additive migration had not been applied.
+
+**Production Repair:** Ran the complete `0054_optional_welcome_reward.sql` first inside a production transaction ending in `ROLLBACK`, then applied the identical SQL with `COMMIT`. Reloaded the PostgREST schema cache. Production now has the welcome marker and partial unique index, both RPC signatures, the one-time card-issuance function and an enabled `customer_cards_grant_welcome_reward` trigger.
+
+**Verification:** The Data API now reads `rewards.is_welcome_reward` and publishes the 16 welcome-reward parameters. A general-Admin activation using Casa Garmendia's current card/program/tier data returned `SAVED` inside a transaction ending in `ROLLBACK`. A final HTTPS check confirmed the production configuration remains disabled, with no test reward or test audit left behind. The Admin can safely retry with the intended gift details; only future card issuances receive it.
+
+**Migration History:** This was a targeted schema repair and did not reconcile `supabase_migrations.schema_migrations`; the bulk remote migration command remains blocked.
+
 ## 2026-08-24 - Apple Point Progress And Front Reward Count
 
 **Objective:** Restore the available-reward count on the front without consuming header identity width, and make lifetime-point progress visible on the real iPhone pass rather than only in the Admin preview.

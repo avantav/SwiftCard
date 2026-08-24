@@ -4,11 +4,11 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy the Apple point-progress application change before migration `0057`, process the queued pass refresh, then reconcile the remaining hosted migration history before executing the Casa Garmendia import with the real non-empty workbook.
-- Last completed task: Restored the Apple front reward count and added both a signed progress strip and an iOS 26-compatible `■■■□□ actual/meta` point-progress field without returning data to the constrained header.
+- Last completed task: Applied migration `0054` directly to hosted production, reloaded PostgREST and verified the Casa Garmendia Admin can save an enabled welcome gift without leaving test data.
 - Current branch: `codex/customer-wallet-fixes`.
 - Last stable feature: Apple store cards use no more than four compact front supporting fields, keep tenant identity alone in the header and preserve point progress even when iOS omits strip images.
 - Git status: All 239 Vitest tests across 69 files, typecheck, lint, webpack build, visual review at 375 px and the complete disposable PostgreSQL migration/RLS suite through `0057` pass.
-- Remote backup: The targeted hosted `0051` grant and one-time `0056` Casa Garmendia repair are live. Migrations `0052` through `0055` remain undeployed and hosted migration history still requires reconciliation before any bulk push.
+- Remote backup: Targeted hosted changes `0051`, `0054` and `0056` are live. Canonical hosted migration history still requires reconciliation before any bulk push; the Casa Garmendia welcome configuration intentionally remains disabled until the Admin retries the form with the intended gift.
 
 ## Completed Functionality
 
@@ -78,6 +78,7 @@
 - Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
 - Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
 - The multi-card editor now exposes the optional welcome gift with name, description and optional 1–3650 day validity. Migration `0054` grants it exactly once when a future customer card is issued through public or employee registration, respects generic import eligibility, leaves points untouched and excludes the Casa Garmendia profile because that import already assigns its fixed welcome reward.
+- Hosted production now has migration `0054` applied as a targeted repair. PostgREST exposes the 16-parameter card-program save RPC, `rewards.is_welcome_reward` is readable and the one-time issuance trigger is enabled; an authenticated Casa Garmendia save returned `SAVED` in rollback validation.
 - Existing programs are backfilled to their current cyclic type; Admin type changes preserve historical data. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs transitions made during the earlier rollout, while `0049` enables decimal purchases, non-resetting balances and one-time milestones. Reward catalogs have no product-level count cap.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.

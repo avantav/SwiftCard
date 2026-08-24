@@ -321,7 +321,7 @@
 - Decision: Configure the gift in the card editor and grant it from one database trigger after the first `customer_cards` insertion. Mark welcome rewards explicitly and enforce one per customer/card with a partial unique index. Apply optional expiration from the issuance time, leave balances and ledgers unchanged, and make the behavior non-retroactive. Generic imports follow the existing program eligibility option; exclude the Casa Garmendia profile because its transactional importer already grants a fixed welcome Churro.
 - Alternatives considered: Grant separately in each registration RPC, model the gift as a zero-point tier, award it during claim/Wallet download, or backfill every existing customer.
 - Reason: Card issuance is the common atomic boundary for public and employee registration. A dedicated marker and database uniqueness rule prevent duplicates across retries and recovery without mixing an unconditional benefit into milestone accounting.
-- Consequences: Additive migration `0054` must be deployed before the new editor save and issuance behavior work. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
+- Consequences: Additive migration `0054` is now deployed to hosted production as a targeted repair, although canonical migration history remains unreconciled. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
 - Status: Accepted.
 
 ## DEC-0033 - Header-First Apple Pass Identity
