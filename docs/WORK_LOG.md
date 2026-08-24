@@ -1,5 +1,33 @@
 # Work Log
 
+## 2026-08-20 - Google Maps Branch Picker And Operational Geofencing
+
+**Objective:** Replace manual branch coordinates with place/map selection and make the existing geofence usable and diagnosable in real employee operations.
+
+**Changes Made:** Added Google Places Autocomplete (New), an interactive branch map, map-click/current-location adjustment, selected address/coordinates summary and a live radius circle to branch create/edit. Added an Admin status/control that distinguishes Apple Wallet proximity from operational geofencing. Migration `0050` adds an audited Admin-only mode RPC, refuses strict activation until every active branch has coordinates, prevents coordinate-less active branches while strict and hardens distance validation to the selected tenant branch. The primary scanner flow and compatibility purchase/redeem routes now capture browser GPS, normalize it server-side, pass it to the database and explain permission, timeout and outside-radius failures.
+
+**Security And Correctness:** Tenant and role authority stay server-derived. The map only supplies candidate branch coordinates; the existing PostgreSQL triggers remain authoritative for operations. Strict mode changes require an active tenant Admin, are audited and cannot leave active branches without coordinates. Browser coordinates are range-validated, and the database validates tenant/branch/status plus distance.
+
+**Design Review:** The real picker and geofence control were reviewed through a temporary route at 375, 768, 1280 and 1440 px, including the missing-key state. They reuse enterprise tokens, cards, fields, alerts and 44px actions; the control, selected-location summary and GPS panel collapse to one column on mobile while preserving bounded 300/240px map heights, visible status and no horizontal overflow. The temporary route was removed. A real Google tile/place smoke test remains external because no Maps key is configured locally.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 216 Vitest tests, `npm run build`, `git diff --check` and the complete disposable PostgreSQL migration/RLS suite through `0050` pass.
+
+**Next Action:** Configure a billing-enabled, HTTP-referrer-restricted `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` with Maps JavaScript API and Places API (New), deploy migration `0050`, select every active branch on the hosted map and test inside/outside strict operations over HTTPS on the employee phone.
+
+## 2026-08-20 - SWIF-15 Lifetime Points Engine And Card Design
+
+**Objective:** Make the non-resetting points program publishable and usable end to end without showing stamp circles on point cards.
+
+**Changes Made:** Added migration `0049` with authoritative tenths on balances, purchases and ledger entries; per-purchase truncation without carry; non-resetting milestone generation; card-scoped stamp-to-point conversion; integer customer/employee projections; one-decimal Admin metrics and purchase exports; and database enforcement that disables lifetime purchase/reward cancellation and manual point adjustments. Enabled the mode in the card wizard with explicit type-change confirmation and automatic default unit naming. Web Card, Apple pass payload and Apple/Android previews now show accumulated points, next-milestone progress and the all-hitos-complete state instead of stamp circles.
+
+**Security And Correctness:** All calculations and milestone authority remain in security-definer database functions scoped from the issued card and authenticated staff. No frontend `tenant_id` or awarded-unit value is trusted. The full historical migration/RLS suite proves that cyclic stamp purchases remain compatible and that 1.5 plus 0.7 points persists as 2.2 while customer/employee projections show 2.
+
+**Design Review:** The point Web Card and Apple preview were rendered with representative data at 375, 768, 1280 and 1440 px. Balance hierarchy, progress, reward catalog, responsive wrapping, contrast and completion copy remain legible without horizontal overflow. The temporary review route was removed.
+
+**Validation:** `npm run typecheck`, `npm run lint`, all 211 Vitest tests, `npm run build` and the complete disposable PostgreSQL migration/RLS suite through `0049` pass.
+
+**Next Action:** With approval, deploy migrations through `0049` and run a hosted purchase/milestone/Admin-decimal/Apple-refresh smoke test. Welcome rewards and import conversion remain follow-up work.
+
 ## 2026-08-18 - SWIF-15 Apple Card Design Propagation
 
 **Objective:** Make card program/design changes appear in the Admin preview and propagate them to already installed Apple Wallet passes.

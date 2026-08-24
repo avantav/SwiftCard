@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy validated migrations `0043` through `0048` and complete the hosted multi-card plus Apple pass refresh smoke path.
-- Last completed task: Repaired the multi-card design editor so unsaved text, colors and locally selected images appear immediately in its program-aware `storeCard` preview.
+- Current task: Configure the restricted Google Maps browser key, deploy validated migrations `0043` through `0050` and complete the hosted geofence/lifetime-points/Apple smoke paths.
+- Last completed task: Added Google Maps branch selection, Admin-controlled strict geofencing and real browser GPS on every purchase/redemption confirmation route.
 - Current branch: `SWIF-15`.
-- Last stable feature: Card design, program and location saves queue and immediately attempt installed Apple pass updates; before saving, the Admin preview now renders edited fields and local logo/strip object URLs, labels its unsaved state and blocks form submission during an active upload.
-- Git status: Typecheck, lint, 208 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0048` pass locally.
+- Last stable feature: Migration `0050` lets only the active tenant Admin enable strict validation after every active branch has map coordinates; operation forms capture browser GPS and the database blocks missing or out-of-radius purchases/canjes.
+- Git status: Typecheck, lint, 216 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0050` pass locally.
 - Remote backup: `SWIF-15` is local and not pushed yet.
 
 ## Completed Functionality
@@ -46,6 +46,9 @@
 - Branch IDs are generated on the trusted server before insertion, so creation no longer depends on an RLS-filtered `INSERT ... RETURNING` response to continue shared-account compensation safely.
 - Admin general can edit branch name, address, coordinates, geofence radius, proximity activation/message and status inline from `/admin/branches`; validation retains submitted values, deactivation requires confirmation, and the write matches both branch ID and the authenticated tenant under RLS.
 - Branch location/proximity/status changes continue through the existing Apple Wallet outbox trigger and immediate best-effort dispatcher; shared-access mode and credentials remain in their separate confirmed control.
+- Branch create/edit now uses Google Places Autocomplete (New), an interactive Google map, point adjustment, current-position assistance and a visual radius circle instead of manual coordinate inputs. Existing coordinates remain preserved if Maps configuration is unavailable.
+- `/admin/branches` clearly separates Apple Wallet proximity from operational geofencing and lets only the tenant Admin enable or disable strict GPS validation. Activation is refused until every active branch has coordinates and every change is audited.
+- Purchase and reward confirmations in the primary scanner modal and compatibility routes capture browser geolocation, send normalized coordinates to the existing authoritative RPCs and show actionable permission, timeout and outside-radius errors. Flexible mode permits submission and can retain optional diagnostic GPS; strict mode requires it.
 - Admin-only `/admin/staff` creation for Manager and Employee accounts.
 - Server-only Auth provisioning with profile cleanup compensation.
 - Tenant and creator derived from the authenticated Admin context.
@@ -69,7 +72,7 @@
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
 - Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
 - Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
-- Existing programs are backfilled to their current cyclic type; Admin type changes require confirmation, preserve historical data and begin paused. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs the same conversion if the type changed after online migration `0041` but before `0042`. Reward catalogs have no product-level count cap, and lifetime points remain forced to PAUSED until the decimal engine is connected.
+- Existing programs are backfilled to their current cyclic type; Admin type changes preserve historical data. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs transitions made during the earlier rollout, while `0049` enables decimal purchases, non-resetting balances and one-time milestones. Reward catalogs have no product-level count cap.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
 - The public Web Card and provider-neutral Wallet payload include program terms and the active prize catalog ordered by required stamps.
@@ -132,7 +135,8 @@
 
 ## Pending Functionality
 
-- Tenths-based lifetime point accounting, per-purchase truncation, one-time milestones, welcome/import generation, policy enforcement and Web Card/Apple Wallet progress for the new third program type.
+- Configurable welcome-reward generation and imported-stamp conversion/milestone generation for lifetime-points programs.
+- Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
 - Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
@@ -224,4 +228,4 @@
 
 ## Next Exact Step
 
-Apply validated migrations `0043` through `0048` to the hosted Supabase project with approval, then exercise create draft → resume → publish → employee register → scan handoff QR → accept terms → add Wallet/Web Card → edit program/design/locations → confirm automatic Apple refresh → scan/search → customer modal → redeem/purchase. After that, resume the additive `LIFETIME_POINTS` engine; the separate APNs/Google rollout validation remains required before production scale.
+Configure `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` locally and in Hostinger with Maps JavaScript API plus Places API (New), billing and exact HTTP-referrer restrictions. Apply validated migrations `0043` through `0050` with approval, select every active branch location, activate geofencing, then test one inside-radius and one outside-radius operation on an HTTPS phone. Continue the lifetime-points and Apple refresh smoke path afterward.

@@ -1,3 +1,4 @@
+import { OperationLocationSubmit } from "@/components/operation-location-submit";
 import { SubmitButton } from "@/components/submit-button";
 import type { RegistrationScope } from "@/components/registration-scope-fields";
 import { requireInternalArea } from "@/lib/auth/server";
@@ -12,17 +13,19 @@ export default async function PurchasePage({ searchParams }: PurchasePageProps) 
   const loyaltyCardId = params.loyaltyCardId ?? "";
   const hasPreview = params.previewStamps !== undefined;
   const { data: rawScopes, error: branchesError } = await context.supabase.schema("app").rpc("get_staff_registration_scopes");
+  const { data: tenant } = await context.supabase.from("tenants").select("location_validation_mode").eq("id", context.tenantId).maybeSingle();
+  const locationRequired = tenant?.location_validation_mode === "STRICT";
   const cardScopes = ((rawScopes ?? []) as RegistrationScope[]).filter((scope) => scope.loyalty_card_id === loyaltyCardId);
   const cardName = cardScopes[0]?.card_name;
 
   return <main className="operations-page">
     <header className="operations-page-header"><p>Operación</p><h1>Registrar compra</h1><span>Previsualiza el cálculo antes de confirmar la operación.</span></header>
-    {params.confirmed ? <p className="operations-alert is-success" role="status"><strong>Compra confirmada.</strong> Sellos: {params.stamps ?? "0"}. Recompensas: {params.rewards ?? "0"}.</p> : null}
+    {params.confirmed ? <p className="operations-alert is-success" role="status"><strong>Compra confirmada.</strong> Unidades: {params.stamps ?? "0"}. Recompensas: {params.rewards ?? "0"}.</p> : null}
     {params.error ? <p className="operations-alert is-error" role="alert">{params.error}</p> : null}
     {branchesError ? <p className="operations-alert is-error" role="alert">No se pudieron cargar las sucursales. Actualiza la página.</p> : null}
-    {hasPreview ? <section className="operations-preview" aria-labelledby="purchase-preview-title"><div><span>Sellos</span><strong>{params.previewStamps}</strong></div><div><span>Balance proyectado</span><strong>{params.previewBalance}</strong></div><div><span>Remanente</span><strong>{params.previewRemainder}</strong></div><p id="purchase-preview-title">Previsualización calculada por SwiftWallet</p></section> : null}
+    {hasPreview ? <section className="operations-preview" aria-labelledby="purchase-preview-title"><div><span>Unidades</span><strong>{params.previewStamps}</strong></div><div><span>Balance proyectado</span><strong>{params.previewBalance}</strong></div><div><span>Remanente</span><strong>{params.previewRemainder}</strong></div><p id="purchase-preview-title">Previsualización calculada por SwiftWallet</p></section> : null}
     <section className="operations-card" aria-labelledby="purchase-data-title">
-      <div className="operations-card-header"><h2 id="purchase-data-title">Datos de la compra</h2><p>El backend volverá a calcular los sellos al confirmar.</p></div>
+      <div className="operations-card-header"><h2 id="purchase-data-title">Datos de la compra</h2><p>El backend volverá a calcular las unidades al confirmar.</p></div>
       <form className="operations-form" action={previewPurchase}>
         <input name="customerCardId" type="hidden" value={customerCardId} />
         <input name="loyaltyCardId" type="hidden" value={loyaltyCardId} />
@@ -35,7 +38,7 @@ export default async function PurchasePage({ searchParams }: PurchasePageProps) 
     {hasPreview ? <section className="operations-card operations-confirm-card" aria-labelledby="confirm-purchase-title"><div className="operations-card-header"><h2 id="confirm-purchase-title">Confirmar operación</h2><p>Verifica el ticket. La compra no se podrá editar después.</p></div><form className="operations-form" action={confirmPurchase}>
       <input type="hidden" name="customerCardId" value={customerCardId} /><input type="hidden" name="loyaltyCardId" value={loyaltyCardId} /><input type="hidden" name="branchId" value={params.branchId ?? ""} /><input type="hidden" name="amountMinor" value={params.amountMinor ?? ""} />
       <label className="field"><span>Número de ticket</span><input name="ticketNumber" required /></label>
-      <SubmitButton className="operations-primary-button">Confirmar compra</SubmitButton>
+      <OperationLocationSubmit locationRequired={locationRequired}>Confirmar compra</OperationLocationSubmit>
     </form></section> : null}
   </main>;
 }

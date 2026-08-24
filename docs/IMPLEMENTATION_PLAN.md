@@ -109,11 +109,11 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Expose loyalty program creation, configuration, and pause/resume controls in the Admin UI.
 - [x] [Terminada] Add cumulative reward tiers, cycle-safe generation and reversal, program terms, and the reward catalog on the Web Card.
 - [x] [Terminada] Add a backward-compatible configuration foundation for stamps per purchase, stamps per amount, and paused lifetime-points programs, including unit labels, welcome/import options, operational policies, confirmed paused type transitions, existing stamp-balance conversion and unbounded reward catalogs.
-- [ ] [Pendiente] Implement tenths-based lifetime point calculation with per-purchase truncation, non-resetting balances and one-time milestone generation.
+- [x] [Terminada] Implement tenths-based lifetime point calculation with per-purchase truncation, non-resetting balances and one-time milestone generation.
 - [ ] [Pendiente] Generate the configurable welcome reward for self-service registration and optionally for imported customers.
 - [ ] [Pendiente] Convert imported stamps with the configured integer multiplier and award every reached milestone atomically.
-- [ ] [Pendiente] Enforce purchase/reward cancellation and redemption-reversal options in the backend and authorized interfaces; keep manual point adjustments disabled for lifetime points.
-- [ ] [Pendiente] Show integer customer/employee progress, one-decimal Admin/export values, next milestones and completion state in the operational UI, Web Card and Apple Wallet.
+- [ ] [Pendiente] Enforce the remaining configurable cancellation and redemption-reversal options in authorized interfaces; lifetime purchase/reward cancellations and manual point adjustments are already disabled in the backend.
+- [x] [Terminada] Show integer customer/employee progress, one-decimal Admin/export values, next milestones and completion state in the operational UI, Web Card and Apple Wallet.
 
 ## Phase 4 - PWA
 
@@ -132,7 +132,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Convert the customer modal into a three-step guided operation: overview, minimal purchase/reward input and explicit authoritative confirmation; keep large search result sets clear and vertically bounded.
 - [x] [Terminada] Offer an expandable card-claim QR from the identified-customer modal only while Apple has no active device registration for that issued card.
 - [x] [Terminada] Add an employee-readable, tenant-derived program catalog with earning rules, reward tiers and terms and conditions.
-- [x] [Terminada] Add strict/flexible geolocation handling.
+- [x] [Terminada] Add strict/flexible geolocation handling, Google Maps branch selection, Admin activation control and browser GPS capture for purchases/redemptions.
 - [x] [Terminada] Add double-submit protection.
 
 ## Phase 5 - Operaciones Administrativas

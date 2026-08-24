@@ -382,6 +382,34 @@
   background: var(--card-preview-foreground);
 }
 
+.unified-wallet-points {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 7px;
+  margin: 34px 0 28px;
+}
+
+.unified-wallet-points > span,
+.unified-wallet-points > small {
+  color: var(--card-preview-label);
+  font-size: 10px;
+}
+
+.unified-wallet-points > strong {
+  font-size: 2.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.unified-wallet-points > div {
+  background: rgb(255 255 255 / 28%);
+}
+
+.unified-wallet-points i {
+  background: var(--card-preview-foreground);
+}
+
 .unified-wallet-meta {
   position: relative;
   z-index: 1;
@@ -1723,6 +1751,28 @@ textarea {
 }
 
 @media (max-width: 639px) {
+  .branch-geofence-control,
+  .branch-location-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .branch-geofence-control form,
+  .branch-geofence-control button,
+  .branch-location-actions button {
+    width: 100%;
+  }
+
+  .branch-location-selection,
+  .operation-location-check {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-map-shell,
+  .branch-map {
+    min-height: 240px;
+  }
+
   .enterprise-page {
     gap: 20px;
     padding: 20px 16px 32px;
@@ -1976,6 +2026,191 @@ textarea {
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
   align-items: start;
   gap: 24px;
+}
+
+.branch-geofence-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+}
+
+.branch-geofence-control > div {
+  display: grid;
+  max-width: 760px;
+  gap: 7px;
+}
+
+.branch-geofence-control h2,
+.branch-geofence-control p,
+.branch-geofence-control small {
+  margin: 0;
+}
+
+.branch-geofence-control h2 {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.branch-geofence-control p,
+.branch-geofence-control small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.branch-geofence-control form {
+  flex: none;
+}
+
+.branch-location-picker {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  margin: 0;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 16px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.branch-location-picker legend {
+  padding: 0 6px;
+  color: var(--enterprise-text);
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.branch-location-copy {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.branch-place-host,
+.branch-place-autocomplete {
+  display: block;
+  width: 100%;
+}
+
+.branch-map-shell {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  border: 1px solid var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-muted, #eef1f3);
+}
+
+.branch-map {
+  width: 100%;
+  min-height: 300px;
+}
+
+.branch-map-center-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 7px rgb(17 24 39 / 28%);
+  background: var(--enterprise-primary);
+  color: transparent;
+  pointer-events: none;
+}
+
+.branch-map-alert {
+  margin: 0;
+}
+
+.branch-location-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.branch-location-actions p {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.branch-location-selection {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-sm);
+  background: var(--enterprise-border);
+}
+
+.branch-location-selection > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--enterprise-surface);
+}
+
+.branch-location-selection span,
+.branch-location-selection strong {
+  overflow-wrap: anywhere;
+  font-size: 0.72rem;
+}
+
+.branch-location-selection span {
+  color: var(--enterprise-text-muted);
+}
+
+.operation-location-submit {
+  display: grid;
+  gap: 10px;
+}
+
+.operation-location-check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #f2d19a;
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--enterprise-warning-soft);
+}
+
+.operation-location-check.is-optional {
+  border-color: var(--enterprise-border);
+  background: var(--enterprise-surface-subtle);
+}
+
+.operation-location-check strong,
+.operation-location-check p,
+.operation-location-status {
+  margin: 0;
+}
+
+.operation-location-check strong {
+  font-size: 0.82rem;
+}
+
+.operation-location-check p,
+.operation-location-status {
+  color: var(--enterprise-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.operation-location-status {
+  color: var(--enterprise-success);
 }
 
 .admin-record-list {
@@ -4474,6 +4709,63 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   margin: 24px 0;
 }
 
+.wallet-points-progress {
+  display: grid;
+  gap: 14px;
+  margin: 24px 0;
+  border: 1px solid var(--enterprise-border);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.wallet-points-balance {
+  display: grid;
+  gap: 2px;
+}
+
+.wallet-points-balance > span,
+.wallet-points-balance > small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+}
+
+.wallet-points-balance > strong {
+  color: var(--card-primary);
+  font-size: 2.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.wallet-points-track,
+.unified-wallet-points > div,
+.apple-pass-preview-points > div {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--enterprise-border);
+}
+
+.wallet-points-track > span,
+.unified-wallet-points i,
+.apple-pass-preview-points i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--card-primary);
+}
+
+.wallet-points-progress > p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.wallet-points-progress > p span {
+  color: var(--enterprise-text-muted);
+}
+
 .wallet-program-status {
   width: fit-content;
   margin: 12px 0 0 !important;
@@ -5099,6 +5391,32 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 1.25rem;
   font-weight: 600;
   text-align: center;
+}
+
+.apple-pass-preview-points {
+  display: grid;
+  width: min(82%, 300px);
+  gap: 6px;
+  text-align: center;
+}
+
+.apple-pass-preview-points > strong {
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.apple-pass-preview-points > div {
+  background: rgb(255 255 255 / 28%);
+}
+
+.apple-pass-preview-points i {
+  background: var(--apple-pass-foreground);
+}
+
+.apple-pass-preview-points > small {
+  font-size: 0.58rem;
+  font-weight: 600;
 }
 
 .apple-pass-preview-content {

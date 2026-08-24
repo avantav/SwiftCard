@@ -19,6 +19,14 @@ const branchEditForm = readFileSync(
   join(process.cwd(), "src/components/branch-edit-form.tsx"),
   "utf8",
 );
+const branchLocationPicker = readFileSync(
+  join(process.cwd(), "src/components/branch-location-picker.tsx"),
+  "utf8",
+);
+const branchesPage = readFileSync(
+  join(process.cwd(), "src/app/admin/branches/page.tsx"),
+  "utf8",
+);
 
 function form(values: Record<string, string>) {
   const data = new FormData();
@@ -188,6 +196,18 @@ describe("validateBranchCreateForm", () => {
     expect(branchForm).toContain("aria-invalid");
     expect(branchForm).toContain("field-error-message");
     expect(branchForm).toContain("summaryRef.current?.focus()");
+  });
+
+  it("selects branch coordinates through Google Places and exposes the strict-mode control", () => {
+    expect(branchForm).toContain("BranchLocationPicker");
+    expect(branchEditForm).toContain("BranchLocationPicker");
+    expect(branchLocationPicker).toContain("PlaceAutocompleteElement");
+    expect(branchLocationPicker).toContain('importLibrary("places")');
+    expect(branchLocationPicker).toContain('name="latitude"');
+    expect(branchLocationPicker).toContain('name="longitude"');
+    expect(branchLocationPicker).toContain("geofenceRadiusMeters");
+    expect(branchesPage).toContain("configureTenantGeofencing");
+    expect(branchesPage).toContain("Geofence activo");
   });
 });
 

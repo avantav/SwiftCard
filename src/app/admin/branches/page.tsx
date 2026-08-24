@@ -10,13 +10,14 @@ import {
   publicRegistrationUrl,
   resolvePublicOrigin,
 } from "@/lib/public-origin";
-import { configureBranchAccess } from "./actions";
+import { configureBranchAccess, configureTenantGeofencing } from "./actions";
 
 type BranchesPageProps = {
   searchParams: Promise<{
     accessUpdated?: string;
     created?: string;
     error?: string;
+    geofenceUpdated?: string;
     updated?: string;
   }>;
 };
@@ -28,13 +29,24 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
     redirect("/admin");
   }
 
-  const { accessUpdated, created, error, updated } = await searchParams;
-  const { data: branches, error: branchesError } = await context.supabase
-    .from("branches")
-    .select(
-      "id,name,address,latitude,longitude,status,geofence_radius_meters,proximity_enabled,proximity_message,employee_access_mode,public_registration_token",
-    )
-    .order("name");
+  const { accessUpdated, created, error, geofenceUpdated, updated } = await searchParams;
+  const [{ data: branches, error: branchesError }, { data: tenant, error: tenantError }] = await Promise.all([
+    context.supabase
+      .from("branches")
+      .select(
+        "id,name,address,latitude,longitude,status,geofence_radius_meters,proximity_enabled,proximity_message,employee_access_mode,public_registration_token",
+      )
+      .order("name"),
+    context.supabase
+      .from("tenants")
+      .select("location_validation_mode")
+      .eq("id", context.tenantId)
+      .maybeSingle(),
+  ]);
+  const strictGeofencing = tenant?.location_validation_mode === "STRICT";
+  const branchesMissingCoordinates = (branches ?? []).filter(
+    (branch) => branch.status === "ACTIVE" && (branch.latitude === null || branch.longitude === null),
+  );
   const publicOrigin = resolvePublicOrigin(
     process.env.SWIFTWALLET_PUBLIC_URL,
   );
@@ -75,11 +87,29 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           </p>
         ) : null}
         {accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
+        {geofenceUpdated ? <p className="enterprise-alert is-success" role="status">Validación de ubicación actualizada.</p> : null}
         {error ? (
           <p className="enterprise-alert is-error" role="alert">
             {error}
           </p>
         ) : null}
+        <section className="enterprise-content-card branch-geofence-control" aria-labelledby="tenant-geofence-title">
+          <div>
+            <span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{strictGeofencing ? "Geofence activo" : "Geofence desactivado"}</span>
+            <h2 id="tenant-geofence-title">Validación GPS de operaciones</h2>
+            <p>{strictGeofencing ? "Compras y canjes requieren el GPS del dispositivo dentro del radio configurado." : "En modo flexible las operaciones no se bloquean por ubicación, aunque la sucursal tenga coordenadas."}</p>
+            {!strictGeofencing && branchesMissingCoordinates.length ? <small>{branchesMissingCoordinates.length} {branchesMissingCoordinates.length === 1 ? "sucursal activa necesita" : "sucursales activas necesitan"} una ubicación antes de poder activarlo.</small> : null}
+            <small>La proximidad de Apple Wallet es independiente: puede mostrar avisos cercanos, pero no bloquea operaciones.</small>
+          </div>
+          {tenantError ? <p className="enterprise-alert is-error" role="alert">No se pudo consultar el modo de validación.</p> : <form action={configureTenantGeofencing}>
+            <input name="locationValidationMode" type="hidden" value={strictGeofencing ? "FLEXIBLE" : "STRICT"} />
+            <SubmitButton
+              className={strictGeofencing ? "secondary-button" : "primary-button"}
+              confirmMessage={strictGeofencing ? "Las operaciones dejarán de validar la ubicación. ¿Deseas continuar?" : "Las compras y canjes fuera del radio serán bloqueados. ¿Deseas activar el geofence?"}
+              disabled={!strictGeofencing && branchesMissingCoordinates.length > 0}
+            >{strictGeofencing ? "Desactivar geofence" : "Activar geofence"}</SubmitButton>
+          </form>}
+        </section>
         <div className="admin-management-grid">
           <section className="enterprise-data-panel" aria-labelledby="branch-list-title">
             <div className="enterprise-panel-header"><div><h2 id="branch-list-title">Sucursales actuales</h2><p>{branches?.length ?? 0} {(branches?.length ?? 0) === 1 ? "ubicación" : "ubicaciones"}</p></div></div>

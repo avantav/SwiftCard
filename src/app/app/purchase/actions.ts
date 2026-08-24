@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
+import { GEOFENCE_REJECTION_MESSAGE, isGeofenceRejection, readOperationCoordinates } from "@/lib/geofencing/operation-location";
 import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
 function back(params: Record<string, string>): never {
@@ -43,18 +44,20 @@ export async function confirmPurchase(formData: FormData) {
   if (!customerCardId || !branchId || !ticketNumber || !Number.isSafeInteger(amountMinor) || amountMinor <= 0) {
     back({ loyaltyCardId, error: "Cliente, sucursal, ticket y monto válido son obligatorios." });
   }
+  const coordinates = readOperationCoordinates(formData);
+  if (!coordinates.ok) back({ customerCardId, loyaltyCardId, branchId, amountMinor: String(amountMinor), error: coordinates.error });
   const context = await requireInternalArea("APP");
   const { data, error } = await context.supabase.schema("app").rpc("confirm_card_purchase", {
     target_customer_card_id: customerCardId,
     target_branch_id: branchId,
     target_ticket_number: ticketNumber,
     target_amount_minor: amountMinor,
-    target_latitude: null,
-    target_longitude: null
+    target_latitude: coordinates.data.latitude,
+    target_longitude: coordinates.data.longitude
   });
   const result = Array.isArray(data) ? data[0] : null;
   if (error || !result || result.result !== "CONFIRMED") {
-    back({ customerCardId, loyaltyCardId, branchId, amountMinor: String(amountMinor), error: result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
+    back({ customerCardId, loyaltyCardId, branchId, amountMinor: String(amountMinor), error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
   }
   await dispatchAppleWalletUpdatesBestEffort({ limit: 1 });
   back({ customerCardId, loyaltyCardId, confirmed: "1", rewards: String(result.rewards_generated), stamps: String(result.stamps_awarded) });

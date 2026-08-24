@@ -66,6 +66,13 @@ export function buildAppleWalletPassProps(
       }),
     )
     .join("\n");
+  const lifetimePoints = input.programType === "LIFETIME_POINTS";
+  const nextTier = lifetimePoints
+    ? tiers.find((tier) => tier.stampsRequired > input.stampBalance)
+    : null;
+  const nextMilestoneText = nextTier
+    ? `${nextTier.name} al llegar a ${nextTier.stampsRequired} ${input.unitNamePlural}`
+    : "Todos los hitos del programa están desbloqueados.";
 
   return {
     formatVersion: 1 as const,
@@ -99,12 +106,25 @@ export function buildAppleWalletPassProps(
           changeMessage: "Ahora tienes %@ premios disponibles.",
         },
       ],
-      primaryFields: [],
+      primaryFields: lifetimePoints
+        ? [{
+            key: "points-balance",
+            label: input.unitNamePlural.toLocaleUpperCase("es-MX"),
+            value: input.stampBalance,
+            changeMessage: `Ahora tienes %@ ${input.unitNamePlural}.`,
+          }]
+        : [],
       secondaryFields: [
         { key: "customer", label: "CLIENTE", value: input.customerName },
       ],
-      auxiliaryFields: [
-        {
+      auxiliaryFields: [lifetimePoints
+        ? {
+          key: "next-milestone",
+          label: nextTier ? "SIGUIENTE PREMIO" : "PROGRAMA",
+          value: nextMilestoneText,
+          changeMessage: "Tu progreso ahora es %@.",
+        }
+        : {
           key: "stamp-progress",
           label: "PROGRESO",
           value: appleWalletProgressText({

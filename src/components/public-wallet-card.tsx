@@ -13,8 +13,12 @@ export type PublicCard = {
   customer_name: string;
   program_name: string | null;
   program_status: "ACTIVE" | "PAUSED" | null;
+  program_type: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
   stamp_balance: number;
+  balance_tenths: number | string;
   reward_goal: number | null;
+  unit_name_singular: string;
+  unit_name_plural: string;
   terms_and_conditions: string | null;
   reward_tiers: Array<{
     stamps_required: number;
@@ -31,6 +35,7 @@ export type PublicCard = {
 };
 
 export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false, qrDataUrl }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean; qrDataUrl?: string | null }) {
+  const lifetimePoints = card.program_type === "LIFETIME_POINTS";
   const rewardGoal = Math.max(0, Math.trunc(card.reward_goal ?? 0));
   const earnedStamps = Math.min(rewardGoal, Math.max(0, Math.trunc(card.stamp_balance)));
   const visibleStampCount = Math.min(rewardGoal, MAX_VISIBLE_STAMPS);
@@ -45,12 +50,28 @@ export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false
     "--stamp-columns": Math.min(5, visibleStampCount),
   } as CSSProperties;
   const tenantInitials = card.tenant_name.slice(0, 2).toUpperCase();
+  const balanceTenths = Math.max(0, Number(card.balance_tenths ?? card.stamp_balance * 10));
+  const nextTier = lifetimePoints
+    ? card.reward_tiers.find((tier) => tier.stamps_required * 10 > balanceTenths)
+    : null;
+  const previousThresholdTenths = lifetimePoints
+    ? Math.max(0, ...card.reward_tiers
+      .filter((tier) => tier.stamps_required * 10 <= balanceTenths)
+      .map((tier) => tier.stamps_required * 10))
+    : 0;
+  const lifetimeProgress = nextTier
+    ? Math.min(100, Math.max(0, ((balanceTenths - previousThresholdTenths) / ((nextTier.stamps_required * 10) - previousThresholdTenths)) * 100))
+    : 100;
   return <main className="wallet-shell" style={brandStyle}>
     <section className="wallet-card" aria-labelledby="card-title">
       <header className="wallet-card-header"><div>{card.logo_url ? <img className="wallet-logo" src={card.logo_url} alt={`Logo de ${card.tenant_name}`} /> : <span className="wallet-tenant-mark" aria-hidden="true">{card.tenant_name.slice(0, 2).toUpperCase()}</span>}</div><span className="wallet-card-label">Tarjeta digital</span></header>
       <div className="wallet-card-body"><p>{card.program_name ?? "Programa de fidelidad"}</p><h1 id="card-title">{card.customer_name}</h1>
         {card.program_status === "PAUSED" ? <p className="wallet-program-status">Programa temporalmente pausado</p> : null}
-        {rewardGoal > 0 ? <section className="wallet-progress" aria-labelledby="wallet-progress-title">
+        {lifetimePoints ? <section className="wallet-points-progress" aria-labelledby="wallet-progress-title">
+          <div className="wallet-points-balance"><span id="wallet-progress-title">{card.unit_name_plural}</span><strong>{card.stamp_balance}</strong><small>Saldo acumulado; nunca se reinicia</small></div>
+          <div className="wallet-points-track" role="progressbar" aria-label="Progreso al siguiente premio" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(lifetimeProgress)}><span style={{ width: `${lifetimeProgress}%` }} /></div>
+          {nextTier ? <p><strong>Próximo premio: {nextTier.name}</strong><span>Faltan {Math.max(1, Math.ceil((nextTier.stamps_required * 10 - balanceTenths) / 10))} {card.unit_name_plural} para llegar a {nextTier.stamps_required}.</span></p> : <p><strong>Todos los hitos desbloqueados</strong><span>Puedes seguir acumulando {card.unit_name_plural}.</span></p>}
+        </section> : rewardGoal > 0 ? <section className="wallet-progress" aria-labelledby="wallet-progress-title">
           <div className="wallet-progress-heading"><span id="wallet-progress-title">Tu tarjeta</span><strong>{earnedStamps >= rewardGoal ? "Tarjeta completa" : "Sigue acumulando"}</strong></div>
           <div className="wallet-stamp-grid" role="img" aria-label={`${earnedStamps} de ${rewardGoal} sellos acumulados`}>
             {Array.from({ length: visibleStampCount }, (_, index) => {
@@ -68,11 +89,11 @@ export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false
       </div>
     </section>
     {appleWalletAvailable && cardToken ? <section className="wallet-apple-action" aria-label="Apple Wallet"><a href={`/card/${encodeURIComponent(cardToken)}?claim=1`}>Agregar a Apple Wallet</a><p>Revisa y acepta los términos vigentes antes de agregar el pase.</p></section> : null}
-    <section className="wallet-rewards wallet-tier-catalog" aria-labelledby="reward-tiers-title"><div><p className="public-eyebrow">Cómo ganar</p><h2 id="reward-tiers-title">Premios por número de sellos</h2></div>
-      {card.reward_tiers.length ? <ol>{card.reward_tiers.map((tier) => <li key={`${tier.stamps_required}-${tier.name}`}><span>{tier.stamps_required}</span><div><strong>{tier.name}</strong><p>{tier.description}</p><small>{tier.stamps_required} {tier.stamps_required === 1 ? "sello" : "sellos"}{tier.expiration_days ? ` · Vigencia de ${tier.expiration_days} días al obtenerlo` : " · Sin expiración"}</small></div></li>)}</ol> : <p className="wallet-no-rewards">El negocio todavía no ha publicado su catálogo de premios.</p>}
+    <section className="wallet-rewards wallet-tier-catalog" aria-labelledby="reward-tiers-title"><div><p className="public-eyebrow">Cómo ganar</p><h2 id="reward-tiers-title">{lifetimePoints ? "Hitos del programa" : "Premios por número de sellos"}</h2></div>
+      {card.reward_tiers.length ? <ol>{card.reward_tiers.map((tier) => <li key={`${tier.stamps_required}-${tier.name}`}><span>{tier.stamps_required}</span><div><strong>{tier.name}</strong><p>{tier.description}</p><small>{tier.stamps_required} {tier.stamps_required === 1 ? card.unit_name_singular : card.unit_name_plural}{tier.expiration_days ? ` · Vigencia de ${tier.expiration_days} días al obtenerlo` : " · Sin expiración"}</small></div></li>)}</ol> : <p className="wallet-no-rewards">El negocio todavía no ha publicado su catálogo de premios.</p>}
     </section>
     <section className="wallet-rewards" aria-labelledby="rewards-title"><div><p className="public-eyebrow">Beneficios</p><h2 id="rewards-title">Recompensas disponibles</h2></div>
-      {card.available_rewards.length ? <ul>{card.available_rewards.map((reward, index) => <li key={`${reward.name}-${reward.expires_at ?? "never"}-${index}`}><span aria-hidden="true">✓</span><div><strong>{reward.name}</strong><p>{reward.description}</p>{reward.expires_at ? <small>Disponible hasta {new Intl.DateTimeFormat("es-MX", { dateStyle: "medium" }).format(new Date(reward.expires_at))}</small> : <small>Sin expiración</small>}</div></li>)}</ul> : <p className="wallet-no-rewards">Sigue acumulando sellos para desbloquear tu próxima recompensa.</p>}
+      {card.available_rewards.length ? <ul>{card.available_rewards.map((reward, index) => <li key={`${reward.name}-${reward.expires_at ?? "never"}-${index}`}><span aria-hidden="true">✓</span><div><strong>{reward.name}</strong><p>{reward.description}</p>{reward.expires_at ? <small>Disponible hasta {new Intl.DateTimeFormat("es-MX", { dateStyle: "medium" }).format(new Date(reward.expires_at))}</small> : <small>Sin expiración</small>}</div></li>)}</ul> : <p className="wallet-no-rewards">Sigue acumulando {card.unit_name_plural} para desbloquear tu próxima recompensa.</p>}
     </section>
     <section className="wallet-terms" aria-labelledby="wallet-terms-title"><p className="public-eyebrow">Información del programa</p><h2 id="wallet-terms-title">Términos y condiciones</h2><p>{card.terms_and_conditions ?? "Consulta los términos y condiciones vigentes con el negocio."}</p></section>
     <p className="wallet-help">Esta tarjeta es válida en las sucursales participantes de {card.tenant_name}.</p>

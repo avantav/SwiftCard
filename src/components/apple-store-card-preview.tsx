@@ -21,6 +21,7 @@ type AppleStoreCardPreviewProps = {
   design: AppleStoreCardPreviewDesign;
   tenantName: string;
   programName: string;
+  programType: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
   rewardGoal: number | null;
   unitNameSingular: string;
   unitNamePlural: string;
@@ -40,6 +41,7 @@ export function AppleStoreCardPreview({
   design,
   tenantName,
   programName,
+  programType,
   rewardGoal,
   unitNameSingular,
   unitNamePlural,
@@ -63,6 +65,7 @@ export function AppleStoreCardPreview({
     "--apple-pass-stamp-gap": `${layout.gap}px`,
   } as CSSProperties;
   const tenantInitials = initials(tenantName);
+  const lifetimePoints = programType === "LIFETIME_POINTS";
 
   return (
     <div className="apple-pass-preview" style={style}>
@@ -93,7 +96,14 @@ export function AppleStoreCardPreview({
             src={design.stripImageUrl}
           />
         ) : null}
-        {progress.visible ? (
+        {lifetimePoints ? (
+          <div className="apple-pass-preview-points">
+            <span>{unitNamePlural.toLocaleUpperCase("es-MX")}</span>
+            <strong>{exampleBalance}</strong>
+            <div aria-hidden="true"><i style={{ width: `${Math.round((exampleBalance / Math.max(progress.goal, 1)) * 100)}%` }} /></div>
+            <small>Próximo premio al llegar a {progress.goal}</small>
+          </div>
+        ) : progress.visible ? (
           <div
             aria-label={`${exampleBalance} de ${progress.goal} ${unitNamePlural}`}
             className="apple-pass-preview-stamps"
@@ -132,7 +142,7 @@ export function AppleStoreCardPreview({
           </p>
           <p>
             <span>PROGRESO</span>
-            <strong>{progressText}</strong>
+            <strong>{lifetimePoints ? `${exampleBalance} ${unitNamePlural} acumulados` : progressText}</strong>
           </p>
         </div>
         <figure className="apple-pass-preview-code">

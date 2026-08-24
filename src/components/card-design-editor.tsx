@@ -16,6 +16,7 @@ import {
 type CardDesignPreviewContext = {
   tenantName: string;
   programName: string;
+  programType: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
   rewardGoal: number | null;
   unitNameSingular: string;
   unitNamePlural: string;
@@ -61,6 +62,7 @@ export function CardDesignEditor({
     previewGoal,
     Math.max(1, Math.floor(previewGoal * 0.4)),
   );
+  const lifetimePoints = preview.programType === "LIFETIME_POINTS";
   const googleVisibleStamps = Math.min(previewGoal, 10);
   const googleFilledStamps = Math.min(
     googleVisibleStamps,
@@ -192,7 +194,7 @@ export function CardDesignEditor({
           <div className="apple-wallet-upload-grid">
             {([
               { kind: "logo" as const, label: "Logo", hint: "Preferentemente horizontal o cuadrado, con fondo transparente." },
-              { kind: "strip" as const, label: "Imagen principal", hint: "Se usa como fondo visual detrás de los sellos." },
+              { kind: "strip" as const, label: "Imagen principal", hint: lifetimePoints ? "Se usa como fondo visual detrás del saldo y el siguiente hito." : "Se usa como fondo visual detrás de los sellos." },
             ]).map((asset) => {
               const imageUrl = asset.kind === "logo"
                 ? effectiveDesign.logoImageUrl
@@ -254,6 +256,7 @@ export function CardDesignEditor({
         {provider === "APPLE" ? (
           <AppleStoreCardPreview
             design={effectiveDesign}
+            programType={preview.programType}
             programName={preview.programName}
             rewardGoal={preview.rewardGoal}
             tenantName={preview.tenantName}
@@ -267,10 +270,10 @@ export function CardDesignEditor({
               {effectiveDesign.logoImageUrl ? <img alt="Logo de la tarjeta" src={effectiveDesign.logoImageUrl} /> : <span aria-hidden="true">SW</span>}
               <strong>{design.logoText || preview.tenantName}</strong>
             </header>
-            <div className="unified-wallet-stamps" role="img" aria-label={`${previewBalance} de ${previewGoal} ${preview.unitNamePlural}`}>
+            {lifetimePoints ? <div className="unified-wallet-points"><span>{preview.unitNamePlural}</span><strong>{previewBalance}</strong><div aria-hidden="true"><i style={{ width: `${Math.round((previewBalance / previewGoal) * 100)}%` }} /></div><small>Próximo premio al llegar a {previewGoal}</small></div> : <div className="unified-wallet-stamps" role="img" aria-label={`${previewBalance} de ${previewGoal} ${preview.unitNamePlural}`}>
               {Array.from({ length: googleVisibleStamps }, (_, index) => <span className={index < googleFilledStamps ? "is-filled" : ""} key={index}>{index < googleFilledStamps ? "✓" : ""}</span>)}
-            </div>
-            <div className="unified-wallet-meta"><p><span>CLIENTE</span><strong>Cliente ejemplo</strong></p><p><span>PROGRESO</span><strong>{previewBalance} de {previewGoal} {preview.unitNamePlural}</strong></p></div>
+            </div>}
+            <div className="unified-wallet-meta"><p><span>CLIENTE</span><strong>Cliente ejemplo</strong></p><p><span>PROGRESO</span><strong>{lifetimePoints ? `${previewBalance} ${preview.unitNamePlural} acumulados` : `${previewBalance} de ${previewGoal} ${preview.unitNamePlural}`}</strong></p></div>
             <div className="unified-wallet-qr" aria-hidden="true"><span /><span /><span /></div>
           </div>
         )}

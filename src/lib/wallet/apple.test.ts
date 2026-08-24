@@ -105,4 +105,46 @@ describe("Apple Wallet store card", () => {
     expect(JSON.stringify(props)).not.toContain("SwiftWallet");
     expect(props.storeCard.auxiliaryFields[0]?.value).toBe("0 visitas");
   });
+
+  it("shows a non-resetting point balance and next milestone without stamp fields", () => {
+    const props = buildAppleWalletPassProps(
+      {
+        serialNumber: "points-card",
+        tenantName: "Casa Garmendia",
+        brandingMode: "STANDARD",
+        logoText: "Garmendia",
+        description: "Programa de puntos",
+        backgroundColor: "#17202A",
+        foregroundColor: "#FFFFFF",
+        labelColor: "#FFFFFF",
+        customerName: "Cliente",
+        programName: "Puntos de por vida",
+        programType: "LIFETIME_POINTS",
+        unitNameSingular: "punto",
+        unitNamePlural: "puntos",
+        stampBalance: 125,
+        rewardGoal: 300,
+        availableRewards: 1,
+        termsAndConditions: "Los puntos nunca se reinician.",
+        rewardTiers: [
+          { stampsRequired: 100, name: "Café", description: "Dos bebidas" },
+          { stampsRequired: 200, name: "Desayuno", description: "Un desayuno" },
+        ],
+        cardUrl: "https://example.com/card/token",
+        webServiceUrl: "https://example.com/api/wallet/apple",
+        authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
+        locations: [],
+      },
+      { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
+    );
+
+    expect(props.storeCard.primaryFields[0]).toMatchObject({
+      key: "points-balance",
+      label: "PUNTOS",
+      value: 125,
+    });
+    expect(props.storeCard.auxiliaryFields[0]?.value).toContain("Desayuno");
+    expect(props.storeCard.auxiliaryFields[0]?.value).toContain("200 puntos");
+    expect(JSON.stringify(props.storeCard)).not.toContain("stamp-progress");
+  });
 });
