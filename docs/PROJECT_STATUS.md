@@ -4,10 +4,10 @@
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
 - Current task: Deploy migrations `0053` and `0054` after reconciling hosted migration history, then execute the Casa Garmendia one-time import with the real non-empty workbook.
-- Last completed task: Added an optional card-scoped welcome reward that is configured in the card editor and granted once on future public or employee registrations.
+- Last completed task: Prevented automatic iOS focus zoom in the public QR registration form while preserving manual pinch zoom.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: The card wizard can enable a named welcome gift with optional expiration; a database trigger grants it exactly once without changing points or cyclic progress.
-- Git status: Lint, typecheck, all 230 Vitest tests across 67 files, the production build and the complete database/RLS suite through migration `0054` pass locally.
+- Last stable feature: Public QR registration renders text, telephone, email and date controls at the 16px iOS threshold without disabling browser accessibility zoom.
+- Git status: Focused design tests, lint, typecheck and the production build pass after the QR registration zoom correction; all 230 Vitest tests across 67 files and the complete database/RLS suite through migration `0054` remain green from the preceding commit.
 - Remote backup: The Casa Garmendia import and PIN unlock repairs are committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` through `0054` remain undeployed.
 
 ## Completed Functionality

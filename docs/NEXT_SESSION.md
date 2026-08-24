@@ -24,6 +24,7 @@
 22. Shared PIN unlock: `/app/unlock` now uses a six-digit keypad with clear/backspace and physical-keyboard support. The server action returns success only after writing the HttpOnly operator cookie; the client then performs a full replacement navigation to `/app`, avoiding reuse of the locked layout context. Failed attempts clear the entered PIN and keep existing database lockout behavior.
 23. Welcome gift: the first card-editor step can enable a name, description and optional 1–3650 day validity. Migration `0054` grants it once on future public or employee card issuance, does not alter points, is non-retroactive and prevents duplicates per customer/card. Generic imports follow their program option; Casa Garmendia remains excluded from the generic trigger because `0053` already grants its fixed Churro.
 24. Google Wallet generation remains pending. The Admin Android toggle is explicitly labeled as a conceptual preview, not a claim that Google pass issuance is implemented.
+25. Public QR registration: all focusable text/date controls render at 16px, preventing iOS automatic focus zoom without setting `user-scalable=no` or blocking the customer's manual pinch zoom. The composition was reviewed at 375, 768, 1280 and 1440 px.
 
 ## Prior lifetime-points context
 

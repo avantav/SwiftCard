@@ -4589,6 +4589,14 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-weight: 600;
 }
 
+/* Keep QR registration controls at iOS' non-zooming minimum while preserving
+   the root viewport's manual pinch-zoom accessibility. */
+.public-registration-shell input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+.public-registration-shell select,
+.public-registration-shell textarea {
+  font-size: 16px;
+}
+
 .public-form .field small {
   color: var(--enterprise-text-muted);
   font-weight: 400;

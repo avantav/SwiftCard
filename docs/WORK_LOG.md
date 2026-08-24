@@ -1,5 +1,17 @@
 # Work Log
 
+## 2026-08-24 - Public QR Registration Focus Zoom
+
+**Objective:** Stop mobile Safari from automatically enlarging the public registration page when a customer focuses a field after opening the branch QR.
+
+**Changes Made:** Scoped the established 16px form-control minimum to text, telephone, email, date, select and textarea controls inside `.public-registration-shell`. Checkbox, radio and hidden controls remain unaffected, and the root viewport still permits manual pinch zoom for accessibility.
+
+**Design Review:** The real public form composition was reviewed at 375, 768, 1280 and 1440 px. Larger input text remains contained, labels and actions retain their hierarchy, no horizontal overflow was introduced and the temporary review route was removed.
+
+**Validation:** The focused application-design suite passes with 6 tests. `npm run lint`, `npm run typecheck`, the webpack production build and `git diff --check` pass; no database change is required.
+
+**Next Action:** Deploy the application commit and verify focus behavior from a real branch QR on iPhone Safari.
+
 ## 2026-08-24 - Optional Welcome Gift
 
 **Objective:** Let the Admin add an optional welcome gift to a points card and deliver it exactly once without deducting points or resetting accumulated progress.

@@ -58,6 +58,14 @@ describe("application-wide design contract", () => {
     expect(card).toContain("Powered by SwiftWallet");
   });
 
+  it("prevents automatic iOS focus zoom in QR registration without disabling manual zoom", () => {
+    const rootLayout = source("../../app/layout.tsx");
+    expect(styles).toContain('.public-registration-shell input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
+    expect(styles).toMatch(/\.public-registration-shell textarea \{\s*font-size: 16px;/);
+    expect(rootLayout).not.toContain("userScalable: false");
+    expect(rootLayout).not.toContain("maximumScale: 1");
+  });
+
   it("covers pending, success, error, empty and destructive confirmation states", () => {
     const purchase = source("../../app/app/purchase/page.tsx");
     const redeem = source("../../app/app/redeem/page.tsx");
