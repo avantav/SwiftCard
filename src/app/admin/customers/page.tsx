@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AdminCustomerQrDialog } from "@/components/admin-customer-qr-dialog";
 import {
   ADMIN_CUSTOMER_PAGE_SIZE,
   adminCustomerPageHref,
@@ -9,6 +10,8 @@ import {
 } from "@/lib/admin/customers";
 import { canViewTenantCustomers } from "@/lib/auth/permissions";
 import { requireInternalArea } from "@/lib/auth/server";
+import { customerCardClaimPath } from "@/lib/customers/card-qr";
+import { resolveCustomerCardHandoffOrigin } from "@/lib/customers/card-handoff-origin";
 
 type CustomerDirectoryPageProps = {
   searchParams: Promise<AdminCustomerDirectoryParams>;
@@ -27,6 +30,7 @@ type CustomerRow = {
 
 type CustomerCardRow = {
   customer_id: string;
+  public_token: string;
   status: "ACTIVE" | "REVOKED";
 };
 
@@ -116,7 +120,7 @@ export default async function CustomerDirectoryPage({
     customersQuery = customersQuery.ilike("full_name", `%${search.value}%`);
   }
 
-  const [customersResult, branchesResult, designResult] = await Promise.all([
+  const [customersResult, branchesResult, designResult, handoffOrigin] = await Promise.all([
     customersQuery,
     context.supabase
       .from("branches")
@@ -128,6 +132,7 @@ export default async function CustomerDirectoryPage({
       .select("apple_enabled")
       .eq("tenant_id", context.tenantId)
       .maybeSingle(),
+    resolveCustomerCardHandoffOrigin(),
   ]);
   const customers = (customersResult.data ?? []) as CustomerRow[];
   const customerIds = customers.map((customer) => customer.id);
@@ -137,7 +142,7 @@ export default async function CustomerDirectoryPage({
       ? await Promise.all([
           context.supabase
             .from("customer_cards")
-            .select("customer_id,status")
+            .select("customer_id,public_token,status")
             .eq("tenant_id", context.tenantId)
             .in("customer_id", customerIds),
           context.supabase
@@ -178,7 +183,7 @@ export default async function CustomerDirectoryPage({
   const cards = new Map(
     ((cardsResult.data ?? []) as CustomerCardRow[]).map((card) => [
       card.customer_id,
-      card.status,
+      card,
     ]),
   );
   const balances = new Map(
@@ -277,7 +282,8 @@ export default async function CustomerDirectoryPage({
                 </thead>
                 <tbody>
                   {customers.map((customer) => {
-                    const cardStatus = cards.get(customer.id) ?? null;
+                    const card = cards.get(customer.id) ?? null;
+                    const cardStatus = card?.status ?? null;
                     const passStatus = walletPasses.get(customer.id) ?? null;
                     const wallet = walletBadge({
                       appleEnabled,
@@ -308,10 +314,20 @@ export default async function CustomerDirectoryPage({
                           </span>
                         </td>
                         <td data-label="Tarjeta">
-                          {cardStatus ? (
-                            <span className={`enterprise-badge ${cardStatus === "ACTIVE" ? "is-active" : "is-neutral"}`}>
-                              {cardStatus === "ACTIVE" ? "Activa" : "Revocada"}
-                            </span>
+                          {card ? (
+                            <div className="admin-customer-card-actions">
+                              <span className={`enterprise-badge ${cardStatus === "ACTIVE" ? "is-active" : "is-neutral"}`}>
+                                {cardStatus === "ACTIVE" ? "Activa" : "Revocada"}
+                              </span>
+                              {cardStatus === "ACTIVE" && customer.status === "ACTIVE" ? (
+                                <AdminCustomerQrDialog
+                                  cardToken={card.public_token}
+                                  claimPath={customerCardClaimPath(card.public_token)}
+                                  customerName={customer.full_name}
+                                  origin={handoffOrigin}
+                                />
+                              ) : null}
+                            </div>
                           ) : "—"}
                         </td>
                         <td className="enterprise-number" data-label="Saldo">{balancesResult.error ? "—" : balances.get(customer.id) ?? 0}</td>

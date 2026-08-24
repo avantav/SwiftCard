@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Configure the restricted Google Maps browser key, deploy validated migrations `0043` through `0050` and complete the hosted geofence/lifetime-points/Apple smoke paths.
-- Last completed task: Added Google Maps branch selection, Admin-controlled strict geofencing and real browser GPS on every purchase/redemption confirmation route.
-- Current branch: `SWIF-15`.
-- Last stable feature: Migration `0050` lets only the active tenant Admin enable strict validation after every active branch has map coordinates; operation forms capture browser GPS and the database blocks missing or out-of-radius purchases/canjes.
-- Git status: Typecheck, lint, 216 application tests, production build and the complete disposable PostgreSQL migration/RLS suite through `0050` pass locally.
-- Remote backup: `SWIF-15` is local and not pushed yet.
+- Current task: Deploy the Admin customer QR and Apple Wallet terms error-handling changes, reconcile hosted migration history, configure the restricted Google Maps browser key and complete the hosted smoke paths.
+- Last completed task: Added on-demand customer card delivery QR access to the Admin customer directory.
+- Current branch: `codex/swiftwallet-mvp`.
+- Last stable feature: Active customer rows expose a tenant-scoped “Mostrar QR” dialog that generates the existing possession-based card claim QR only when requested.
+- Git status: Typecheck, lint, all 217 application tests and the production build pass locally; the complete database/RLS suite through `0051` passed in the preceding change.
+- Remote backup: The `0051` and Admin customer QR commits are local on `codex/swiftwallet-mvp` and not pushed; the targeted hosted database grant is already live.
 
 ## Completed Functionality
 
@@ -105,9 +105,11 @@
 - Home, login, required-password change, public registration, and Web Card now share SwiftWallet tokens, controls, content hierarchy, accessibility states, and responsive public compositions.
 - Admin general can copy each active branch's public registration link, download its PNG QR, and open the destination from `/admin/branches`; the link is derived from the server-configured public HTTPS origin.
 - Admin general has an exclusive `/admin/customers` directory with bounded name/phone search, status filter, 50-row pagination, registration source, customer/card state, loyalty balances, available rewards and Apple Wallet generation diagnostics; Branch Administrators are redirected before data queries and do not see the navigation entry.
+- Each active customer with an active issued card now has a “Mostrar QR” action in that directory. It opens an accessible dialog and generates the existing terms-and-Wallet claim QR on demand, avoiding bulk QR work while keeping the opaque token tenant-scoped by the Admin query.
 - Public registration identifies the tenant and source branch, rejects invalid/inactive branch tokens and suspended tenants before rendering the form, and continues to create the customer and card atomically through the existing secure RPC.
 - Employee registration now returns to the real `/app` route and replaces the dead `/app/register` destination with a compact delivery state. Its QR uses the configured public HTTPS origin in production and the current request host during local LAN development, so the customer opens the issued card on their own phone.
 - The card claim screen keeps tenant identity, current terms, required acceptance and the Wallet/Web Card action together. Migration `0046` stores the accepted program version and immutable terms snapshot behind forced RLS, and the initial Apple endpoint rejects direct downloads until the current terms are accepted.
+- Migration `0051` grants the server-only Apple issuance role access to that verification function. The targeted grant is applied on hosted Supabase and a live read-only check confirms the most recent accepted card now returns `true`; database verification errors no longer masquerade as missing acceptance in the updated route.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.

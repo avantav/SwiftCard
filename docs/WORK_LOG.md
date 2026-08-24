@@ -1,5 +1,31 @@
 # Work Log
 
+## 2026-08-24 - Admin Customer Card Delivery QR
+
+**Objective:** Let the tenant Admin display the customer-facing QR for adding an existing active card from the customer directory.
+
+**Changes Made:** Extended the tenant-scoped customer-card projection with the opaque public token and added “Mostrar QR” beneath each eligible card state. The action opens a keyboard-accessible native dialog, generates the existing claim QR only after interaction, explains the terms step and offers a same-device fallback. Inactive customers and revoked cards do not expose the action.
+
+**Security And Performance:** The query remains under the authenticated tenant Admin client and explicitly matches the current tenant; no service-role client or browser-provided tenant authority was added. The QR contains only the existing possession-based claim URL. Lazy client generation avoids preparing and serializing up to 50 QR images during directory load.
+
+**Design Review:** The representative directory and open dialog were reviewed at 375, 768, 1280 and 1440 px. The dialog stays within the viewport, the QR and explanatory copy remain legible, actions retain keyboard focus and mobile touch sizing, and the table does not gain another column. The temporary visual-review route was removed.
+
+**Validation:** Focused customer-directory/QR tests, `npm run typecheck`, `npm run lint`, all 217 Vitest tests and the production webpack build pass.
+
+**Next Action:** Deploy the Admin change and confirm with an active hosted customer that “Mostrar QR” opens the current terms-and-Wallet claim flow on a phone.
+
+## 2026-08-24 - Apple Wallet Terms Verification Permission
+
+**Objective:** Resolve the false “Debes aceptar los términos” response after a customer had already accepted the current program version.
+
+**Changes Made:** Confirmed in hosted data that both recent cards had immutable acceptance rows for the current program version. Identified that the Apple issuance route uses the server-only Supabase role while migration `0046` granted the verification function only to `anon` and `authenticated`. Added migration `0051` granting the exact function to `service_role`, added a SQL role-execution assertion and separated database verification failures from a genuine false acceptance result in the endpoint.
+
+**Hosted Resolution:** Applied only the idempotent `0051` grant because hosted migration history records through `0034` while later schema was applied manually. Requested a PostgREST schema reload and verified with the service role that the most recent card now returns accepted without an error. No customer, balance or acceptance data was modified.
+
+**Validation:** `git diff --check`, `npm run typecheck`, `npm run lint`, all 216 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0051` pass.
+
+**Next Action:** Deploy the endpoint error-handling change, retry adding the accepted card on the iPhone and reconcile hosted migration history before using the bulk remote migration runner.
+
 ## 2026-08-20 - Google Maps Branch Picker And Operational Geofencing
 
 **Objective:** Replace manual branch coordinates with place/map selection and make the existing geofence usable and diagnosable in real employee operations.

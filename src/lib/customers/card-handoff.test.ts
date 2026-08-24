@@ -17,6 +17,7 @@ const claimComponent = source("../../components/customer-card-claim.tsx");
 const appleRoute = source("../../app/api/wallet/apple/[cardToken]/route.ts");
 const migration = source("../../../supabase/migrations/0046_customer_card_terms_acceptance.sql");
 const staffDeliveryMigration = source("../../../supabase/migrations/0047_staff_customer_wallet_delivery.sql");
+const serviceRolePermissionMigration = source("../../../supabase/migrations/0051_apple_wallet_terms_service_role.sql");
 
 describe("employee customer card handoff", () => {
   it("returns successful employee registration to the real app route and shows a claim QR", () => {
@@ -48,6 +49,11 @@ describe("employee customer card handoff", () => {
     expect(migration).not.toContain("target_tenant_id");
     expect(appleRoute).toContain("public_card_terms_are_accepted");
     expect(appleRoute).toContain("termsAccepted !== true");
+    expect(serviceRolePermissionMigration).toContain(
+      "grant execute on function app.public_card_terms_are_accepted(text) to service_role",
+    );
+    expect(appleRoute).toContain("if (termsError)");
+    expect(appleRoute).toContain("No se pudo verificar la aceptación de los términos");
   });
 
   it("offers the same claim QR after search only when Wallet has no device registration", () => {

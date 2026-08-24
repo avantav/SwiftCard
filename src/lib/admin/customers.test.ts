@@ -15,6 +15,10 @@ const navigationSource = readFileSync(
   join(process.cwd(), "src/components/admin-navigation.tsx"),
   "utf8",
 );
+const qrDialogSource = readFileSync(
+  join(process.cwd(), "src/components/admin-customer-qr-dialog.tsx"),
+  "utf8",
+);
 
 describe("admin customer directory", () => {
   it("normalizes bounded filters and pagination", () => {
@@ -63,5 +67,17 @@ describe("admin customer directory", () => {
     expect(navigationSource).toContain(
       '...(role === "ADMIN" ? [{ href: "/admin/customers"',
     );
+  });
+
+  it("offers the active customer card claim QR from the directory", () => {
+    expect(pageSource).toContain('.select("customer_id,public_token,status")');
+    expect(pageSource).toContain("customerCardClaimPath(card.public_token)");
+    expect(pageSource).toContain("AdminCustomerQrDialog");
+    expect(pageSource).toContain('customer.status === "ACTIVE"');
+    expect(qrDialogSource).toContain("Mostrar QR");
+    expect(qrDialogSource).toContain('import(\n        "@/lib/customers/card-qr"');
+    expect(qrDialogSource).toContain("Generando QR");
+    expect(qrDialogSource).toContain("href={claimPath}");
+    expect(qrDialogSource).toContain("revisar los términos");
   });
 });
