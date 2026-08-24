@@ -3,6 +3,9 @@ import { normalizePhone } from "@/lib/customers/phone";
 export const ADMIN_CUSTOMER_PAGE_SIZE = 50;
 
 export type AdminCustomerDirectoryParams = {
+  customerDeleted?: string;
+  customerUpdated?: string;
+  error?: string;
   page?: string;
   q?: string;
   status?: string;

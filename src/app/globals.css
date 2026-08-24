@@ -102,6 +102,62 @@
   gap: 8px;
 }
 
+.card-summary-actions {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px !important;
+}
+
+.card-summary-actions form,
+.enterprise-row-menu form {
+  margin: 0;
+}
+
+.danger-button {
+  min-height: 40px;
+  width: fit-content;
+  border: 1px solid #efb5af;
+  border-radius: var(--enterprise-radius-md);
+  padding: 8px 14px;
+  background: var(--enterprise-surface);
+  color: var(--enterprise-danger);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+}
+
+.danger-button:hover:not(:disabled) {
+  border-color: var(--enterprise-danger);
+  background: var(--enterprise-danger-soft);
+}
+
+.danger-button:focus-visible {
+  outline: 2px solid var(--enterprise-focus);
+  outline-offset: 2px;
+}
+
+.danger-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.card-archived-section {
+  margin-top: 8px;
+}
+
+.card-config-summary.is-archived {
+  background: var(--enterprise-surface-subtle);
+}
+
+.card-archived-copy {
+  margin: 14px 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 .card-config-stats,
 .card-review-grid {
   display: grid;
@@ -567,6 +623,19 @@
   .card-stage-save-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .card-summary-actions,
+  .card-summary-actions form,
+  .card-summary-actions .secondary-button,
+  .card-summary-actions .danger-button {
+    width: 100%;
+  }
+
+  .card-summary-actions .secondary-button,
+  .card-summary-actions .danger-button {
+    justify-content: center;
+    min-height: 44px;
   }
 
   .card-wizard-steps ol {

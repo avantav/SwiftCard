@@ -85,7 +85,8 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 
 - Gestionar sucursales, empleados y asignaciones.  
 - Configurar programa, niveles de recompensa, términos, branding y geolocalización.
-- Consultar y editar clientes.  
+- Consultar, editar, desactivar y, cuando no exista historial operativo, eliminar clientes.
+- Descartar, desactivar, reactivar y eliminar configuraciones de tarjeta sin historial.
 - Cancelar compras.  
 - Ajustar sellos.  
 - Cancelar recompensas y revertir canjes.  
@@ -198,6 +199,8 @@ Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya e
 
 Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
 
+Solo el Admin general podrá eliminar permanentemente un cliente. La eliminación se permitirá únicamente cuando no tenga compras, movimientos, recompensas, canjes, ajustes, una tarjeta instalada en Wallet ni saldo o progreso acumulado. Cuando exista cualquiera de esos antecedentes, el cliente solo podrá desactivarse para conservar la auditoría.
+
 El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers`, con búsqueda, filtro por estado y paginación. La vista mostrará nombre, contacto, sucursal de alta, estado del cliente y de su tarjeta, unidades acumuladas con la precisión administrativa, recompensas disponibles, estado de generación de Apple Wallet, método y fecha de registro. Los Administradores de sucursal no verán este directorio administrativo y conservarán únicamente la búsqueda operativa dentro de su alcance.
 
 ## 10. Registro de clientes
@@ -273,6 +276,8 @@ El Admin general administrará las tarjetas desde `/admin/cards`. Puede conserva
 4. Revisión y publicación.
 
 Cada etapa confirmada se persiste de manera independiente; salir del asistente nunca elimina las etapas ya guardadas y el listado permite retomarlo. Solo una tarjeta con programa, diseño y al menos una sucursal completos puede publicarse. Las tarjetas mantienen estadísticas propias de emisiones, compras, monto, unidades y recompensas. El token QR identifica la tarjeta emitida, y el backend deriva desde ella el programa y las ubicaciones autorizadas; el frontend no puede elegir un `tenant_id` ni adjudicar unidades.
+
+Un tenant no conservará dos borradores activos con el mismo nombre normalizado: al intentar crearlo otra vez se retoma el borrador existente y cualquier duplicado previo se consolida conservando el más avanzado. El Admin general puede descartar un borrador o desactivar una tarjeta publicada; ambas acciones la archivan de forma reversible. Una tarjeta archivada puede reactivarse y solo puede eliminarse permanentemente cuando no tiene tarjetas emitidas ni historial operativo relacionado. Estas operaciones no están disponibles para el Administrador de sucursal.
 
 ## 12. Programa de fidelidad
 

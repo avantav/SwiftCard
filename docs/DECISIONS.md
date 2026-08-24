@@ -293,3 +293,13 @@
 - Reason: Integer tenths provide deterministic accounting without floating-point drift, retain backward compatibility for cyclic programs and match the product's different visibility requirements. A separate milestone path avoids applying cancellation and reset assumptions from the cyclic reward engine.
 - Consequences: Additive migration `0049` is required before the UI can publish this type. Lifetime purchases, manual reward cancellation and point adjustments are initially definitive and database-blocked. Welcome reward and imported-stamp conversion/milestone generation remain separate follow-up work. Existing Apple installations still require hosted deployment and a successful PassKit refresh to display the new layout.
 - Status: Accepted.
+
+## DEC-0030 - History-Safe Admin Lifecycle For Cards And Customers
+
+- Date: 2026-08-24
+- Context: Repeated starts of the card wizard could leave multiple same-name draft rows, while the Admin had no explicit way to discard drafts, deactivate published cards or remove clean test customers. Permanent deletion must not erase loyalty, Wallet or audit history, and branch-scoped administrators must not control tenant-wide records.
+- Decision: Normalize draft names per tenant, retain the most advanced existing duplicate and make future creation resume it. Model discard and deactivation as reversible archival, with restoration to the prior draft/published state. Permit permanent deletion only from an archived card without issued or operational references, or for a customer without purchases, ledger, rewards, redemptions, adjustments, Wallet installation, balance or accumulated progress. Derive the tenant and require the authenticated `ADMIN` role inside every lifecycle RPC; audit every accepted state change and deletion.
+- Alternatives considered: Merge unrelated wizard rows by frontend display only, hard-delete every discarded draft, cascade-delete historical customers/cards, or grant the operations to branch Managers.
+- Reason: One canonical draft removes confusing duplicates without losing the most advanced work. Reversible status changes cover normal administration, while guarded deletion supports clean setup/test records without weakening financial, reward, consent or Wallet traceability.
+- Consequences: Additive migration `0052` must be deployed before the new actions work or existing duplicate drafts are physically consolidated. Records with history remain deactivatable but intentionally cannot be deleted. Administradores de sucursal receive no lifecycle controls and backend calls return unavailable even if invoked directly.
+- Status: Accepted.

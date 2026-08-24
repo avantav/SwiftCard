@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-24 - Admin Card And Customer Lifecycle
+
+**Objective:** Collapse repeated drafts of the same card into one entry and give only the tenant Admin safe controls to discard/deactivate cards and deactivate or delete customers.
+
+**Changes Made:** Added migration `0052` to retain the most advanced same-name draft, prevent future duplicates and make draft creation resume the canonical record. Added reversible archive/restore controls for draft and published cards, guarded deletion for archived cards without issuance/history, customer deactivate/reactivate controls and guarded deletion for clean customers. The Admin card list now separates archived cards, and the customer directory exposes the existing action menu only to the tenant Admin.
+
+**Security And Correctness:** Every lifecycle RPC derives tenant and role from the authenticated profile, requires `ADMIN`, and records accepted state changes in immutable audit logs. Permanent deletion refuses card/customer records referenced by purchases, balances, ledger entries, rewards, redemptions, adjustments or Wallet registrations; card terms also protect the owning card configuration. Operational history is preserved through deactivation. A branch Admin receives `UNAVAILABLE` even if calling the RPC directly.
+
+**Design Review:** Card actions, archived-card recovery and the customer action menu were reviewed at 375, 768, 1280 and 1440 px. Actions retain 44px mobile targets, destructive choices use confirmation and established danger styling, menus remain bounded, and no horizontal overflow was introduced. Temporary visual-review code was removed.
+
+**Validation:** Focused lifecycle tests, `npm run typecheck`, `npm run lint`, all 219 Vitest tests, the production webpack build and the complete disposable PostgreSQL migration/RLS suite through `0052` pass.
+
+**Next Action:** Reconcile hosted migration history, deploy reviewed migration `0052` and the application commit, then verify that the two existing drafts become one and exercise archive/restore with a clean test record.
+
 ## 2026-08-24 - Admin Customer Card Delivery QR
 
 **Objective:** Let the tenant Admin display the customer-facing QR for adding an existing active card from the customer directory.

@@ -12,6 +12,8 @@ import { canViewTenantCustomers } from "@/lib/auth/permissions";
 import { requireInternalArea } from "@/lib/auth/server";
 import { customerCardClaimPath } from "@/lib/customers/card-qr";
 import { resolveCustomerCardHandoffOrigin } from "@/lib/customers/card-handoff-origin";
+import { SubmitButton } from "@/components/submit-button";
+import { deleteAdminCustomer, setAdminCustomerStatus } from "./actions";
 
 type CustomerDirectoryPageProps = {
   searchParams: Promise<AdminCustomerDirectoryParams>;
@@ -98,7 +100,8 @@ export default async function CustomerDirectoryPage({
     redirect("/admin");
   }
 
-  const filters = parseAdminCustomerDirectoryParams(await searchParams);
+  const pageQuery = await searchParams;
+  const filters = parseAdminCustomerDirectoryParams(pageQuery);
   const search = resolveAdminCustomerSearch(filters.search);
   const offset = (filters.page - 1) * ADMIN_CUSTOMER_PAGE_SIZE;
   let customersQuery = context.supabase
@@ -215,6 +218,12 @@ export default async function CustomerDirectoryPage({
         </div>
       </header>
 
+      {pageQuery.customerDeleted ? <p className="enterprise-alert is-success" role="status">Cliente eliminado permanentemente.</p> : null}
+      {pageQuery.customerUpdated === "active" ? <p className="enterprise-alert is-success" role="status">Cliente reactivado.</p> : null}
+      {pageQuery.customerUpdated === "inactive" ? <p className="enterprise-alert is-success" role="status">Cliente desactivado. Su historial se conserva.</p> : null}
+      {pageQuery.error === "history" ? <p className="enterprise-alert is-warning" role="alert">No se puede eliminar este cliente porque tiene saldo, compras, recompensas, Wallet o historial operativo. Puedes desactivarlo.</p> : null}
+      {pageQuery.error && pageQuery.error !== "history" ? <p className="enterprise-alert is-error" role="alert">No se pudo completar la acción sobre el cliente.</p> : null}
+
       <section className="enterprise-filter-panel" aria-label="Filtros de clientes">
         <form className="enterprise-filter-form admin-customer-filters" method="get">
           <label className="field">
@@ -278,6 +287,7 @@ export default async function CustomerDirectoryPage({
                     <th scope="col">Premios</th>
                     <th scope="col">Apple Wallet</th>
                     <th scope="col">Registro</th>
+                    <th scope="col"><span className="sr-only">Acciones</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -336,6 +346,29 @@ export default async function CustomerDirectoryPage({
                         <td data-label="Registro">
                           <span className="admin-customer-date">{formattedDate(customer.created_at)}</span>
                           <small className="admin-customer-method">{customer.registration_method === "SELF_SERVICE" ? "Autorregistro" : "Registrado por personal"}</small>
+                        </td>
+                        <td className="enterprise-row-actions" data-label="Acciones">
+                          <details>
+                            <summary>Acciones</summary>
+                            <div className="enterprise-row-menu">
+                              <form action={setAdminCustomerStatus.bind(null, customer.id, customer.status === "ACTIVE" ? "INACTIVE" : "ACTIVE")}>
+                                <SubmitButton
+                                  className="enterprise-menu-action"
+                                  confirmMessage={customer.status === "ACTIVE" ? `¿Desactivar a ${customer.full_name}? No podrá acumular ni canjear hasta reactivarlo.` : undefined}
+                                >
+                                  {customer.status === "ACTIVE" ? "Desactivar cliente" : "Reactivar cliente"}
+                                </SubmitButton>
+                              </form>
+                              <form action={deleteAdminCustomer.bind(null, customer.id)}>
+                                <SubmitButton
+                                  className="enterprise-menu-action is-destructive"
+                                  confirmMessage={`¿Eliminar permanentemente a ${customer.full_name}? Solo se eliminará si no tiene historial y esta acción no se puede deshacer.`}
+                                >
+                                  Eliminar cliente
+                                </SubmitButton>
+                              </form>
+                            </div>
+                          </details>
                         </td>
                       </tr>
                     );

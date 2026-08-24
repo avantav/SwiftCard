@@ -2,10 +2,10 @@
 
 ## Active Blockers
 
-- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and the targeted idempotent `0051` Apple terms grant is live.
+- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and the targeted idempotent `0051` Apple terms grant is live; local migration `0052` is not deployed.
   - **Affected area:** Repeatable remote database deployment.
   - **Consequence:** The bulk migration runner would try to replay migrations `0035` onward and may stop on objects that already exist.
-  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0051`, then repair canonical migration history before using `npm run db:push:remote`.
+  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0052`, then repair canonical migration history before using `npm run db:push:remote`.
   - **Work that can continue:** Application deployment and targeted, reviewed database fixes; do not run the bulk migration command meanwhile.
 
 - **MAPS-001:** The Google Maps branch picker is implemented, but neither `.env.local` nor the documented hosted configuration currently provides `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`.
