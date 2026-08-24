@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { SubmitButton } from "@/components/submit-button";
+import { PinPadLogin } from "@/components/pin-pad-login";
 import { requireInternalArea } from "@/lib/auth/server";
 import { unlockWithPin } from "./actions";
 
@@ -17,10 +17,7 @@ export default async function UnlockPage({ searchParams }: UnlockPageProps) {
     {error ? <p className="operations-alert is-error" role="alert">{error}</p> : null}
     <section className="operations-card operations-unlock-card" aria-labelledby="pin-access-title">
       <div className="operations-card-header"><h2 id="pin-access-title">Identificación de turno</h2><p>La cuenta de la sucursal ya está conectada.</p></div>
-      <form className="operations-form" action={unlockWithPin}>
-        <label className="field"><span>PIN de seis dígitos</span><input name="pin" type="password" inputMode="numeric" autoComplete="off" minLength={6} maxLength={6} pattern="[0-9]{6}" required autoFocus /></label>
-        <SubmitButton className="operations-primary-button">Entrar</SubmitButton>
-      </form>
+      <PinPadLogin action={unlockWithPin} initialError={error} />
     </section>
   </main>;
 }

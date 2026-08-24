@@ -303,3 +303,43 @@
 - Reason: One canonical draft removes confusing duplicates without losing the most advanced work. Reversible status changes cover normal administration, while guarded deletion supports clean setup/test records without weakening financial, reward, consent or Wallet traceability.
 - Consequences: Additive migration `0052` must be deployed before the new actions work or existing duplicate drafts are physically consolidated. Records with history remain deactivatable but intentionally cannot be deleted. Administradores de sucursal receive no lifecycle controls and backend calls return unavailable even if invoked directly.
 - Status: Accepted.
+
+## DEC-0031 - Tenant-Bound One-Time Casa Garmendia Import
+
+- Date: 2026-08-24
+- Context: Casa Garmendia must migrate one legacy stamp workbook into an already configured non-resetting points card, preserve the supplied non-linear reward equivalences and let imported customers recover the already issued card without creating duplicates. The generic import is Superadmin-only and its old uniform stamp balance does not model this conversion.
+- Decision: Add one fixed profile visible only to the active general Admin of the matching tenant. Auto-map the six supplied columns, reject malformed/duplicate/out-of-range rows during preview and convert each 0–15 stamp value to the greatest reached milestone in the supplied table. Confirm in one database transaction against a published lifetime-points card and participating branch, grant Churro individual plus every configured reached tier and enforce one confirmed profile per tenant. Persist the import identifier on each new customer. Public recovery requires exact phone, normalized imported name, same card/branch and privacy consent before redirecting to the claim/terms screen; authorized employees may regenerate that claim QR for an imported card even after an earlier Wallet registration.
+- Alternatives considered: Use a uniform stamp multiplier, rewrite the uploaded spreadsheet, expose the generic Superadmin import to all tenant Admins, create a new card on duplicate registration, or reveal an imported card from phone alone without a name match.
+- Reason: A named fixed profile represents the real one-off business rule without weakening the generic multi-tenant importer. Database-side card, branch, role, threshold and single-use checks prevent frontend manipulation, while the imported identifier makes recovery explicit and auditable.
+- Consequences: Migration `0053` must be deployed after `0052`. The target program must contain active tiers at 100, 200, 300, 400, 500, 650 and 860. The current workbook copies are empty and must be replaced before real confirmation; confirmation cannot be repeated after success.
+- Status: Accepted.
+
+## DEC-0032 - Card-Issuance Welcome Reward
+
+- Date: 2026-08-24
+- Context: The program schema already stored optional welcome-reward fields, but the multi-card editor did not save them and neither public nor employee registration emitted the configured benefit. The gift must not behave like a points milestone or be duplicated when a card is recovered.
+- Decision: Configure the gift in the card editor and grant it from one database trigger after the first `customer_cards` insertion. Mark welcome rewards explicitly and enforce one per customer/card with a partial unique index. Apply optional expiration from the issuance time, leave balances and ledgers unchanged, and make the behavior non-retroactive. Generic imports follow the existing program eligibility option; exclude the Casa Garmendia profile because its transactional importer already grants a fixed welcome Churro.
+- Alternatives considered: Grant separately in each registration RPC, model the gift as a zero-point tier, award it during claim/Wallet download, or backfill every existing customer.
+- Reason: Card issuance is the common atomic boundary for public and employee registration. A dedicated marker and database uniqueness rule prevent duplicates across retries and recovery without mixing an unconditional benefit into milestone accounting.
+- Consequences: Additive migration `0054` must be deployed before the new editor save and issuance behavior work. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
+- Status: Accepted.
+
+## DEC-0033 - Header-First Apple Pass Identity
+
+- Date: 2026-08-24
+- Context: Wallet rendered Casa Garmendia's square logo centered inside the generated 160×50 transparent logo canvas, while a right-side reward header field consumed the remaining width and truncated the tenant name. The barcode alternate text also produced an unwanted caption below the QR.
+- Decision: Preserve each source logo's aspect ratio inside Apple's 160×50 maximum and emit a tight output canvas at 1x/2x/3x. Reserve the front header for `logo` plus `logoText`, move the changing reward count to the back and omit optional barcode `altText`. Keep the QR payload unchanged. Queue all installed passes once through the existing card-scoped update outbox after the new generator is deployed.
+- Alternatives considered: Shorten the tenant name, remove `logoText`, keep the wide transparent canvas, retain the reward header at the expense of identity width, or encode an empty alternate-text string.
+- Reason: Apple owns final pass placement, but eliminating artificial logo padding and nonessential header competition gives its renderer the maximum available width for the business identity. Omitting the optional property is the clean way to remove barcode-adjacent text without affecting scanning.
+- Consequences: Migration `0055` must run only after the application deployment, then the protected outbox processor must deliver APNs work. The reward count remains available on the back; existing passes require this queued refresh or a reinstall to receive the new assets and JSON.
+- Status: Accepted.
+
+## DEC-0034 - Exact Audited Repair For Casa Garmendia Points
+
+- Date: 2026-08-24
+- Context: Casa Garmendia PROD intended to award one lifetime point per MXN $10, but its persisted program rule was MXN $1. Its first and only MXN $2,000 purchase therefore granted 2,000 points, seven milestones and one canje instead of 200 points and two milestones.
+- Decision: Apply one production-scoped transaction guarded by the exact tenant, program, customer, purchase, ledger, seven rewards and single redemption inspected immediately beforehand. Change the rule to 1,000 minor units, correct purchase/ledger/balance accounting to 200 points, keep the 100/200 rewards, preserve the 400 canje as a reversed redemption and cancel only rewards above 200. Record a dedicated append-only repair audit and keep the normal cancellation/reversal audits. Clarify the editor as “monto gastado para ganar 1 punto” with a concrete calculation example.
+- Alternatives considered: Leave historical 2,000-point accounting, delete the test customer and history, add a negative adjustment while leaving purchase exports wrong, or silently remove generated rewards and the canje.
+- Reason: The customer had no other purchase or ledger activity, so the correct state was deterministic. Exact fail-closed guards and one atomic transaction avoid affecting another tenant or overwriting concurrent activity, while reversal and cancellation preserve the operational record.
+- Consequences: Hosted production is already corrected and has an Apple Wallet update queued. Migration `0056` is intentionally bound to the production UUID and no-ops elsewhere; it is idempotent only for the exact repaired state. Hosted migration history remains unreconciled, so this targeted repair does not authorize a bulk migration push.
+- Status: Accepted.

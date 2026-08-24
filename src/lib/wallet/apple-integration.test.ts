@@ -38,6 +38,13 @@ const cardConfigurationUpdateMigration = readFileSync(
   ),
   "utf8",
 );
+const headerLayoutRefreshMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0055_apple_wallet_header_layout_refresh.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -132,6 +139,12 @@ describe("Apple Wallet integration boundaries", () => {
     expect(cardConfigurationUpdateMigration).toContain(
       "apple_wallet_loyalty_card_changed",
     );
+    expect(headerLayoutRefreshMigration).toContain(
+      "app.queue_apple_wallet_card_updates(target_card_id)",
+    );
+    expect(headerLayoutRefreshMigration).toContain(
+      "join public.apple_wallet_registrations",
+    );
   });
 
   it("lets only the server role allocate update tags during pass issuance", () => {
@@ -162,6 +175,7 @@ describe("Apple Wallet integration boundaries", () => {
 
   it("keeps the visual preview aligned with Apple's store-card layout", () => {
     expect(appleServer).toContain("buildAppleWalletStampStrips");
+    expect(appleServer).toContain("appleWalletLogoDimensions");
     expect(appleServer).toContain("stampBalance: input.stampBalance");
     expect(appleServer).toContain('input.programType === "LIFETIME_POINTS"');
     expect(cardPreview).toContain("apple-pass-preview-primary");

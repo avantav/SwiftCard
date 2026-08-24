@@ -4,6 +4,7 @@ import { CardDesignEditor } from "@/components/card-design-editor";
 import { CardProgramFields } from "@/components/card-program-fields";
 import { RewardTiersEditor } from "@/components/reward-tiers-editor";
 import { SubmitButton } from "@/components/submit-button";
+import { WelcomeRewardFields } from "@/components/welcome-reward-fields";
 import { formatMinorUnitsForInput } from "@/lib/admin/program";
 import { requireInternalArea } from "@/lib/auth/server";
 import { publishCard, saveCardDesign, saveCardLocations, saveCardProgram } from "../../actions";
@@ -36,14 +37,15 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
   const maxStep = card.status === "PUBLISHED" ? 4 : card.locations_completed ? 4 : card.design_completed ? 3 : card.program_completed ? 2 : 1;
   if (requestedStep > maxStep) redirect(`/admin/cards/${cardId}/edit?step=${maxStep}`);
   const [{ data: rawProgram }, { data: rawTiers }, { data: assignments }] = await Promise.all([
-    context.supabase.from("loyalty_programs").select("id,name,program_type,rule_type,minimum_purchase_minor,stamps_per_purchase,amount_per_stamp_minor,carry_remainder,terms_and_conditions,unit_name_singular,unit_name_plural").eq("id", card.program_id).maybeSingle(),
+    context.supabase.from("loyalty_programs").select("id,name,program_type,rule_type,minimum_purchase_minor,stamps_per_purchase,amount_per_stamp_minor,carry_remainder,terms_and_conditions,unit_name_singular,unit_name_plural,welcome_reward_enabled,welcome_reward_name,welcome_reward_description,welcome_reward_expiration_days").eq("id", card.program_id).maybeSingle(),
     context.supabase.from("loyalty_reward_tiers").select("id,stamps_required,name,description,expiration_days").eq("program_id", card.program_id).eq("active", true).order("stamps_required"),
     context.supabase.from("loyalty_card_branches").select("branch_id").eq("loyalty_card_id", card.id),
   ]);
   const program = rawProgram as null | {
     name: string; program_type: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS"; minimum_purchase_minor: number | string;
     stamps_per_purchase: number; amount_per_stamp_minor: number | string | null; carry_remainder: boolean; terms_and_conditions: string;
-    unit_name_singular: string; unit_name_plural: string;
+    unit_name_singular: string; unit_name_plural: string; welcome_reward_enabled: boolean;
+    welcome_reward_name: string | null; welcome_reward_description: string | null; welcome_reward_expiration_days: number | null;
   };
   if (!program) notFound();
   const currency = tenant?.currency_code ?? "MXN";
@@ -80,6 +82,7 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
       />
       <div className="form-grid"><label className="field"><span>Unidad singular</span><input defaultValue={program.unit_name_singular} maxLength={24} name="unitNameSingular" required /></label><label className="field"><span>Unidad plural</span><input defaultValue={program.unit_name_plural} maxLength={24} name="unitNamePlural" required /></label></div>
       <RewardTiersEditor initialTiers={(rawTiers ?? []).map((tier) => ({ id: tier.id, stampsRequired: tier.stamps_required, name: tier.name, description: tier.description, expirationDays: tier.expiration_days }))} />
+      <WelcomeRewardFields initialDescription={program.welcome_reward_description ?? ""} initialEnabled={program.welcome_reward_enabled} initialExpirationDays={program.welcome_reward_expiration_days} initialName={program.welcome_reward_name ?? ""} />
       <label className="field"><span>Términos y condiciones</span><textarea defaultValue={program.terms_and_conditions} maxLength={4000} minLength={10} name="termsAndConditions" rows={5} required /></label>
       <div className="card-stage-actions"><SubmitButton className="secondary-button" name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton>Guardar y continuar</SubmitButton></div>
     </form></section> : null}

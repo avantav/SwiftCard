@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { customerCardClaimPath, isCustomerCardToken } from "@/lib/customers/card-qr";
 import { validatePublicCustomerRegistration } from "@/lib/customers/registration";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -36,6 +37,9 @@ export async function registerCustomer(branchToken: string, formData: FormData) 
 
   if (error || !result || typeof result.result !== "string") {
     registrationRedirect(branchToken, { error: "El registro no está disponible." });
+  }
+  if (result.result === "IMPORTED_RECOVERY" && isCustomerCardToken(result.card_token)) {
+    redirect(customerCardClaimPath(result.card_token));
   }
   if (result.result === "DUPLICATE") registrationRedirect(branchToken, { duplicate: "1" });
   if (result.result !== "CREATED" || typeof result.card_token !== "string") {

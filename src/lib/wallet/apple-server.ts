@@ -7,6 +7,7 @@ import sharp from "sharp";
 import { buildAppleWalletStampStrips } from "./apple-stamp-strip";
 import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
+import { appleWalletLogoDimensions } from "./apple-logo-layout";
 import { walletProviderConfig } from "./service";
 import { resolvePublicOrigin } from "@/lib/public-origin";
 import {
@@ -133,14 +134,21 @@ async function buildPassImages(
   );
   const tenantLogoSource = await fetchAllowedImage(logoUrl);
   const logoSource = tenantLogoSource ?? fallback;
+  const logoMetadata = await sharp(logoSource, {
+    limitInputPixels: 40_000_000,
+  }).metadata();
+  const logoDimensions = appleWalletLogoDimensions(
+    logoMetadata.width ?? 1,
+    logoMetadata.height ?? 1,
+  );
   const stripSource = await fetchAllowedImage(stripUrl);
   const entries = await Promise.all([
     resizedPng(logoSource, 29, 29, "contain"),
     resizedPng(logoSource, 58, 58, "contain"),
     resizedPng(logoSource, 87, 87, "contain"),
-    resizedPng(logoSource, 160, 50, "contain"),
-    resizedPng(logoSource, 320, 100, "contain"),
-    resizedPng(logoSource, 480, 150, "contain"),
+    resizedPng(logoSource, logoDimensions.width, logoDimensions.height, "contain"),
+    resizedPng(logoSource, logoDimensions.width * 2, logoDimensions.height * 2, "contain"),
+    resizedPng(logoSource, logoDimensions.width * 3, logoDimensions.height * 3, "contain"),
   ]);
   const images: Record<string, Buffer> = {
     "icon.png": entries[0],

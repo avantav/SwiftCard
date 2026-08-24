@@ -61,6 +61,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement tenant staff account provisioning.
 - [x] [Terminada] Implement staff branch assignments and primary branch management.
 - [x] [Terminada] Add branch-scoped Administrator semantics, per-branch employee access modes, shared branch accounts, PIN operators, revocable PIN sessions, and individual actor attribution.
+- [x] [Terminada] Replace free-text shared-account PIN entry with an accessible numeric pad and navigate only after the HttpOnly operator cookie is confirmed.
 
 **Acceptance Criteria**
 
@@ -110,7 +111,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add cumulative reward tiers, cycle-safe generation and reversal, program terms, and the reward catalog on the Web Card.
 - [x] [Terminada] Add a backward-compatible configuration foundation for stamps per purchase, stamps per amount, and paused lifetime-points programs, including unit labels, welcome/import options, operational policies, confirmed paused type transitions, existing stamp-balance conversion and unbounded reward catalogs.
 - [x] [Terminada] Implement tenths-based lifetime point calculation with per-purchase truncation, non-resetting balances and one-time milestone generation.
-- [ ] [Pendiente] Generate the configurable welcome reward for self-service registration and optionally for imported customers.
+- [x] [Terminada] Generate the configurable welcome reward once when a customer card is issued through public or employee registration, with optional expiration and imported-customer eligibility.
 - [ ] [Pendiente] Convert imported stamps with the configured integer multiplier and award every reached milestone atomically.
 - [ ] [Pendiente] Enforce the remaining configurable cancellation and redemption-reversal options in authorized interfaces; lifetime purchase/reward cancellations and manual point adjustments are already disabled in the backend.
 - [x] [Terminada] Show integer customer/employee progress, one-decimal Admin/export values, next milestones and completion state in the operational UI, Web Card and Apple Wallet.
@@ -175,6 +176,8 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement import schema and Superadmin upload flow.
 - [x] [Terminada] Implement column mapping and validation preview without customer mutation.
 - [x] [Terminada] Implement atomic import confirmation with duplicate/error summary.
+- [x] [Terminada] Add the one-time Casa Garmendia tenant-Admin profile with fixed Excel mapping, legacy-stamp milestone conversion, imported welcome/milestone rewards and terms-gated card recovery.
+- [x] [Terminada] Repair Casa Garmendia PROD's one erroneous lifetime-point purchase after correcting its rule from MXN $1 to MXN $10 per point, preserving the canje as reversed and auditing every invalid reward cancellation.
 - [x] [Terminada] Implement tenant suspension and reactivation controls.
 - [x] [Terminada] Implement branding mode controls.
 
@@ -199,6 +202,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Preserve the configured QR barcode and branch locations in the final signed `.pkpass` through the PassKit generator setter APIs.
 - [x] [Terminada] Generate a per-customer branded graphical stamp strip on the server at 1x/2x/3x, replace it with each signed pass update, and retain exact textual progress as a compatibility fallback.
 - [x] [Terminada] Align the multi-card Admin preview with the signed Apple `storeCard`, reflect unsaved text, color and locally selected image changes immediately, use each program's actual goal and unit names, and transactionally queue plus immediately dispatch installed-pass updates after card design, program or location changes.
+- [x] [Terminada] Tighten Apple logo canvases to their source aspect ratio, reserve the header for left-aligned tenant identity, move the reward count to the back, omit barcode alternate text, and queue a one-time installed-pass layout refresh.
 - [ ] [Pendiente] Deploy the QR/scanner correction, refresh or reinstall the pass, validate scanning plus APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [ ] [Pendiente] Implement Google Wallet generation behind server-only config.
 - [x] [Terminada] Document required external credentials without storing secrets.

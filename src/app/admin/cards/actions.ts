@@ -159,6 +159,10 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
       })),
       target_unit_name_singular: input.unitNameSingular,
       target_unit_name_plural: input.unitNamePlural,
+      target_welcome_reward_enabled: input.welcomeRewardEnabled,
+      target_welcome_reward_name: input.welcomeRewardName,
+      target_welcome_reward_description: input.welcomeRewardDescription,
+      target_welcome_reward_expiration_days: input.welcomeRewardExpirationDays,
     },
   );
   if (error || data !== "SAVED") {

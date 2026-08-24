@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy migration `0052` and the Admin lifecycle UI, then reconcile hosted migration history and complete the remaining hosted smoke paths.
-- Last completed task: Consolidated duplicate card drafts and added Admin-only card/customer lifecycle controls with history-safe deletion.
+- Current task: Deploy the application before migration `0055`, process the queued Apple layout refresh, then reconcile and deploy the remaining pending migrations before executing the Casa Garmendia import with the real non-empty workbook.
+- Last completed task: Corrected Casa Garmendia PROD from MXN $1 to MXN $10 per point and repaired its only affected MXN $2,000 purchase from 2,000 to 200 points without deleting purchase, reward or redemption history.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: The card editor presents one canonical same-name draft and lets the tenant Admin discard, deactivate, reactivate or safely delete cards; the customer directory offers deactivation and guarded deletion only to that same role.
-- Git status: Typecheck, lint, all 219 application tests, the production build and the complete database/RLS suite through `0052` pass locally.
-- Remote backup: Commits through the Admin customer QR are local on `codex/customer-wallet-fixes` and not pushed; migration `0052` remains local and the targeted hosted `0051` grant is already live.
+- Last stable feature: Migration `0056` performs an exact, idempotent and audited Casa Garmendia repair; the card editor now explains that the configured amount is spend per point and gives a $2,000-to-200 example.
+- Git status: Focused lifetime-point/program tests, lint and typecheck pass; the `0056` transaction also passed a production-schema dry run with rollback before its definitive commit.
+- Remote backup: The targeted hosted `0051` grant and one-time `0056` Casa Garmendia repair are live. Migrations `0052` through `0055` remain undeployed and hosted migration history still requires reconciliation before any bulk push.
 
 ## Completed Functionality
 
@@ -17,6 +17,9 @@
 - Executable implementation plan started.
 - Next.js 16 App Router scaffold.
 - Base routes: `/`, `/superadmin`, `/admin`, `/app`, `/register/[branchToken]`, `/card/[cardToken]`.
+- Admin-only `/admin/imports` profile for Casa Garmendia with fixed six-column mapping, one-time confirmation and tenant/card/branch-derived database authority.
+- Casa Garmendia PROD now uses MXN $10 per lifetime point. Its single erroneous purchase, balance and ledger were corrected to 200 points; only 100/200 rewards remain available, the 400-point canje is preserved as reversed, higher rewards are audited as cancelled and an Apple refresh is queued.
+- Imported customer identification enables terms-gated public recovery and repeat employee QR delivery without issuing a second card.
 - Health endpoint: `/api/health`.
 - Vitest health endpoint test.
 - Supabase environment template and config helpers without secrets.
@@ -74,6 +77,7 @@
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
 - Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
 - Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
+- The multi-card editor now exposes the optional welcome gift with name, description and optional 1–3650 day validity. Migration `0054` grants it exactly once when a future customer card is issued through public or employee registration, respects generic import eligibility, leaves points untouched and excludes the Casa Garmendia profile because that import already assigns its fixed welcome reward.
 - Existing programs are backfilled to their current cyclic type; Admin type changes preserve historical data. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs transitions made during the earlier rollout, while `0049` enables decimal purchases, non-resetting balances and one-time milestones. Reward catalogs have no product-level count cap.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
@@ -114,6 +118,7 @@
 - Migration `0051` grants the server-only Apple issuance role access to that verification function. The targeted grant is applied on hosted Supabase and a live read-only check confirms the most recent accepted card now returns `true`; database verification errors no longer masquerade as missing acceptance in the updated route.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
+- Apple header identity now uses a logo canvas constrained to 160×50 while preserving the source aspect ratio, rather than centering every logo inside a wide transparent canvas. The front header no longer spends width on the reward count, the count remains on the back and the QR barcode omits its visible alternate text. Migration `0055` queues a one-time refresh for existing installed passes.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.
@@ -139,7 +144,7 @@
 
 ## Pending Functionality
 
-- Configurable welcome-reward generation and imported-stamp conversion/milestone generation for lifetime-points programs.
+- Generic imported-stamp conversion/milestone generation for lifetime-points programs; the Casa Garmendia one-time profile and configurable welcome-reward generation are complete.
 - Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.

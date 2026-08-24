@@ -3,9 +3,9 @@
 
 import { customerCardClaimPath } from "@/lib/customers/card-qr";
 
-export function CustomerWalletQrDelivery({ cardToken, qrDataUrl }: { cardToken: string; qrDataUrl: string | null }) {
+export function CustomerWalletQrDelivery({ cardToken, qrDataUrl, repeatDelivery = false }: { cardToken: string; qrDataUrl: string | null; repeatDelivery?: boolean }) {
   return <section className="operations-wallet-delivery" aria-labelledby="wallet-delivery-title">
-    <div><p>Entrega digital</p><h3 id="wallet-delivery-title">La tarjeta aún no está agregada a Wallet</h3><span>Genera un QR para que el cliente la agregue desde su teléfono.</span></div>
+    <div><p>Entrega digital</p><h3 id="wallet-delivery-title">{repeatDelivery ? "Volver a entregar tarjeta importada" : "La tarjeta aún no está agregada a Wallet"}</h3><span>{repeatDelivery ? "Puedes mostrar nuevamente el QR aunque Wallet haya registrado una instalación anterior." : "Genera un QR para que el cliente la agregue desde su teléfono."}</span></div>
     <details>
       <summary className="operations-secondary-button">Generar QR para agregar tarjeta</summary>
       <div className="operations-wallet-delivery-qr">

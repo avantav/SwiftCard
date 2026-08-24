@@ -87,6 +87,7 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Configurar programa, niveles de recompensa, términos, branding y geolocalización.
 - Consultar, editar, desactivar y, cuando no exista historial operativo, eliminar clientes.
 - Descartar, desactivar, reactivar y eliminar configuraciones de tarjeta sin historial.
+- Ejecutar el perfil de importación única autorizado para su propio tenant cuando exista.
 - Cancelar compras.  
 - Ajustar sellos.  
 - Cancelar recompensas y revertir canjes.  
@@ -167,7 +168,7 @@ Cada sucursal configurará un modo exclusivo para usuarios operativos:
 - `INDIVIDUAL_CREDENTIALS`: cada empleado usa su propio correo y contraseña, conservando el comportamiento original.
 - `SHARED_ACCOUNT_PIN`: la sucursal usa una sola cuenta común de correo y contraseña y cada mesero se identifica después con un PIN personal de seis dígitos.
 
-La cuenta compartida pertenece a una sola sucursal. El PIN queda hasheado, es único dentro de esa sucursal y nunca sustituye la atribución individual: clientes registrados, compras, canjes, ledger y auditoría guardan al operador PIN. Cinco intentos fallidos bloquean el acceso PIN durante cinco minutos. La sesión del operador termina al cambiar usuario, cerrar el navegador o después de ocho horas sin actividad.
+La cuenta compartida pertenece a una sola sucursal. El PIN queda hasheado, es único dentro de esa sucursal y nunca sustituye la atribución individual: clientes registrados, compras, canjes, ledger y auditoría guardan al operador PIN. El desbloqueo usa un teclado numérico de seis posiciones, no conserva el PIN en almacenamiento del navegador y abre el área operativa solamente después de que el servidor haya confirmado la cookie HttpOnly. Cinco intentos fallidos bloquean el acceso PIN durante cinco minutos. La sesión del operador termina al cambiar usuario, cerrar el navegador o después de ocho horas sin actividad.
 
 Solo el Admin general configura o rota la credencial compartida. El Admin general y los Administradores asignados a la sucursal administran usuarios PIN. Cambiar el modo revoca las sesiones incompatibles sin borrar el historial.
 
@@ -195,7 +196,7 @@ Restricción de duplicados:
 
 El mismo teléfono puede existir en tenants diferentes.
 
-Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.** No se mostrará la tarjeta automáticamente.
+Si el teléfono ya existe, el registro público mostrará: **Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.** No se mostrará la tarjeta automáticamente, salvo para un cliente identificado por el perfil de importación Casa Garmendia que seleccione su misma tarjeta y proporcione el nombre importado: en ese caso continuará al flujo de recuperación y aceptación de términos sin crear un duplicado.
 
 Los usuarios internos podrán buscar por teléfono exacto o nombre parcial. Administrador y Encargado podrán editar y desactivar clientes. Un cliente inactivo conserva historial, pero no recibe compras, sellos ni canjes.
 
@@ -383,7 +384,7 @@ Comportamiento:
 - En puntos acumulativos, cada nivel se entrega una sola vez durante toda la vida del cliente, aunque el saldo continúe aumentando.
 - Bajar un requisito o agregar un hito ya alcanzado genera la recompensa automáticamente. Subir un requisito o desactivar un nivel no retira recompensas ya otorgadas.
 - Una recompensa otorgada se conserva hasta su expiración; sin expiración permanece disponible indefinidamente.
-- La recompensa de bienvenida es opcional, configurable y se entrega una sola vez al registro. Una opción fija del programa decide si también se entrega a clientes importados.
+- La recompensa de bienvenida es opcional y se configura en el editor de la tarjeta con nombre, descripción y vigencia opcional. Se entrega una sola vez al crear la tarjeta del cliente, tanto en el registro público como en el realizado por un empleado, sin descontar puntos ni reiniciar el saldo. Solo aplica a registros futuros y una opción fija del programa decide si también se entrega a clientes importados.
 
 Configuración de cada nivel:
 
@@ -432,7 +433,7 @@ Toda cancelación requiere motivo y conserva la compra original con estado CANCE
 
 ## 18. Importación de clientes
 
-Solo el Superadmin podrá importar CSV o Excel durante el MVP.
+Solo el Superadmin podrá usar el importador genérico CSV o Excel durante el MVP. Como excepción explícita, el Admin general de Casa Garmendia tendrá un perfil fijo y de un solo uso en `/admin/imports`; el Administrador de sucursal no podrá verlo ni ejecutarlo.
 
 Campos:
 
@@ -445,6 +446,10 @@ Campos:
 Flujo: subir, mapear columnas, validar, previsualizar, confirmar y mostrar resumen. Se guardará historial con archivo, usuario, fecha, importados, duplicados y errores.
 
 Cuando el programa use puntos acumulativos, la configuración incluirá una equivalencia entera `1 sello importado = N puntos`. La confirmación importará los puntos resultantes y generará automáticamente todos los hitos alcanzados. La misma recompensa de bienvenida podrá incluir o excluir importados mediante una opción fija del programa.
+
+El perfil Casa Garmendia mapeará automáticamente `Nombre`, `Apellido`, `Email`, `Teléfono`, `Fecha de Nacimiento` y `Estampillas Actuales`. La conversión conservará el mayor hito alcanzado: 0–2 sellos = 0 puntos; 3 = 100; 4–5 = 200; 6 = 300; 7–9 = 400; 10–12 = 500; 13–14 = 650; y 15 = 860. Valores fuera de 0–15 serán errores de previsualización. Cada importado recibirá el premio de registro **Churro individual** y todos los premios configurados en los hitos alcanzados de 100, 200, 300, 400, 500, 650 y 860 puntos.
+
+La confirmación será atómica, auditada y ligada a una tarjeta publicada de puntos y una sucursal participante. Cada cliente conservará un identificador interno de importación. Ese identificador permitirá recuperar la tarjeta emitida al repetir el registro con teléfono y nombre coincidentes, y permitirá que un empleado vuelva a mostrar el QR de entrega incluso si Wallet registró una instalación anterior; ambos caminos conducen a la aceptación vigente de términos.
 
 ## 19. Dashboard y exportaciones
 
@@ -515,7 +520,7 @@ Requisitos:
 
 Apple Wallet requiere cuenta Apple Developer, Pass Type ID, Team ID, certificado firmante, llave privada y certificado WWDR. Los secretos solo existirán en el entorno del servidor. El archivo `.pkpass` se generará y firmará al solicitar **Agregar a Apple Wallet** después del registro o desde el respaldo Web Card.
 
-Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor. Ante un recurso inválido se usará el activo seguro de respaldo.
+Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. La cabecera reservará el ancho disponible para el logo y el nombre del negocio; el contador de premios podrá consultarse en el reverso y el QR no mostrará una leyenda textual inferior. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor. Ante un recurso inválido se usará el activo seguro de respaldo.
 
 Google Wallet requerirá proyecto, Issuer ID, service account, clase y objeto de pase.
 

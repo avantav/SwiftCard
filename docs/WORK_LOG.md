@@ -1,5 +1,75 @@
 # Work Log
 
+## 2026-08-24 - Compact Apple Wallet Header And QR
+
+**Objective:** Keep the Casa Garmendia logo and full name aligned together at the left of the iPhone pass header, and remove the visible text below its QR.
+
+**Changes Made:** Removed the front header reward field and retained its live count on the back of the pass. Barcode `altText` is now omitted, which removes the lower QR legend while preserving the secure URL payload. Logo assets no longer force every source into a transparent 160×50 canvas: their output stays within Apple's maximum while preserving the source aspect ratio, so a square logo becomes 50×50 and leaves the adjacent `logoText` its usable width. Both Admin previews now match the new signed-pass structure.
+
+**Update Delivery:** Migration `0055` queues every actively installed Apple pass through the existing card-scoped outbox once. The application code must be deployed before this migration, followed by invoking the protected outbox processor, so the resulting PassKit fetch receives the new layout rather than the prior generator.
+
+**Design Review:** The updated point-card preview was reviewed at 375, 768, 1280 and 1440 px. Logo and complete tenant name share the left edge without truncation, the QR remains centered without a caption and no overflow or alternate visual pattern was introduced. Temporary review code was removed.
+
+**Validation:** All 234 Vitest tests across 68 files pass, including logo-dimension, pass JSON and integration boundaries. Lint, typecheck, the webpack production build, `git diff --check` and the complete disposable PostgreSQL migration/RLS suite through `0055` pass.
+
+**Next Action:** Deploy the application commit first, reconcile hosted migration history, apply `0055`, process the Apple update outbox and confirm the existing Casa Garmendia pass refreshes on a real iPhone without reinstallation.
+
+## 2026-08-24 - Public QR Registration Focus Zoom
+
+**Objective:** Stop mobile Safari from automatically enlarging the public registration page when a customer focuses a field after opening the branch QR.
+
+**Changes Made:** Scoped the established 16px form-control minimum to text, telephone, email, date, select and textarea controls inside `.public-registration-shell`. Checkbox, radio and hidden controls remain unaffected, and the root viewport still permits manual pinch zoom for accessibility.
+
+**Design Review:** The real public form composition was reviewed at 375, 768, 1280 and 1440 px. Larger input text remains contained, labels and actions retain their hierarchy, no horizontal overflow was introduced and the temporary review route was removed.
+
+**Validation:** The focused application-design suite passes with 6 tests. `npm run lint`, `npm run typecheck`, the webpack production build and `git diff --check` pass; no database change is required.
+
+**Next Action:** Deploy the application commit and verify focus behavior from a real branch QR on iPhone Safari.
+
+## 2026-08-24 - Optional Welcome Gift
+
+**Objective:** Let the Admin add an optional welcome gift to a points card and deliver it exactly once without deducting points or resetting accumulated progress.
+
+**Changes Made:** Added a compact optional section to the first step of the card editor with name, description and optional 1–3650 day validity. Migration `0054` persists the card-owned program configuration and marks issued welcome rewards explicitly. An after-insert trigger on issued customer cards covers both public and employee registration, calculates expiration on issuance and uses a partial unique index to prevent duplicates for the same customer/card.
+
+**Security And Correctness:** Configuration still requires an authenticated general Admin and derives tenant/card/program authority in the existing protected save path. Reward issuance uses server-owned card relations, stores no browser-supplied tenant authority and does not touch the loyalty balance or ledger. Generic imported customers follow the program eligibility option; Casa Garmendia is deliberately excluded from this trigger because migration `0053` already assigns its fixed Churro and would otherwise duplicate the welcome benefit. Existing customers are not changed retroactively.
+
+**Design Review:** The real card-editor section was reviewed at 375, 768, 1280 and 1440 px. The toggle, helper copy and conditional fields follow the established form hierarchy, stack cleanly on mobile, retain accessible labels/disabled state and introduce no horizontal overflow. Temporary visual-review code was removed.
+
+**Validation:** Focused welcome-reward tests pass; `npm run lint`, `npm run typecheck`, all 230 Vitest tests across 67 files, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0054` pass.
+
+**Next Action:** Reconcile hosted migration history, deploy `0054` with the preceding pending migrations, enable the gift on a test points card and verify one public plus one employee registration before enabling it on the production card.
+
+## 2026-08-24 - Shared PIN Unlock Navigation And Keypad
+
+**Objective:** Make shared-account operator PIN login reliably enter the employee area and replace the free-text password control with a purpose-built numeric pad.
+
+**Changes Made:** The unlock action now returns an explicit success/error state and writes the HttpOnly operator cookie before navigation. On success, the client performs a full replacement navigation to `/app`, ensuring the protected tree reads the new cookie instead of reusing its locked layout context. The new six-position keypad supports touch, number keys, Backspace and Escape, masks every digit, clears failed attempts and retains the existing five-attempt lockout messages.
+
+**Security And Accessibility:** The operator token remains server-only and the PIN is submitted only in the form body; no local/session storage or token exposure was added. Every keypad control has a large touch target and keyboard focus, the digit count is announced without revealing values, delete has an accessible name and submission remains disabled until all six digits are present.
+
+**Design Review:** The unlock screen was reviewed at 375, 768, 1280 and 1440 px. The six indicators, 3×4 keypad and primary action remain within the existing operations card without horizontal overflow; the temporary review route was removed.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 226 Vitest tests across 66 files and the Next.js production build pass. The database schema was unchanged; the complete migration/RLS harness through `0053` remains green from the immediately preceding validated commit.
+
+**Next Action:** Deploy the application commit and verify one real shared branch account on a phone: enter a valid PIN, confirm `/app` opens and the operator name appears in the header, then exercise invalid PIN, backspace, clearing and user switching.
+
+## 2026-08-24 - Casa Garmendia One-Time Import Profile
+
+**Objective:** Import the legacy Casa Garmendia customer workbook into its existing lifetime-points card, translate prior stamps through the supplied non-linear equivalence table, grant matching rewards and preserve a safe path to recover imported cards.
+
+**Changes Made:** Added `/admin/imports` exclusively for the tenant's general Admin with automatic mapping for Nombre, Apellido, Email, Teléfono, Fecha de Nacimiento and Estampillas Actuales. The profile previews invalid rows, combines first/last name and uses the greatest reached milestone from 0 to 15 stamps. Migration `0053` binds the preview to one published points card and participating branch, creates customers/cards/balances/ledger entries, grants Churro individual plus reached configured tiers and enforces one confirmed use. Imported customers retain `customer_import_id`; matching public registration resumes the claim/terms flow, and employee search can always regenerate its claim QR.
+
+**Security And Correctness:** Tenant, Admin role, card, active program, required thresholds, branch assignment and single-use state are revalidated inside the atomic RPC. Prepared rows are bounded and revalidated; duplicates are skipped without overwriting existing customers; audit metadata contains counts and IDs rather than customer PII. Public recovery requires the same imported card plus exact phone and accent-insensitive normalized name, and never bypasses current terms acceptance.
+
+**Design Review:** The profile, equivalence table, upload form, preview/error state and irreversible confirmation were reviewed at 375, 768, 1280 and 1440 px. The table becomes labeled row blocks on mobile, controls retain usable touch sizing, the single primary action remains clear and no horizontal overflow or temporary review route remains.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 225 Vitest tests across 66 files, the Next.js production build and the full disposable PostgreSQL migration/RLS harness through `0053` pass. Responsive review passed at 375, 768, 1280 and 1440 px without horizontal overflow or an alternate visual language.
+
+**External Input:** `EquivalenciasSdL.pdf` was read successfully. All three matching `.xlsx` files in Downloads hash as empty 0-byte files, so no real customer PII was processed and a non-empty original is still required before production confirmation.
+
+**Next Action:** Obtain the real workbook, deploy reviewed migrations through `0053` after reconciling hosted history, verify the seven target tiers, inspect the complete preview and confirm exactly once.
+
 ## 2026-08-24 - Admin Card And Customer Lifecycle
 
 **Objective:** Collapse repeated drafts of the same card into one entry and give only the tenant Admin safe controls to discard/deactivate cards and deactivate or delete customers.
