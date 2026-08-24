@@ -520,7 +520,7 @@ Requisitos:
 
 Apple Wallet requiere cuenta Apple Developer, Pass Type ID, Team ID, certificado firmante, llave privada y certificado WWDR. Los secretos solo existirán en el entorno del servidor. El archivo `.pkpass` se generará y firmará al solicitar **Agregar a Apple Wallet** después del registro o desde el respaldo Web Card.
 
-Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor. Ante un recurso inválido se usará el activo seguro de respaldo.
+Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. La cabecera reservará el ancho disponible para el logo y el nombre del negocio; el contador de premios podrá consultarse en el reverso y el QR no mostrará una leyenda textual inferior. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor. Ante un recurso inválido se usará el activo seguro de respaldo.
 
 Google Wallet requerirá proyecto, Issuer ID, service account, clase y objeto de pase.
 

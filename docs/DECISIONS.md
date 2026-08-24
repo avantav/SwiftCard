@@ -323,3 +323,13 @@
 - Reason: Card issuance is the common atomic boundary for public and employee registration. A dedicated marker and database uniqueness rule prevent duplicates across retries and recovery without mixing an unconditional benefit into milestone accounting.
 - Consequences: Additive migration `0054` must be deployed before the new editor save and issuance behavior work. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
 - Status: Accepted.
+
+## DEC-0033 - Header-First Apple Pass Identity
+
+- Date: 2026-08-24
+- Context: Wallet rendered Casa Garmendia's square logo centered inside the generated 160×50 transparent logo canvas, while a right-side reward header field consumed the remaining width and truncated the tenant name. The barcode alternate text also produced an unwanted caption below the QR.
+- Decision: Preserve each source logo's aspect ratio inside Apple's 160×50 maximum and emit a tight output canvas at 1x/2x/3x. Reserve the front header for `logo` plus `logoText`, move the changing reward count to the back and omit optional barcode `altText`. Keep the QR payload unchanged. Queue all installed passes once through the existing card-scoped update outbox after the new generator is deployed.
+- Alternatives considered: Shorten the tenant name, remove `logoText`, keep the wide transparent canvas, retain the reward header at the expense of identity width, or encode an empty alternate-text string.
+- Reason: Apple owns final pass placement, but eliminating artificial logo padding and nonessential header competition gives its renderer the maximum available width for the business identity. Omitting the optional property is the clean way to remove barcode-adjacent text without affecting scanning.
+- Consequences: Migration `0055` must run only after the application deployment, then the protected outbox processor must deliver APNs work. The reward count remains available on the back; existing passes require this queued refresh or a reinstall to receive the new assets and JSON.
+- Status: Accepted.

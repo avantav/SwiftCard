@@ -313,10 +313,6 @@ export function AppleWalletDesignForm({
               )}
               <strong>{design.logoText || "Nombre del negocio"}</strong>
             </div>
-            <p className="apple-pass-preview-header-field">
-              <span>PREMIOS</span>
-              <strong>1</strong>
-            </p>
           </header>
           <div
             className={`apple-pass-preview-primary${previewStripUrl ? " has-strip" : ""}`}
@@ -352,9 +348,6 @@ export function AppleWalletDesignForm({
             </div>
             <figure className="apple-pass-preview-code">
               <img alt="" src="/icons/wallet-preview-qr.svg" />
-              <figcaption>
-                Tarjeta de {design.logoText || "Nombre del negocio"}
-              </figcaption>
             </figure>
           </div>
         </div>

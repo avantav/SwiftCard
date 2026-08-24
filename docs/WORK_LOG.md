@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-24 - Compact Apple Wallet Header And QR
+
+**Objective:** Keep the Casa Garmendia logo and full name aligned together at the left of the iPhone pass header, and remove the visible text below its QR.
+
+**Changes Made:** Removed the front header reward field and retained its live count on the back of the pass. Barcode `altText` is now omitted, which removes the lower QR legend while preserving the secure URL payload. Logo assets no longer force every source into a transparent 160×50 canvas: their output stays within Apple's maximum while preserving the source aspect ratio, so a square logo becomes 50×50 and leaves the adjacent `logoText` its usable width. Both Admin previews now match the new signed-pass structure.
+
+**Update Delivery:** Migration `0055` queues every actively installed Apple pass through the existing card-scoped outbox once. The application code must be deployed before this migration, followed by invoking the protected outbox processor, so the resulting PassKit fetch receives the new layout rather than the prior generator.
+
+**Design Review:** The updated point-card preview was reviewed at 375, 768, 1280 and 1440 px. Logo and complete tenant name share the left edge without truncation, the QR remains centered without a caption and no overflow or alternate visual pattern was introduced. Temporary review code was removed.
+
+**Validation:** All 234 Vitest tests across 68 files pass, including logo-dimension, pass JSON and integration boundaries. Lint, typecheck, the webpack production build, `git diff --check` and the complete disposable PostgreSQL migration/RLS suite through `0055` pass.
+
+**Next Action:** Deploy the application commit first, reconcile hosted migration history, apply `0055`, process the Apple update outbox and confirm the existing Casa Garmendia pass refreshes on a real iPhone without reinstallation.
+
 ## 2026-08-24 - Public QR Registration Focus Zoom
 
 **Objective:** Stop mobile Safari from automatically enlarging the public registration page when a customer focuses a field after opening the branch QR.

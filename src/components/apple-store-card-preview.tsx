@@ -80,10 +80,6 @@ export function AppleStoreCardPreview({
           )}
           <strong>{design.logoText || tenantName}</strong>
         </div>
-        <p className="apple-pass-preview-header-field">
-          <span>PREMIOS</span>
-          <strong>1</strong>
-        </p>
       </header>
 
       <div
@@ -147,7 +143,6 @@ export function AppleStoreCardPreview({
         </div>
         <figure className="apple-pass-preview-code">
           <img alt="" src="/icons/wallet-preview-qr.svg" />
-          <figcaption>Tarjeta de {tenantName}</figcaption>
         </figure>
       </div>
     </div>

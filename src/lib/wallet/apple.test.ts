@@ -36,12 +36,18 @@ describe("Apple Wallet store card", () => {
       { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
     );
     expect(props.storeCard.primaryFields).toHaveLength(0);
+    expect(props.storeCard.headerFields).toHaveLength(0);
     expect(props.storeCard.auxiliaryFields[0]?.value).toBe("4 de 10 sellos");
     expect(props.storeCard.auxiliaryFields[0]?.changeMessage).toContain("%@");
     expect(props.storeCard.backFields[1]?.value).toContain("3 sellos");
     expect(props.barcodes[0]?.message).toBe(
       "https://wallet.example.com/card/public-token",
     );
+    expect(props.barcodes[0]).not.toHaveProperty("altText");
+    expect(props.storeCard.backFields[2]).toMatchObject({
+      key: "available-rewards",
+      value: 1,
+    });
     expect(JSON.stringify(props)).not.toContain("customer-id");
     expect(props.locations).toHaveLength(1);
     expect(props.webServiceURL).toBe(

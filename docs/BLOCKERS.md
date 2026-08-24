@@ -2,10 +2,10 @@
 
 ## Active Blockers
 
-- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and the targeted idempotent `0051` Apple terms grant is live; local migrations `0052` through `0054` are not deployed.
+- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and the targeted idempotent `0051` Apple terms grant is live; local migrations `0052` through `0055` are not deployed.
   - **Affected area:** Repeatable remote database deployment.
   - **Consequence:** The bulk migration runner would try to replay migrations `0035` onward and may stop on objects that already exist.
-  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0054`, then repair canonical migration history before using `npm run db:push:remote`.
+  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0055`, then repair canonical migration history before using `npm run db:push:remote`. Deploy the new application code before applying `0055`, because that migration queues installed passes to fetch the new layout.
 
 - **IMPORT-001:** The three Casa Garmendia `.xlsx` files currently present in `/home/advanta/Downloads` are empty (0 bytes); only the screenshot exposes the expected headers.
   - **Affected area:** Real-data preview and execution of the one-time Casa Garmendia import.
@@ -20,10 +20,10 @@
   - **Recommendation:** In Google Cloud enable Maps JavaScript API and Places API (New), attach billing, restrict a browser key to the exact local/production HTTP referrers, set the environment variable and redeploy.
   - **Work that can continue:** Migration deployment, branch data review and all non-map functionality.
 
-- **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The visible QR, employee camera, card-owned updates and lifetime-points design through local migration `0049` are validated; hosted deployment, pass refresh/reinstallation, real-device scan, APNs validation, an external retry cron and Google Wallet remain pending. No secrets are present in the repository.
+- **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The visible QR, employee camera, card-owned updates, lifetime-points design and compact header/QR layout through local migration `0055` are validated; hosted deployment, queued pass refresh, real-device scan, APNs validation, an external retry cron and Google Wallet remain pending. No secrets are present in the repository.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** The current deployed pass may still omit the visible QR, and failed immediate pushes can remain queued without an external scheduler.
-  - **Recommendation:** Deploy application code and migrations through `0049`, refresh or reinstall the pass, test one lifetime-points purchase and milestone, confirm automatic refresh on iPhone, scan it from the employee PWA, then schedule the protected retry endpoint.
+  - **Consequence:** The current deployed pass retains the wide logo canvas, truncated header name and text below the QR; failed pushes can remain queued without an external scheduler.
+  - **Recommendation:** Deploy application code first, reconcile and apply migrations through `0055`, invoke the protected update processor, confirm the header/QR refresh on iPhone, scan it from the employee PWA, then schedule the retry endpoint.
   - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.

@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy migrations `0053` and `0054` after reconciling hosted migration history, then execute the Casa Garmendia one-time import with the real non-empty workbook.
-- Last completed task: Prevented automatic iOS focus zoom in the public QR registration form while preserving manual pinch zoom.
+- Current task: Deploy the application before migration `0055`, process the queued Apple layout refresh, then deploy the preceding pending migrations and execute the Casa Garmendia import with the real non-empty workbook.
+- Last completed task: Reworked the Apple Wallet header so compact logos and the full tenant name share the left edge, and removed the text below the QR.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: Public QR registration renders text, telephone, email and date controls at the 16px iOS threshold without disabling browser accessibility zoom.
-- Git status: Focused design tests, lint, typecheck and the production build pass after the QR registration zoom correction; all 230 Vitest tests across 67 files and the complete database/RLS suite through migration `0054` remain green from the preceding commit.
-- Remote backup: The Casa Garmendia import and PIN unlock repairs are committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` through `0054` remain undeployed.
+- Last stable feature: Signed Apple passes generate a tight aspect-ratio logo asset, leave header fields empty, keep reward count on the back and omit barcode `altText`; migration `0055` queues installed passes once.
+- Git status: Lint, typecheck, all 234 Vitest tests across 68 files, the production build and the complete database/RLS suite through migration `0055` pass locally.
+- Remote backup: The Casa Garmendia import, PIN unlock, welcome gift and QR-registration zoom corrections are committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` through `0055` remain undeployed.
 
 ## Completed Functionality
 
@@ -117,6 +117,7 @@
 - Migration `0051` grants the server-only Apple issuance role access to that verification function. The targeted grant is applied on hosted Supabase and a live read-only check confirms the most recent accepted card now returns `true`; database verification errors no longer masquerade as missing acceptance in the updated route.
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
+- Apple header identity now uses a logo canvas constrained to 160×50 while preserving the source aspect ratio, rather than centering every logo inside a wide transparent canvas. The front header no longer spends width on the reward count, the count remains on the back and the QR barcode omits its visible alternate text. Migration `0055` queues a one-time refresh for existing installed passes.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.

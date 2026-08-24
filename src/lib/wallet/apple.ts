@@ -93,19 +93,11 @@ export function buildAppleWalletPassProps(
         format: "PKBarcodeFormatQR" as const,
         message: input.cardUrl,
         messageEncoding: "iso-8859-1",
-        altText: `Tarjeta de ${input.tenantName}`,
       },
     ],
     locations: input.locations.slice(0, 10),
     storeCard: {
-      headerFields: [
-        {
-          key: "available-rewards",
-          label: "PREMIOS",
-          value: input.availableRewards,
-          changeMessage: "Ahora tienes %@ premios disponibles.",
-        },
-      ],
+      headerFields: [],
       primaryFields: lifetimePoints
         ? [{
             key: "points-balance",
@@ -142,6 +134,12 @@ export function buildAppleWalletPassProps(
           key: "reward-tiers",
           label: `PREMIOS POR ${input.unitNamePlural.toLocaleUpperCase("es-MX")}`,
           value: rewardCatalog || "Consulta los premios vigentes con el negocio.",
+        },
+        {
+          key: "available-rewards",
+          label: "PREMIOS DISPONIBLES",
+          value: input.availableRewards,
+          changeMessage: "Ahora tienes %@ premios disponibles.",
         },
         {
           key: "terms",
