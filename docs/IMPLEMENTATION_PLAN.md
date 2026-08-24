@@ -177,6 +177,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement column mapping and validation preview without customer mutation.
 - [x] [Terminada] Implement atomic import confirmation with duplicate/error summary.
 - [x] [Terminada] Add the one-time Casa Garmendia tenant-Admin profile with fixed Excel mapping, legacy-stamp milestone conversion, imported welcome/milestone rewards and terms-gated card recovery.
+- [x] [Terminada] Repair Casa Garmendia PROD's one erroneous lifetime-point purchase after correcting its rule from MXN $1 to MXN $10 per point, preserving the canje as reversed and auditing every invalid reward cancellation.
 - [x] [Terminada] Implement tenant suspension and reactivation controls.
 - [x] [Terminada] Implement branding mode controls.
 

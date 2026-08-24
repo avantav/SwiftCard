@@ -333,3 +333,13 @@
 - Reason: Apple owns final pass placement, but eliminating artificial logo padding and nonessential header competition gives its renderer the maximum available width for the business identity. Omitting the optional property is the clean way to remove barcode-adjacent text without affecting scanning.
 - Consequences: Migration `0055` must run only after the application deployment, then the protected outbox processor must deliver APNs work. The reward count remains available on the back; existing passes require this queued refresh or a reinstall to receive the new assets and JSON.
 - Status: Accepted.
+
+## DEC-0034 - Exact Audited Repair For Casa Garmendia Points
+
+- Date: 2026-08-24
+- Context: Casa Garmendia PROD intended to award one lifetime point per MXN $10, but its persisted program rule was MXN $1. Its first and only MXN $2,000 purchase therefore granted 2,000 points, seven milestones and one canje instead of 200 points and two milestones.
+- Decision: Apply one production-scoped transaction guarded by the exact tenant, program, customer, purchase, ledger, seven rewards and single redemption inspected immediately beforehand. Change the rule to 1,000 minor units, correct purchase/ledger/balance accounting to 200 points, keep the 100/200 rewards, preserve the 400 canje as a reversed redemption and cancel only rewards above 200. Record a dedicated append-only repair audit and keep the normal cancellation/reversal audits. Clarify the editor as “monto gastado para ganar 1 punto” with a concrete calculation example.
+- Alternatives considered: Leave historical 2,000-point accounting, delete the test customer and history, add a negative adjustment while leaving purchase exports wrong, or silently remove generated rewards and the canje.
+- Reason: The customer had no other purchase or ledger activity, so the correct state was deterministic. Exact fail-closed guards and one atomic transaction avoid affecting another tenant or overwriting concurrent activity, while reversal and cancellation preserve the operational record.
+- Consequences: Hosted production is already corrected and has an Apple Wallet update queued. Migration `0056` is intentionally bound to the production UUID and no-ops elsewhere; it is idempotent only for the exact repaired state. Hosted migration history remains unreconciled, so this targeted repair does not authorize a bulk migration push.
+- Status: Accepted.

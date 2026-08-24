@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the application before migration `0055`, process the queued Apple layout refresh, then deploy the preceding pending migrations and execute the Casa Garmendia import with the real non-empty workbook.
-- Last completed task: Reworked the Apple Wallet header so compact logos and the full tenant name share the left edge, and removed the text below the QR.
+- Current task: Deploy the application before migration `0055`, process the queued Apple layout refresh, then reconcile and deploy the remaining pending migrations before executing the Casa Garmendia import with the real non-empty workbook.
+- Last completed task: Corrected Casa Garmendia PROD from MXN $1 to MXN $10 per point and repaired its only affected MXN $2,000 purchase from 2,000 to 200 points without deleting purchase, reward or redemption history.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: Signed Apple passes generate a tight aspect-ratio logo asset, leave header fields empty, keep reward count on the back and omit barcode `altText`; migration `0055` queues installed passes once.
-- Git status: Lint, typecheck, all 234 Vitest tests across 68 files, the production build and the complete database/RLS suite through migration `0055` pass locally.
-- Remote backup: The Casa Garmendia import, PIN unlock, welcome gift and QR-registration zoom corrections are committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` through `0055` remain undeployed.
+- Last stable feature: Migration `0056` performs an exact, idempotent and audited Casa Garmendia repair; the card editor now explains that the configured amount is spend per point and gives a $2,000-to-200 example.
+- Git status: Focused lifetime-point/program tests, lint and typecheck pass; the `0056` transaction also passed a production-schema dry run with rollback before its definitive commit.
+- Remote backup: The targeted hosted `0051` grant and one-time `0056` Casa Garmendia repair are live. Migrations `0052` through `0055` remain undeployed and hosted migration history still requires reconciliation before any bulk push.
 
 ## Completed Functionality
 
@@ -18,6 +18,7 @@
 - Next.js 16 App Router scaffold.
 - Base routes: `/`, `/superadmin`, `/admin`, `/app`, `/register/[branchToken]`, `/card/[cardToken]`.
 - Admin-only `/admin/imports` profile for Casa Garmendia with fixed six-column mapping, one-time confirmation and tenant/card/branch-derived database authority.
+- Casa Garmendia PROD now uses MXN $10 per lifetime point. Its single erroneous purchase, balance and ledger were corrected to 200 points; only 100/200 rewards remain available, the 400-point canje is preserved as reversed, higher rewards are audited as cancelled and an Apple refresh is queued.
 - Imported customer identification enables terms-gated public recovery and repeat employee QR delivery without issuing a second card.
 - Health endpoint: `/api/health`.
 - Vitest health endpoint test.

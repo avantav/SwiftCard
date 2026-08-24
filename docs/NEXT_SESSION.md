@@ -26,6 +26,7 @@
 24. Google Wallet generation remains pending. The Admin Android toggle is explicitly labeled as a conceptual preview, not a claim that Google pass issuance is implemented.
 25. Public QR registration: all focusable text/date controls render at 16px, preventing iOS automatic focus zoom without setting `user-scalable=no` or blocking the customer's manual pinch zoom. The composition was reviewed at 375, 768, 1280 and 1440 px.
 26. Apple header/QR layout: signed passes use a tight aspect-ratio logo canvas, reserve the top row for left-aligned logo plus tenant name, move available-reward count to the back and omit the text under the QR. Migration `0055` queues installed passes once and must be applied only after the new application code is deployed, then the protected outbox processor must run.
+27. Casa Garmendia point repair: the hosted PROD program now stores `amount_per_stamp_minor = 1000` (MXN $10 per point) and version 5. Migration `0056` corrected the only affected MXN $2,000 purchase, ledger and balance from 2,000 to 200 points, retained the 100/200 rewards, cancelled 300/400/500/650/860, marked the 400 redemption `REVERSED`, wrote a dedicated audit event and queued an Apple update. Do not repeat this manually; `0056` is exact and idempotent, and other environments no-op because the production tenant UUID is absent.
 
 ## Prior lifetime-points context
 

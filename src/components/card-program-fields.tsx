@@ -53,7 +53,7 @@ export function CardProgramFields({
       ) : (
         <div className="admin-form-section">
           <label className="field">
-            <span>Monto entero por punto</span>
+            <span>Monto gastado para ganar 1 punto</span>
             <input
               defaultValue={String(Number(amountPerStamp))}
               min="1"
@@ -62,7 +62,9 @@ export function CardProgramFields({
               type="number"
               required
             />
-            <small>La compra se trunca a un decimal. La fracción descartada no se traslada a otra compra.</small>
+            <small>
+              Escribe el importe en moneda, no la cantidad de puntos. Ejemplo: con 10, una compra de $2,000 otorga 200 puntos. La compra se trunca a un decimal y la fracción descartada no se acumula.
+            </small>
           </label>
           <p className="enterprise-alert is-info">
             El saldo nunca se reinicia y cada hito entrega su recompensa una sola vez.

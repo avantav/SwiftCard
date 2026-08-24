@@ -5,6 +5,10 @@ const migration = readFileSync(
   new URL("../../../supabase/migrations/0049_lifetime_points_engine.sql", import.meta.url),
   "utf8",
 );
+const casaGarmendiaRepair = readFileSync(
+  new URL("../../../supabase/migrations/0056_casa_garmendia_points_repair.sql", import.meta.url),
+  "utf8",
+);
 const publicCard = readFileSync(
   new URL("../../components/public-wallet-card.tsx", import.meta.url),
   "utf8",
@@ -37,10 +41,22 @@ describe("lifetime point engine", () => {
 
   it("exposes a point-specific card design instead of stamp circles", () => {
     expect(cardFields).toContain("Puntos acumulativos sin reinicio");
+    expect(cardFields).toContain("Monto gastado para ganar 1 punto");
+    expect(cardFields).toContain("una compra de $2,000 otorga 200 puntos");
     expect(cardFields).toContain('name="confirmProgramTypeChange"');
     expect(cardActions).toContain("Confirma el cambio de tipo de programa antes de guardar.");
     expect(publicCard).toContain("wallet-points-progress");
     expect(publicCard).toContain("Todos los hitos desbloqueados");
     expect(publicCard).toContain("lifetimePoints ?");
+  });
+
+  it("repairs the single Casa Garmendia purchase without erasing its redemption history", () => {
+    expect(casaGarmendiaRepair).toContain("amount_per_stamp_minor = 1000");
+    expect(casaGarmendiaRepair).toContain("units_awarded_tenths = 2000");
+    expect(casaGarmendiaRepair).toContain("lifetime_points_tenths = 2000");
+    expect(casaGarmendiaRepair).toContain("status = 'REVERSED'");
+    expect(casaGarmendiaRepair).toContain("tier.stamps_required > 200");
+    expect(casaGarmendiaRepair).toContain("CASA_GARMENDIA_POINTS_RULE_REPAIRED");
+    expect(casaGarmendiaRepair).toContain("production state changed");
   });
 });
