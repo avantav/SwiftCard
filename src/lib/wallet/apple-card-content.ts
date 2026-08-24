@@ -18,6 +18,26 @@ export function appleWalletProgressText(input: {
   return `${balance} ${unit}`;
 }
 
+export function appleWalletPointProgressText(input: {
+  balance: number;
+  goal: number | null;
+  complete?: boolean;
+}) {
+  const segmentCount = 5;
+  if (input.complete) {
+    return `${"■".repeat(segmentCount)} Completo`;
+  }
+  if (!input.goal || input.goal <= 0) {
+    return displayNumber(input.balance);
+  }
+  const filled = Math.min(
+    segmentCount,
+    Math.max(0, Math.floor((input.balance / input.goal) * segmentCount)),
+  );
+  const bar = `${"■".repeat(filled)}${"□".repeat(segmentCount - filled)}`;
+  return `${bar} ${displayNumber(input.balance)}/${displayNumber(input.goal)}`;
+}
+
 export function appleWalletRewardTierText(input: {
   required: number;
   name: string;

@@ -3,11 +3,11 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the application before migration `0055`, process the queued Apple layout refresh, then reconcile and deploy the remaining pending migrations before executing the Casa Garmendia import with the real non-empty workbook.
-- Last completed task: Corrected Casa Garmendia PROD from MXN $1 to MXN $10 per point and repaired its only affected MXN $2,000 purchase from 2,000 to 200 points without deleting purchase, reward or redemption history.
+- Current task: Deploy the Apple point-progress application change before migration `0057`, process the queued pass refresh, then reconcile the remaining hosted migration history before executing the Casa Garmendia import with the real non-empty workbook.
+- Last completed task: Restored the Apple front reward count and added both a signed progress strip and an iOS 26-compatible `■■■□□ actual/meta` point-progress field without returning data to the constrained header.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: Migration `0056` performs an exact, idempotent and audited Casa Garmendia repair; the card editor now explains that the configured amount is spend per point and gives a $2,000-to-200 example.
-- Git status: Focused lifetime-point/program tests, lint and typecheck pass; the `0056` transaction also passed a production-schema dry run with rollback before its definitive commit.
+- Last stable feature: Apple store cards use no more than four compact front supporting fields, keep tenant identity alone in the header and preserve point progress even when iOS omits strip images.
+- Git status: All 239 Vitest tests across 69 files, typecheck, lint, webpack build, visual review at 375 px and the complete disposable PostgreSQL migration/RLS suite through `0057` pass.
 - Remote backup: The targeted hosted `0051` grant and one-time `0056` Casa Garmendia repair are live. Migrations `0052` through `0055` remain undeployed and hosted migration history still requires reconciliation before any bulk push.
 
 ## Completed Functionality
@@ -119,6 +119,7 @@
 - Admin general can configure one Apple `storeCard` design per tenant with activation, text, accessible colors, logo, strip image, live preview, versioning, and immutable audit attribution.
 - The Apple Wallet designer preview now mirrors the signed pass field order, overlays the balance on the official `375 × 144 pt` strip area, uses a realistic QR treatment and prepares matching 1x/2x/3x strip assets for the generated pass.
 - Apple header identity now uses a logo canvas constrained to 160×50 while preserving the source aspect ratio, rather than centering every logo inside a wide transparent canvas. The front header no longer spends width on the reward count, the count remains on the back and the QR barcode omits its visible alternate text. Migration `0055` queues a one-time refresh for existing installed passes.
+- Apple store-card fronts again show the available-reward count below the primary balance. Lifetime-point cards also show a five-segment progress value plus exact current/next milestone, and generate a dynamic progress strip for pre-iOS-26 Wallet versions. Migration `0057` queues installed passes after application deployment.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.

@@ -38,6 +38,11 @@ describe("Apple Wallet store card", () => {
     expect(props.storeCard.primaryFields).toHaveLength(0);
     expect(props.storeCard.headerFields).toHaveLength(0);
     expect(props.storeCard.auxiliaryFields[0]?.value).toBe("4 de 10 sellos");
+    expect(props.storeCard.secondaryFields[1]).toMatchObject({
+      key: "available-rewards-front",
+      label: "PREMIOS",
+      value: 1,
+    });
     expect(props.storeCard.auxiliaryFields[0]?.changeMessage).toContain("%@");
     expect(props.storeCard.backFields[1]?.value).toContain("3 sellos");
     expect(props.barcodes[0]?.message).toBe(
@@ -149,8 +154,21 @@ describe("Apple Wallet store card", () => {
       label: "PUNTOS",
       value: 125,
     });
-    expect(props.storeCard.auxiliaryFields[0]?.value).toContain("Desayuno");
-    expect(props.storeCard.auxiliaryFields[0]?.value).toContain("200 puntos");
+    expect(props.storeCard.secondaryFields[1]).toMatchObject({
+      key: "available-rewards-front",
+      value: 1,
+    });
+    expect(
+      props.storeCard.secondaryFields.length + props.storeCard.auxiliaryFields.length,
+    ).toBe(4);
+    expect(props.storeCard.auxiliaryFields[0]).toMatchObject({
+      key: "point-progress",
+      value: "■■■□□ 125/200",
+    });
+    expect(props.storeCard.auxiliaryFields[1]).toMatchObject({
+      key: "next-milestone",
+      value: "Desayuno",
+    });
     expect(JSON.stringify(props.storeCard)).not.toContain("stamp-progress");
   });
 });

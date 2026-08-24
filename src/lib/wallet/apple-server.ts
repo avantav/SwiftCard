@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { PKPass } from "passkit-generator";
 import sharp from "sharp";
 import { buildAppleWalletStampStrips } from "./apple-stamp-strip";
+import { buildAppleWalletPointStrips } from "./apple-point-strip";
 import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
 import { appleWalletLogoDimensions } from "./apple-logo-layout";
@@ -158,8 +159,23 @@ async function buildPassImages(
     "logo@2x.png": entries[4],
     "logo@3x.png": entries[5],
   };
-  const stampStrips = input.programType === "LIFETIME_POINTS"
-    ? {}
+  const nextPointGoal = input.programType === "LIFETIME_POINTS"
+    ? [...input.rewardTiers]
+      .sort((left, right) => left.stampsRequired - right.stampsRequired)
+      .find((tier) => tier.stampsRequired > input.stampBalance)?.stampsRequired
+      ?? [...input.rewardTiers]
+        .sort((left, right) => left.stampsRequired - right.stampsRequired)
+        .at(-1)?.stampsRequired
+      ?? input.rewardGoal
+    : null;
+  const progressStrips = input.programType === "LIFETIME_POINTS"
+    ? await buildAppleWalletPointStrips({
+      backgroundColor: input.backgroundColor,
+      foregroundColor: input.foregroundColor,
+      pointBalance: input.stampBalance,
+      nextGoal: nextPointGoal,
+      backgroundSource: stripSource,
+    })
     : await buildAppleWalletStampStrips({
       backgroundColor: input.backgroundColor,
       foregroundColor: input.foregroundColor,
@@ -169,8 +185,8 @@ async function buildPassImages(
       logoSource: tenantLogoSource,
       backgroundSource: stripSource,
     });
-  if (Object.keys(stampStrips).length) {
-    Object.assign(images, stampStrips);
+  if (Object.keys(progressStrips).length) {
+    Object.assign(images, progressStrips);
   } else if (stripSource) {
     const staticStrips = await Promise.all([
       resizedPng(stripSource, 375, 144, "cover"),

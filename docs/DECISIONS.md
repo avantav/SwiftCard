@@ -343,3 +343,14 @@
 - Reason: The customer had no other purchase or ledger activity, so the correct state was deterministic. Exact fail-closed guards and one atomic transaction avoid affecting another tenant or overwriting concurrent activity, while reversal and cancellation preserve the operational record.
 - Consequences: Hosted production is already corrected and has an Apple Wallet update queued. Migration `0056` is intentionally bound to the production UUID and no-ops elsewhere; it is idempotent only for the exact repaired state. Hosted migration history remains unreconciled, so this targeted repair does not authorize a bulk migration push.
 - Status: Accepted.
+
+## DEC-0035 - Header-Safe Apple Reward And Point Progress Fields
+
+- Date: 2026-08-24
+- Context: Removing the reward header field fixed Casa Garmendia's truncated identity, but left available rewards only on the back. The Admin preview also drew a CSS point-progress bar that the signed pass never generated, and Apple documents that store-card strip images are not displayed on iOS 26+.
+- Decision: Keep the header exclusive to logo and `logoText`. Use no more than Apple's combined limit of four compact secondary/auxiliary fields: customer, available rewards, point progress and next reward. Represent point progress as a five-segment value with the exact current/next milestone, and also generate dynamic 375×144 point-progress strips at 1x/2x/3x for Wallet versions that support them. Retain the full reward count and catalog on the back.
+- Alternatives considered: Restore the top-right reward header, rely only on the back, rely only on a strip image, switch the pass away from `storeCard`, or show long milestone sentences that can cause Wallet to hide other front fields.
+- Reason: The compact fields preserve header width, meet Apple's four-field limit and remain visible on the user's current iPhone even when Wallet omits strip assets. The optional strip gives older systems a smoother bar without becoming the only representation of progress.
+- Consequences: Application code must deploy before migration `0057` queues installed passes. Apple still owns exact truncation and placement, so customer and next-reward values are bounded. A real-device refresh remains required to confirm the final OS rendering.
+- References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
+- Status: Accepted.

@@ -45,6 +45,13 @@ const headerLayoutRefreshMigration = readFileSync(
   ),
   "utf8",
 );
+const frontProgressRefreshMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0057_apple_wallet_front_progress_refresh.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -113,8 +120,14 @@ describe("Apple Wallet integration boundaries", () => {
     expect(appleServer).toContain("pass.setBarcodes(...barcodes)");
     expect(appleServer).toContain("pass.setLocations(...locations)");
     expect(appleServer).toContain("pass.primaryFields.push");
+    expect(appleServer).toContain("buildAppleWalletPointStrips");
     expect(appleServer).toContain("APPLE_WALLET_ASSET_HOSTS");
     expect(appleServer).toContain("MAX_REMOTE_IMAGE_BYTES");
+  });
+
+  it("queues installed passes after the front progress layout is deployed", () => {
+    expect(frontProgressRefreshMigration).toContain("apple_wallet_registrations");
+    expect(frontProgressRefreshMigration).toContain("queue_apple_wallet_card_updates");
   });
 
   it("implements the complete PassKit update web service and durable outbox", () => {
