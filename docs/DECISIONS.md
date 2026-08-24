@@ -354,3 +354,14 @@
 - Consequences: Application code must deploy before migration `0057` queues installed passes. Apple still owns exact truncation and placement, so customer and next-reward values are bounded. A real-device refresh remains required to confirm the final OS rendering.
 - References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
 - Status: Accepted.
+
+## DEC-0036 - Per-Card Apple Notification Icon
+
+- Date: 2026-08-24
+- Context: Apple Wallet notifications use the pass icon, while the existing card editor only exposed a header logo and strip image. Reusing a wide header asset can make the small notification identity unclear, but changing it must not alter the visible pass header.
+- Decision: Store one optional notification icon URL on each loyalty card and expose it in the existing unified design stage. Restrict uploads to the tenant Admin's generated `notification-*` Storage paths and existing raster limits. Generate `icon.png`, `icon@2x.png` and `icon@3x.png` from this source; fall back first to the effective card/tenant logo and then to the bundled safe icon. Keep `logo.png` assets sourced only from the normal header logo. Queue the affected card's installed passes whenever the notification icon changes.
+- Alternatives considered: Reuse the header logo unconditionally, replace the visible logo with a square asset, configure one icon tenant-wide, or add a separate Apple-only designer.
+- Reason: A dedicated square source gives notifications a legible identity without sacrificing header layout, while the fallback preserves every existing card and the single-stage workflow. Card-scoped storage and update triggers retain multi-tenant isolation and automatic PassKit delivery.
+- Consequences: Additive migration `0058` must run before the application build that reads `notification_icon_url` and calls `save_loyalty_card_design_v2`. Existing passes are unchanged until an Admin saves a dedicated icon or another card update occurs. Google Wallet generation remains pending and does not consume this field yet.
+- References: [Creating the source for a pass](https://developer.apple.com/documentation/walletpasses/creating-the-source-for-a-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
+- Status: Accepted.

@@ -129,12 +129,15 @@ async function buildPassImages(
   input: AppleWalletPassData,
   logoUrl: string | null,
   stripUrl: string | null,
+  notificationIconUrl: string | null,
 ) {
   const fallback = await readFile(
     join(process.cwd(), "public", "icons", "apple-touch-icon.png"),
   );
   const tenantLogoSource = await fetchAllowedImage(logoUrl);
   const logoSource = tenantLogoSource ?? fallback;
+  const notificationIconSource = await fetchAllowedImage(notificationIconUrl);
+  const iconSource = notificationIconSource ?? logoSource;
   const logoMetadata = await sharp(logoSource, {
     limitInputPixels: 40_000_000,
   }).metadata();
@@ -144,9 +147,9 @@ async function buildPassImages(
   );
   const stripSource = await fetchAllowedImage(stripUrl);
   const entries = await Promise.all([
-    resizedPng(logoSource, 29, 29, "contain"),
-    resizedPng(logoSource, 58, 58, "contain"),
-    resizedPng(logoSource, 87, 87, "contain"),
+    resizedPng(iconSource, 29, 29, "contain"),
+    resizedPng(iconSource, 58, 58, "contain"),
+    resizedPng(iconSource, 87, 87, "contain"),
     resizedPng(logoSource, logoDimensions.width, logoDimensions.height, "contain"),
     resizedPng(logoSource, logoDimensions.width * 2, logoDimensions.height * 2, "contain"),
     resizedPng(logoSource, logoDimensions.width * 3, logoDimensions.height * 3, "contain"),
@@ -202,10 +205,19 @@ async function buildPassImages(
 
 export async function generateAppleWalletPass(
   input: AppleWalletPassData,
-  assets: { logoUrl: string | null; stripUrl: string | null },
+  assets: {
+    logoUrl: string | null;
+    stripUrl: string | null;
+    notificationIconUrl: string | null;
+  },
 ) {
   const signing = getAppleSigningConfig();
-  const images = await buildPassImages(input, assets.logoUrl, assets.stripUrl);
+  const images = await buildPassImages(
+    input,
+    assets.logoUrl,
+    assets.stripUrl,
+    assets.notificationIconUrl,
+  );
   const { barcodes, locations, storeCard, ...props } =
     buildAppleWalletPassProps(input, signing.identity);
   const pass = new PKPass(

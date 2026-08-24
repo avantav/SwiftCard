@@ -5517,6 +5517,18 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   object-fit: cover;
 }
 
+.card-upload-image-preview.is-notification {
+  width: min(100%, 148px);
+  min-height: 0;
+  aspect-ratio: 1;
+  justify-self: start;
+}
+
+.card-upload-image-preview.is-notification img {
+  padding: 16px;
+  object-fit: contain;
+}
+
 .card-upload-image-preview span {
   position: absolute;
   right: 8px;

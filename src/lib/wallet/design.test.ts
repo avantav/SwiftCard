@@ -15,6 +15,7 @@ function validForm() {
   form.set("labelColor", "#FFFFFF");
   form.set("logoImageUrl", "https://assets.example.com/logo.png");
   form.set("stripImageUrl", "https://assets.example.com/strip.jpg");
+  form.set("notificationIconUrl", "https://assets.example.com/notification.png");
   return form;
 }
 
@@ -26,11 +27,15 @@ describe("Apple Wallet tenant design", () => {
     expect(result.data.appleEnabled).toBe(true);
     expect(result.data.backgroundColor).toBe("#17202A");
     expect(result.data.logoImageUrl).toBe("https://assets.example.com/logo.png");
+    expect(result.data.notificationIconUrl).toBe(
+      "https://assets.example.com/notification.png",
+    );
   });
 
   it("rejects non-HTTPS assets and inaccessible color combinations", () => {
     const form = validForm();
     form.set("logoImageUrl", "http://localhost/logo.png");
+    form.set("notificationIconUrl", "http://localhost/notification.png");
     form.set("foregroundColor", "#17202A");
     const result = validateAppleWalletDesignForm(form);
     expect(result.ok).toBe(false);

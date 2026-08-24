@@ -24,6 +24,9 @@ describe("Apple Wallet Storage assets", () => {
         objectId,
       ),
     ).toContain("/apple/strip-");
+    expect(
+      createAppleWalletAssetPath(tenantId, "notification", "image/png", objectId),
+    ).toBe(`${tenantId}/apple/notification-${objectId}.png`);
   });
 
   it("accepts only bounded Wallet image formats", () => {
@@ -45,6 +48,15 @@ describe("Apple Wallet Storage assets", () => {
     expect(appleWalletAssetPathFromPublicUrl(url, supabaseUrl)).toBe(path);
     expect(tenantAppleWalletAssetPath(url, supabaseUrl, tenantId, "strip")).toBe(path);
     expect(tenantAppleWalletAssetPath(url, supabaseUrl, tenantId, "logo")).toBeNull();
+    const notificationPath = `${tenantId}/apple/notification-${objectId}.png`;
+    expect(
+      tenantAppleWalletAssetPath(
+        `${supabaseUrl}/storage/v1/object/public/wallet-assets/${notificationPath}`,
+        supabaseUrl,
+        tenantId,
+        "notification",
+      ),
+    ).toBe(notificationPath);
     expect(
       appleWalletAssetPathFromPublicUrl(
         `https://attacker.example/storage/v1/object/public/wallet-assets/${path}`,

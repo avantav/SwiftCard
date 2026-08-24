@@ -7,6 +7,7 @@ export type AppleWalletDesignInput = {
   labelColor: string;
   logoImageUrl: string | null;
   stripImageUrl: string | null;
+  notificationIconUrl: string | null;
 };
 
 export type AppleWalletDesignValidation =
@@ -136,6 +137,12 @@ export function validateAppleWalletDesignForm(
     "La imagen principal",
     errors,
   );
+  const notificationIconUrl = optionalHttpsUrl(
+    formData,
+    "notificationIconUrl",
+    "El logo de notificaciones",
+    errors,
+  );
 
   if (errors.length) return { ok: false, errors };
   return {
@@ -149,6 +156,7 @@ export function validateAppleWalletDesignForm(
       labelColor,
       logoImageUrl,
       stripImageUrl,
+      notificationIconUrl,
     },
   };
 }

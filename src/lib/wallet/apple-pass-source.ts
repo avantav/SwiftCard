@@ -21,7 +21,11 @@ export type AppleWalletPassSource = {
   updateTag: string | null;
   lastModified: Date | null;
   passData: AppleWalletPassData;
-  assets: { logoUrl: string | null; stripUrl: string | null };
+  assets: {
+    logoUrl: string | null;
+    stripUrl: string | null;
+    notificationIconUrl: string | null;
+  };
 };
 
 export type AppleWalletPassSourceResult =
@@ -83,7 +87,7 @@ export async function loadAppleWalletPassSource(
 
   const { data: cardConfiguration, error: cardConfigurationError } = await supabase
     .from("loyalty_cards")
-    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url")
+    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url")
     .eq("id", card.loyalty_card_id)
     .eq("tenant_id", card.tenant_id)
     .maybeSingle();
@@ -274,6 +278,7 @@ export async function loadAppleWalletPassSource(
       assets: {
         logoUrl: design.logo_image_url ?? tenant.logo_url,
         stripUrl: design.strip_image_url ?? tenant.banner_url,
+        notificationIconUrl: design.notification_icon_url,
       },
     },
   };

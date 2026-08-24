@@ -24,6 +24,8 @@ export type AppleWalletDesignValues = {
   stripImageUrl: string;
 };
 
+type LegacyAppleWalletAssetKind = Extract<AppleWalletAssetKind, "logo" | "strip">;
+
 export function AppleWalletDesignForm({
   fallbackAssets,
   initial,
@@ -34,13 +36,13 @@ export function AppleWalletDesignForm({
   tenantId: string;
 }) {
   const [design, setDesign] = useState(initial);
-  const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({
+  const pendingPaths = useRef<Record<LegacyAppleWalletAssetKind, string | null>>({
     logo: null,
     strip: null,
   });
   const [uploads, setUploads] = useState<
     Record<
-      AppleWalletAssetKind,
+      LegacyAppleWalletAssetKind,
       {
         status: "idle" | "uploading" | "success" | "error";
         message: string;
@@ -65,7 +67,7 @@ export function AppleWalletDesignForm({
   const previewLogoUrl = design.logoImageUrl || fallbackAssets.logoImageUrl;
   const previewStripUrl = design.stripImageUrl || fallbackAssets.stripImageUrl;
 
-  async function uploadAsset(kind: AppleWalletAssetKind, file: File) {
+  async function uploadAsset(kind: LegacyAppleWalletAssetKind, file: File) {
     const validationError = validateAppleWalletAssetFile(file);
     if (validationError) {
       setUploads((current) => ({
@@ -125,7 +127,7 @@ export function AppleWalletDesignForm({
     }));
   }
 
-  function clearAsset(kind: AppleWalletAssetKind) {
+  function clearAsset(kind: LegacyAppleWalletAssetKind) {
     const pendingPath = pendingPaths.current[kind];
     if (pendingPath) {
       pendingPaths.current[kind] = null;

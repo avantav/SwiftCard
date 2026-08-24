@@ -52,6 +52,13 @@ const frontProgressRefreshMigration = readFileSync(
   ),
   "utf8",
 );
+const notificationIconMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0058_apple_wallet_notification_icon.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -123,6 +130,9 @@ describe("Apple Wallet integration boundaries", () => {
     expect(appleServer).toContain("buildAppleWalletPointStrips");
     expect(appleServer).toContain("APPLE_WALLET_ASSET_HOSTS");
     expect(appleServer).toContain("MAX_REMOTE_IMAGE_BYTES");
+    expect(appleServer).toContain("notificationIconSource ?? logoSource");
+    expect(source).toContain("notificationIconUrl: design.notification_icon_url");
+    expect(notificationIconMigration).toContain("logo|strip|notification");
   });
 
   it("queues installed passes after the front progress layout is deployed", () => {
