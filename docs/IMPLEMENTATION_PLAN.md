@@ -111,7 +111,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add cumulative reward tiers, cycle-safe generation and reversal, program terms, and the reward catalog on the Web Card.
 - [x] [Terminada] Add a backward-compatible configuration foundation for stamps per purchase, stamps per amount, and paused lifetime-points programs, including unit labels, welcome/import options, operational policies, confirmed paused type transitions, existing stamp-balance conversion and unbounded reward catalogs.
 - [x] [Terminada] Implement tenths-based lifetime point calculation with per-purchase truncation, non-resetting balances and one-time milestone generation.
-- [ ] [Pendiente] Generate the configurable welcome reward for self-service registration and optionally for imported customers.
+- [x] [Terminada] Generate the configurable welcome reward once when a customer card is issued through public or employee registration, with optional expiration and imported-customer eligibility.
 - [ ] [Pendiente] Convert imported stamps with the configured integer multiplier and award every reached milestone atomically.
 - [ ] [Pendiente] Enforce the remaining configurable cancellation and redemption-reversal options in authorized interfaces; lifetime purchase/reward cancellations and manual point adjustments are already disabled in the backend.
 - [x] [Terminada] Show integer customer/employee progress, one-decimal Admin/export values, next milestones and completion state in the operational UI, Web Card and Apple Wallet.

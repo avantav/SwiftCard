@@ -384,7 +384,7 @@ Comportamiento:
 - En puntos acumulativos, cada nivel se entrega una sola vez durante toda la vida del cliente, aunque el saldo continúe aumentando.
 - Bajar un requisito o agregar un hito ya alcanzado genera la recompensa automáticamente. Subir un requisito o desactivar un nivel no retira recompensas ya otorgadas.
 - Una recompensa otorgada se conserva hasta su expiración; sin expiración permanece disponible indefinidamente.
-- La recompensa de bienvenida es opcional, configurable y se entrega una sola vez al registro. Una opción fija del programa decide si también se entrega a clientes importados.
+- La recompensa de bienvenida es opcional y se configura en el editor de la tarjeta con nombre, descripción y vigencia opcional. Se entrega una sola vez al crear la tarjeta del cliente, tanto en el registro público como en el realizado por un empleado, sin descontar puntos ni reiniciar el saldo. Solo aplica a registros futuros y una opción fija del programa decide si también se entrega a clientes importados.
 
 Configuración de cada nivel:
 

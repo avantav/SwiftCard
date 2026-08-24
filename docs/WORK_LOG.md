@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-08-24 - Optional Welcome Gift
+
+**Objective:** Let the Admin add an optional welcome gift to a points card and deliver it exactly once without deducting points or resetting accumulated progress.
+
+**Changes Made:** Added a compact optional section to the first step of the card editor with name, description and optional 1–3650 day validity. Migration `0054` persists the card-owned program configuration and marks issued welcome rewards explicitly. An after-insert trigger on issued customer cards covers both public and employee registration, calculates expiration on issuance and uses a partial unique index to prevent duplicates for the same customer/card.
+
+**Security And Correctness:** Configuration still requires an authenticated general Admin and derives tenant/card/program authority in the existing protected save path. Reward issuance uses server-owned card relations, stores no browser-supplied tenant authority and does not touch the loyalty balance or ledger. Generic imported customers follow the program eligibility option; Casa Garmendia is deliberately excluded from this trigger because migration `0053` already assigns its fixed Churro and would otherwise duplicate the welcome benefit. Existing customers are not changed retroactively.
+
+**Design Review:** The real card-editor section was reviewed at 375, 768, 1280 and 1440 px. The toggle, helper copy and conditional fields follow the established form hierarchy, stack cleanly on mobile, retain accessible labels/disabled state and introduce no horizontal overflow. Temporary visual-review code was removed.
+
+**Validation:** Focused welcome-reward tests pass; `npm run lint`, `npm run typecheck`, all 230 Vitest tests across 67 files, the webpack production build and the complete disposable PostgreSQL migration/RLS suite through `0054` pass.
+
+**Next Action:** Reconcile hosted migration history, deploy `0054` with the preceding pending migrations, enable the gift on a test points card and verify one public plus one employee registration before enabling it on the production card.
+
 ## 2026-08-24 - Shared PIN Unlock Navigation And Keypad
 
 **Objective:** Make shared-account operator PIN login reliably enter the employee area and replace the free-text password control with a purpose-built numeric pad.

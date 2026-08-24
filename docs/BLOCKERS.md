@@ -2,10 +2,10 @@
 
 ## Active Blockers
 
-- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and the targeted idempotent `0051` Apple terms grant is live; local migrations `0052` and `0053` are not deployed.
+- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and the targeted idempotent `0051` Apple terms grant is live; local migrations `0052` through `0054` are not deployed.
   - **Affected area:** Repeatable remote database deployment.
   - **Consequence:** The bulk migration runner would try to replay migrations `0035` onward and may stop on objects that already exist.
-  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0053`, then repair canonical migration history before using `npm run db:push:remote`.
+  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0054`, then repair canonical migration history before using `npm run db:push:remote`.
 
 - **IMPORT-001:** The three Casa Garmendia `.xlsx` files currently present in `/home/advanta/Downloads` are empty (0 bytes); only the screenshot exposes the expected headers.
   - **Affected area:** Real-data preview and execution of the one-time Casa Garmendia import.

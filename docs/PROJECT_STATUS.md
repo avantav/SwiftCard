@@ -3,12 +3,12 @@
 ## Current State
 
 - Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy migration `0053` and the Casa Garmendia import profile after reconciling hosted migration history, then execute the one-time import with the real non-empty workbook.
-- Last completed task: Repaired shared-account PIN unlock navigation and replaced the password textbox with an accessible six-digit numeric pad.
+- Current task: Deploy migrations `0053` and `0054` after reconciling hosted migration history, then execute the Casa Garmendia one-time import with the real non-empty workbook.
+- Last completed task: Added an optional card-scoped welcome reward that is configured in the card editor and granted once on future public or employee registrations.
 - Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: `/app/unlock` confirms the HttpOnly PIN session before a full navigation to `/app`, clears failed attempts and supports touch or physical-keyboard entry without a free-text PIN field.
-- Git status: Lint, typecheck, all 226 Vitest tests and the production build pass locally; database/RLS validation through unchanged migration `0053` remains green from the preceding commit.
-- Remote backup: The PIN unlock repair is committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` and `0053` remain undeployed.
+- Last stable feature: The card wizard can enable a named welcome gift with optional expiration; a database trigger grants it exactly once without changing points or cyclic progress.
+- Git status: Lint, typecheck, all 230 Vitest tests across 67 files, the production build and the complete database/RLS suite through migration `0054` pass locally.
+- Remote backup: The Casa Garmendia import and PIN unlock repairs are committed locally on `codex/customer-wallet-fixes`; the targeted hosted `0051` grant is live while migrations `0052` through `0054` remain undeployed.
 
 ## Completed Functionality
 
@@ -76,6 +76,7 @@
 - Initial program creation converts imported/pre-existing stamp balances into rewards atomically when the configured goal is met.
 - Admin can configure one or more uniquely ordered reward levels with independent names, descriptions, and expiration rules.
 - Admin can now configure an explicit stamps-per-purchase, stamps-per-amount or lifetime-points type, custom singular/plural unit labels, welcome reward and import eligibility, integer stamp-to-point conversion, and correction/reversal policies through migration `0040`.
+- The multi-card editor now exposes the optional welcome gift with name, description and optional 1–3650 day validity. Migration `0054` grants it exactly once when a future customer card is issued through public or employee registration, respects generic import eligibility, leaves points untouched and excludes the Casa Garmendia profile because that import already assigns its fixed welcome reward.
 - Existing programs are backfilled to their current cyclic type; Admin type changes preserve historical data. Entering lifetime points converts each current stamp balance with the configured multiplier, clears obsolete monetary remainder and records a ledger boundary without altering existing rewards. Additive migration `0042` repairs transitions made during the earlier rollout, while `0049` enables decimal purchases, non-resetting balances and one-time milestones. Reward catalogs have no product-level count cap.
 - Intermediate rewards accumulate without resetting progress; the highest reward closes the cycle, preserves excess stamps, and can unlock the next cycle's lower levels in the same operation.
 - Purchases and adjustments store completed-cycle metadata separately from the number of rewards generated so cancellation restores balances correctly.
@@ -141,7 +142,7 @@
 
 ## Pending Functionality
 
-- Configurable welcome-reward generation and imported-stamp conversion/milestone generation for lifetime-points programs.
+- Generic imported-stamp conversion/milestone generation for lifetime-points programs; the Casa Garmendia one-time profile and configurable welcome-reward generation are complete.
 - Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.

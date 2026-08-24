@@ -3385,6 +3385,39 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   opacity: 0.55;
 }
 
+.card-welcome-reward {
+  display: grid;
+  gap: 16px;
+}
+
+.card-welcome-reward .card-section-heading {
+  align-items: flex-start;
+}
+
+.card-welcome-reward .card-section-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.card-welcome-reward .card-section-heading h3,
+.card-welcome-reward .card-section-heading p {
+  margin: 0;
+}
+
+.card-welcome-reward .card-section-heading p {
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.card-welcome-reward-fields {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
 .operations-form {
   display: grid;
   gap: 16px;

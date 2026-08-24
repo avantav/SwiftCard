@@ -313,3 +313,13 @@
 - Reason: A named fixed profile represents the real one-off business rule without weakening the generic multi-tenant importer. Database-side card, branch, role, threshold and single-use checks prevent frontend manipulation, while the imported identifier makes recovery explicit and auditable.
 - Consequences: Migration `0053` must be deployed after `0052`. The target program must contain active tiers at 100, 200, 300, 400, 500, 650 and 860. The current workbook copies are empty and must be replaced before real confirmation; confirmation cannot be repeated after success.
 - Status: Accepted.
+
+## DEC-0032 - Card-Issuance Welcome Reward
+
+- Date: 2026-08-24
+- Context: The program schema already stored optional welcome-reward fields, but the multi-card editor did not save them and neither public nor employee registration emitted the configured benefit. The gift must not behave like a points milestone or be duplicated when a card is recovered.
+- Decision: Configure the gift in the card editor and grant it from one database trigger after the first `customer_cards` insertion. Mark welcome rewards explicitly and enforce one per customer/card with a partial unique index. Apply optional expiration from the issuance time, leave balances and ledgers unchanged, and make the behavior non-retroactive. Generic imports follow the existing program eligibility option; exclude the Casa Garmendia profile because its transactional importer already grants a fixed welcome Churro.
+- Alternatives considered: Grant separately in each registration RPC, model the gift as a zero-point tier, award it during claim/Wallet download, or backfill every existing customer.
+- Reason: Card issuance is the common atomic boundary for public and employee registration. A dedicated marker and database uniqueness rule prevent duplicates across retries and recovery without mixing an unconditional benefit into milestone accounting.
+- Consequences: Additive migration `0054` must be deployed before the new editor save and issuance behavior work. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
+- Status: Accepted.
