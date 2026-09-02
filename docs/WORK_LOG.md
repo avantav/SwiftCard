@@ -1,5 +1,31 @@
 # Work Log
 
+## 2026-08-24 - Hosted Welcome Reward Activation Repair
+
+**Objective:** Fix the error shown when enabling the optional welcome reward on the deployed lifetime-points card.
+
+**Root Cause:** The hosted application sent the 16-parameter `save_loyalty_card_program` request introduced by `0054`, while PostgREST still exposed only the prior 12-parameter function. The hosted `rewards` table also lacked `is_welcome_reward`, confirming that the additive migration had not been applied.
+
+**Production Repair:** Ran the complete `0054_optional_welcome_reward.sql` first inside a production transaction ending in `ROLLBACK`, then applied the identical SQL with `COMMIT`. Reloaded the PostgREST schema cache. Production now has the welcome marker and partial unique index, both RPC signatures, the one-time card-issuance function and an enabled `customer_cards_grant_welcome_reward` trigger.
+
+**Verification:** The Data API now reads `rewards.is_welcome_reward` and publishes the 16 welcome-reward parameters. A general-Admin activation using Casa Garmendia's current card/program/tier data returned `SAVED` inside a transaction ending in `ROLLBACK`. A final HTTPS check confirmed the production configuration remains disabled, with no test reward or test audit left behind. The Admin can safely retry with the intended gift details; only future card issuances receive it.
+
+**Migration History:** This was a targeted schema repair and did not reconcile `supabase_migrations.schema_migrations`; the bulk remote migration command remains blocked.
+
+## 2026-08-24 - Apple Point Progress And Front Reward Count
+
+**Objective:** Restore the available-reward count on the front without consuming header identity width, and make lifetime-point progress visible on the real iPhone pass rather than only in the Admin preview.
+
+**Changes Made:** Store cards now use at most four combined supporting fields: compact customer, available rewards, a five-segment point progress value with the exact current/next milestone, and the compact next reward name. Cyclic cards also regain the front reward count. Lifetime-point passes generate customer-specific 1x/2x/3x progress strips over the configured background where supported. Because Apple no longer renders store-card strips on iOS 26+, the `■■■□□ 200/300` field is the authoritative graphical/textual fallback. The logo/header remains dedicated to tenant identity and the count remains duplicated on the back for complete details.
+
+**Update Delivery:** Migration `0057` queues every actively installed Apple pass once. Deploy the application code before applying the migration, then process the protected outbox so Wallet fetches the new fields and strip assets.
+
+**Design Review:** A temporary real-component route was reviewed at 375 px with Casa Garmendia colors and long identity text. The full header name, point balance, progress bar, reward count, next reward and QR remain contained; compact field values truncate predictably instead of hiding header identity. The temporary route was removed.
+
+**Validation:** All 239 Vitest tests across 69 files, typecheck, lint, the webpack production build, `git diff --check` and the complete disposable PostgreSQL migration/RLS suite through `0057` pass.
+
+**Next Action:** Deploy the application, apply `0057`, process the Apple outbox and confirm the existing Casa Garmendia pass shows `PREMIOS 2` plus `■■■□□ 200/300` on the real iPhone.
+
 ## 2026-08-24 - Compact Apple Wallet Header And QR
 
 **Objective:** Keep the Casa Garmendia logo and full name aligned together at the left of the iPhone pass header, and remove the visible text below its QR.

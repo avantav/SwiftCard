@@ -1,5 +1,6 @@
 import { hexToAppleRgb } from "./design";
 import {
+  appleWalletPointProgressText,
   appleWalletProgressText,
   appleWalletRewardTierText,
 } from "./apple-card-content";
@@ -70,9 +71,18 @@ export function buildAppleWalletPassProps(
   const nextTier = lifetimePoints
     ? tiers.find((tier) => tier.stampsRequired > input.stampBalance)
     : null;
+  const lastTier = tiers.at(-1) ?? null;
+  const pointProgressGoal = nextTier?.stampsRequired ?? lastTier?.stampsRequired ?? input.rewardGoal;
+  const pointProgressText = appleWalletPointProgressText({
+    balance: input.stampBalance,
+    goal: nextTier ? pointProgressGoal : null,
+    complete: !nextTier && Boolean(lastTier),
+  });
   const nextMilestoneText = nextTier
-    ? `${nextTier.name} al llegar a ${nextTier.stampsRequired} ${input.unitNamePlural}`
-    : "Todos los hitos del programa están desbloqueados.";
+    ? nextTier.name.length > 18
+      ? `${nextTier.name.slice(0, 17).trimEnd()}…`
+      : nextTier.name
+    : "Todos desbloqueados";
 
   return {
     formatVersion: 1 as const,
@@ -107,16 +117,35 @@ export function buildAppleWalletPassProps(
           }]
         : [],
       secondaryFields: [
-        { key: "customer", label: "CLIENTE", value: input.customerName },
+        {
+          key: "customer",
+          label: "CLIENTE",
+          value: input.customerName.length > 16
+            ? `${input.customerName.slice(0, 15).trimEnd()}…`
+            : input.customerName,
+        },
+        {
+          key: "available-rewards-front",
+          label: "PREMIOS",
+          value: input.availableRewards,
+          changeMessage: "Ahora tienes %@ premios disponibles.",
+        },
       ],
-      auxiliaryFields: [lifetimePoints
-        ? {
-          key: "next-milestone",
-          label: nextTier ? "SIGUIENTE PREMIO" : "PROGRAMA",
-          value: nextMilestoneText,
-          changeMessage: "Tu progreso ahora es %@.",
-        }
-        : {
+      auxiliaryFields: lifetimePoints
+        ? [
+          {
+            key: "point-progress",
+            label: "PROGRESO",
+            value: pointProgressText,
+            changeMessage: "Tu progreso ahora es %@.",
+          },
+          {
+            key: "next-milestone",
+            label: nextTier ? "SIGUIENTE" : "PROGRAMA",
+            value: nextMilestoneText,
+          },
+        ]
+        : [{
           key: "stamp-progress",
           label: "PROGRESO",
           value: appleWalletProgressText({
@@ -126,8 +155,7 @@ export function buildAppleWalletPassProps(
             unitNamePlural: input.unitNamePlural,
           }),
           changeMessage: "Tu tarjeta ahora tiene %@.",
-        },
-      ],
+        }],
       backFields: [
         { key: "program", label: "PROGRAMA", value: input.programName },
         {

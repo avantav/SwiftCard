@@ -321,7 +321,7 @@
 - Decision: Configure the gift in the card editor and grant it from one database trigger after the first `customer_cards` insertion. Mark welcome rewards explicitly and enforce one per customer/card with a partial unique index. Apply optional expiration from the issuance time, leave balances and ledgers unchanged, and make the behavior non-retroactive. Generic imports follow the existing program eligibility option; exclude the Casa Garmendia profile because its transactional importer already grants a fixed welcome Churro.
 - Alternatives considered: Grant separately in each registration RPC, model the gift as a zero-point tier, award it during claim/Wallet download, or backfill every existing customer.
 - Reason: Card issuance is the common atomic boundary for public and employee registration. A dedicated marker and database uniqueness rule prevent duplicates across retries and recovery without mixing an unconditional benefit into milestone accounting.
-- Consequences: Additive migration `0054` must be deployed before the new editor save and issuance behavior work. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
+- Consequences: Additive migration `0054` is now deployed to hosted production as a targeted repair, although canonical migration history remains unreconciled. Only future issued cards receive the benefit; changing or disabling configuration does not revoke rewards already granted.
 - Status: Accepted.
 
 ## DEC-0033 - Header-First Apple Pass Identity
@@ -342,4 +342,26 @@
 - Alternatives considered: Leave historical 2,000-point accounting, delete the test customer and history, add a negative adjustment while leaving purchase exports wrong, or silently remove generated rewards and the canje.
 - Reason: The customer had no other purchase or ledger activity, so the correct state was deterministic. Exact fail-closed guards and one atomic transaction avoid affecting another tenant or overwriting concurrent activity, while reversal and cancellation preserve the operational record.
 - Consequences: Hosted production is already corrected and has an Apple Wallet update queued. Migration `0056` is intentionally bound to the production UUID and no-ops elsewhere; it is idempotent only for the exact repaired state. Hosted migration history remains unreconciled, so this targeted repair does not authorize a bulk migration push.
+- Status: Accepted.
+
+## DEC-0035 - Header-Safe Apple Reward And Point Progress Fields
+
+- Date: 2026-08-24
+- Context: Removing the reward header field fixed Casa Garmendia's truncated identity, but left available rewards only on the back. The Admin preview also drew a CSS point-progress bar that the signed pass never generated, and Apple documents that store-card strip images are not displayed on iOS 26+.
+- Decision: Keep the header exclusive to logo and `logoText`. Use no more than Apple's combined limit of four compact secondary/auxiliary fields: customer, available rewards, point progress and next reward. Represent point progress as a five-segment value with the exact current/next milestone, and also generate dynamic 375×144 point-progress strips at 1x/2x/3x for Wallet versions that support them. Retain the full reward count and catalog on the back.
+- Alternatives considered: Restore the top-right reward header, rely only on the back, rely only on a strip image, switch the pass away from `storeCard`, or show long milestone sentences that can cause Wallet to hide other front fields.
+- Reason: The compact fields preserve header width, meet Apple's four-field limit and remain visible on the user's current iPhone even when Wallet omits strip assets. The optional strip gives older systems a smoother bar without becoming the only representation of progress.
+- Consequences: Application code must deploy before migration `0057` queues installed passes. Apple still owns exact truncation and placement, so customer and next-reward values are bounded. A real-device refresh remains required to confirm the final OS rendering.
+- References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
+- Status: Accepted.
+
+## DEC-0036 - Per-Card Apple Notification Icon
+
+- Date: 2026-08-24
+- Context: Apple Wallet notifications use the pass icon, while the existing card editor only exposed a header logo and strip image. Reusing a wide header asset can make the small notification identity unclear, but changing it must not alter the visible pass header.
+- Decision: Store one optional notification icon URL on each loyalty card and expose it in the existing unified design stage. Restrict uploads to the tenant Admin's generated `notification-*` Storage paths and existing raster limits. Generate `icon.png`, `icon@2x.png` and `icon@3x.png` from this source; fall back first to the effective card/tenant logo and then to the bundled safe icon. Keep `logo.png` assets sourced only from the normal header logo. Queue the affected card's installed passes whenever the notification icon changes.
+- Alternatives considered: Reuse the header logo unconditionally, replace the visible logo with a square asset, configure one icon tenant-wide, or add a separate Apple-only designer.
+- Reason: A dedicated square source gives notifications a legible identity without sacrificing header layout, while the fallback preserves every existing card and the single-stage workflow. Card-scoped storage and update triggers retain multi-tenant isolation and automatic PassKit delivery.
+- Consequences: Additive migration `0058` must run before the application build that reads `notification_icon_url` and calls `save_loyalty_card_design_v2`. Existing passes are unchanged until an Admin saves a dedicated icon or another card update occurs. Google Wallet generation remains pending and does not consume this field yet.
+- References: [Creating the source for a pass](https://developer.apple.com/documentation/walletpasses/creating-the-source-for-a-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
 - Status: Accepted.

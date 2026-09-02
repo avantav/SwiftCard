@@ -6,7 +6,10 @@ import {
   appleWalletStampRows,
   appleWalletStampSlots,
 } from "@/lib/wallet/apple-stamp-layout";
-import { appleWalletProgressText } from "@/lib/wallet/apple-card-content";
+import {
+  appleWalletPointProgressText,
+  appleWalletProgressText,
+} from "@/lib/wallet/apple-card-content";
 
 export type AppleStoreCardPreviewDesign = {
   logoText: string;
@@ -131,15 +134,22 @@ export function AppleStoreCardPreview({
       </div>
 
       <div className="apple-pass-preview-content">
-        <div className="apple-pass-preview-supporting-fields">
+        <div className={`apple-pass-preview-supporting-fields${lifetimePoints ? " is-lifetime" : ""}`}>
           <p>
             <span>CLIENTE</span>
             <strong>Cliente ejemplo</strong>
           </p>
           <p>
-            <span>PROGRESO</span>
-            <strong>{lifetimePoints ? `${exampleBalance} ${unitNamePlural} acumulados` : progressText}</strong>
+            <span>PREMIOS</span>
+            <strong>1</strong>
           </p>
+          <p>
+            <span>PROGRESO</span>
+            <strong>{lifetimePoints
+              ? appleWalletPointProgressText({ balance: exampleBalance, goal: progress.goal })
+              : progressText}</strong>
+          </p>
+          {lifetimePoints ? <p><span>SIGUIENTE</span><strong>Próximo premio</strong></p> : null}
         </div>
         <figure className="apple-pass-preview-code">
           <img alt="" src="/icons/wallet-preview-qr.svg" />

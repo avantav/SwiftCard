@@ -5517,6 +5517,18 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   object-fit: cover;
 }
 
+.card-upload-image-preview.is-notification {
+  width: min(100%, 148px);
+  min-height: 0;
+  aspect-ratio: 1;
+  justify-self: start;
+}
+
+.card-upload-image-preview.is-notification img {
+  padding: 16px;
+  object-fit: contain;
+}
+
 .card-upload-image-preview span {
   position: absolute;
   right: 8px;
@@ -5740,8 +5752,23 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .apple-pass-preview-supporting-fields {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+}
+
+.apple-pass-preview-supporting-fields.is-lifetime {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.apple-pass-preview-supporting-fields p,
+.apple-pass-preview-supporting-fields strong {
+  min-width: 0;
+}
+
+.apple-pass-preview-supporting-fields strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .apple-pass-preview-content strong {

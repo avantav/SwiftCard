@@ -3,8 +3,14 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { validateLoyaltyProgramForm } from "@/lib/admin/program";
+import { getRequiredPublicSupabaseConfig } from "@/lib/supabase/config";
 import { validateAppleWalletDesignForm } from "@/lib/wallet/design";
 import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
+import {
+  APPLE_WALLET_ASSET_BUCKET,
+  tenantAppleWalletAssetPath,
+  type AppleWalletAssetKind,
+} from "@/lib/wallet/assets";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -178,13 +184,60 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
 export async function saveCardDesign(cardId: string, formData: FormData) {
   const context = await requireTenantAdmin();
   if (!UUID.test(cardId)) redirect("/admin/cards");
+  const { url: supabaseUrl } = getRequiredPublicSupabaseConfig();
+  const { data: currentDesign, error: currentDesignError } = await context.supabase
+    .from("loyalty_cards")
+    .select("logo_image_url,strip_image_url,notification_icon_url")
+    .eq("id", cardId)
+    .eq("tenant_id", context.tenantId)
+    .maybeSingle();
+  if (currentDesignError || !currentDesign) {
+    redirectCardError(cardId, 2, "No se pudo verificar la configuración actual de imágenes.");
+  }
+
+  const submittedAssets: Array<{
+    kind: AppleWalletAssetKind;
+    value: string | null;
+    currentValue: string | null;
+  }> = [
+    { kind: "logo", value: formData.get("logoImageUrl")?.toString().trim() || null, currentValue: currentDesign.logo_image_url },
+    { kind: "strip", value: formData.get("stripImageUrl")?.toString().trim() || null, currentValue: currentDesign.strip_image_url },
+    { kind: "notification", value: formData.get("notificationIconUrl")?.toString().trim() || null, currentValue: currentDesign.notification_icon_url },
+  ];
+  const newAssetPaths = submittedAssets.flatMap(({ kind, value, currentValue }) => {
+    if (!value || value === currentValue) return [];
+    const path = tenantAppleWalletAssetPath(value, supabaseUrl, context.tenantId!, kind);
+    return path ? [path] : [];
+  });
+  const removeNewAssets = async () => {
+    if (newAssetPaths.length) {
+      await context.supabase.storage
+        .from(APPLE_WALLET_ASSET_BUCKET)
+        .remove(newAssetPaths);
+    }
+  };
+
   const validation = validateAppleWalletDesignForm(formData);
   if (!validation.ok) {
+    await removeNewAssets();
     redirectCardError(cardId, 2, validation.errors[0] ?? "Revisa el diseño.");
   }
   const input = validation.data;
+  const hasInvalidNewAsset = submittedAssets.some(({ kind, value, currentValue }) => (
+    Boolean(value)
+    && value !== currentValue
+    && !tenantAppleWalletAssetPath(value!, supabaseUrl, context.tenantId!, kind)
+  ));
+  if (hasInvalidNewAsset) {
+    await removeNewAssets();
+    redirectCardError(
+      cardId,
+      2,
+      "Las imágenes nuevas deben cargarse desde el almacenamiento de SwiftWallet.",
+    );
+  }
   const { data, error } = await context.supabase.schema("app").rpc(
-    "save_loyalty_card_design",
+    "save_loyalty_card_design_v2",
     {
       target_card_id: cardId,
       target_wallet_enabled: input.appleEnabled,
@@ -195,10 +248,27 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
       target_label_color: input.labelColor,
       target_logo_image_url: input.logoImageUrl ?? "",
       target_strip_image_url: input.stripImageUrl ?? "",
+      target_notification_icon_url: input.notificationIconUrl ?? "",
     },
   );
   if (error || data !== "SAVED") {
+    await removeNewAssets();
     redirectCardError(cardId, 2, "No se pudo guardar el diseño de la tarjeta.");
+  }
+  const previousAssetPaths = submittedAssets.flatMap(({ kind, value, currentValue }) => {
+    if (!currentValue || currentValue === value) return [];
+    const path = tenantAppleWalletAssetPath(
+      currentValue,
+      supabaseUrl,
+      context.tenantId!,
+      kind,
+    );
+    return path ? [path] : [];
+  });
+  if (previousAssetPaths.length) {
+    await context.supabase.storage
+      .from(APPLE_WALLET_ASSET_BUCKET)
+      .remove(previousAssetPaths);
   }
   await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId: context.tenantId! });
   redirectAfterSave(cardId, 3, formData);

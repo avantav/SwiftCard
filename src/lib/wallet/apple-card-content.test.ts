@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  appleWalletPointProgressText,
   appleWalletProgressText,
   appleWalletRewardTierText,
 } from "./apple-card-content";
@@ -24,5 +25,16 @@ describe("Apple Wallet card content", () => {
       description: "Un postre de la casa",
       unitNamePlural: "visitas",
     })).toBe("5 visitas · Postre: Un postre de la casa");
+  });
+
+  it("keeps point progress visible when Wallet omits strip images", () => {
+    expect(appleWalletPointProgressText({ balance: 200, goal: 300 })).toBe(
+      "■■■□□ 200/300",
+    );
+    expect(appleWalletPointProgressText({
+      balance: 860,
+      goal: null,
+      complete: true,
+    })).toBe("■■■■■ Completo");
   });
 });

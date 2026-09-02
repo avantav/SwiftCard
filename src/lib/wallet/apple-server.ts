@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { PKPass } from "passkit-generator";
 import sharp from "sharp";
 import { buildAppleWalletStampStrips } from "./apple-stamp-strip";
+import { buildAppleWalletPointStrips } from "./apple-point-strip";
 import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
 import { appleWalletLogoDimensions } from "./apple-logo-layout";
@@ -128,12 +129,15 @@ async function buildPassImages(
   input: AppleWalletPassData,
   logoUrl: string | null,
   stripUrl: string | null,
+  notificationIconUrl: string | null,
 ) {
   const fallback = await readFile(
     join(process.cwd(), "public", "icons", "apple-touch-icon.png"),
   );
   const tenantLogoSource = await fetchAllowedImage(logoUrl);
   const logoSource = tenantLogoSource ?? fallback;
+  const notificationIconSource = await fetchAllowedImage(notificationIconUrl);
+  const iconSource = notificationIconSource ?? logoSource;
   const logoMetadata = await sharp(logoSource, {
     limitInputPixels: 40_000_000,
   }).metadata();
@@ -143,9 +147,9 @@ async function buildPassImages(
   );
   const stripSource = await fetchAllowedImage(stripUrl);
   const entries = await Promise.all([
-    resizedPng(logoSource, 29, 29, "contain"),
-    resizedPng(logoSource, 58, 58, "contain"),
-    resizedPng(logoSource, 87, 87, "contain"),
+    resizedPng(iconSource, 29, 29, "contain"),
+    resizedPng(iconSource, 58, 58, "contain"),
+    resizedPng(iconSource, 87, 87, "contain"),
     resizedPng(logoSource, logoDimensions.width, logoDimensions.height, "contain"),
     resizedPng(logoSource, logoDimensions.width * 2, logoDimensions.height * 2, "contain"),
     resizedPng(logoSource, logoDimensions.width * 3, logoDimensions.height * 3, "contain"),
@@ -158,8 +162,23 @@ async function buildPassImages(
     "logo@2x.png": entries[4],
     "logo@3x.png": entries[5],
   };
-  const stampStrips = input.programType === "LIFETIME_POINTS"
-    ? {}
+  const nextPointGoal = input.programType === "LIFETIME_POINTS"
+    ? [...input.rewardTiers]
+      .sort((left, right) => left.stampsRequired - right.stampsRequired)
+      .find((tier) => tier.stampsRequired > input.stampBalance)?.stampsRequired
+      ?? [...input.rewardTiers]
+        .sort((left, right) => left.stampsRequired - right.stampsRequired)
+        .at(-1)?.stampsRequired
+      ?? input.rewardGoal
+    : null;
+  const progressStrips = input.programType === "LIFETIME_POINTS"
+    ? await buildAppleWalletPointStrips({
+      backgroundColor: input.backgroundColor,
+      foregroundColor: input.foregroundColor,
+      pointBalance: input.stampBalance,
+      nextGoal: nextPointGoal,
+      backgroundSource: stripSource,
+    })
     : await buildAppleWalletStampStrips({
       backgroundColor: input.backgroundColor,
       foregroundColor: input.foregroundColor,
@@ -169,8 +188,8 @@ async function buildPassImages(
       logoSource: tenantLogoSource,
       backgroundSource: stripSource,
     });
-  if (Object.keys(stampStrips).length) {
-    Object.assign(images, stampStrips);
+  if (Object.keys(progressStrips).length) {
+    Object.assign(images, progressStrips);
   } else if (stripSource) {
     const staticStrips = await Promise.all([
       resizedPng(stripSource, 375, 144, "cover"),
@@ -186,10 +205,19 @@ async function buildPassImages(
 
 export async function generateAppleWalletPass(
   input: AppleWalletPassData,
-  assets: { logoUrl: string | null; stripUrl: string | null },
+  assets: {
+    logoUrl: string | null;
+    stripUrl: string | null;
+    notificationIconUrl: string | null;
+  },
 ) {
   const signing = getAppleSigningConfig();
-  const images = await buildPassImages(input, assets.logoUrl, assets.stripUrl);
+  const images = await buildPassImages(
+    input,
+    assets.logoUrl,
+    assets.stripUrl,
+    assets.notificationIconUrl,
+  );
   const { barcodes, locations, storeCard, ...props } =
     buildAppleWalletPassProps(input, signing.identity);
   const pass = new PKPass(

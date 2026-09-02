@@ -256,7 +256,7 @@ tras una acción explícita del empleado y conservará la búsqueda por nombre o
 teléfono como respaldo cuando el dispositivo niegue o no soporte la cámara. La
 interfaz no permitirá capturar manualmente tokens ni enlaces de tarjeta.
 
-El Admin general configurará cada tarjeta con un diseño neutral al proveedor: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El mismo formulario mostrará una vista previa alternable Apple/Android; no existirán diseñadores separados por dispositivo. La generación Apple seguirá usando una plantilla `storeCard` y adaptará el diseño común a la estructura controlada por Apple. El diseño es independiente del secreto de firma.
+El Admin general configurará cada tarjeta con un diseño neutral al proveedor: activación, texto de logo, descripción, colores accesibles, logo e imagen principal. El mismo formulario mostrará una vista previa alternable Apple/Android; no existirán diseñadores separados por dispositivo. Dentro de ese formulario podrá cargar además un logo cuadrado específico para las notificaciones de Apple Wallet. Si no lo configura, Apple usará el logo general de la tarjeta como respaldo. La generación Apple seguirá usando una plantilla `storeCard` y adaptará el diseño común a la estructura controlada por Apple. El diseño es independiente del secreto de firma.
 
 En Apple Wallet, los programas cíclicos generarán en el servidor una imagen
 `strip` personalizada con el avance del cliente. Los círculos obtenidos
@@ -265,7 +265,7 @@ dentro del `.pkpass` firmado cuando cambie el saldo. El pase conservará además
 un campo textual exacto porque Wallet puede ajustar u omitir imágenes según la
 versión de iOS, Apple Watch y el dispositivo.
 
-El logo y la imagen principal se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.
+El logo, la imagen principal y el logo de notificaciones se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.
 
 ### Configuración administrativa de tarjetas
 
@@ -520,7 +520,7 @@ Requisitos:
 
 Apple Wallet requiere cuenta Apple Developer, Pass Type ID, Team ID, certificado firmante, llave privada y certificado WWDR. Los secretos solo existirán en el entorno del servidor. El archivo `.pkpass` se generará y firmará al solicitar **Agregar a Apple Wallet** después del registro o desde el respaldo Web Card.
 
-Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. La cabecera reservará el ancho disponible para el logo y el nombre del negocio; el contador de premios podrá consultarse en el reverso y el QR no mostrará una leyenda textual inferior. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor. Ante un recurso inválido se usará el activo seguro de respaldo.
+Cada tenant podrá publicar una plantilla `storeCard` con colores, textos y recursos gráficos propios. El pase mostrará programa, cliente, sellos, meta, recompensas disponibles, catálogo, términos, QR seguro y hasta diez ubicaciones activas. La cabecera reservará el ancho disponible para el logo y el nombre del negocio; el contador de premios podrá consultarse en el reverso y el QR no mostrará una leyenda textual inferior. Un logo cuadrado opcional alimentará `icon.png`, `icon@2x.png` e `icon@3x.png`, usados por Apple en notificaciones; si falta o es inválido, se reutilizará el logo general y después el activo seguro del sistema. Los recursos propios se cargarán al bucket `wallet-assets` del mismo proyecto Supabase; su host se autoriza automáticamente. Cualquier host externo adicional deberá estar autorizado explícitamente por el servidor.
 
 Google Wallet requerirá proyecto, Issuer ID, service account, clase y objeto de pase.
 

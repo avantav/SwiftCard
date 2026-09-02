@@ -24,28 +24,42 @@ type CardDesignPreviewContext = {
   fallbackStripImageUrl: string;
 };
 
+type CardWalletDesignValues = AppleWalletDesignValues & {
+  notificationIconUrl: string;
+};
+
+const assetDesignKey: Record<AppleWalletAssetKind, keyof Pick<
+  CardWalletDesignValues,
+  "logoImageUrl" | "stripImageUrl" | "notificationIconUrl"
+>> = {
+  logo: "logoImageUrl",
+  strip: "stripImageUrl",
+  notification: "notificationIconUrl",
+};
+
 export function CardDesignEditor({
   initial,
   preview,
   tenantId,
 }: {
-  initial: AppleWalletDesignValues;
+  initial: CardWalletDesignValues;
   preview: CardDesignPreviewContext;
   tenantId: string;
 }) {
   const [design, setDesign] = useState(initial);
   const [provider, setProvider] = useState<"APPLE" | "GOOGLE">("APPLE");
   const editorRef = useRef<HTMLDivElement>(null);
-  const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
-  const localPreviewUrls = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
-  const [localPreviews, setLocalPreviews] = useState<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null });
+  const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null });
+  const localPreviewUrls = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null });
+  const [localPreviews, setLocalPreviews] = useState<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null });
   const [uploads, setUploads] = useState<Record<AppleWalletAssetKind, { status: "idle" | "uploading" | "success" | "error"; message: string }>>({
     logo: { status: "idle", message: "" },
     strip: { status: "idle", message: "" },
+    notification: { status: "idle", message: "" },
   });
-  const update = <Key extends keyof AppleWalletDesignValues>(
+  const update = <Key extends keyof CardWalletDesignValues>(
     key: Key,
-    value: AppleWalletDesignValues[Key],
+    value: CardWalletDesignValues[Key],
   ) => setDesign((current) => ({ ...current, [key]: value }));
   const style = {
     "--card-preview-background": design.backgroundColor,
@@ -57,6 +71,9 @@ export function CardDesignEditor({
     logoImageUrl: localPreviews.logo || design.logoImageUrl || preview.fallbackLogoImageUrl,
     stripImageUrl: localPreviews.strip || design.stripImageUrl || preview.fallbackStripImageUrl,
   };
+  const notificationIconPreviewUrl = localPreviews.notification
+    || design.notificationIconUrl
+    || effectiveDesign.logoImageUrl;
   const previewGoal = Math.max(1, preview.rewardGoal ?? 10);
   const previewBalance = Math.min(
     previewGoal,
@@ -71,9 +88,10 @@ export function CardDesignEditor({
   const isUploading = Object.values(uploads).some((upload) => upload.status === "uploading");
   const hasUnsavedChanges = localPreviews.logo !== null
     || localPreviews.strip !== null
+    || localPreviews.notification !== null
     || Object.keys(initial).some((key) => (
-      design[key as keyof AppleWalletDesignValues]
-        !== initial[key as keyof AppleWalletDesignValues]
+      design[key as keyof CardWalletDesignValues]
+        !== initial[key as keyof CardWalletDesignValues]
     ));
 
   useEffect(() => {
@@ -136,8 +154,7 @@ export function CardDesignEditor({
       await supabase.storage.from(APPLE_WALLET_ASSET_BUCKET).remove([previousPath]);
     }
     pendingPaths.current[kind] = path;
-    const key = kind === "logo" ? "logoImageUrl" : "stripImageUrl";
-    update(key, data.publicUrl);
+    update(assetDesignKey[kind], data.publicUrl);
     setUploads((current) => ({ ...current, [kind]: { status: "success", message: "Imagen cargada. Guarda esta etapa para aplicarla." } }));
   }
 
@@ -148,7 +165,7 @@ export function CardDesignEditor({
       pendingPaths.current[kind] = null;
       void createSupabaseBrowserClient().storage.from(APPLE_WALLET_ASSET_BUCKET).remove([pendingPath]);
     }
-    update(kind === "logo" ? "logoImageUrl" : "stripImageUrl", "");
+    update(assetDesignKey[kind], "");
     setUploads((current) => ({ ...current, [kind]: { status: "idle", message: "La imagen se quitará al guardar esta etapa." } }));
   }
 
@@ -188,17 +205,22 @@ export function CardDesignEditor({
         </div>
         <div className="admin-form-section">
           <h3 className="section-title">Imágenes</h3>
-          <p className="field-hint">Sube PNG, JPEG o WebP de hasta 5 MB. Se guardan en el espacio seguro del tenant y se reutilizan en ambas wallets.</p>
+          <p className="field-hint">Sube PNG, JPEG o WebP de hasta 5 MB. Se guardan en el espacio seguro del tenant y se usan en la tarjeta correspondiente.</p>
           <input name="logoImageUrl" type="hidden" value={design.logoImageUrl} />
           <input name="stripImageUrl" type="hidden" value={design.stripImageUrl} />
+          <input name="notificationIconUrl" type="hidden" value={design.notificationIconUrl} />
           <div className="apple-wallet-upload-grid">
             {([
               { kind: "logo" as const, label: "Logo", hint: "Preferentemente horizontal o cuadrado, con fondo transparente." },
               { kind: "strip" as const, label: "Imagen principal", hint: lifetimePoints ? "Se usa como fondo visual detrás del saldo y el siguiente hito." : "Se usa como fondo visual detrás de los sellos." },
+              { kind: "notification" as const, label: "Logo de notificaciones", hint: "Usa una imagen cuadrada, sencilla y con buen contraste. Apple la muestra en los avisos de Wallet; si la dejas vacía, se usa el logo general." },
             ]).map((asset) => {
               const imageUrl = asset.kind === "logo"
                 ? effectiveDesign.logoImageUrl
-                : effectiveDesign.stripImageUrl;
+                : asset.kind === "strip"
+                  ? effectiveDesign.stripImageUrl
+                  : notificationIconPreviewUrl;
+              const configuredImageUrl = design[assetDesignKey[asset.kind]];
               return (
                 <div className="apple-wallet-upload-field" key={asset.kind}>
                   <label className="field" htmlFor={`card-${asset.kind}-file`}>
@@ -219,13 +241,21 @@ export function CardDesignEditor({
                   {imageUrl ? (
                     <div className={`card-upload-image-preview is-${asset.kind}`}>
                       <img
-                        alt={asset.kind === "logo" ? "Logo usado en la vista previa" : "Imagen principal usada en la vista previa"}
+                        alt={asset.kind === "logo"
+                          ? "Logo usado en la vista previa"
+                          : asset.kind === "strip"
+                            ? "Imagen principal usada en la vista previa"
+                            : "Logo usado en las notificaciones de Apple Wallet"}
                         src={imageUrl}
                       />
-                      <span>{localPreviews[asset.kind] ? "Vista previa local" : "Imagen actual"}</span>
+                      <span>{localPreviews[asset.kind]
+                        ? "Vista previa local"
+                        : asset.kind === "notification" && !design.notificationIconUrl
+                          ? "Logo general (respaldo)"
+                          : "Imagen actual"}</span>
                     </div>
                   ) : null}
-                  {(asset.kind === "logo" ? design.logoImageUrl : design.stripImageUrl) ? (
+                  {configuredImageUrl ? (
                     <button className="secondary-button" onClick={() => clearAsset(asset.kind)} type="button">
                       Quitar imagen
                     </button>
