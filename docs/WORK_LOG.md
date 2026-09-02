@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-09-02 - Google Wallet Loyalty Pass Issuance
+
+**Objective:** Enable the shared SwiftWallet card on Google Wallet without exposing issuer credentials or requiring another database migration.
+
+**Changes Made:** Added a server-only service-account OAuth flow, stable class/object mapping, REST create/update handling and a compact signed Save to Google Wallet JWT. The route reuses the existing current-terms gate and provider-neutral `wallet_passes` table. Customer claim, registration-success and Web Card views now expose each configured provider independently and use Google's official Latin American Spanish badge. The Admin Android preview now describes the implemented loyalty-pass adapter instead of a conceptual future feature.
+
+**Security And Correctness:** Tenant, card, customer, configuration and terms authority are loaded on the server from the opaque token; no frontend tenant ID or service credential is trusted. Google images and the canonical Web Card URL require HTTPS. API failures and stored diagnostics remain generic, while stable issuer-scoped IDs make retries idempotent. A paused program keeps its pass active because earned rewards remain valid.
+
+**Deployment:** No SQL is required. Follow `docs/GOOGLE_WALLET.md` to enable the API, add the service account as a Wallet Console Developer, configure secrets, validate with an authorized demo-mode Android account and obtain publishing access. Automatic Google object refresh after purchases remains separate follow-up work; using the add action resynchronizes the existing object.
+
+**Design Review:** The real shared Apple/Google success actions and standalone Google action were rendered through a temporary route at 375, 768, 1280 and 1440 px. The official 239×55 badge preserves its ratio and required clear space, both actions remain centered without overflow, focus is visible and targets exceed 44×44 px. The temporary route was removed.
+
+**Validation:** Lint, typecheck, all 245 Vitest tests across 71 files, the webpack production build and `git diff --check` pass.
+
+**Next Action:** Configure non-repository credentials in the deployment secret manager and complete the real-device smoke test.
+
 ## 2026-08-24 - Hosted Welcome Reward Activation Repair
 
 **Objective:** Fix the error shown when enabling the optional welcome reward on the deployed lifetime-points card.

@@ -277,7 +277,7 @@ export function CardDesignEditor({
       </div>
       <aside className="card-provider-preview" aria-labelledby="card-preview-heading">
         <div className="card-preview-heading">
-          <div><p className="enterprise-breadcrumb">Vista previa en vivo</p><h3 id="card-preview-heading">{provider === "APPLE" ? "Apple Wallet · storeCard" : "Google Wallet · vista conceptual"}</h3><small className={hasUnsavedChanges ? "is-dirty" : ""} role="status">{hasUnsavedChanges ? "Mostrando cambios sin guardar" : "Mostrando el diseño guardado"}</small></div>
+          <div><p className="enterprise-breadcrumb">Vista previa en vivo</p><h3 id="card-preview-heading">{provider === "APPLE" ? "Apple Wallet · storeCard" : "Google Wallet · pase de lealtad"}</h3><small className={hasUnsavedChanges ? "is-dirty" : ""} role="status">{hasUnsavedChanges ? "Mostrando cambios sin guardar" : "Mostrando el diseño guardado"}</small></div>
           <div className="card-provider-toggle" role="group" aria-label="Proveedor de vista previa">
             <button aria-pressed={provider === "APPLE"} onClick={() => setProvider("APPLE")} type="button">Apple</button>
             <button aria-pressed={provider === "GOOGLE"} onClick={() => setProvider("GOOGLE")} type="button">Android</button>
@@ -314,7 +314,7 @@ export function CardDesignEditor({
         <p className="field-hint">
           {provider === "APPLE"
             ? "La estructura, campos, colores, QR y proporción 375 × 144 corresponden al storeCard firmado. Apple controla el render final y en iOS 26 o posterior puede omitir las imágenes logo y strip; el progreso textual permanece visible."
-            : "Vista conceptual del diseño compartido. La emisión de Google Wallet aún no está implementada en este MVP."}
+            : "La vista aproxima la jerarquía, colores, saldo y QR del pase de lealtad. Google controla el render final según el dispositivo y la versión de Wallet."}
         </p>
       </aside>
     </div>

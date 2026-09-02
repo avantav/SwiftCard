@@ -86,6 +86,10 @@ const publicCard = readFileSync(
   new URL("../../components/public-wallet-card.tsx", import.meta.url),
   "utf8",
 );
+const appleButton = readFileSync(
+  new URL("../../components/apple-wallet-add-button.tsx", import.meta.url),
+  "utf8",
+);
 const appleServer = readFileSync(
   new URL("./apple-server.ts", import.meta.url),
   "utf8",
@@ -179,8 +183,13 @@ describe("Apple Wallet integration boundaries", () => {
 
   it("only exposes the public download when the server and tenant are ready", () => {
     expect(migration).toContain("public_apple_wallet_is_enabled");
-    expect(publicCard).toContain("appleWalletAvailable && cardToken");
-    expect(publicCard).toContain("?claim=1");
+    expect(publicCard).toContain(
+      "(appleWalletAvailable || googleWalletAvailable) && cardToken",
+    );
+    expect(publicCard).toContain(
+      "appleWalletAvailable ? <AppleWalletAddButton",
+    );
+    expect(appleButton).toContain("?claim=1");
   });
 
   it("uploads tenant images to an RLS-scoped Supabase Storage bucket", () => {

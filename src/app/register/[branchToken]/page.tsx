@@ -2,7 +2,7 @@ import { PublicRegistrationSuccess } from "@/components/public-registration-succ
 import { SubmitButton } from "@/components/submit-button";
 import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
 import { getPublicRegistrationContext } from "@/lib/customers/public-registration-context";
-import { isPublicAppleWalletAvailable } from "@/lib/wallet/public-availability";
+import { isPublicAppleWalletAvailable, isPublicGoogleWalletAvailable } from "@/lib/wallet/public-availability";
 import { registerCustomer } from "./actions";
 
 type RegisterPageProps = { params: Promise<{ branchToken: string }>; searchParams: Promise<{ created?: string; duplicate?: string; error?: string; cardToken?: string }> };
@@ -12,10 +12,12 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
   const { created, duplicate, error, cardToken } = await searchParams;
   const registrationContext = await getPublicRegistrationContext(branchToken);
   const registrationCreated = created === "1" && Boolean(cardToken);
-  const appleWalletAvailable =
-    registrationCreated && cardToken
-      ? await isPublicAppleWalletAvailable(cardToken)
-      : false;
+  const [appleWalletAvailable, googleWalletAvailable] = registrationCreated && cardToken
+    ? await Promise.all([
+        isPublicAppleWalletAvailable(cardToken),
+        isPublicGoogleWalletAvailable(cardToken),
+      ])
+    : [false, false];
   const action = registerCustomer.bind(null, branchToken);
 
   if (!registrationContext) {
@@ -24,7 +26,7 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
 
   return <main className="public-shell public-registration-shell"><div className="public-auth-layout public-registration-layout"><SwiftWalletBrand subtitle="Registro de cliente" />
     <section className="public-card" aria-labelledby="registration-title"><p className="public-eyebrow">{registrationContext.tenantName} · {registrationContext.branchName}</p><h1 id="registration-title" className="auth-title">Crear mi tarjeta</h1><p className="public-card-copy">Registra tus datos para recibir una tarjeta digital válida en las sucursales participantes.</p>
-    {registrationCreated && cardToken ? <PublicRegistrationSuccess appleWalletAvailable={appleWalletAvailable} cardToken={cardToken} /> : null}
+    {registrationCreated && cardToken ? <PublicRegistrationSuccess appleWalletAvailable={appleWalletAvailable} googleWalletAvailable={googleWalletAvailable} cardToken={cardToken} /> : null}
     {duplicate ? <p className="enterprise-alert is-error" role="alert">Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.</p> : null}
     {error ? <p className="enterprise-alert is-error" role="alert">{error}</p> : null}
     {!registrationCreated ? <form className="public-form" action={action}>

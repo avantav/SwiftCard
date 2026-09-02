@@ -2,12 +2,12 @@
 
 ## Current State
 
-- Current phase: Cross-cutting multi-card configuration and card-scoped loyalty operations; the separate Phase 8 Apple rollout validation remains pending externally.
-- Current task: Deploy the Apple point-progress application change before migration `0057`, process the queued pass refresh, then reconcile the remaining hosted migration history before executing the Casa Garmendia import with the real non-empty workbook.
-- Last completed task: Applied migration `0054` directly to hosted production, reloaded PostgREST and verified the Casa Garmendia Admin can save an enabled welcome gift without leaving test data.
-- Current branch: `codex/customer-wallet-fixes`.
-- Last stable feature: Apple store cards use no more than four compact front supporting fields, keep tenant identity alone in the header and preserve point progress even when iOS omits strip images.
-- Git status: All 239 Vitest tests across 69 files, typecheck, lint, webpack build, visual review at 375 px and the complete disposable PostgreSQL migration/RLS suite through `0057` pass.
+- Current phase: Phase 8 Wallet rollout validation and cross-cutting multi-card operations.
+- Current task: Configure the Google Wallet issuer/service account in the deployment secret manager, complete issuer publishing access and validate a real Android save flow.
+- Last completed task: Implemented Google Wallet loyalty class/object synchronization, signed save links and terms-gated public actions without adding a database migration.
+- Current branch: `codex/google-wallet`.
+- Last stable feature: The shared published card can now be added to Apple Wallet or Google Wallet when the corresponding server-only provider configuration is present.
+- Git status: All 245 Vitest tests across 71 files, lint, typecheck and the webpack production build pass. Google Wallet public actions were reviewed at 375, 768, 1280 and 1440 px with the official badge, no overflow and compliant touch/focus sizing.
 - Remote backup: Targeted hosted changes `0051`, `0054` and `0056` are live. Canonical hosted migration history still requires reconciliation before any bulk push; the Casa Garmendia welcome configuration intentionally remains disabled until the Admin retries the form with the intended gift.
 
 ## Completed Functionality
@@ -122,6 +122,7 @@
 - Apple header identity now uses a logo canvas constrained to 160×50 while preserving the source aspect ratio, rather than centering every logo inside a wide transparent canvas. The front header no longer spends width on the reward count, the count remains on the back and the QR barcode omits its visible alternate text. Migration `0055` queues a one-time refresh for existing installed passes.
 - Apple store-card fronts again show the available-reward count below the primary balance. Lifetime-point cards also show a five-segment progress value plus exact current/next milestone, and generate a dynamic progress strip for pre-iOS-26 Wallet versions. Migration `0057` queues installed passes after application deployment.
 - The card design editor now accepts an optional square Apple notification logo without changing the visible header identity. Migration `0058` stores it per card, expands tenant Admin-only Storage paths, queues installed passes when it changes, and the generator emits it as the three PassKit icon assets with the normal card logo as fallback.
+- Google Wallet uses the same published card design to upsert one issuer-scoped loyalty class per card and one loyalty object per issued customer card. Issuance verifies current terms, includes the opaque Web Card QR, live balance/rewards, catalog, HTTPS imagery and up to ten active proximity locations, persists a provider-neutral pass record and redirects through a short signed Save to Google Wallet JWT. Credentials remain server-only and the customer UI uses Google's official Latin American Spanish badge.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
 - The public Web Card represents cyclic progress with up to 24 branded stamp circles, fills earned positions with the tenant logo or initials, preserves the exact count for assistive technology and keeps unusually large goals bounded.
@@ -151,18 +152,18 @@
 - Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
-- Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, implement Google pass generation, and complete pilot sign-off.
+- Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, configure/publish and validate Google Wallet on Android, and complete pilot sign-off.
 
 ## Active Blockers
 
-- WALLET-001: Initial issuance and the `0039` repair now work in production. The locally corrected visible QR, employee camera scan, pass refresh/reinstallation, APNs validation, external retry cron and Google Wallet remain pending deployment or external validation.
+- WALLET-001: Apple and Google issuance are implemented. The Google issuer/service account and publishing access, real Android save, locally corrected Apple QR, employee camera scan, pass refresh/reinstallation, APNs validation and external retry cron remain deployment or device-validation work.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks
 
 - `npm audit --omit=dev` reports four high-severity runtime advisories in the pinned Next.js transitive `postcss`/`sharp` copies and the existing `xlsx` package. The Apple generator's Joi advisory was removed with a tested `17.13.4` override; unrelated framework/export dependency upgrades remain separate risk work.
 - `npm install` reports an `EBADENGINE` warning for transitive `eslint-visitor-keys@5.0.1`, which requires Node `22.13+`; local Node is `22.12.0`. `npm ls`, lint, typecheck, tests, and build still pass.
-- Production APNs validation, the licensed official web badge, external retry scheduling, and Google Wallet require deployment configuration or external credentials.
+- Production APNs validation, the licensed official Apple web badge, external retry scheduling, and Google Wallet issuer publishing/device validation require deployment configuration or external credentials.
 
 ## Last Validation Commands
 

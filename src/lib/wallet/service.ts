@@ -20,5 +20,10 @@ export function walletProviderConfig(provider: WalletProvider) {
     });
     return { configured: missing.length === 0, missing };
   }
-  return { configured: Boolean(process.env.GOOGLE_WALLET_ISSUER_ID && process.env.GOOGLE_WALLET_SERVICE_ACCOUNT) };
+  const required = [
+    "GOOGLE_WALLET_ISSUER_ID",
+    "GOOGLE_WALLET_SERVICE_ACCOUNT",
+  ] as const;
+  const missing = required.filter((name) => !process.env[name]?.trim());
+  return { configured: missing.length === 0, missing };
 }

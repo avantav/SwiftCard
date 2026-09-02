@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { AppleWalletAddButton } from "@/components/apple-wallet-add-button";
+import { GoogleWalletAddButton, GoogleWalletBadge } from "@/components/google-wallet-add-button";
 import { SubmitButton } from "@/components/submit-button";
 
 export type CustomerCardClaimData = {
@@ -20,6 +21,7 @@ export function CustomerCardClaim({
   accepted,
   action,
   appleWalletAvailable,
+  googleWalletAvailable,
   card,
   cardToken,
   error,
@@ -27,6 +29,7 @@ export function CustomerCardClaim({
   accepted: boolean;
   action: (formData: FormData) => void | Promise<void>;
   appleWalletAvailable: boolean;
+  googleWalletAvailable: boolean;
   card: CustomerCardClaimData;
   cardToken: string;
   error?: string;
@@ -45,9 +48,13 @@ export function CustomerCardClaim({
       <div className="customer-claim-body"><p className="public-eyebrow">Tu tarjeta está lista</p><h1 id="claim-title">{card.customer_name}</h1><p>Revisa las condiciones y agrega tu tarjeta digital desde esta pantalla.</p>
         {error ? <p className="enterprise-alert is-error" role="alert">{error}</p> : null}
         <section className="customer-claim-terms" aria-labelledby="claim-terms-title"><h2 id="claim-terms-title">Términos y condiciones</h2><p>{card.terms_and_conditions}</p></section>
-        {accepted ? <div className="customer-claim-accepted"><p role="status">Términos aceptados.</p>{appleWalletAvailable ? <AppleWalletAddButton cardToken={cardToken} accepted /> : <Link className="public-primary-button" href={`/card/${encodeURIComponent(cardToken)}`}>Abrir mi tarjeta digital</Link>}</div> : <form action={action} className="customer-claim-form">
+        {accepted ? <div className="customer-claim-accepted"><p role="status">Términos aceptados.</p><div className="customer-claim-wallet-actions">{appleWalletAvailable ? <AppleWalletAddButton cardToken={cardToken} accepted /> : null}{googleWalletAvailable ? <GoogleWalletAddButton cardToken={cardToken} accepted /> : null}{!appleWalletAvailable && !googleWalletAvailable ? <Link className="public-primary-button" href={`/card/${encodeURIComponent(cardToken)}`}>Abrir mi tarjeta digital</Link> : null}</div></div> : <form action={action} className="customer-claim-form">
           <label className="check-field public-check"><input name="acceptTerms" type="checkbox" required /><span>Acepto los términos y condiciones vigentes del programa.</span></label>
-          <SubmitButton className="public-primary-button">{appleWalletAvailable ? "Aceptar y agregar a Apple Wallet" : "Aceptar y abrir mi tarjeta"}</SubmitButton>
+          <div className="customer-claim-wallet-actions">
+            {appleWalletAvailable ? <SubmitButton className="public-primary-button" name="destination" value="APPLE">Aceptar y agregar a Apple Wallet</SubmitButton> : null}
+            {googleWalletAvailable ? <SubmitButton className="public-google-wallet-submit" name="destination" value="GOOGLE"><GoogleWalletBadge /></SubmitButton> : null}
+            {!appleWalletAvailable && !googleWalletAvailable ? <SubmitButton className="public-primary-button" name="destination" value="WEB">Aceptar y abrir mi tarjeta</SubmitButton> : null}
+          </div>
         </form>}
         <Link className="customer-claim-later" href={`/card/${encodeURIComponent(cardToken)}`}>Ver la tarjeta sin agregarla ahora</Link>
       </div>

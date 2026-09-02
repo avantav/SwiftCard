@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { isCustomerCardToken } from "@/lib/customers/card-qr";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type ClaimDestination = "APPLE" | "WEB";
+type ClaimDestination = "APPLE" | "GOOGLE" | "WEB";
 
 function claimRedirect(cardToken: string, error: string): never {
   redirect(`/card/${encodeURIComponent(cardToken)}?${new URLSearchParams({ claim: "1", error }).toString()}`);
@@ -13,7 +13,6 @@ function claimRedirect(cardToken: string, error: string): never {
 export async function acceptCardTerms(
   cardToken: string,
   programVersion: number,
-  destination: ClaimDestination,
   formData: FormData,
 ) {
   if (!isCustomerCardToken(cardToken) || !Number.isSafeInteger(programVersion) || programVersion < 1) {
@@ -21,6 +20,10 @@ export async function acceptCardTerms(
   }
   if (formData.get("acceptTerms") !== "on") {
     claimRedirect(cardToken, "Debes aceptar los términos y condiciones.");
+  }
+  const destination = formData.get("destination");
+  if (!(["APPLE", "GOOGLE", "WEB"] satisfies ClaimDestination[]).includes(destination as ClaimDestination)) {
+    claimRedirect(cardToken, "Selecciona dónde quieres agregar tu tarjeta.");
   }
 
   let supabase;
@@ -39,6 +42,9 @@ export async function acceptCardTerms(
 
   if (destination === "APPLE") {
     redirect(`/api/wallet/apple/${encodeURIComponent(cardToken)}`);
+  }
+  if (destination === "GOOGLE") {
+    redirect(`/api/wallet/google/${encodeURIComponent(cardToken)}`);
   }
   redirect(`/card/${encodeURIComponent(cardToken)}`);
 }

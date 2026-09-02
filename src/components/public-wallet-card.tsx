@@ -1,6 +1,8 @@
 /* Tenant logos use validated remote HTTPS URLs that cannot be allowlisted by hostname. */
 /* eslint-disable @next/next/no-img-element */
 import type { CSSProperties } from "react";
+import { AppleWalletAddButton } from "@/components/apple-wallet-add-button";
+import { GoogleWalletAddButton } from "@/components/google-wallet-add-button";
 
 const MAX_VISIBLE_STAMPS = 24;
 
@@ -34,7 +36,7 @@ export type PublicCard = {
   }>;
 };
 
-export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false, qrDataUrl }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean; qrDataUrl?: string | null }) {
+export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false, googleWalletAvailable = false, qrDataUrl }: { card: PublicCard; cardToken?: string; appleWalletAvailable?: boolean; googleWalletAvailable?: boolean; qrDataUrl?: string | null }) {
   const lifetimePoints = card.program_type === "LIFETIME_POINTS";
   const rewardGoal = Math.max(0, Math.trunc(card.reward_goal ?? 0));
   const earnedStamps = Math.min(rewardGoal, Math.max(0, Math.trunc(card.stamp_balance)));
@@ -88,7 +90,7 @@ export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false
         <div className="wallet-qr" aria-label="QR de la tarjeta">{qrDataUrl ? <div><img alt="Código QR para identificar esta tarjeta" height="172" src={qrDataUrl} width="172" /></div> : <div className="wallet-qr-unavailable" role="status">QR no disponible</div>}<p>{qrDataUrl ? "Presenta este código al personal" : "Solicita al personal que busque tu tarjeta por nombre o teléfono."}</p></div>
       </div>
     </section>
-    {appleWalletAvailable && cardToken ? <section className="wallet-apple-action" aria-label="Apple Wallet"><a href={`/card/${encodeURIComponent(cardToken)}?claim=1`}>Agregar a Apple Wallet</a><p>Revisa y acepta los términos vigentes antes de agregar el pase.</p></section> : null}
+    {(appleWalletAvailable || googleWalletAvailable) && cardToken ? <section className="wallet-provider-action" aria-label="Agregar tarjeta a una billetera móvil"><div className="public-wallet-actions">{appleWalletAvailable ? <AppleWalletAddButton cardToken={cardToken} /> : null}{googleWalletAvailable ? <GoogleWalletAddButton cardToken={cardToken} /> : null}</div><p>Revisa y acepta los términos vigentes antes de agregar el pase.</p></section> : null}
     <section className="wallet-rewards wallet-tier-catalog" aria-labelledby="reward-tiers-title"><div><p className="public-eyebrow">Cómo ganar</p><h2 id="reward-tiers-title">{lifetimePoints ? "Hitos del programa" : "Premios por número de sellos"}</h2></div>
       {card.reward_tiers.length ? <ol>{card.reward_tiers.map((tier) => <li key={`${tier.stamps_required}-${tier.name}`}><span>{tier.stamps_required}</span><div><strong>{tier.name}</strong><p>{tier.description}</p><small>{tier.stamps_required} {tier.stamps_required === 1 ? card.unit_name_singular : card.unit_name_plural}{tier.expiration_days ? ` · Vigencia de ${tier.expiration_days} días al obtenerlo` : " · Sin expiración"}</small></div></li>)}</ol> : <p className="wallet-no-rewards">El negocio todavía no ha publicado su catálogo de premios.</p>}
     </section>

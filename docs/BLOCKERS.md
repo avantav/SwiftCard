@@ -20,11 +20,11 @@
   - **Recommendation:** In Google Cloud enable Maps JavaScript API and Places API (New), attach billing, restrict a browser key to the exact local/production HTTP referrers, set the environment variable and redeploy.
   - **Work that can continue:** Migration deployment, branch data review and all non-map functionality.
 
-- **WALLET-001:** Initial Apple Wallet generation and the applied `0039` repair work in production. The real device now shows the compact header/QR layout, while the restored front reward count/progress through `0057` and the configurable notification icon through `0058` still require deployment; APNs retry cron and Google Wallet also remain pending. No secrets are present in the repository.
+- **WALLET-001:** Apple and Google Wallet issuance are implemented without secrets in the repository. Google still needs a configured issuer, a service account registered as a Wallet Console Developer, publishing access and a real Android save test. The restored Apple reward progress through `0057`, notification icon through `0058` and APNs retry cron also still require rollout validation.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** Until `0057` is deployed and processed, the current pass can show its corrected point balance without a front reward count or visible milestone bar; failed pushes can remain queued without an external scheduler.
-  - **Recommendation:** Deploy application code first, apply the targeted `0057` refresh only after reconciling its prerequisites, invoke the protected update processor, confirm `PREMIOS` and point progress on iPhone, then schedule the retry endpoint.
-  - **Work that can continue:** Implement Google Wallet and the remaining administrative correction UI without committing secrets.
+  - **Consequence:** Google actions remain hidden until both environment values exist, and new issuers in demo mode can save only with authorized Admin/Developer/test accounts. Until `0057` is deployed and processed, the current Apple pass can also omit its front reward count/progress; failed Apple pushes can remain queued without a scheduler.
+  - **Recommendation:** Complete `docs/GOOGLE_WALLET.md`, validate one test save, request publishing access and then test a normal customer account. Separately deploy/process the Apple refresh and schedule its retry endpoint.
+  - **Work that can continue:** Deployment preparation and remaining administrative correction UI.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.
   - **Affected phase:** Phase 9 - Piloto.

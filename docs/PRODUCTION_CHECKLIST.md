@@ -23,6 +23,8 @@
 ## Wallet And Pilot
 
 - [ ] Provide Apple Developer credentials and Google Wallet credentials through the secret manager.
+- [ ] Enable Google Wallet API, add the service-account email as a Wallet Console Developer, obtain issuer publishing access, set the canonical HTTPS origin and save one pass on a real Android device.
+- [ ] Add and validate durable automatic Google object refreshes after loyalty/card changes; until then, the customer add action resynchronizes the existing object on demand.
 - [ ] Configure a stable 32-byte `APPLE_WALLET_UPDATE_SECRET_BASE64`; never rotate it without a compatibility rollout.
 - [x] Confirm `0038` is present, apply repair migration `0039`, and verify initial Apple pass generation.
 - [ ] Deploy the QR/scanner correction, refresh or reinstall earlier passes, and scan the correct customer from `/app/scan` on a real employee phone.
