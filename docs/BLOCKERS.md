@@ -2,6 +2,12 @@
 
 ## Active Blockers
 
+- **LANDING-001:** The product owner has not provided the destination for “Solicitar una demo”.
+  - **Affected area:** Public landing conversion.
+  - **Consequence:** The complete educational page can be reviewed locally, but its demo actions must not be published as a working lead channel yet.
+  - **Recommendation:** Provide an approved Calendly, WhatsApp, email or form URL and set it as `NEXT_PUBLIC_DEMO_REQUEST_URL` in the deployment environment.
+  - **Work that can continue:** Copy review, SEO refinement and all application functionality; no visitor data is collected by the placeholder.
+
 - **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and targeted `0051`/`0054`/`0056` changes are live; canonical history through local migration `0058` is not reconciled.
   - **Affected area:** Repeatable remote database deployment.
   - **Consequence:** The bulk migration runner would try to replay migrations `0035` onward and may stop on objects that already exist.

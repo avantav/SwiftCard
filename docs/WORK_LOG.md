@@ -1,5 +1,33 @@
 # Work Log
 
+## 2026-09-09 - Captivating Landing Motion And Color
+
+**Objective:** Make the educational landing feel more dynamic and memorable, with a hero that captures buyer attention without sacrificing clarity.
+
+**Changes Made:** Added three independently moving solid-color fields behind the hero, emphasized the outcome phrase in the brand color and choreographed the product mock through compra, progreso and premio. The digital card now shows a moving scan line, sequential stamp entry and delayed purchase/reward confirmations. Later sections reveal once on viewport entry, supporting cards use distinct teal, blue, amber and violet treatments, and primary CTA arrows respond to hover.
+
+**Accessibility And Scope:** A small client component progressively enhances server-rendered content with `IntersectionObserver`; content stays visible when JavaScript or the API is unavailable. `prefers-reduced-motion` disables ambient, explanatory and reveal animations. The explicit visual exception is limited to the public landing and recorded in DEC-0039; authenticated interfaces remain unchanged and no gradient was added.
+
+**Design Review:** Hero and full-page states were reviewed at 375, 768, 1280 and 1440 px. The colored layers remain behind content, mobile retains one-column actions and preview, desktop keeps the complete animated product narrative above the fold, and no horizontal overflow was found.
+
+**Validation:** Focused landing/design tests, lint and typecheck pass. The final full-suite and webpack build results are recorded in `docs/PROJECT_STATUS.md`.
+
+**Next Action:** Connect `NEXT_PUBLIC_DEMO_REQUEST_URL` to the approved commercial destination and review the final animation pacing with the product owner before publication.
+
+## 2026-09-07 - Educational Demo-First Public Landing
+
+**Objective:** Turn `/` into a clear modern introduction for non-technical business buyers, with education as the primary job and “Solicitar una demo” as the sole conversion goal.
+
+**Changes Made:** Replaced the compact login gateway with a complete Spanish landing covering the three-step customer journey, client/business benefits, Apple Wallet, Google Wallet and Web Card availability, multi-branch operation, an accessible FAQ and a code-native product illustration. The page repeats one primary demo CTA, keeps staff login secondary and explicitly explains that online contracting and payment are not available yet. Root metadata now describes the public product value.
+
+**Safety And Continuity:** Existing active-staff and required-password redirects remain unchanged. No public form, personal-data persistence, checkout or Stripe dependency was added. Demo links read an optional `NEXT_PUBLIC_DEMO_REQUEST_URL`; without it they use a transparent in-page pre-publication placeholder.
+
+**Design Review:** The real root page was rendered in Chrome at 375, 768, 1280 and 1440 px. Navigation, hero, digital-card example, educational sections, FAQ, CTA and footer remain contained without horizontal overflow. Mobile actions exceed 44 px, focus remains visible, headings are semantic, state is not conveyed only by color and reduced-motion handling remains inherited from the global system.
+
+**Validation:** Focused landing/design tests pass. `npm run lint`, `npm run typecheck`, all 249 Vitest tests across 72 files, `npm run build` with webpack and `git diff --check` pass.
+
+**Next Action:** Provide the approved demo destination, set `NEXT_PUBLIC_DEMO_REQUEST_URL`, review the final commercial copy and repeat the four-width smoke review before publication.
+
 ## 2026-09-02 - Google Wallet Loyalty Pass Issuance
 
 **Objective:** Enable the shared SwiftWallet card on Google Wallet without exposing issuer credentials or requiring another database migration.

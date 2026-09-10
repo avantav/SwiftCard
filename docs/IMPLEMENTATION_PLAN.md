@@ -224,6 +224,17 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Apply migrations `0043` and `0044` in a disposable PostgreSQL instance and add SQL assertions to the full RLS harness.
 - [ ] [Pendiente] Validate the complete draft/resume/publish/register/purchase flow against a deployed Supabase project and refresh existing Apple passes.
 
+## Cross-cutting - Public marketing landing
+
+**Objective:** Explain SwiftWallet to non-technical business buyers and convert interest into a demo request without implying self-service checkout.
+
+**Tasks**
+
+- [x] [Terminada] Replace the authenticated-area gateway at `/` with a clear educational landing while preserving staff redirects and login access.
+- [x] [Terminada] Explain the customer journey, business operation, Wallet channels, multi-branch value and common purchasing questions in plain Spanish.
+- [x] [Terminada] Add a responsive animated product illustration, accessible section navigation, FAQ, purposeful scroll reveals and repeated demo-first CTA without pricing or payment claims.
+- [ ] [Pendiente] Configure the real scheduling/contact destination in `NEXT_PUBLIC_DEMO_REQUEST_URL` before publishing the landing.
+
 ## Phase 9 - Piloto
 
 **Objective:** Complete E2E, security, RLS, monitoring, backups, privacy, pilot tenant, and production checklist.

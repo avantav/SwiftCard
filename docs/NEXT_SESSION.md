@@ -1,5 +1,13 @@
 # Next Session
 
+## Public landing context
+
+- `/` is now a buyer-facing educational landing rather than an internal gateway. It preserves authenticated staff redirects and the secondary `/login` path.
+- The only primary conversion is “Solicitar una demo”; the page intentionally contains no prices, checkout, Stripe integration or payment collection.
+- Set `NEXT_PUBLIC_DEMO_REQUEST_URL` to the approved scheduling, WhatsApp, email or form destination before publication. Without it, all demo actions land on a transparent in-page placeholder and no personal data is collected.
+- The hero uses a purposeful compra → progreso → premio animation, moving solid-color layers and sequential card feedback. Below-fold sections reveal once through `IntersectionObserver`; reduced-motion users receive the complete static page immediately.
+- The real animated page was reviewed at 375, 768, 1280 and 1440 px. Lint, typecheck, 250 Vitest tests across 72 files and the webpack production build pass.
+
 1. New primary Admin flow: `/admin/cards` supports up to three non-archived card configurations per tenant. `/admin/program` and `/admin/wallet` redirect there.
 2. Aggregate: every `loyalty_cards` row owns one program, one neutral design and branch assignments. Existing program/design/issued-card data is backfilled into one published card by `0043`.
 3. Drafts: creation persists immediately; program, design and locations save independently; only a complete draft with at least one branch can publish.

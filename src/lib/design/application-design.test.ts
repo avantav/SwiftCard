@@ -13,7 +13,7 @@ const styles = source("../../app/globals.css");
 
 const adminPages = ["page.tsx", "branches/page.tsx", "staff/page.tsx", "cards/page.tsx", "cards/[cardId]/edit/page.tsx", "dashboard/page.tsx", "exports/page.tsx"].map((path) => source(`../../app/admin/${path}`));
 const operationsPages = ["page.tsx", "scan/page.tsx", "program/page.tsx", "purchase/page.tsx", "redeem/page.tsx"].map((path) => source(`../../app/app/${path}`));
-const publicPages = ["../../app/page.tsx", "../../app/login/page.tsx", "../../app/change-password/page.tsx", "../../app/register/[branchToken]/page.tsx"].map(source);
+const publicPages = ["../../app/login/page.tsx", "../../app/change-password/page.tsx", "../../app/register/[branchToken]/page.tsx"].map(source);
 
 describe("application-wide design contract", () => {
   it("uses protected shared shells and role-aware navigation", () => {
@@ -45,6 +45,7 @@ describe("application-wide design contract", () => {
 
   it("uses the shared public composition and a branded Web Card", () => {
     for (const page of publicPages) expect(page).toContain("public-");
+    expect(source("../../app/page.tsx")).toContain('className="landing-page"');
     const cardPage = source("../../app/card/[cardToken]/page.tsx");
     const card = source("../../components/public-wallet-card.tsx");
     expect(cardPage).toContain("PublicWalletCard");

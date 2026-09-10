@@ -2,16 +2,19 @@
 
 ## Current State
 
-- Current phase: Phase 8 Wallet rollout validation and cross-cutting multi-card operations.
-- Current task: Configure the Google Wallet issuer/service account in the deployment secret manager, complete issuer publishing access and validate a real Android save flow.
-- Last completed task: Implemented Google Wallet loyalty class/object synchronization, signed save links and terms-gated public actions without adding a database migration.
+- Current phase: Cross-cutting public marketing landing, followed by Phase 8 Wallet rollout validation.
+- Current task: Connect the approved demo-request destination and review the landing copy with the product owner before publication.
+- Last completed task: Added a color-rich motion system to the educational landing, including a purchase-to-reward hero sequence and progressive scroll reveals with a reduced-motion fallback.
 - Current branch: `codex/google-wallet`.
 - Last stable feature: The shared published card can now be added to Apple Wallet or Google Wallet when the corresponding server-only provider configuration is present.
-- Git status: All 245 Vitest tests across 71 files, lint, typecheck and the webpack production build pass. Google Wallet public actions were reviewed at 375, 768, 1280 and 1440 px with the official badge, no overflow and compliant touch/focus sizing.
+- Git status: All 250 Vitest tests across 72 files, lint, typecheck and the webpack production build pass. The animated landing was reviewed at 375, 768, 1280 and 1440 px without overflow and with compliant touch/focus sizing.
 - Remote backup: Targeted hosted changes `0051`, `0054` and `0056` are live. Canonical hosted migration history still requires reconciliation before any bulk push; the Casa Garmendia welcome configuration intentionally remains disabled until the Admin retries the form with the intended gift.
 
 ## Completed Functionality
 
+- The root route is now a public educational landing for non-technical business buyers. It explains the three-step loyalty journey, customer and operator experiences, supported Wallet channels, multi-branch operation and common adoption questions, with one repeated “Solicitar una demo” conversion goal and no pricing, checkout or payment collection.
+- The landing hero now stages compra, progreso and premio through an animated status sequence, scan line, stamp progression and operation confirmations. Solid-color teal, blue and amber layers add visual energy, while below-fold content reveals once on entry and `prefers-reduced-motion` removes all animation.
+- Active staff still leave the landing automatically for their authorized area, password-reset-required users retain their security redirect and unauthenticated staff can reach `/login` through a secondary action.
 - Product source normalized into `docs/PRODUCT.md`.
 - Persistent repo instructions added in `AGENTS.md`.
 - Executable implementation plan started.
@@ -148,6 +151,7 @@
 
 ## Pending Functionality
 
+- Configure the real scheduling, WhatsApp, email or form URL in `NEXT_PUBLIC_DEMO_REQUEST_URL`; until then the landing scrolls to its transparent pre-publication contact placeholder and collects no lead data.
 - Generic imported-stamp conversion/milestone generation for lifetime-points programs; the Casa Garmendia one-time profile and configurable welcome-reward generation are complete.
 - Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.

@@ -376,3 +376,23 @@
 - Consequences: Deployment requires the Wallet API, numeric Issuer ID, a service account added as a Wallet Console Developer, canonical HTTPS URLs and issuer publishing approval. New issuers remain limited to authorized test accounts in demo mode. Initial issuance and on-demand resynchronization are complete; automatic Google refresh after loyalty operations remains separate rollout work. A paused loyalty program leaves an already-issued card active so its earned rewards remain visible and usable.
 - References: [Google Wallet web issuance](https://developers.google.com/wallet/retail/loyalty-cards/web), [JWT claims](https://developers.google.com/wallet/retail/loyalty-cards/use-cases/jwt), [loyalty classes](https://developers.google.com/wallet/reference/rest/v1/loyaltyclass), and [loyalty objects](https://developers.google.com/wallet/reference/rest/v1/loyaltyobject).
 - Status: Accepted.
+
+## DEC-0038 - Educational Demo-First Public Landing
+
+- Date: 2026-09-07
+- Context: The root route only directed staff to login and did not explain SwiftWallet to a prospective non-technical buyer. Self-service billing and Stripe are not configured.
+- Decision: Make `/` an educational Spanish landing that explains the customer journey and business operation before presenting one repeated “Solicitar una demo” conversion. Preserve active-staff and required-password redirects plus a secondary login path. Do not show prices, checkout language or collect lead data until an approved destination and privacy handling exist. Read the demo destination from `NEXT_PUBLIC_DEMO_REQUEST_URL`, with a transparent in-page placeholder when it is absent.
+- Alternatives considered: Send every visitor directly to login, present plan pricing before billing exists, add a non-functional lead form or persist public lead data before the privacy notice is approved.
+- Reason: A buyer should understand the outcome and day-to-day workflow without technical vocabulary, while the public interface must not imply unavailable commerce or silently collect personal information.
+- Consequences: Publication requires an approved scheduling/contact URL. Future lead capture with persisted personal data requires an explicit privacy, retention and abuse-prevention design.
+- Status: Accepted.
+
+## DEC-0039 - Purposeful Motion Exception For The Public Landing
+
+- Date: 2026-09-09
+- Context: The first educational landing was clear but felt too static to captivate a prospective buyer. The design system normally excludes decorative ambient motion and limits color primarily to actions and state.
+- Decision: Accept the user's explicit exception only for the public marketing landing. Use animated solid-color fields and a restrained floating product frame for visual energy, while the primary hero animation must teach the actual compra → progreso → premio workflow through a scan line, sequential stamps and operation confirmations. Reveal later sections once as they enter the viewport. Keep authenticated product areas unchanged, avoid gradients and disable every animation under `prefers-reduced-motion`.
+- Alternatives considered: Add a background video, use continuous parallax throughout the page, introduce gradient effects or leave all motion decorative and unrelated to the product.
+- Reason: Motion is most valuable when it helps a buyer understand the product while creating a memorable first impression. Scoping it to the landing prevents the operational interface from becoming distracting.
+- Consequences: New landing motion must remain performant, must not hide content when JavaScript or `IntersectionObserver` is unavailable and must be rechecked at the four required widths. Any motion expansion into authenticated areas requires a separate explicit decision.
+- Status: Accepted.
