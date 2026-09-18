@@ -168,6 +168,12 @@
 
 ## Pending Functionality
 
+- Phase 11 Reviews and reputation product: separate Loyalty/Reviews
+  entitlements, branch configuration, opaque QR/NFC sources, public landing,
+  consented optional contact capture, versioned events, consumer offers/coupons
+  and permission-scoped analytics. Google Business Profile synchronization and
+  cross-product automation are later units. The reviewed scope and safeguards
+  are recorded in `docs/reviews_plan.md` and `docs/PRODUCT.md` section 31.
 - Stripe test-mode Product/Price synchronization, Checkout, Customer Portal, signature-verified webhooks, promotion reservation/cap consumption, affiliate attribution/commission accrual and membership-limit/grace enforcement.
 - Configure the real scheduling, WhatsApp, email or form URL in `NEXT_PUBLIC_DEMO_REQUEST_URL`; until then the landing scrolls to its transparent pre-publication contact placeholder and collects no lead data.
 - Generic imported-stamp conversion/milestone generation for lifetime-points programs; the Casa Garmendia one-time profile and configurable welcome-reward generation are complete.
@@ -178,6 +184,10 @@
 
 ## Active Blockers
 
+- REVIEWS-001: Phase 11 can begin with domain/event design, but production PII
+  capture requires an approved privacy notice, consent copy, retention/deletion
+  policy and abuse limits. Google rating/review synchronization additionally
+  requires approved Business Profile OAuth access and tenant location ownership.
 - BILLING-001: Migration `0059` is validated locally but cannot be pushed safely until hosted migration history is reconciled under `MIGRATIONS-001`. Stripe test/live credentials, approved package prices, tax handling and payment policies have not been provided; local UI and webhook implementation can continue without production mutation.
 - WALLET-001: Apple and Google issuance are implemented. The Google issuer/service account and publishing access, real Android save, locally corrected Apple QR, employee camera scan, pass refresh/reinstallation, APNs validation and external retry cron remain deployment or device-validation work.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.

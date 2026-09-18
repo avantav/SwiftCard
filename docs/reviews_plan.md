@@ -1,5 +1,13 @@
 # Sistema de Reviews y Reputación
 
+**Estado:** Expansión post-MVP autorizada; revisada el 2026-09-17 y pendiente
+de implementación como Fase 11.
+
+**Fuente ejecutable:** Este documento define el producto. La secuencia de
+entrega, dependencias y criterios de terminado viven en
+`docs/IMPLEMENTATION_PLAN.md`. Ante una contradicción prevalecen
+`docs/PRODUCT.md`, `docs/DECISIONS.md` y las reglas de seguridad del repositorio.
+
 ## 1. Objetivo
 
 Agregar un nuevo producto independiente enfocado en:
@@ -1111,4 +1119,80 @@ Promociones
 ```
 
 El objetivo es que ambos productos puedan venderse independientemente pero que contratar ambos genere funciones adicionales y una experiencia más completa.
-s
+
+---
+
+# 38. Revisión técnica vinculante
+
+La revisión del 2026-09-17 conserva el objetivo comercial y agrega estas
+restricciones para que el plan sea compatible con la plataforma existente.
+
+## 38.1 Reutilización del modelo actual
+
+* `tenants` es la entidad canónica de negocio; no se creará una tabla
+  `businesses` paralela.
+* `branches`, `staff_profiles`, `staff_branch_assignments` y Auth siguen siendo
+  las fuentes compartidas de sucursales, usuarios y permisos.
+* Los productos habilitados se modelarán como capacidades o entitlements del
+  dominio comercial existente. No se creará una segunda fuente de verdad de
+  suscripciones.
+* Las promociones comerciales de paquetes y los beneficios entregados a
+  consumidores son dominios distintos. El módulo Reviews usará nombres como
+  `review_offers` y `review_coupons` para evitar confundirlos con promociones
+  de facturación.
+
+## 38.2 Visitantes, contactos y clientes
+
+* Una visita anónima no creará automáticamente un registro en `customers`.
+* Cada apertura usará una sesión pública opaca y de vida limitada. Los
+  identificadores de dispositivo o red no se expondrán ni se usarán como una
+  identidad de cliente confiable.
+* Solo cuando exista consentimiento y un identificador suficiente se creará o
+  vinculará un cliente del tenant mediante reglas de normalización y
+  deduplicación. No se crearán duplicados por producto.
+* Antes de persistir nombre, teléfono o correo se deben aprobar aviso de
+  privacidad, finalidad, retención, eliminación y consentimiento.
+
+## 38.3 Cumplimiento de Google Reviews
+
+* La invitación se mostrará de forma neutral a clientes con experiencias
+  genuinas; no se preguntará primero por satisfacción para enviar solo a los
+  clientes positivos a Google.
+* Ningún descuento, producto, cupón, punto o recompensa se ofrecerá a cambio
+  de publicar, editar o eliminar una reseña, ni dependerá de una calificación.
+* Un beneficio puede depender de registro o participación independiente, y
+  debe entregarse igual aunque la persona no abra Google ni publique contenido.
+* `google_review_click` prueba únicamente que se abrió el destino. No se
+  presentará como una reseña publicada ni se atribuirá una reseña concreta a
+  una sesión sin evidencia suficiente.
+* Rating, total de reseñas, reseñas recientes y respuestas requieren conexión
+  OAuth y acceso aprobado a Google Business Profile; permanecen fuera del
+  primer MVP de captación.
+
+Referencias oficiales revisadas:
+
+* https://support.google.com/business/answer/3474122
+* https://support.google.com/contributionpolicy/answer/7400114
+* https://developers.google.com/my-business/content/review-data
+
+## 38.4 Medición y abuso
+
+* `qr_scan` y `nfc_visit` significan una apertura con un token de fuente QR o
+  NFC; el navegador no puede demostrar por sí solo el acto físico de escanear
+  o acercar el dispositivo.
+* QR y NFC usarán tokens opacos, rotables y revocables. No aceptarán
+  `tenant_id`, `branch_id` ni tipo de fuente enviados libremente por el cliente.
+* Los eventos tendrán esquema versionado, idempotencia, límites de frecuencia,
+  clasificación de bots, retención definida y agregaciones que no mezclen
+  sesiones, personas y clientes identificados.
+* Los códigos de cupón serán aleatorios y no enumerables. Validación y canje
+  serán tenant/sucursal-scoped, atómicos, idempotentes y auditados.
+
+## 38.5 Alcance del primer MVP
+
+El primer corte implementable incluye entitlements, configuración por
+sucursal, enlaces de Google aportados por el Admin, fuentes QR/NFC, landing
+pública neutral, eventos, analytics básicos, captura opcional consentida y
+ofertas/cupones independientes de la reseña. La sincronización con Google
+Business Profile, atribución de reseñas, respuestas, automatizaciones, Wallet y
+reglas cruzadas avanzadas con Loyalty se entregarán en unidades posteriores.

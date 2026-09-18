@@ -821,3 +821,25 @@ autoridad.
   nunca se acepta un `tenant_id` del navegador como autoridad.
 - El lanzamiento empieza en modo de prueba y requiere reconciliación, manejo de
   reembolsos, impuestos y validación de moneda antes de producción.
+
+## 31. Expansión de Reviews y reputación autorizada
+
+Reviews es un producto post-MVP independiente de Loyalty. Un tenant podrá
+tener Loyalty, Reviews o ambos mediante capacidades del dominio comercial
+existente. Ambos productos reutilizan `tenants`, sucursales, usuarios y, cuando
+existe identificación consentida, clientes; no comparten su lógica de negocio y
+Reviews no requiere una tarjeta, puntos, recompensas ni Wallet para operar.
+
+El primer MVP de Reviews comprende configuración y enlace de Google por
+sucursal, fuentes QR/NFC identificables, landing pública mobile-first,
+redirección neutral a Google, eventos y analytics básicos, captura opcional y
+consentida de datos, y ofertas/cupones propios con validación y canje atómicos.
+Una visita anónima no crea un cliente; solo una identidad suficiente y
+consentida puede vincularse al `customer` compartido sin duplicarlo.
+
+No se ofrecerá ningún beneficio por publicar, modificar o eliminar una reseña,
+ni se filtrará a las personas por satisfacción antes de mostrar la invitación.
+Un clic a Google no se contabiliza como reseña publicada. Rating, reseñas
+recientes y respuestas requieren Google Business Profile OAuth y quedan para
+una unidad posterior. El alcance completo, sus restricciones de privacidad,
+medición y cumplimiento se define en `docs/reviews_plan.md`.

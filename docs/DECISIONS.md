@@ -427,3 +427,41 @@
 - Consequences: Migration `0059` establishes the commercial schema and measurement triggers without blocking new registrations. Checkout, webhook handlers, package/promotion/affiliate UI, grace behavior, tax policy and automated payouts remain separate reviewed units. Stripe usage meters may later receive derived events, but the database remains the reconciliation source.
 - References: [Stripe products and prices](https://docs.stripe.com/products-prices/how-products-and-prices-work), [Build a subscriptions integration](https://docs.stripe.com/billing/subscriptions/build-subscriptions), [Usage-based billing](https://docs.stripe.com/billing/subscriptions/usage-based/how-it-works), and [Record usage](https://docs.stripe.com/billing/subscriptions/usage-based/recording-usage).
 - Status: Accepted.
+
+## DEC-0043 - Independent Reviews Product On Shared Platform Authority
+
+- Date: 2026-09-17
+- Context: The user added `docs/reviews_plan.md` for a separately sellable
+  reputation product with QR/NFC acquisition, public landing, optional contact
+  capture, consumer coupons, analytics and later Google Business Profile and
+  Loyalty integration. Its conceptual model used parallel business/product
+  names that overlap the existing tenant and commercial domains, and anonymous
+  traffic cannot satisfy the current customer's required phone identity.
+- Decision: Implement Reviews as Phase 11 behind separate `LOYALTY` and
+  `REVIEWS` entitlements while reusing `tenants`, branches, staff/Auth and the
+  Phase 10 commercial authority. Keep anonymous review sessions/events outside
+  `customers`; link or create a shared tenant customer only with consent and a
+  sufficient normalized identity. Keep consumer review offers/coupons separate
+  from billing promotions. Source scope comes only from opaque, rotatable
+  QR/NFC tokens, and public events are versioned, rate-limited and idempotent.
+  Invitations must be neutral and no benefit may depend on posting, changing,
+  removing or positively rating a Google review. A Google click is not a
+  published review; Google Business Profile synchronization is a separate
+  OAuth-backed delivery unit.
+- Alternatives considered: Create parallel `businesses`, `business_products`
+  and subscriptions; insert every anonymous visit into `customers`; reuse
+  billing promotions for customer coupons; infer reviews from outbound clicks;
+  or reward customers only after a review or positive rating.
+- Reason: Shared platform authority avoids tenant/customer duplication and
+  conflicting billing state, while domain separation lets Reviews-only tenants
+  operate without Loyalty. Explicit identity, measurement and incentive
+  boundaries protect privacy, analytics integrity and Google policy compliance.
+- Consequences: Phase 11 starts with a domain/event contract and entitlement
+  RLS design. Production PII capture requires approved notice, consent,
+  retention and deletion rules. Rating/review data requires Google Business
+  Profile access, and combined Loyalty/Reviews automation follows validation of
+  the standalone Reviews flow.
+- References: `docs/reviews_plan.md`, Google Business Profile Help
+  `answer/3474122`, Maps policy `answer/7400114`, and Google Business Profile
+  review-data documentation.
+- Status: Accepted.

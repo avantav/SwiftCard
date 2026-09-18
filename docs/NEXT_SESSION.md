@@ -1,5 +1,27 @@
 # Next Session
 
+## Reviews product context
+
+- `docs/reviews_plan.md` was reviewed on 2026-09-17 and is now an authorized
+  post-MVP Phase 11, not the current implementation unit.
+- Reviews must operate independently from Loyalty while reusing existing
+  tenants, branches, staff and commercial entitlement authority. Do not create
+  parallel `businesses` or subscription sources.
+- The first implementation unit is a versioned domain/event contract followed
+  by separate `LOYALTY`/`REVIEWS` entitlements and RLS coverage. Preserve the
+  current Phase 10 next step until priorities are explicitly changed.
+- Anonymous visits remain anonymous; only consented, sufficiently identified
+  contacts may link to the shared tenant customer without duplication.
+- Consumer offers/coupons are separate from Phase 10 billing promotions and
+  can never depend on posting, changing, deleting or positively rating a Google
+  review.
+- Treat QR/NFC metrics as token-attributed landing opens and Google actions as
+  outbound clicks. Do not claim a physical scan or a published review without
+  evidence.
+- Google Business Profile OAuth, rating/review synchronization and cross-product
+  Loyalty automation are later units. See `docs/PRODUCT.md` section 31,
+  `docs/IMPLEMENTATION_PLAN.md` Phase 11 and `docs/reviews_plan.md` section 38.
+
 ## Commercial billing context
 
 - Phase 10 is now explicitly authorized post-MVP and specified in `docs/PRODUCT.md` section 30 plus `docs/BILLING_STRIPE.md`.

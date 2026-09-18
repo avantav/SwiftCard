@@ -1,5 +1,31 @@
 # Work Log
 
+## 2026-09-17 - Reviews Plan Review And Phase 11 Registration
+
+**Objective:** Review the new Reviews/reputation proposal and register it as an
+executable product task without displacing the current Phase 10 work.
+
+**Changes:** Marked `docs/reviews_plan.md` as an authorized post-MVP plan and
+added binding compatibility, privacy, measurement, abuse and Google-policy
+constraints. Added PRODUCT section 31, Implementation Phase 11, traceability,
+continuity context, decision record and external-input blocker. The reviewed
+model reuses tenants, branches, staff, customers and commercial entitlements;
+it does not introduce parallel business/subscription authority.
+
+**Review result:** The product is viable if anonymous sessions remain separate
+from identified customers, consumer offers are distinct from billing
+promotions, coupons are atomic/non-enumerable, and incentives never depend on
+posting or rating a Google review. Outbound clicks are not treated as published
+reviews; Google Business Profile synchronization remains a later OAuth-backed
+unit.
+
+**Validation:** Documentation links, headings, pending-task markers and diff
+were reviewed. No application code, migration or production state changed.
+
+**Next Action:** Continue the current Phase 10 promotion-reservation unit unless
+the product owner reprioritizes Phase 11. The first Reviews unit is the
+versioned domain/event contract and entitlement/RLS design.
+
 ## 2026-09-09 - Tenant Billing And Usage Summary
 
 **Objective:** Give the general Admin transparent commercial visibility without initiating payments or enforcing limits.

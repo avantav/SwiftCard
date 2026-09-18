@@ -301,3 +301,62 @@ log. This phase is explicitly authorized post-MVP.
 - Membership usage is backend-derived and cannot decrease below the period peak.
 - Stripe events are unique and browser roles cannot read or mutate them.
 - Archiving commercial records preserves all historical references.
+
+## Phase 11 - Reviews y reputación
+
+**Objective:** Deliver Reviews as a separately entitled product that shares
+tenant, branch, staff and consented customer identity with Loyalty without
+coupling either domain's business logic.
+
+**Dependencies:** Phase 10 entitlement authority; approved privacy/retention
+rules; canonical hosted migration history. Google Business Profile OAuth is
+required only for the later synchronization unit, not for the initial link-out
+MVP.
+
+**Tasks**
+
+- [ ] [Pendiente] Convert `docs/reviews_plan.md` into a versioned domain and
+  event contract using existing `tenants`, branches, staff and commercial
+  entitlements; do not introduce parallel business/subscription authority.
+- [ ] [Pendiente] Add separately enforceable `LOYALTY` and `REVIEWS`
+  entitlements to backend authorization, navigation and APIs with Superadmin
+  lifecycle controls and tenant/role-scoped RLS tests.
+- [ ] [Pendiente] Add branch review configuration and Admin-supplied Google
+  review links with safe URL validation, audited activation and no dependency
+  on Loyalty.
+- [ ] [Pendiente] Add opaque, rotatable and revocable QR/NFC source tokens and
+  a mobile-first public review landing that never trusts browser tenant,
+  branch or source identifiers.
+- [ ] [Pendiente] Add versioned, idempotent review events with anonymous
+  sessions, bot/rate-limit controls, retention rules and explicit semantics
+  for views, source-attributed opens, registrations and Google link clicks.
+- [ ] [Pendiente] Add consented optional contact capture that does not create a
+  `customers` row for anonymous visits and safely links/deduplicates an
+  identified customer within the tenant.
+- [ ] [Pendiente] Add consumer `review_offers` and non-enumerable coupons with
+  atomic validation/redemption, expiration, cancellation, branch scope and
+  audit history; benefits must remain independent of review publication or
+  rating.
+- [ ] [Pendiente] Add permission-scoped Reviews dashboard metrics for visits,
+  unique anonymous sessions, Google clicks, CTR, registrations, coupons,
+  funnel, branch and source while keeping people, sessions and identified
+  customers distinct.
+- [ ] [Pendiente] Add neutral Loyalty-to-Reviews invitation entry points and
+  combined activity only after both product entitlements and the standalone
+  Reviews flow are validated.
+- [ ] [Pendiente] Integrate Google Business Profile OAuth, review/rating sync
+  and recent-review views as a separate unit; never infer that a Google click
+  produced a specific review.
+- [ ] [Pendiente] Add unit, migration/RLS, abuse, accessibility, responsive and
+  E2E coverage plus a Reviews-specific production/privacy checklist.
+
+**Acceptance Criteria**
+
+- Reviews-only tenants operate without loyalty cards, balances or Wallet.
+- Loyalty-only tenants cannot access Reviews UI, data or APIs.
+- Cross-tenant and out-of-branch reads/writes fail under RLS and backend checks.
+- Anonymous traffic is not silently converted into a customer or durable PII.
+- QR/NFC events are source-attributed opens, not unverifiable physical-scan claims.
+- Coupons cannot be enumerated or double-redeemed and are never conditioned on
+  posting, changing or removing a Google review.
+- Dashboards label clicks and synchronized reviews as different measurements.

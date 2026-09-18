@@ -2,6 +2,20 @@
 
 ## Active Blockers
 
+- **REVIEWS-001:** The Reviews product is authorized and its standalone MVP can
+  begin at domain-contract level, but privacy and external-integration inputs
+  are not approved.
+  - **Affected area:** Phase 11 contact capture, analytics retention and Google
+    Business Profile synchronization.
+  - **Consequence:** No production PII collection or Google review/rating sync
+    can be released yet.
+  - **Recommendation:** Approve the privacy notice, consent text,
+    retention/deletion periods, bot/rate limits and customer-benefit terms;
+    later provide Google Business Profile OAuth approval and confirm location
+    ownership for participating tenants.
+  - **Work that can continue:** Versioned domain/event design, entitlement
+    model, RLS plan and non-PII link-out architecture.
+
 - **LANDING-001:** The product owner has not provided the destination for “Solicitar una demo”.
   - **Affected area:** Public landing conversion.
   - **Consequence:** The complete educational page can be reviewed locally, but its demo actions must not be published as a working lead channel yet.
