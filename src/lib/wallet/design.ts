@@ -8,6 +8,12 @@ export type AppleWalletDesignInput = {
   logoImageUrl: string | null;
   stripImageUrl: string | null;
   notificationIconUrl: string | null;
+  logoScalePercent: number;
+  logoMarginXPercent: number;
+  logoMarginYPercent: number;
+  stripScalePercent: number;
+  stripMarginXPercent: number;
+  stripMarginYPercent: number;
 };
 
 export type AppleWalletDesignValidation =
@@ -50,6 +56,24 @@ function colorValue(
 ) {
   const value = textValue(formData, key).toUpperCase();
   if (!HEX_COLOR.test(value)) errors.push(`${label} no es válido.`);
+  return value;
+}
+
+function integerValue(
+  formData: FormData,
+  key: string,
+  label: string,
+  minimum: number,
+  maximum: number,
+  fallback: number,
+  errors: string[],
+) {
+  const raw = textValue(formData, key);
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!/^\d+$/.test(raw) || !Number.isInteger(value) || value < minimum || value > maximum) {
+    errors.push(`${label} debe estar entre ${minimum} y ${maximum}.`);
+  }
   return value;
 }
 
@@ -143,6 +167,12 @@ export function validateAppleWalletDesignForm(
     "El logo de notificaciones",
     errors,
   );
+  const logoScalePercent = integerValue(formData, "logoScalePercent", "El tamaño del logo", 50, 100, 100, errors);
+  const logoMarginXPercent = integerValue(formData, "logoMarginXPercent", "El margen horizontal del logo", 0, 20, 0, errors);
+  const logoMarginYPercent = integerValue(formData, "logoMarginYPercent", "El margen vertical del logo", 0, 20, 0, errors);
+  const stripScalePercent = integerValue(formData, "stripScalePercent", "El tamaño de la imagen principal", 50, 150, 100, errors);
+  const stripMarginXPercent = integerValue(formData, "stripMarginXPercent", "El margen horizontal de la imagen principal", 0, 20, 0, errors);
+  const stripMarginYPercent = integerValue(formData, "stripMarginYPercent", "El margen vertical de la imagen principal", 0, 20, 0, errors);
 
   if (errors.length) return { ok: false, errors };
   return {
@@ -157,6 +187,12 @@ export function validateAppleWalletDesignForm(
       logoImageUrl,
       stripImageUrl,
       notificationIconUrl,
+      logoScalePercent,
+      logoMarginXPercent,
+      logoMarginYPercent,
+      stripScalePercent,
+      stripMarginXPercent,
+      stripMarginYPercent,
     },
   };
 }

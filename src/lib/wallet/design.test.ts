@@ -16,6 +16,12 @@ function validForm() {
   form.set("logoImageUrl", "https://assets.example.com/logo.png");
   form.set("stripImageUrl", "https://assets.example.com/strip.jpg");
   form.set("notificationIconUrl", "https://assets.example.com/notification.png");
+  form.set("logoScalePercent", "85");
+  form.set("logoMarginXPercent", "4");
+  form.set("logoMarginYPercent", "6");
+  form.set("stripScalePercent", "115");
+  form.set("stripMarginXPercent", "8");
+  form.set("stripMarginYPercent", "10");
   return form;
 }
 
@@ -27,9 +33,23 @@ describe("Apple Wallet tenant design", () => {
     expect(result.data.appleEnabled).toBe(true);
     expect(result.data.backgroundColor).toBe("#17202A");
     expect(result.data.logoImageUrl).toBe("https://assets.example.com/logo.png");
+    expect(result.data.logoScalePercent).toBe(85);
+    expect(result.data.stripMarginYPercent).toBe(10);
     expect(result.data.notificationIconUrl).toBe(
       "https://assets.example.com/notification.png",
     );
+  });
+
+  it("rejects image scale and margin values outside their safe ranges", () => {
+    const form = validForm();
+    form.set("logoScalePercent", "101");
+    form.set("stripMarginXPercent", "21");
+    const result = validateAppleWalletDesignForm(form);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toContain("El tamaño del logo debe estar entre 50 y 100.");
+      expect(result.errors).toContain("El margen horizontal de la imagen principal debe estar entre 0 y 20.");
+    }
   });
 
   it("rejects non-HTTPS assets and inaccessible color combinations", () => {

@@ -2,6 +2,7 @@ import "server-only";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { AppleWalletLocation, AppleWalletPassData } from "./apple";
+import type { AppleWalletImageLayout } from "./apple-image-layout";
 import {
   getApplePassAuthenticationToken,
   resolvePublicAppUrl,
@@ -25,6 +26,8 @@ export type AppleWalletPassSource = {
     logoUrl: string | null;
     stripUrl: string | null;
     notificationIconUrl: string | null;
+    logoLayout: AppleWalletImageLayout;
+    stripLayout: AppleWalletImageLayout;
   };
 };
 
@@ -87,7 +90,7 @@ export async function loadAppleWalletPassSource(
 
   const { data: cardConfiguration, error: cardConfigurationError } = await supabase
     .from("loyalty_cards")
-    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url")
+    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent")
     .eq("id", card.loyalty_card_id)
     .eq("tenant_id", card.tenant_id)
     .maybeSingle();
@@ -279,6 +282,16 @@ export async function loadAppleWalletPassSource(
         logoUrl: design.logo_image_url ?? tenant.logo_url,
         stripUrl: design.strip_image_url ?? tenant.banner_url,
         notificationIconUrl: design.notification_icon_url,
+        logoLayout: {
+          scalePercent: design.logo_scale_percent,
+          marginXPercent: design.logo_margin_x_percent,
+          marginYPercent: design.logo_margin_y_percent,
+        },
+        stripLayout: {
+          scalePercent: design.strip_scale_percent,
+          marginXPercent: design.strip_margin_x_percent,
+          marginYPercent: design.strip_margin_y_percent,
+        },
       },
     },
   };

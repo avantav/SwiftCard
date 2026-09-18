@@ -18,6 +18,12 @@ export type AppleStoreCardPreviewDesign = {
   labelColor: string;
   logoImageUrl: string;
   stripImageUrl: string;
+  logoScalePercent: number;
+  logoMarginXPercent: number;
+  logoMarginYPercent: number;
+  stripScalePercent: number;
+  stripMarginXPercent: number;
+  stripMarginYPercent: number;
 };
 
 type AppleStoreCardPreviewProps = {
@@ -66,6 +72,12 @@ export function AppleStoreCardPreview({
     "--apple-pass-label": design.labelColor,
     "--apple-pass-stamp-diameter": `${layout.diameter}px`,
     "--apple-pass-stamp-gap": `${layout.gap}px`,
+    "--apple-pass-logo-scale": design.logoScalePercent / 100,
+    "--apple-pass-logo-margin-x": `${design.logoMarginXPercent}%`,
+    "--apple-pass-logo-margin-y": `${design.logoMarginYPercent}%`,
+    "--apple-pass-strip-scale": design.stripScalePercent / 100,
+    "--apple-pass-strip-margin-x": `${design.stripMarginXPercent}%`,
+    "--apple-pass-strip-margin-y": `${design.stripMarginYPercent}%`,
   } as CSSProperties;
   const tenantInitials = initials(tenantName);
   const lifetimePoints = programType === "LIFETIME_POINTS";

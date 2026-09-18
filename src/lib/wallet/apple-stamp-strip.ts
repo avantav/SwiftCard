@@ -3,6 +3,11 @@ import {
   appleWalletStampLayout,
   appleWalletStampSlots,
 } from "./apple-stamp-layout";
+import {
+  DEFAULT_APPLE_WALLET_IMAGE_LAYOUT,
+  renderAppleWalletPositionedImage,
+  type AppleWalletImageLayout,
+} from "./apple-image-layout";
 
 export {
   APPLE_WALLET_MAX_VISIBLE_STAMPS,
@@ -25,6 +30,7 @@ type StampStripInput = {
   tenantName: string;
   logoSource: Buffer | null;
   backgroundSource: Buffer | null;
+  backgroundLayout?: AppleWalletImageLayout;
 };
 
 function safeHex(value: string, fallback: string) {
@@ -99,9 +105,13 @@ async function renderStampStrip(
   );
 
   const base = input.backgroundSource
-    ? sharp(input.backgroundSource, { limitInputPixels: 40_000_000 })
-      .rotate()
-      .resize(size.width, size.height, { fit: "cover", position: "centre" })
+    ? sharp(await renderAppleWalletPositionedImage(
+      input.backgroundSource,
+      size.width,
+      size.height,
+      input.backgroundLayout ?? DEFAULT_APPLE_WALLET_IMAGE_LAYOUT,
+      { fit: "cover", background },
+    ))
     : sharp({
       create: {
         width: size.width,

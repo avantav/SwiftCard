@@ -292,6 +292,44 @@
   grid-template-columns: 1fr;
 }
 
+.wallet-image-layout-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wallet-image-layout-group {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.wallet-image-layout-group h4,
+.wallet-image-layout-group p {
+  margin: 0;
+}
+
+.wallet-range-field > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wallet-range-field output {
+  color: var(--enterprise-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.wallet-range-field input[type="range"] {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--enterprise-primary);
+}
+
 .card-color-fields {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -612,7 +650,8 @@
 @media (max-width: 600px) {
   .card-create-form,
   .card-review-grid,
-  .card-color-fields {
+  .card-color-fields,
+  .wallet-image-layout-controls {
     grid-template-columns: 1fr;
   }
 
@@ -5744,10 +5783,12 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 
 .apple-pass-preview-identity img {
   width: auto;
-  max-width: 96px;
+  max-width: calc(96px - var(--apple-pass-logo-margin-x, 0%) - var(--apple-pass-logo-margin-x, 0%));
   height: auto;
-  max-height: 34px;
+  max-height: calc(34px - var(--apple-pass-logo-margin-y, 0%) - var(--apple-pass-logo-margin-y, 0%));
+  margin: var(--apple-pass-logo-margin-y, 0%) var(--apple-pass-logo-margin-x, 0%);
   object-fit: contain;
+  transform: scale(var(--apple-pass-logo-scale, 1));
 }
 
 .apple-pass-preview-mark {
@@ -5802,11 +5843,12 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 .apple-pass-preview-strip {
   position: absolute;
   z-index: -1;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: var(--apple-pass-strip-margin-y, 0%) var(--apple-pass-strip-margin-x, 0%);
+  width: calc(100% - var(--apple-pass-strip-margin-x, 0%) - var(--apple-pass-strip-margin-x, 0%));
+  height: calc(100% - var(--apple-pass-strip-margin-y, 0%) - var(--apple-pass-strip-margin-y, 0%));
   object-fit: cover;
   filter: brightness(0.7);
+  transform: scale(var(--apple-pass-strip-scale, 1));
 }
 
 .apple-pass-preview-stamps {

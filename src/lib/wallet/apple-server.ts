@@ -9,6 +9,10 @@ import { buildAppleWalletPointStrips } from "./apple-point-strip";
 import type { AppleWalletPassData } from "./apple";
 import { buildAppleWalletPassProps } from "./apple";
 import { appleWalletLogoDimensions } from "./apple-logo-layout";
+import {
+  renderAppleWalletPositionedImage,
+  type AppleWalletImageLayout,
+} from "./apple-image-layout";
 import { walletProviderConfig } from "./service";
 import { resolvePublicOrigin } from "@/lib/public-origin";
 import {
@@ -130,6 +134,8 @@ async function buildPassImages(
   logoUrl: string | null,
   stripUrl: string | null,
   notificationIconUrl: string | null,
+  logoLayout: AppleWalletImageLayout,
+  stripLayout: AppleWalletImageLayout,
 ) {
   const fallback = await readFile(
     join(process.cwd(), "public", "icons", "apple-touch-icon.png"),
@@ -150,9 +156,9 @@ async function buildPassImages(
     resizedPng(iconSource, 29, 29, "contain"),
     resizedPng(iconSource, 58, 58, "contain"),
     resizedPng(iconSource, 87, 87, "contain"),
-    resizedPng(logoSource, logoDimensions.width, logoDimensions.height, "contain"),
-    resizedPng(logoSource, logoDimensions.width * 2, logoDimensions.height * 2, "contain"),
-    resizedPng(logoSource, logoDimensions.width * 3, logoDimensions.height * 3, "contain"),
+    renderAppleWalletPositionedImage(logoSource, logoDimensions.width, logoDimensions.height, logoLayout, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }),
+    renderAppleWalletPositionedImage(logoSource, logoDimensions.width * 2, logoDimensions.height * 2, logoLayout, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }),
+    renderAppleWalletPositionedImage(logoSource, logoDimensions.width * 3, logoDimensions.height * 3, logoLayout, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }),
   ]);
   const images: Record<string, Buffer> = {
     "icon.png": entries[0],
@@ -178,6 +184,7 @@ async function buildPassImages(
       pointBalance: input.stampBalance,
       nextGoal: nextPointGoal,
       backgroundSource: stripSource,
+      backgroundLayout: stripLayout,
     })
     : await buildAppleWalletStampStrips({
       backgroundColor: input.backgroundColor,
@@ -187,14 +194,15 @@ async function buildPassImages(
       tenantName: input.tenantName,
       logoSource: tenantLogoSource,
       backgroundSource: stripSource,
+      backgroundLayout: stripLayout,
     });
   if (Object.keys(progressStrips).length) {
     Object.assign(images, progressStrips);
   } else if (stripSource) {
     const staticStrips = await Promise.all([
-      resizedPng(stripSource, 375, 144, "cover"),
-      resizedPng(stripSource, 750, 288, "cover"),
-      resizedPng(stripSource, 1125, 432, "cover"),
+      renderAppleWalletPositionedImage(stripSource, 375, 144, stripLayout, { fit: "cover", background: input.backgroundColor }),
+      renderAppleWalletPositionedImage(stripSource, 750, 288, stripLayout, { fit: "cover", background: input.backgroundColor }),
+      renderAppleWalletPositionedImage(stripSource, 1125, 432, stripLayout, { fit: "cover", background: input.backgroundColor }),
     ]);
     images["strip.png"] = staticStrips[0];
     images["strip@2x.png"] = staticStrips[1];
@@ -209,6 +217,8 @@ export async function generateAppleWalletPass(
     logoUrl: string | null;
     stripUrl: string | null;
     notificationIconUrl: string | null;
+    logoLayout: AppleWalletImageLayout;
+    stripLayout: AppleWalletImageLayout;
   },
 ) {
   const signing = getAppleSigningConfig();
@@ -217,6 +227,8 @@ export async function generateAppleWalletPass(
     assets.logoUrl,
     assets.stripUrl,
     assets.notificationIconUrl,
+    assets.logoLayout,
+    assets.stripLayout,
   );
   const { barcodes, locations, storeCard, ...props } =
     buildAppleWalletPassProps(input, signing.identity);

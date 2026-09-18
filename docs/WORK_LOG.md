@@ -1,5 +1,32 @@
 # Work Log
 
+## 2026-09-17 - Per-Card Image Size And Margin Controls
+
+**Objective:** Let the tenant Admin tune uploaded image size and whitespace in
+the card designer while preserving provider constraints.
+
+**Changes:** Added bounded logo and main-image size, horizontal-margin and
+vertical-margin controls to card stage 2. Migration `0062` stores the six
+values, adds an Admin-only v3 design RPC and extends Apple update queuing. The
+live Apple preview and signed 1x/2x/3x assets share the same composition helper;
+defaults preserve all existing output. The editor explains that Google Wallet
+retains control of its own safe area and crop.
+
+**Security:** Card and tenant authority remain derived from the authenticated
+Admin. Database constraints and server validation enforce every range, Branch
+Administrators cannot mutate the layout, and no image host or upload boundary
+was broadened.
+
+**Validation:** Lint, typecheck, all 279 tests across 78 files, webpack build,
+focused validator/composition/strip tests and the complete disposable
+PostgreSQL migration/RLS suite through `0062` pass. The exact production
+component was reviewed with representative data at 375, 768, 1280 and 1440 px;
+controls stack without overflow, retain native keyboard operation and keep the
+preview contained. The temporary review route was removed.
+
+**Next Action:** Reconcile hosted migration history before applying `0062`,
+then deploy the matching application code and refresh an installed Apple pass.
+
 ## 2026-09-17 - Reviews Plan Review And Phase 11 Registration
 
 **Objective:** Review the new Reviews/reputation proposal and register it as an

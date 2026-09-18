@@ -272,6 +272,13 @@ versión de iOS, Apple Watch y el dispositivo.
 
 El logo, la imagen principal y el logo de notificaciones se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.
 
+El Admin general podrá ajustar por tarjeta el tamaño y los márgenes
+horizontal y vertical del logo y de la imagen principal. La vista previa y el
+archivo Apple firmado usarán los mismos valores dentro de las dimensiones
+fijas del proveedor. Google Wallet conservará los mismos activos, pero puede
+aplicar su propia zona segura y recorte; la interfaz no prometerá equivalencia
+pixel a pixel entre proveedores.
+
 ### Configuración administrativa de tarjetas
 
 El Admin general administrará las tarjetas desde `/admin/cards`. Puede conservar como máximo tres tarjetas no archivadas por tenant. Al iniciar una tarjeta, el backend crea inmediatamente un borrador y un programa pausado ligado de forma uno a uno. La configuración usa cuatro etapas simples:

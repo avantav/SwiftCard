@@ -26,6 +26,12 @@ type CardDesignPreviewContext = {
 
 type CardWalletDesignValues = AppleWalletDesignValues & {
   notificationIconUrl: string;
+  logoScalePercent: number;
+  logoMarginXPercent: number;
+  logoMarginYPercent: number;
+  stripScalePercent: number;
+  stripMarginXPercent: number;
+  stripMarginYPercent: number;
 };
 
 const assetDesignKey: Record<AppleWalletAssetKind, keyof Pick<
@@ -65,6 +71,12 @@ export function CardDesignEditor({
     "--card-preview-background": design.backgroundColor,
     "--card-preview-foreground": design.foregroundColor,
     "--card-preview-label": design.labelColor,
+    "--card-logo-scale": design.logoScalePercent / 100,
+    "--card-logo-margin-x": `${design.logoMarginXPercent}%`,
+    "--card-logo-margin-y": `${design.logoMarginYPercent}%`,
+    "--card-strip-scale": design.stripScalePercent / 100,
+    "--card-strip-margin-x": `${design.stripMarginXPercent}%`,
+    "--card-strip-margin-y": `${design.stripMarginYPercent}%`,
   } as CSSProperties;
   const effectiveDesign = {
     ...design,
@@ -272,6 +284,57 @@ export function CardDesignEditor({
               );
             })}
           </div>
+          <div className="wallet-image-layout-controls">
+            <div className="wallet-image-layout-group">
+              <div>
+                <h4>Logo en la tarjeta</h4>
+                <p className="field-hint">Ajusta el contenido dentro del espacio reservado por Apple.</p>
+              </div>
+              {([
+                ["logoScalePercent", "Tamaño", 50, 100],
+                ["logoMarginXPercent", "Margen horizontal", 0, 20],
+                ["logoMarginYPercent", "Margen vertical", 0, 20],
+              ] as const).map(([key, label, min, max]) => (
+                <label className="field wallet-range-field" key={key}>
+                  <span>{label} <output>{design[key]}%</output></span>
+                  <input
+                    max={max}
+                    min={min}
+                    name={key}
+                    onChange={(event) => update(key, Number(event.target.value))}
+                    step="1"
+                    type="range"
+                    value={design[key]}
+                  />
+                </label>
+              ))}
+            </div>
+            <div className="wallet-image-layout-group">
+              <div>
+                <h4>Imagen principal</h4>
+                <p className="field-hint">El tamaño puede acercar o alejar la imagen; los márgenes conservan una zona libre alrededor.</p>
+              </div>
+              {([
+                ["stripScalePercent", "Tamaño", 50, 150],
+                ["stripMarginXPercent", "Margen horizontal", 0, 20],
+                ["stripMarginYPercent", "Margen vertical", 0, 20],
+              ] as const).map(([key, label, min, max]) => (
+                <label className="field wallet-range-field" key={key}>
+                  <span>{label} <output>{design[key]}%</output></span>
+                  <input
+                    max={max}
+                    min={min}
+                    name={key}
+                    onChange={(event) => update(key, Number(event.target.value))}
+                    step="1"
+                    type="range"
+                    value={design[key]}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          <p className="field-hint">Estos controles se aplican al archivo firmado de Apple Wallet. Google Wallet adapta logo e imagen principal con su propia zona segura y puede recortarlos de forma diferente.</p>
           {isUploading ? <p className="enterprise-alert is-info" role="status">Espera a que terminen las cargas antes de guardar.</p> : null}
         </div>
       </div>

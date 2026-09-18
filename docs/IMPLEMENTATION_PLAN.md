@@ -205,6 +205,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Tighten Apple logo canvases to their source aspect ratio, reserve the header for left-aligned tenant identity, move the reward count to the back, omit barcode alternate text, and queue a one-time installed-pass layout refresh.
 - [x] [Terminada] Restore the available-reward count in compact front fields and add signed plus iOS-26-compatible textual progress bars for non-resetting point cards without competing with header identity.
 - [x] [Terminada] Add an optional per-card Apple notification logo upload, tenant-scoped Storage policy, header-logo fallback and automatic installed-pass refresh when it changes.
+- [x] [Terminada] Add per-card logo and main-image scale plus horizontal/vertical margin controls, persist bounded values, mirror them in the live Apple preview and render them into every signed pass image size.
 - [ ] [Pendiente] Deploy the QR/scanner correction, refresh or reinstall the pass, validate scanning plus APNs end to end on iPhone, and connect the protected retry endpoint to an external cron before production scale.
 - [x] [Terminada] Implement Google Wallet loyalty-class/object synchronization and signed Save to Google Wallet links behind server-only configuration, current-terms acceptance and the shared card design.
 - [ ] [Pendiente] Trigger durable Google object refreshes after balance, reward, program, design or location changes; initial issuance and on-demand resynchronization are complete.

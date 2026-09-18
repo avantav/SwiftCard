@@ -41,6 +41,10 @@ const notificationIconMigration = readFileSync(
   new URL("../../../supabase/migrations/0058_apple_wallet_notification_icon.sql", import.meta.url),
   "utf8",
 );
+const imageLayoutMigration = readFileSync(
+  new URL("../../../supabase/migrations/0062_wallet_image_layout_controls.sql", import.meta.url),
+  "utf8",
+);
 
 describe("multi-card loyalty boundary", () => {
   it("owns a program and limits each tenant to three durable cards", () => {
@@ -85,6 +89,9 @@ describe("multi-card loyalty boundary", () => {
     expect(designEditor).toContain('name="notificationIconUrl"');
     expect(designEditor).toContain("preventSubmitWhileUploading");
     expect(designEditor).toContain("Mostrando cambios sin guardar");
+    expect(designEditor).toContain('name={key}');
+    expect(designEditor).toContain('"logoScalePercent"');
+    expect(designEditor).toContain('"stripMarginYPercent"');
     expect(designEditor).toContain("onInput=");
     expect(wizard).toContain("rewardGoal");
     expect(applePreview).toContain("appleWalletStampSlots");
@@ -100,6 +107,9 @@ describe("multi-card loyalty boundary", () => {
     expect(notificationIconMigration).toContain("notification_icon_url");
     expect(notificationIconMigration).toContain("save_loyalty_card_design_v2");
     expect(notificationIconMigration).toContain("apple_wallet_loyalty_card_changed");
+    expect(imageLayoutMigration).toContain("save_loyalty_card_design_v3");
+    expect(imageLayoutMigration).toContain("logo_scale_percent");
+    expect(imageLayoutMigration).toContain("strip_margin_y_percent");
     expect(cardActions).toContain("tenantAppleWalletAssetPath");
     expect(cardActions).toContain("notification_icon_url");
     expect(cardActions.match(/dispatchAppleWalletUpdatesBestEffort/g)?.length).toBeGreaterThanOrEqual(5);

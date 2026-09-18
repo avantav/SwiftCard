@@ -1,4 +1,9 @@
 import sharp from "sharp";
+import {
+  DEFAULT_APPLE_WALLET_IMAGE_LAYOUT,
+  renderAppleWalletPositionedImage,
+  type AppleWalletImageLayout,
+} from "./apple-image-layout";
 
 const stripSizes = [
   { name: "strip.png", width: 375, height: 144 },
@@ -12,6 +17,7 @@ type PointStripInput = {
   pointBalance: number;
   nextGoal: number | null;
   backgroundSource: Buffer | null;
+  backgroundLayout?: AppleWalletImageLayout;
 };
 
 function safeHex(value: string, fallback: string) {
@@ -44,9 +50,13 @@ async function renderPointStrip(
     </svg>`,
   );
   const base = input.backgroundSource
-    ? sharp(input.backgroundSource, { limitInputPixels: 40_000_000 })
-      .rotate()
-      .resize(size.width, size.height, { fit: "cover", position: "centre" })
+    ? sharp(await renderAppleWalletPositionedImage(
+      input.backgroundSource,
+      size.width,
+      size.height,
+      input.backgroundLayout ?? DEFAULT_APPLE_WALLET_IMAGE_LAYOUT,
+      { fit: "cover", background },
+    ))
     : sharp({
       create: {
         width: size.width,

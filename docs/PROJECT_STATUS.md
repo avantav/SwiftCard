@@ -4,10 +4,10 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Added `/admin/billing`, a general-Admin-only read-only summary of package, subscription, current/peak membership usage, limits, promotion and affiliate attribution.
+- Last completed task: Added per-card logo and main-image size plus horizontal/vertical margin controls with matching Apple preview and signed-pass composition.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: The shared published card can now be added to Apple Wallet or Google Wallet when the corresponding server-only provider configuration is present.
-- Git status: Phase 10 foundation plus package, promotion, affiliate and tenant billing summary pass lint, typecheck, all 276 tests, webpack build, the complete migration/RLS harness through `0061` and commercial-screen review at 375, 768, 1280 and 1440 px. Pre-existing landing/rebrand changes remain uncommitted in the shared worktree.
+- Last stable feature: Tenant Admins can tune Wallet image scale and margins without changing provider dimensions or weakening card authority.
+- Git status: Wallet image-layout controls pass lint, typecheck, all 279 tests across 78 files, webpack build, the complete migration/RLS harness through `0062` and responsive review at 375, 768, 1280 and 1440 px. Migration `0062` remains local pending hosted history reconciliation.
 - Remote backup: Targeted hosted changes `0051`, `0054` and `0056` are live. Canonical hosted migration history still requires reconciliation before any bulk push; the Casa Garmendia welcome configuration intentionally remains disabled until the Admin retries the form with the intended gift.
 
 ## Completed Functionality
@@ -142,6 +142,11 @@
 - Apple header identity now uses a logo canvas constrained to 160×50 while preserving the source aspect ratio, rather than centering every logo inside a wide transparent canvas. The front header no longer spends width on the reward count, the count remains on the back and the QR barcode omits its visible alternate text. Migration `0055` queues a one-time refresh for existing installed passes.
 - Apple store-card fronts again show the available-reward count below the primary balance. Lifetime-point cards also show a five-segment progress value plus exact current/next milestone, and generate a dynamic progress strip for pre-iOS-26 Wallet versions. Migration `0057` queues installed passes after application deployment.
 - The card design editor now accepts an optional square Apple notification logo without changing the visible header identity. Migration `0058` stores it per card, expands tenant Admin-only Storage paths, queues installed passes when it changes, and the generator emits it as the three PassKit icon assets with the normal card logo as fallback.
+- The card design editor now exposes bounded size and horizontal/vertical margin
+  controls for the logo and main image. Migration `0062` persists them per
+  card, restricts mutation to the tenant Admin, queues installed Apple passes,
+  and the server applies the same safe-area composition to 1x/2x/3x signed
+  assets shown by the live preview. Google continues to control its own crop.
 - Google Wallet uses the same published card design to upsert one issuer-scoped loyalty class per card and one loyalty object per issued customer card. Issuance verifies current terms, includes the opaque Web Card QR, live balance/rewards, catalog, HTTPS imagery and up to ten active proximity locations, persists a provider-neutral pass record and redirects through a short signed Save to Google Wallet JWT. Credentials remain server-only and the customer UI uses Google's official Latin American Spanish badge.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
@@ -202,8 +207,12 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 261 tests across 74 files.
+- `npm run test:run`: passed; 279 tests across 78 files.
 - `npm run db:verify-rls`: passed through migration and test `0059`.
+- `npm run db:verify-rls`: passed through migration and test `0062`, including
+  image-layout ranges, Admin persistence and Branch Administrator denial.
+- Wallet image-layout editor: reviewed at 375, 768, 1280 and 1440 px; controls
+  stack on mobile, remain keyboard-native, and keep the preview contained.
 - `/superadmin/billing/packages` representative populated state: reviewed at 375, 768, 1280 and 1440 px; form, capabilities, responsive catalog, status and actions remain contained.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.

@@ -465,3 +465,31 @@
   `answer/3474122`, Maps policy `answer/7400114`, and Google Business Profile
   review-data documentation.
 - Status: Accepted.
+
+## DEC-0044 - Bounded Per-Card Wallet Image Layout Controls
+
+- Date: 2026-09-17
+- Context: The tenant Admin needs to adjust the visible size and surrounding
+  space of uploaded images instead of preparing a new source file for every
+  card. Apple Wallet fixes the logo and store-card strip regions, and Google
+  Wallet independently controls its logo safe area and hero-image crop.
+- Decision: Store per-card percentage controls for logo size, logo horizontal
+  and vertical margins, main-image size, and main-image horizontal and vertical
+  margins. Bound logo size to 50–100%, main-image size to 50–150% and margins to
+  0–20%. Apply them to the live Apple preview and compose them server-side into
+  the required 1x/2x/3x signed assets without changing provider dimensions.
+  Keep defaults at 100% size and zero margins. Explain that Google uses the
+  shared source assets but may crop them differently.
+- Alternatives considered: Change only the browser preview, allow arbitrary
+  pixel dimensions, create separate Apple/Google designers, or require every
+  Admin to pre-edit transparent padding into uploaded files.
+- Reason: Bounded percentages are responsive, preserve existing cards and map
+  to Apple's fixed canvases without presenting unsupported free-form layout as
+  portable across providers.
+- Consequences: Migration `0062` and application code must deploy together.
+  Layout changes queue installed Apple passes and require outbox delivery or a
+  pass reinstall before device validation. Google pixel parity is explicitly
+  outside the guarantee because its renderer owns the final crop.
+- References: Apple Pass Designer image dimensions and Google Wallet loyalty
+  card brand guidelines.
+- Status: Accepted.

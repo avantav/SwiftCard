@@ -22,6 +22,20 @@
   Loyalty automation are later units. See `docs/PRODUCT.md` section 31,
   `docs/IMPLEMENTATION_PLAN.md` Phase 11 and `docs/reviews_plan.md` section 38.
 
+## Wallet image-layout context
+
+- Migration `0062_wallet_image_layout_controls.sql` adds per-card scale and
+  horizontal/vertical margin values for the logo and main image plus the
+  Admin-only `save_loyalty_card_design_v3` RPC.
+- `/admin/cards/[cardId]/edit?step=2` previews these values immediately. Apple
+  pass generation applies them to every 1x/2x/3x logo and strip; Google Wallet
+  receives the shared original assets and retains provider-controlled cropping.
+- Defaults preserve the prior rendering: 100% size and 0% margins. Existing
+  cards therefore do not change until an Admin edits the controls.
+- Do not apply `0062` remotely until `MIGRATIONS-001` is reconciled. Deploy code
+  after the migration, then process the Apple outbox or reinstall a pass for
+  device validation.
+
 ## Commercial billing context
 
 - Phase 10 is now explicitly authorized post-MVP and specified in `docs/PRODUCT.md` section 30 plus `docs/BILLING_STRIPE.md`.
