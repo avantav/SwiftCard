@@ -1,5 +1,70 @@
 # Work Log
 
+## 2026-09-09 - Tenant Billing And Usage Summary
+
+**Objective:** Give the general Admin transparent commercial visibility without initiating payments or enforcing limits.
+
+**Changes:** Added `/admin/billing` and Admin-only navigation. The server derives tenant authority from the authenticated context and reads the RLS-isolated current subscription, current/peak membership usage, active branch and configured-card counts, latest promotion snapshot and affiliate attribution. The page covers loading failure, no-subscription and populated states, translates subscription status, formats currency/periods and warns at 80%, 90% and 100% of the membership high-water limit.
+
+**Scope:** The view is read-only. It does not trust browser tenant IDs, expose billing to branch Managers, create Stripe sessions, alter subscriptions or block membership issuance.
+
+**Validation:** Focused summary/security tests, lint, typecheck, all 276 tests and
+the production build pass. The populated warning state was reviewed at 375,
+768, 1280 and 1440 px with responsive metrics, table and attribution details
+and no overflow. The previously validated RLS harness remains green through
+`0061`; this unit adds no migration.
+
+**Next Action:** Add transactional promotion reservation and global/per-tenant/membership cap consumption before Checkout.
+
+## 2026-09-09 - Affiliate Catalog Management
+
+**Objective:** Make affiliate commercial rules administrable without introducing automatic payouts or trusting browser writes.
+
+**Changes:** Migration `0061` adds validated email storage and Superadmin-only RPCs for affiliate creation, activation and archival, then revokes direct authenticated writes. `/superadmin/billing/affiliates` manages unique codes, optional contact, percentage or minor-unit fixed commissions and 1–365 day attribution windows. Historical referrals and commissions remain protected by archival rather than deletion.
+
+**Validation:** Focused validator/interface tests, lint, typecheck, all 271 tests,
+the production build and the complete disposable PostgreSQL migration/RLS
+harness through `0061` pass. The database suite covers normalization, lifecycle,
+direct-write denial and tenant-Admin denial. The populated view was reviewed at
+375, 768, 1280 and 1440 px; a 768 px table overflow was found and corrected with
+bounded columns and safe text wrapping.
+
+**Deployment:** No hosted mutation was attempted. `0059`–`0061` remain local behind `MIGRATIONS-001`; attribution, accrual, reversals and payouts are separate later units.
+
+**Next Action:** Add the tenant Admin read-only package, subscription and membership-usage summary.
+
+## 2026-09-09 - Promotion Catalog Management
+
+**Objective:** Make the provider-neutral promotion catalog operable before connecting Checkout.
+
+**Changes:** Migration `0060` adds Superadmin-only RPCs that atomically create a promotion with its eligible packages and activate or archive it. Activation requires a non-expired promotion with at least one active eligible package. `/superadmin/billing/promotions` supports percentage and minor-unit fixed discounts, duration, dates, global/per-tenant redemption caps and membership coverage limits with server validation and responsive catalog states.
+
+**Validation:** Focused validator/interface tests, lint, typecheck, all 266 tests,
+the production build and the complete disposable PostgreSQL migration/RLS
+harness through `0060` pass. The database suite verifies atomic eligibility
+persistence, lifecycle changes and tenant-Admin denial. The populated view was
+reviewed at 375, 768, 1280 and 1440 px with no overflow or hierarchy regression.
+
+**Deployment:** No hosted mutation was attempted. `0059` and `0060` remain local behind `MIGRATIONS-001`. Promotion reservation and cap consumption remain intentionally separate until the pre-Checkout flow is implemented.
+
+**Next Action:** Add Superadmin affiliate management, then the tenant Admin billing summary and transactional promotion reservation.
+
+## 2026-09-09 - Commercial Billing Foundation And Package Management
+
+**Objective:** Begin the authorized post-MVP packages, membership-volume promotions, Stripe and affiliate plan with a stable local authority before payment fulfillment.
+
+**Product And Architecture:** Added Product section 30, Phase 10, DEC-0042 and `docs/BILLING_STRIPE.md`. A billable membership is an active issued card for an active customer. PostgreSQL retains current and peak period usage, while Stripe remains an external processor linked through optional IDs.
+
+**Database:** Migration `0059` adds package/price catalogs, billing customers, historical tenant subscriptions with contract snapshots, membership usage, promotions and eligible packages, promotion redemptions, affiliates, one-time tenant attribution, commissions and idempotent Stripe event metadata. All tables force RLS; only Superadmin mutates global catalogs, tenant Admins read their own commercial state, branch roles are denied and browser roles cannot access Stripe events or usage-authority functions.
+
+**Interface:** Added `/superadmin/billing/packages` and navigation. Superadmin can atomically create a draft package plus monthly/yearly price, activate them together or archive them without deleting history. Inputs validate codes, currency, minor-unit money, membership/branch/card limits and allowlisted entitlements.
+
+**Validation:** The complete disposable PostgreSQL migration/RLS harness passes through `0059`, including current/peak membership transitions, cross-tenant denial, role denial, commercial auditing and Superadmin-only package RPCs. Lint, typecheck, all 261 Vitest tests across 74 files and the webpack production build pass. A representative populated package view was reviewed at 375, 768, 1280 and 1440 px; its form, capability controls, responsive catalog, state labels and actions remain contained.
+
+**Deployment:** No hosted mutation was attempted. `MIGRATIONS-001` still blocks bulk deployment, so `0059` remains local until canonical migration history is reconciled.
+
+**Next Action:** Add transactional promotion eligibility/caps and Superadmin promotion/affiliate management, then expose a read-only tenant package and usage summary before connecting Stripe test mode.
+
 ## 2026-09-09 - Captivating Landing Motion And Color
 
 **Objective:** Make the educational landing feel more dynamic and memorable, with a hero that captures buyer attention without sacrificing clarity.
@@ -2052,3 +2117,24 @@
 **Commit Generated**
 
 - `3eb962b chore: initialize swiftwallet scaffold`
+## 2026-09-09 - Reference-driven morrow landing and rebrand
+
+**Objective:** Align the public landing with the supplied design project and adopt its morrow identity without changing stable backend namespaces.
+
+**Changes made**
+
+- Rebuilt `/` around the supplied editorial layout: product-led hero, business strip, benefit cards, product preview, phone Wallet experience, process, dark Wallet block, FAQ and demo close.
+- Preserved the approved light hero after reverting an unrequested experimental direction.
+- Changed the visible product name to lowercase morrow and replaced the prior bar mark with the navy rounded-square italic `m` monogram.
+- Updated navigation, public flows, PWA metadata, offline UI, export naming and non-white-label Wallet attribution.
+- Regenerated the 180px, 192px, 512px and maskable PNG assets from the canonical morrow SVG.
+- Documented marketing tokens, composition, components, motion, responsive rules and brand usage in `docs/DESIGN_SYSTEM.md`.
+- Excluded the standalone TSX reference under `docs/design/` from application TypeScript and ESLint validation.
+
+**Migrations added**
+
+- None.
+
+**Validation**
+
+- In progress.

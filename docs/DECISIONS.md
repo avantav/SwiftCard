@@ -396,3 +396,34 @@
 - Reason: Motion is most valuable when it helps a buyer understand the product while creating a memorable first impression. Scoping it to the landing prevents the operational interface from becoming distracting.
 - Consequences: New landing motion must remain performant, must not hide content when JavaScript or `IntersectionObserver` is unavailable and must be rechecked at the four required widths. Any motion expansion into authenticated areas requires a separate explicit decision.
 - Status: Accepted.
+
+## DEC-0040 - Editorial Product-Led Marketing Language
+
+- Date: 2026-09-09
+- Context: The user supplied a complete landing and component reference under `docs/design/design-system(1)` and explicitly asked for the root landing to follow it and for the resulting system to be documented. The prior landing was educational and animated, but its colorful enterprise-card composition did not match the new editorial, product-led direction.
+- Decision: Use the supplied reference as the visual source for the public marketing route while retaining Spanish copy and real product capabilities. Adopt its morrow name and monogram as the product identity, with an editorial warm-white canvas, navy product surfaces and CTAs, restrained teal accents, limited Georgia italic emphasis, tangible operational/wallet/phone previews and slow layered motion. Keep the acquisition flow demo-first, omit pricing and checkout, preserve authenticated redirects and isolate marketing tokens and scale from the operational application.
+- Alternatives considered: Copy the Morrow example verbatim, keep the previous multicolor landing, apply the reference only to the hero, or migrate the entire authenticated application to the marketing language.
+- Reason: Reusing the reference's composition, identity and design logic makes the intended result concrete, while isolation and semantic token mapping prevent the marketing scale from weakening the denser enterprise console.
+- Consequences: `docs/DESIGN_SYSTEM.md` now defines a marketing-specific extension and the route styling lives in `src/app/landing.css`. The reference source under `docs/design/` remains documentation and is excluded from product TypeScript and ESLint validation. Future landing changes must keep the reference, implementation and documented marketing rules synchronized.
+- Status: Accepted.
+
+## DEC-0041 - Morrow Product Rebrand
+
+- Date: 2026-09-09
+- Context: After reviewing the supplied design reference in the application, the user explicitly selected its “morrow” name and monogram as the product brand rather than keeping the SwiftWallet presentation.
+- Decision: Present the product as lowercase `morrow` in marketing, public flows, authenticated navigation, PWA metadata, offline UI, exports and Wallet attribution. Use the navy rounded-square mark with a lowercase italic serif `m`. Retain existing SwiftWallet technical identifiers in database objects, environment variables, cookies, URLs and provider object IDs where renaming creates migration or compatibility risk.
+- Alternatives considered: Rebrand only the landing, rename every technical identifier immediately, or keep the former logo next to the new name.
+- Reason: A complete user-facing identity avoids a split brand, while leaving stable internal identifiers untouched makes the visual change safe and reversible without affecting sessions, passes or integrations.
+- Consequences: New visible product copy and install surfaces use morrow. A future technical namespace migration, domain change or legal trademark review must be planned separately before changing persistent identifiers.
+- Status: Accepted.
+
+## DEC-0042 - Local Commercial Authority Before Stripe Fulfillment
+
+- Date: 2026-09-09
+- Context: The user authorized starting packages, promotions by membership volume, Stripe billing and affiliates. The repository only had a fictional pricing reference and explicitly lacked billing implementation.
+- Decision: Build a provider-neutral commercial domain before Checkout. Define a billable membership as an active issued customer card for an active customer, record both current use and the high-water mark for each subscription period, and use the high-water mark for future limits or volume billing. Keep packages, immutable subscription snapshots, promotion eligibility/redemptions, affiliate attribution/commissions and event idempotency in PostgreSQL. Stripe Product, Price, Customer, Subscription, Coupon, Promotion Code, Invoice and Event identifiers are optional external links; verified server webhooks will be the automated fulfillment authority.
+- Alternatives considered: Make Stripe Dashboard the only catalog, count raw customer rows, trust a browser-provided quantity, enforce limits immediately, reuse loyalty rewards as billing promotions, or begin with automatic affiliate payouts.
+- Reason: A local contract keeps tenant permissions, historical pricing and promotion rules deterministic, permits manual operation before Stripe credentials exist, and prevents payment-provider availability from corrupting loyalty operations.
+- Consequences: Migration `0059` establishes the commercial schema and measurement triggers without blocking new registrations. Checkout, webhook handlers, package/promotion/affiliate UI, grace behavior, tax policy and automated payouts remain separate reviewed units. Stripe usage meters may later receive derived events, but the database remains the reconciliation source.
+- References: [Stripe products and prices](https://docs.stripe.com/products-prices/how-products-and-prices-work), [Build a subscriptions integration](https://docs.stripe.com/billing/subscriptions/build-subscriptions), [Usage-based billing](https://docs.stripe.com/billing/subscriptions/usage-based/how-it-works), and [Record usage](https://docs.stripe.com/billing/subscriptions/usage-based/recording-usage).
+- Status: Accepted.

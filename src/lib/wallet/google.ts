@@ -107,7 +107,7 @@ export function buildGoogleWalletResources(input: GoogleWalletPassData) {
 
   const loyaltyClass = {
     id: ids.classId,
-    issuerName: bounded(input.tenantName, 20, "SwiftWallet"),
+    issuerName: bounded(input.tenantName, 20, "morrow"),
     programName: bounded(input.programName, 20, "Programa de fidelidad"),
     reviewStatus: "UNDER_REVIEW",
     programLogo: walletImage(input.logoUrl, `Logo de ${input.tenantName}`),

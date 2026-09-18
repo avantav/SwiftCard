@@ -1,6 +1,6 @@
-# SwiftWallet
+# morrow
 
-SwiftWallet is a multi-tenant SaaS MVP for digital loyalty programs. The product source is `docs/PRODUCT.md`; continuity for autonomous development lives in `docs/`.
+morrow is a multi-tenant SaaS MVP for digital loyalty programs. The product source is `docs/PRODUCT.md`; continuity for autonomous development lives in `docs/`.
 
 ## Development
 

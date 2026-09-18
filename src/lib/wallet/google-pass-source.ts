@@ -149,7 +149,7 @@ export async function loadGoogleWalletPassSource(
   try {
     origin = publicAppOrigin(requestUrl);
   } catch {
-    return { ok: false, status: 500, message: "Google Wallet requiere el dominio HTTPS público de SwiftWallet." };
+    return { ok: false, status: 500, message: "Google Wallet requiere el dominio HTTPS público de morrow." };
   }
 
   const logoUrl = configuration.logo_image_url ?? tenant.logo_url ?? `${origin}/icons/icon-512.png`;

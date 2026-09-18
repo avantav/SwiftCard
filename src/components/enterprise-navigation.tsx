@@ -65,6 +65,7 @@ function LogoutButton() {
 
 function isCurrentRoute(pathname: string, item: EnterpriseNavItem) {
   if (item.exact) return pathname === item.href;
+  if (pathname === item.href) return true;
   const matches = item.matches ?? [item.href];
   return matches.some((match) => pathname === match || pathname.startsWith(`${match}/`));
 }
@@ -76,12 +77,12 @@ export function EnterpriseNavigation({ areaLabel, email, groups, roleLabel }: { 
 
   return <>
     <header className="enterprise-mobile-header">
-      <Link className="enterprise-mobile-brand" href={groups[0]?.items[0]?.href ?? "/"}><span className="enterprise-brand-mark" aria-hidden="true"><span /></span><span>SwiftWallet</span></Link>
+      <Link className="enterprise-mobile-brand" href={groups[0]?.items[0]?.href ?? "/"}><span className="enterprise-brand-mark" aria-hidden="true"><span>m</span></span><span>morrow</span></Link>
       <button aria-controls="enterprise-navigation" aria-expanded={open} aria-label={open ? "Cerrar navegación" : "Abrir navegación"} className="enterprise-mobile-menu" onClick={() => setOpen((current) => !current)} type="button"><EnterpriseIcon name={open ? "close" : "menu"} /></button>
     </header>
     {open ? <button aria-label="Cerrar navegación" className="enterprise-nav-backdrop" onClick={() => setOpen(false)} type="button" /> : null}
     <aside className={`enterprise-sidebar${open ? " is-open" : ""}`} id="enterprise-navigation">
-      <Link className="enterprise-brand" href={groups[0]?.items[0]?.href ?? "/"} onClick={() => setOpen(false)}><span className="enterprise-brand-mark" aria-hidden="true"><span /></span><span className="enterprise-brand-copy"><strong>SwiftWallet</strong><small>{areaLabel}</small></span></Link>
+      <Link className="enterprise-brand" href={groups[0]?.items[0]?.href ?? "/"} onClick={() => setOpen(false)}><span className="enterprise-brand-mark" aria-hidden="true"><span>m</span></span><span className="enterprise-brand-copy"><strong>morrow</strong><small>{areaLabel}</small></span></Link>
       <div className="enterprise-nav-groups">
         {groups.map((group) => <nav aria-label={group.label} className="enterprise-nav" key={group.label}>
           <p className="enterprise-nav-label">{group.label}</p>

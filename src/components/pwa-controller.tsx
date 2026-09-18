@@ -122,7 +122,7 @@ export function PwaController() {
         <div className="pwa-notice is-install">
           <span className="pwa-notice-icon" aria-hidden="true"><EnterpriseIcon name="download" /></span>
           <div>
-            <strong>Instala SwiftWallet en este dispositivo</strong>
+            <strong>Instala morrow en este dispositivo</strong>
             <p>{showIosHelp ? "En Safari, toca Compartir y después Agregar a pantalla de inicio." : "Crea un acceso directo para abrir la operación sin buscarla en el navegador."}</p>
           </div>
           {installPrompt ? <button className="pwa-install-button" onClick={install} type="button">Instalar</button> : null}

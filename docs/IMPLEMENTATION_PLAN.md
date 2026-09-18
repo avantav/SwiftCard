@@ -248,3 +248,56 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add production checklist.
 - [x] [Terminada] Document monitoring and backup plan.
 - [ ] [Pendiente] Validate pilot tenant readiness.
+
+## Phase 10 - Comercial, Stripe y afiliados
+
+**Objective:** Add an independently auditable commercial domain for package
+catalogs, tenant subscriptions, membership usage, promotions, Stripe billing
+and affiliate commissions without coupling loyalty correctness to payments.
+
+**Dependencies:** Existing tenant/customer/card authority and immutable audit
+log. This phase is explicitly authorized post-MVP.
+
+**Tasks**
+
+- [x] [Terminada] Define billable memberships as active issued cards for active
+  customers and preserve current plus period-peak usage.
+- [x] [Terminada] Add package, recurring price, tenant subscription, usage,
+  promotion, redemption, affiliate, referral, commission and Stripe-event
+  persistence with forced RLS.
+- [x] [Terminada] Add optional Stripe identifiers while keeping the local
+  catalog and entitlement snapshots authoritative.
+- [x] [Terminada] Add Superadmin atomic package plus initial-price creation and
+  package activation/archival UI.
+- [ ] [Pendiente] Add additional currency/interval prices and version-safe
+  package replacement instead of mutating contracted definitions.
+- [x] [Terminada] Add Superadmin promotion management with atomic package
+  eligibility, rule creation, activation and archival.
+- [x] [Terminada] Add Superadmin affiliate management with validated commission
+  rules and RPC-only activation/archival.
+- [x] [Terminada] Add the general Admin read-only billing summary with package,
+  subscription, current/peak usage, limits, promotion and affiliate attribution.
+- [ ] [Pendiente] Install the Stripe server SDK and implement test-mode Product
+  and Price synchronization.
+- [ ] [Pendiente] Implement server-created Checkout Sessions and Customer Portal
+  sessions without accepting tenant authority from the browser.
+- [ ] [Pendiente] Implement signature-verified, idempotent Stripe webhooks for
+  checkout, subscriptions, invoices, refunds and disputes.
+- [ ] [Pendiente] Add promotion eligibility/reservation and immutable redemption
+  snapshots, including membership coverage and per-tenant/global caps.
+- [ ] [Pendiente] Add affiliate attribution, commission accrual, reversal and
+  manual payout reconciliation.
+- [ ] [Pendiente] Decide and implement membership-limit enforcement plus grace
+  behavior after observing pilot usage; Phase 10 foundation is measurement-only.
+- [ ] [Pendiente] Replace the fictional pricing reference with approved Spanish
+  packages only after catalog, privacy, tax and payment flows are production-ready.
+
+**Acceptance Criteria**
+
+- Tenant staff cannot read another tenant's subscription, usage, promotion
+  redemption, referral or commission records.
+- Only an active Superadmin can mutate global commercial catalogs.
+- Money uses minor units and historical subscriptions/redemptions keep snapshots.
+- Membership usage is backend-derived and cannot decrease below the period peak.
+- Stripe events are unique and browser roles cannot read or mutate them.
+- Archiving commercial records preserves all historical references.

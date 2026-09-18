@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/app",
-    name: "SwiftWallet Operación",
-    short_name: "SwiftWallet",
-    description: "Opera clientes, compras, sellos y recompensas de SwiftWallet.",
+    name: "morrow Operación",
+    short_name: "morrow",
+    description: "Opera clientes, compras, sellos y recompensas de morrow.",
     start_url: "/app",
     scope: "/",
     display: "standalone",
@@ -23,14 +23,14 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         name: "Registrar cliente",
         short_name: "Registro",
-        description: "Registrar un cliente en SwiftWallet.",
+        description: "Registrar un cliente en morrow.",
         url: "/app",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
       },
       {
         name: "Identificar cliente",
         short_name: "Clientes",
-        description: "Escanear una tarjeta o buscar un cliente de SwiftWallet.",
+        description: "Escanear una tarjeta o buscar un cliente de morrow.",
         url: "/app/scan",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }]
       },

@@ -1,12 +1,35 @@
 # Next Session
 
+## Commercial billing context
+
+- Phase 10 is now explicitly authorized post-MVP and specified in `docs/PRODUCT.md` section 30 plus `docs/BILLING_STRIPE.md`.
+- Migration `0059_commercial_billing_foundation.sql` creates the provider-neutral package/subscription/promotion/affiliate model, optional Stripe links, immutable snapshots, forced RLS and backend-derived membership current/peak usage.
+- `/superadmin/billing/packages` lets the active Superadmin create a draft package and price atomically, then activate or archive both. There is no hard delete and no Stripe call yet.
+- Migration `0060_billing_promotion_management.sql` and
+  `/superadmin/billing/promotions` add atomic promotion/rule creation, package
+  eligibility and activation/archival. Activation requires a non-expired promo
+  with an active eligible package; redemption reservation is still pending.
+- Migration `0061_billing_affiliate_management.sql` and
+  `/superadmin/billing/affiliates` add RPC-only affiliate creation, activation
+  and archival with validated percentage/fixed commissions, normalized contact
+  email and attribution window. Attribution and commission accrual remain pending.
+- `/admin/billing` is read-only and visible only to the general Admin. It shows
+  the subscription snapshot, current/peak memberships, branch/card limits,
+  latest promotion and affiliate attribution, with informational capacity
+  warnings at 80%, 90% and 100%. It does not enforce limits or initiate billing.
+- Billable membership means an active `customer_cards` row whose customer is active. Each period keeps current usage and a high-water mark; `0059` measures only and does not block registrations.
+- The complete disposable PostgreSQL migration/RLS harness passes through `0061`, including cross-tenant, Manager and browser-role denial, high-water behavior and RPC-only promotion/affiliate operations.
+- Next implementation unit: transactional promotion reservation/cap consumption, followed by affiliate attribution.
+- Do not apply `0059`–`0061` to hosted Supabase until `MIGRATIONS-001` is reconciled. Do not add live Stripe credentials or public pricing yet.
+
 ## Public landing context
 
 - `/` is now a buyer-facing educational landing rather than an internal gateway. It preserves authenticated staff redirects and the secondary `/login` path.
 - The only primary conversion is “Solicitar una demo”; the page intentionally contains no prices, checkout, Stripe integration or payment collection.
 - Set `NEXT_PUBLIC_DEMO_REQUEST_URL` to the approved scheduling, WhatsApp, email or form destination before publication. Without it, all demo actions land on a transparent in-page placeholder and no personal data is collected.
-- The hero uses a purposeful compra → progreso → premio animation, moving solid-color layers and sequential card feedback. Below-fold sections reveal once through `IntersectionObserver`; reduced-motion users receive the complete static page immediately.
-- The real animated page was reviewed at 375, 768, 1280 and 1440 px. Lint, typecheck, 250 Vitest tests across 72 files and the webpack production build pass.
+- The landing follows `docs/design/design-system(1)`: editorial warm-white composition, navy/teal product previews, Inter with restrained Georgia emphasis, large benefit surfaces, a phone Wallet section and slow layered motion. Below-fold sections reveal once through `IntersectionObserver`; reduced-motion users receive the complete static page immediately.
+- The visible brand is lowercase morrow with the rounded navy `m` monogram across marketing, authenticated navigation, PWA, offline, exports and Wallet attribution. Do not rename stable SwiftWallet environment variables, cookies, provider IDs or database namespaces without a separate migration plan.
+- Final responsive review and validation for the reference-driven rebrand must be recorded after completion.
 
 1. New primary Admin flow: `/admin/cards` supports up to three non-archived card configurations per tenant. `/admin/program` and `/admin/wallet` redirect there.
 2. Aggregate: every `loyalty_cards` row owns one program, one neutral design and branch assignments. Existing program/design/issued-card data is backfilled into one published card by `0043`.

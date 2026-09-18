@@ -233,7 +233,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
     redirectCardError(
       cardId,
       2,
-      "Las imágenes nuevas deben cargarse desde el almacenamiento de SwiftWallet.",
+      "Las imágenes nuevas deben cargarse desde el almacenamiento de morrow.",
     );
   }
   const { data, error } = await context.supabase.schema("app").rpc(

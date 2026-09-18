@@ -1,16 +1,16 @@
-# SwiftWallet Enterprise Web App Design System
+# morrow Enterprise Web App Design System
 
 **Estado:** Obligatorio
 
-**Alcance:** Toda interfaz web de SwiftWallet
+**Alcance:** Toda interfaz web de morrow
 
 **Referencia conceptual:** Claridad, sobriedad y eficiencia operativa de productos enterprise como Verkada Command
 
-**Identidad:** Propia de SwiftWallet; no se copian marca, logotipo, textos, ilustraciones ni componentes propietarios de Verkada
+**Identidad:** Propia de morrow; no se copian marca, logotipo, textos, ilustraciones ni componentes propietarios de Verkada
 
 ## 1. Propósito
 
-Este documento define las reglas visuales, de interacción y de implementación para todas las pantallas de SwiftWallet. Su objetivo es producir una aplicación enterprise consistente, confiable, eficiente y fácil de operar durante jornadas de trabajo reales.
+Este documento define las reglas visuales, de interacción y de implementación para todas las pantallas de morrow. Su objetivo es producir una aplicación enterprise consistente, confiable, eficiente y fácil de operar durante jornadas de trabajo reales.
 
 Estas reglas son obligatorias para:
 
@@ -24,7 +24,7 @@ Una desviación requiere instrucción explícita del usuario y debe documentarse
 
 ## 2. Dirección de diseño
 
-SwiftWallet debe sentirse como un centro de control enterprise moderno:
+morrow debe sentirse como un centro de control enterprise moderno:
 
 - Sobrio, preciso y seguro.
 - Amplio sin desperdiciar espacio.
@@ -33,7 +33,17 @@ SwiftWallet debe sentirse como un centro de control enterprise moderno:
 - Con superficies limpias, bordes discretos y contraste alto.
 - Con color reservado para acción, selección y estado.
 
-La inspiración de Verkada se limita a principios generales: navegación clara, composición limpia, tipografía contenida, controles directos y sensación de producto operativo premium. SwiftWallet conserva su paleta, voz y patrones propios.
+La inspiración de Verkada se limita a principios generales: navegación clara, composición limpia, tipografía contenida, controles directos y sensación de producto operativo premium. morrow conserva su paleta, voz y patrones propios.
+
+### 2.1 Identidad de marca
+
+- El nombre visible del producto es `morrow`, siempre en minúsculas salvo restricciones técnicas de una plataforma.
+- El símbolo es un bloque navy con esquinas suaves y la esquina inferior izquierda más cerrada. En su interior aparece una `m` minúscula en Georgia itálica blanca.
+- El wordmark usa Inter o Arial semibold, tracking negativo ligero y se alinea ópticamente con el símbolo.
+- Tamaño estándar del símbolo: `32px` en aplicación autenticada y `26–27px` en marketing compacto.
+- En sidebar navy, el símbolo invierte a superficie blanca con `m` navy. En superficies claras usa fondo navy y `m` blanca.
+- El monograma no se sustituye por iconos genéricos de wallet, gráficas o tarjetas.
+- Los activos canónicos son `public/icon.svg`, `public/icons/icon-maskable.svg` y sus derivados PNG para PWA y Apple.
 
 ## 3. Principios no negociables
 
@@ -83,7 +93,7 @@ Las áreas Superadmin y Administrador deben utilizar un shell consistente:
 
 El sidebar debe incluir:
 
-- Marca SwiftWallet.
+- Marca morrow.
 - Navegación agrupada por función.
 - Estado activo inequívoco.
 - Identidad y rol del usuario en la zona inferior cuando estén disponibles.
@@ -103,6 +113,88 @@ La PWA de empleados debe priorizar velocidad y uso con una mano:
 ### 4.3 Páginas públicas
 
 Login, registro y Web Card pueden usar una composición centrada y más ligera, pero deben compartir tipografía, colores, controles, radios y estados con la aplicación autenticada.
+
+### 4.4 Landing de marketing y adquisición
+
+La ruta pública raíz tiene un objetivo distinto a las interfaces operativas: educar a una persona no técnica, volver tangible el producto y conducirla a solicitar una demo. Su referencia viva se conserva en `docs/design/design-system(1)` y define la identidad visual de morrow; su contenido ficticio solo sirve como ejemplo de composición.
+
+#### Dirección visual
+
+- Sensación editorial, calmada y premium, con espacio negativo generoso.
+- Producto al centro: el hero debe mostrar una vista reconocible del panel y una tarjeta digital, no ilustraciones abstractas como elemento principal.
+- Navy para confianza y grandes momentos de contraste; teal para interacción, progreso y estados positivos.
+- Superficies claras tipo Apple con radios amplios y sombras difusas, siempre subordinadas al contenido.
+- Una palabra o frase breve en serif itálica puede aportar calidez a titulares de marketing. Inter sigue siendo la fuente funcional y de cuerpo.
+- No trasladar esta escala, tipografía serif ni radios amplios a la consola autenticada.
+
+#### Tokens de marketing
+
+| Token | Valor | Uso |
+|---|---:|---|
+| `--mkt-navy` | `#10253D` | CTA principal, previews de producto y bloques oscuros |
+| `--mkt-navy-deep` | `#0B1B2C` | Contraste interno en superficies navy |
+| `--mkt-teal` | `#0F766E` | Progreso, iconos, enlaces activos y hover |
+| `--mkt-teal-soft` | `#DCEEEA` | Fondos de iconos y feedback positivo |
+| `--mkt-canvas` | `#F8F8F6` | Fondo editorial de la página |
+| `--mkt-card` | `#FFFFFF` | Tarjetas y superficies de producto |
+| `--mkt-cream` | `#EEEDE8` | Secciones de apoyo |
+| `--mkt-text` | `#17212D` | Texto principal de marketing |
+| `--mkt-muted` | `#687180` | Descripciones y metadatos |
+| `--mkt-border` | `#E1E5E5` | Divisores y controles discretos |
+
+Estos tokens son una extensión semántica para marketing y no reemplazan la paleta operativa de la sección 6. No introducir gradientes; profundidad, dirección y movimiento se resuelven con capas de color sólido, líneas, transformaciones y sombras.
+
+#### Tipografía y jerarquía
+
+- Hero en escritorio: `48–72px`, peso `600–650`, line-height cercano a `1.03` y tracking negativo.
+- Títulos de sección: `40–56px`, peso `600–650`, con máximo una frase breve en Georgia itálica.
+- Cuerpo destacado: `16–17px`, line-height entre `1.65` y `1.7`, ancho máximo aproximado de `460px`.
+- Eyebrow: `10px`, semibold, tracking `0.12em` y mayúsculas solo para esta etiqueta breve.
+- Mantener un solo `h1`; las secciones principales usan `h2` y las tarjetas `h3`.
+
+#### Composición de la ruta raíz
+
+La secuencia recomendada es:
+
+1. Header ligero con marca, anclas, acceso secundario y CTA de demo.
+2. Hero dividido: propuesta de valor y CTA a la izquierda; composición tangible de producto a la derecha.
+3. Franja de tipos de negocio para ayudar al visitante a reconocerse.
+4. Tres beneficios centrados en resultados, no en nombres técnicos de funciones.
+5. Vista del producto acompañada de una explicación simple.
+6. Experiencia de la tarjeta dentro de un teléfono.
+7. Proceso de tres pasos.
+8. Bloque navy dedicado a Apple Wallet, Google Wallet y tarjeta web.
+9. Preguntas frecuentes.
+10. Cierre con un único CTA de demo y aclaración comercial honesta.
+
+#### Componentes de marketing
+
+- **Hero de producto:** dashboard, tarjeta y notificación pueden superponerse; la lectura central debe sobrevivir sin animación.
+- **Dashboard preview:** representación simplificada con sidebar navy, tres métricas y dos paneles. Los datos son demostrativos y no deben presentarse como resultados garantizados.
+- **Wallet card:** superficie navy con marca ficticia de comercio, progreso, sellos y próximo premio; debe sentirse como un pase real.
+- **Teléfono:** marco oscuro y pantalla clara que contextualizan la tarjeta. Es una demostración visual, no un control interactivo.
+- **Benefit card:** fondo neutral, radio de `24–28px`, icono lineal en círculo blanco, texto centrado y elevación sutil en hover.
+- **Proceso:** tres columnas separadas por divisores en escritorio y una lista vertical en móvil.
+- **CTA:** navy sobre superficie clara o blanco sobre navy. `Solicitar una demo` es la única acción primaria de conversión; iniciar sesión y anclas son secundarias.
+
+#### Movimiento
+
+- La entrada al viewport usa opacity y desplazamientos de hasta `28px`, con duración de `600–700ms`.
+- Dashboard, teléfono y tarjeta pueden flotar entre `7–10px` en ciclos lentos de `7–8s`.
+- Las piezas superpuestas deben moverse a ritmos distintos para producir profundidad sin distraer.
+- Hover de cards y botones puede elevar hasta `5px` durante `180–220ms`.
+- No usar parallax, rebotes continuos, rotaciones intensas ni animaciones que dificulten la lectura.
+- Todo movimiento ambiental se elimina con `prefers-reduced-motion`.
+
+#### Responsive y contenido
+
+- El contenedor de marketing tiene ancho máximo de `1160px` y padding lateral de `24px` en escritorio, `16px` en móvil.
+- A menos de `1024px`, hero, producto, teléfono, wallet y FAQ pasan a una columna.
+- A menos de `768px`, se oculta la navegación de anclas, el CTA permanece visible y las acciones del hero ocupan el ancho disponible.
+- Los mockups pueden escalarse o recortarse de forma controlada, pero nunca causar overflow horizontal en el viewport.
+- El texto explica beneficios con lenguaje cotidiano; términos como PWA, tenant, RPC, RLS o pass class no aparecen en adquisición.
+- No mostrar precios, checkout ni lenguaje de compra mientras pagos y planes públicos no estén habilitados.
+- Toda promesa debe corresponder a capacidad existente o alcance aprobado. El CTA de demo no debe fingir un flujo de agenda si la URL aún no está configurada.
 
 ## 5. Sistema de espaciado
 
@@ -138,7 +230,7 @@ Reglas:
 | Texto secundario | `#667085` | Ayuda y metadatos |
 | Borde | `#E4E7EC` | Divisiones y controles |
 | Sidebar | `#0C1618` | Navegación enterprise |
-| Primario SwiftWallet | `#149C91` | Acción principal y selección |
+| Primario morrow | `#149C91` | Acción principal y selección |
 | Primario hover | `#0F7E75` | Hover y pressed |
 | Focus | `#2563EB` | Anillo de foco accesible |
 
@@ -402,4 +494,4 @@ Antes de considerar terminada cualquier tarea de interfaz, verificar:
 - Las nuevas decisiones visuales reutilizables deben actualizar este archivo antes o junto con su implementación.
 - Los cambios que contradigan una regla requieren autorización explícita del usuario y una decisión registrada.
 - Una pantalla existente que no cumpla estas reglas debe mejorar de forma incremental cuando sea modificada; no se debe propagar su inconsistencia.
-- Las referencias externas sirven para estudiar principios, nunca para sustituir el criterio, la identidad o los requisitos de SwiftWallet.
+- Las referencias externas sirven para estudiar principios, nunca para sustituir el criterio, la identidad o los requisitos de morrow.

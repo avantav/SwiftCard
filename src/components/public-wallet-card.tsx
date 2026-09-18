@@ -99,6 +99,6 @@ export function PublicWalletCard({ card, cardToken, appleWalletAvailable = false
     </section>
     <section className="wallet-terms" aria-labelledby="wallet-terms-title"><p className="public-eyebrow">Información del programa</p><h2 id="wallet-terms-title">Términos y condiciones</h2><p>{card.terms_and_conditions ?? "Consulta los términos y condiciones vigentes con el negocio."}</p></section>
     <p className="wallet-help">Esta tarjeta es válida en las sucursales participantes de {card.tenant_name}.</p>
-    {card.branding_mode !== "WHITE_LABEL" ? <p className="wallet-powered">Powered by SwiftWallet</p> : null}
+    {card.branding_mode !== "WHITE_LABEL" ? <p className="wallet-powered">Powered by morrow</p> : null}
   </main>;
 }

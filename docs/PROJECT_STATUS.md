@@ -2,19 +2,36 @@
 
 ## Current State
 
-- Current phase: Cross-cutting public marketing landing, followed by Phase 8 Wallet rollout validation.
-- Current task: Connect the approved demo-request destination and review the landing copy with the product owner before publication.
-- Last completed task: Added a color-rich motion system to the educational landing, including a purchase-to-reward hero sequence and progressive scroll reveals with a reduced-motion fallback.
+- Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
+- Current task: Add transactional promotion reservation and cap consumption before Checkout.
+- Last completed task: Added `/admin/billing`, a general-Admin-only read-only summary of package, subscription, current/peak membership usage, limits, promotion and affiliate attribution.
 - Current branch: `codex/google-wallet`.
 - Last stable feature: The shared published card can now be added to Apple Wallet or Google Wallet when the corresponding server-only provider configuration is present.
-- Git status: All 250 Vitest tests across 72 files, lint, typecheck and the webpack production build pass. The animated landing was reviewed at 375, 768, 1280 and 1440 px without overflow and with compliant touch/focus sizing.
+- Git status: Phase 10 foundation plus package, promotion, affiliate and tenant billing summary pass lint, typecheck, all 276 tests, webpack build, the complete migration/RLS harness through `0061` and commercial-screen review at 375, 768, 1280 and 1440 px. Pre-existing landing/rebrand changes remain uncommitted in the shared worktree.
 - Remote backup: Targeted hosted changes `0051`, `0054` and `0056` are live. Canonical hosted migration history still requires reconciliation before any bulk push; the Casa Garmendia welcome configuration intentionally remains disabled until the Admin retries the form with the intended gift.
 
 ## Completed Functionality
 
-- The root route is now a public educational landing for non-technical business buyers. It explains the three-step loyalty journey, customer and operator experiences, supported Wallet channels, multi-branch operation and common adoption questions, with one repeated “Solicitar una demo” conversion goal and no pricing, checkout or payment collection.
-- The landing hero now stages compra, progreso and premio through an animated status sequence, scan line, stamp progression and operation confirmations. Solid-color teal, blue and amber layers add visual energy, while below-fold content reveals once on entry and `prefers-reduced-motion` removes all animation.
+- The root route follows the supplied morrow reference: warm editorial canvas, large Inter/Georgia hierarchy, navy/teal palette, product dashboard, floating loyalty card, phone Wallet experience, spacious benefit cards and one repeated “Solicitar una demo” conversion goal. It contains no pricing, checkout or payment collection.
+- The visible product identity is now lowercase morrow with its navy rounded-square italic `m` monogram. Public/authenticated navigation, metadata, install surfaces, offline UI, exports and non-white-label Wallet attribution use the new brand; stable SwiftWallet technical identifiers remain unchanged for compatibility.
+- Landing product layers float at slow independent rhythms and below-fold content reveals once on entry; `prefers-reduced-motion` removes ambient motion and leaves the complete experience readable.
 - Active staff still leave the landing automatically for their authorized area, password-reset-required users retain their security redirect and unauthenticated staff can reach `/login` through a secondary action.
+- Phase 10 is explicitly authorized post-MVP. Migration `0059` adds forced-RLS package, price, billing customer, subscription, membership usage, promotion, redemption, affiliate, referral, commission and Stripe-event tables.
+- A billable membership is an active issued customer card for an active customer. Database triggers maintain the current count and period high-water mark; deactivation can lower current usage but never its historical peak.
+- Superadmin can create an atomic package plus monthly/yearly price as a draft, activate both together or archive both without deleting subscription history from `/superadmin/billing/packages`.
+- Superadmin can create percentage or fixed-amount promotions with dates,
+  duration, package eligibility, global/per-tenant caps and membership coverage
+  from `/superadmin/billing/promotions`. Creation is atomic; activation requires
+  an active eligible package and a non-expired promotion.
+- Superadmin can create, activate and archive affiliates with percentage or
+  minor-unit fixed commissions, optional normalized contact email and a 1–365
+  day attribution window from `/superadmin/billing/affiliates`. Direct catalog
+  writes are revoked so application changes must pass through audited RPCs.
+- The general Admin can inspect its own package, recurring price, subscription
+  state/period, current and peak membership use, branch/card limits, latest
+  promotion and affiliate attribution from `/admin/billing`. Capacity warnings
+  appear at 80%, 90% and 100%; they are informational and do not block issuance.
+- Tenant Admins can read only active public catalog entries and their own tenant's commercial records; Managers and Employees cannot read billing data, and browser roles have no access to Stripe event records or usage-authority functions.
 - Product source normalized into `docs/PRODUCT.md`.
 - Persistent repo instructions added in `AGENTS.md`.
 - Executable implementation plan started.
@@ -151,6 +168,7 @@
 
 ## Pending Functionality
 
+- Stripe test-mode Product/Price synchronization, Checkout, Customer Portal, signature-verified webhooks, promotion reservation/cap consumption, affiliate attribution/commission accrual and membership-limit/grace enforcement.
 - Configure the real scheduling, WhatsApp, email or form URL in `NEXT_PUBLIC_DEMO_REQUEST_URL`; until then the landing scrolls to its transparent pre-publication contact placeholder and collects no lead data.
 - Generic imported-stamp conversion/milestone generation for lifetime-points programs; the Casa Garmendia one-time profile and configurable welcome-reward generation are complete.
 - Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
@@ -160,6 +178,7 @@
 
 ## Active Blockers
 
+- BILLING-001: Migration `0059` is validated locally but cannot be pushed safely until hosted migration history is reconciled under `MIGRATIONS-001`. Stripe test/live credentials, approved package prices, tax handling and payment policies have not been provided; local UI and webhook implementation can continue without production mutation.
 - WALLET-001: Apple and Google issuance are implemented. The Google issuer/service account and publishing access, real Android save, locally corrected Apple QR, employee camera scan, pass refresh/reinstallation, APNs validation and external retry cron remain deployment or device-validation work.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
@@ -173,7 +192,9 @@
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 193 tests passed.
+- `npm run test:run`: passed; 261 tests across 74 files.
+- `npm run db:verify-rls`: passed through migration and test `0059`.
+- `/superadmin/billing/packages` representative populated state: reviewed at 375, 768, 1280 and 1440 px; form, capabilities, responsive catalog, status and actions remain contained.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.
 - Temporary PostgreSQL 16 migration validation via Docker: passed.
@@ -245,4 +266,4 @@
 
 ## Next Exact Step
 
-Configure `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` locally and in Hostinger with Maps JavaScript API plus Places API (New), billing and exact HTTP-referrer restrictions. Apply validated migrations `0043` through `0050` with approval, select every active branch location, activate geofencing, then test one inside-radius and one outside-radius operation on an HTTPS phone. Continue the lifetime-points and Apple refresh smoke path afterward.
+Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Do not apply `0059`–`0061` remotely or begin Stripe live-mode work until hosted migration history, package pricing, taxes and payment policies are approved.

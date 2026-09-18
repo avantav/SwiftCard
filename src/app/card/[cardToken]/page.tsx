@@ -1,6 +1,6 @@
 import { CustomerCardClaim, type CustomerCardClaimData } from "@/components/customer-card-claim";
 import { PublicWalletCard, type PublicCard } from "@/components/public-wallet-card";
-import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
+import { MorrowBrand } from "@/components/morrow-brand";
 import { createCustomerCardQrDataUrl } from "@/lib/customers/card-qr";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isPublicAppleWalletAvailable, isPublicGoogleWalletAvailable } from "@/lib/wallet/public-availability";
@@ -61,5 +61,5 @@ export default async function CardPage({ params, searchParams }: CardPageProps) 
     />;
   }
   if (card) return <PublicWalletCard appleWalletAvailable={appleWalletAvailable} googleWalletAvailable={googleWalletAvailable} card={card} cardToken={cardToken} qrDataUrl={qrDataUrl} />;
-  return <main className="public-shell"><div className="public-auth-layout"><SwiftWalletBrand /><section className="public-card public-unavailable-card"><span className="enterprise-empty-icon" aria-hidden="true">!</span><h1>Tarjeta no disponible</h1><p>El enlace es inválido, fue revocado o la tarjeta ya no está activa.</p></section></div></main>;
+  return <main className="public-shell"><div className="public-auth-layout"><MorrowBrand /><section className="public-card public-unavailable-card"><span className="enterprise-empty-icon" aria-hidden="true">!</span><h1>Tarjeta no disponible</h1><p>El enlace es inválido, fue revocado o la tarjeta ya no está activa.</p></section></div></main>;
 }

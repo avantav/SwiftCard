@@ -1,6 +1,6 @@
 import { requirePasswordChangeContext } from "@/lib/auth/server";
 import { SubmitButton } from "@/components/submit-button";
-import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
+import { MorrowBrand } from "@/components/morrow-brand";
 import { changeRequiredPassword } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ export default async function ChangePasswordPage({
   return (
     <main className="public-shell">
       <div className="public-auth-layout">
-      <SwiftWalletBrand subtitle="Seguridad de la cuenta" />
+      <MorrowBrand subtitle="Seguridad de la cuenta" />
       <section className="public-card" aria-labelledby="change-password-title">
         <p className="public-eyebrow">Primer acceso</p>
         <h1 id="change-password-title" className="auth-title">

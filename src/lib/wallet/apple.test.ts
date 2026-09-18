@@ -84,7 +84,7 @@ describe("Apple Wallet store card", () => {
     expect(pass.props.locations).toHaveLength(1);
   });
 
-  it("omits SwiftWallet attribution for white-label tenants", () => {
+  it("omits morrow attribution for white-label tenants", () => {
     const base = {
       serialNumber: "card-id",
       tenantName: "Tenant",
@@ -113,7 +113,7 @@ describe("Apple Wallet store card", () => {
       passTypeIdentifier: "pass.com.example",
       teamIdentifier: "TEAM123",
     });
-    expect(JSON.stringify(props)).not.toContain("SwiftWallet");
+    expect(JSON.stringify(props)).not.toContain("morrow");
     expect(props.storeCard.auxiliaryFields[0]?.value).toBe("0 visitas");
   });
 

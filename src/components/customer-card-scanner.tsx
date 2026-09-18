@@ -66,7 +66,7 @@ export function CustomerCardScanner() {
             scanLockedRef.current = true;
             activeControls.stop();
             setState("error");
-            setMessage("El código detectado no es una tarjeta SwiftWallet. Intenta nuevamente.");
+            setMessage("El código detectado no es una tarjeta de morrow. Intenta nuevamente.");
             return;
           }
           if (!navigator.onLine) {

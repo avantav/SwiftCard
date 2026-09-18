@@ -1,4 +1,4 @@
-# SwiftWallet
+# morrow
 
 ## Documento Maestro del MVP
 
@@ -10,7 +10,7 @@
 
 ## 1. Resumen ejecutivo
 
-SwiftWallet será una plataforma SaaS multi-tenant para crear y operar programas de fidelidad digitales. Cada negocio podrá administrar sucursales, empleados, clientes, reglas de acumulación, recompensas, tarjetas digitales, estadísticas y exportaciones.
+morrow será una plataforma SaaS multi-tenant para crear y operar programas de fidelidad digitales. Cada negocio podrá administrar sucursales, empleados, clientes, reglas de acumulación, recompensas, tarjetas digitales, estadísticas y exportaciones.
 
 El cliente final no tendrá un portal ni una cuenta con contraseña. Después de registrar sus datos recibirá una tarjeta de recompensas disponible como Web Card, Apple Wallet y Google Wallet. Los empleados utilizarán una PWA instalada en un teléfono del negocio para escanear la tarjeta, registrar compras y canjear recompensas.
 
@@ -55,6 +55,11 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 - Dashboard, CSV y XLSX.
 
 ## 4. Fuera del MVP
+
+Las siguientes capacidades permanecen fuera de la definición original del MVP.
+La expansión comercial de la sección 30 fue autorizada posteriormente y se
+implementará como una fase independiente, sin reinterpretarlas como requisito
+de salida del piloto original.
 
 - Portal y login del cliente.  
 - OTP o validación SMS.  
@@ -237,7 +242,7 @@ Contenido mínimo:
 - Recompensas disponibles.  
 - Descripción de cada recompensa.
 - Términos y condiciones del programa.
-- Marca de agua Powered by SwiftWallet cuando el tenant no sea white-label.
+- Marca de agua Powered by morrow cuando el tenant no sea white-label.
 
 En la Web Card, los programas cíclicos representarán el avance mediante
 círculos de sello en lugar de un contador numérico visible. Cada círculo
@@ -663,7 +668,7 @@ E2E:
 
 ## 26. Información necesaria antes del piloto
 
-- Logo de SwiftWallet.  
+- Logo de morrow.
 - Dominio.  
 - Tenant piloto.  
 - Branding y reglas reales.  
@@ -688,6 +693,9 @@ E2E:
 - Apps nativas.  
 - Campañas y avisos de expiración.  
 - Referidos, cupones, API pública y CRM.
+
+Suscripciones, promociones, cupones y referidos dejan de ser backlog no
+priorizado: su primera fase técnica queda autorizada en la sección 30.
 
 ## 28. Flujo con Codex
 
@@ -736,3 +744,80 @@ El MVP estará terminado cuando:
 - Auditoría está disponible.  
 - RLS impide acceso cruzado.  
 - Un tenant piloto opera en producción controlada.  
+
+## 30. Expansión comercial autorizada
+
+### 30.1 Objetivo
+
+morrow podrá definir paquetes comerciales, asignarlos a tenants, medir su uso
+por membresías, aplicar promociones controladas, atribuir ventas a afiliados y
+usar Stripe como procesador de cobro. Este dominio es posterior e independiente
+del MVP de fidelidad; una falla de facturación nunca debe alterar compras,
+puntos, recompensas ni tarjetas de clientes.
+
+### 30.2 Definición de membresía facturable
+
+Una membresía facturable es una tarjeta de cliente activa cuyo cliente también
+está activo. El uso del periodo conserva dos valores: conteo actual y pico del
+periodo. Los límites y futuros cobros por volumen usarán el pico, de modo que
+revocar o reactivar registros no permita reducir retrospectivamente el consumo.
+El backend calcula ambos valores; ningún contador enviado por el frontend es
+autoridad.
+
+### 30.3 Paquetes y precios
+
+- El Superadmin administra un catálogo versionable de paquetes.
+- Un paquete define nombre, descripción, límites de membresías, sucursales y
+  tarjetas, así como capacidades incluidas.
+- Un paquete puede tener precios mensuales y anuales por moneda.
+- Los precios se almacenan en unidades mínimas y no se modifican en contratos
+  existentes: una suscripción conserva un snapshot del nombre, precio y límites.
+- Quitar un paquete o precio significa archivarlo; no se elimina si tiene
+  suscripciones o historial.
+- Los identificadores Stripe Product y Price son vínculos opcionales. El
+  catálogo local sigue siendo la fuente de verdad de permisos y presentación.
+
+### 30.4 Suscripciones y uso
+
+- Un tenant puede tener una sola suscripción vigente y conservar historial de
+  suscripciones terminadas.
+- Estados mínimos: prueba, incompleta, activa, vencida, pausada y cancelada.
+- El acceso y los límites no se activan desde el retorno del navegador. Solo una
+  operación administrativa autorizada o un webhook Stripe verificado cambia la
+  suscripción efectiva.
+- La primera fase registra y reporta límites; el bloqueo de nuevas membresías y
+  las reglas de gracia se habilitarán después de validar el flujo comercial.
+
+### 30.5 Promociones
+
+- El Superadmin puede crear, activar y archivar promociones.
+- Admiten porcentaje o monto fijo, vigencia, paquetes elegibles, máximo global
+  de usos, máximo por tenant y cantidad máxima de membresías cubiertas.
+- Cada aplicación conserva el paquete, suscripción, afiliado opcional, cantidad
+  de membresías cubierta y valores monetarios como snapshot.
+- Una promoción archivada no afecta aplicaciones ni facturas históricas.
+- Los códigos de Stripe son una representación de cobro; las reglas de
+  elegibilidad se validan primero en morrow.
+
+### 30.6 Afiliados
+
+- Un afiliado tiene código único, estado y regla de comisión fija o porcentual.
+- La atribución de un tenant se registra una sola vez y no depende de cookies
+  para conservarse después de la conversión.
+- Cada comisión referencia la suscripción y el cobro que la originó, y pasa por
+  estados pendiente, aprobada, pagada o anulada.
+- Reembolsos o contracargos pueden anular comisiones no pagadas o crear una
+  corrección auditable. Los pagos automáticos a afiliados no forman parte de la
+  primera integración Stripe.
+
+### 30.7 Stripe y seguridad
+
+- Checkout, Customer Portal y webhooks se ejecutan únicamente en el servidor.
+- Las claves secretas y el secreto de firma nunca llegan al navegador.
+- Cada evento se procesa de forma idempotente por su identificador Stripe y se
+  conserva un estado de procesamiento sin almacenar datos sensibles innecesarios.
+- La firma se verifica sobre el cuerpo original de la solicitud.
+- Los IDs internos se vinculan mediante registros locales y metadata, pero
+  nunca se acepta un `tenant_id` del navegador como autoridad.
+- El lanzamiento empieza en modo de prueba y requiere reconciliación, manejo de
+  reembolsos, impuestos y validación de moneda antes de producción.

@@ -8,7 +8,7 @@ export function parseCardQrPayload(payload: string): { ok: true; cardToken: stri
   try {
     const url = new URL(value);
     const match = url.pathname.match(/^\/card\/([^/]+)$/);
-    if (!match) return { ok: false, error: "El QR no contiene una tarjeta SwiftWallet." };
+    if (!match) return { ok: false, error: "El QR no contiene una tarjeta de morrow." };
     token = match[1];
   } catch {
     // Raw tokens are supported for scanner integrations that omit the URL.

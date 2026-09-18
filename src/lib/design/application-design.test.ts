@@ -28,7 +28,7 @@ describe("application-wide design contract", () => {
     expect(operationsNavigation).toContain('aria-label="Navegación operativa"');
     expect(operationsNavigation).toContain("tenantLogoUrl");
     expect(operationsNavigation).toContain("tenantName");
-    expect(operationsNavigation).not.toContain("SwiftWallet</strong>");
+    expect(operationsNavigation).not.toContain("morrow</strong>");
     expect(operationsNavigation).toContain("Salir");
   });
 
@@ -45,7 +45,7 @@ describe("application-wide design contract", () => {
 
   it("uses the shared public composition and a branded Web Card", () => {
     for (const page of publicPages) expect(page).toContain("public-");
-    expect(source("../../app/page.tsx")).toContain('className="landing-page"');
+    expect(source("../../app/page.tsx")).toContain('className="landing-page mkt-page"');
     const cardPage = source("../../app/card/[cardToken]/page.tsx");
     const card = source("../../components/public-wallet-card.tsx");
     expect(cardPage).toContain("PublicWalletCard");
@@ -56,7 +56,7 @@ describe("application-wide design contract", () => {
     expect(card).toContain("wallet-stamp-logo");
     expect(card).toContain("sellos acumulados");
     expect(styles).toContain(".wallet-stamp.is-filled");
-    expect(card).toContain("Powered by SwiftWallet");
+    expect(card).toContain("Powered by morrow");
   });
 
   it("prevents automatic iOS focus zoom in QR registration without disabling manual zoom", () => {

@@ -1,6 +1,6 @@
 import { PublicRegistrationSuccess } from "@/components/public-registration-success";
 import { SubmitButton } from "@/components/submit-button";
-import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
+import { MorrowBrand } from "@/components/morrow-brand";
 import { getPublicRegistrationContext } from "@/lib/customers/public-registration-context";
 import { isPublicAppleWalletAvailable, isPublicGoogleWalletAvailable } from "@/lib/wallet/public-availability";
 import { registerCustomer } from "./actions";
@@ -21,10 +21,10 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
   const action = registerCustomer.bind(null, branchToken);
 
   if (!registrationContext) {
-    return <main className="public-shell public-registration-shell"><div className="public-auth-layout public-registration-layout"><SwiftWalletBrand subtitle="Registro de cliente" /><section className="public-card" aria-labelledby="registration-title"><p className="public-eyebrow">Registro no disponible</p><h1 id="registration-title" className="auth-title">Este enlace no está activo</h1><p className="public-card-copy">Solicita al negocio un código QR vigente para crear tu tarjeta.</p></section></div></main>;
+    return <main className="public-shell public-registration-shell"><div className="public-auth-layout public-registration-layout"><MorrowBrand subtitle="Registro de cliente" /><section className="public-card" aria-labelledby="registration-title"><p className="public-eyebrow">Registro no disponible</p><h1 id="registration-title" className="auth-title">Este enlace no está activo</h1><p className="public-card-copy">Solicita al negocio un código QR vigente para crear tu tarjeta.</p></section></div></main>;
   }
 
-  return <main className="public-shell public-registration-shell"><div className="public-auth-layout public-registration-layout"><SwiftWalletBrand subtitle="Registro de cliente" />
+  return <main className="public-shell public-registration-shell"><div className="public-auth-layout public-registration-layout"><MorrowBrand subtitle="Registro de cliente" />
     <section className="public-card" aria-labelledby="registration-title"><p className="public-eyebrow">{registrationContext.tenantName} · {registrationContext.branchName}</p><h1 id="registration-title" className="auth-title">Crear mi tarjeta</h1><p className="public-card-copy">Registra tus datos para recibir una tarjeta digital válida en las sucursales participantes.</p>
     {registrationCreated && cardToken ? <PublicRegistrationSuccess appleWalletAvailable={appleWalletAvailable} googleWalletAvailable={googleWalletAvailable} cardToken={cardToken} /> : null}
     {duplicate ? <p className="enterprise-alert is-error" role="alert">Este teléfono ya está registrado. Solicita ayuda a un empleado para recuperar tu tarjeta.</p> : null}

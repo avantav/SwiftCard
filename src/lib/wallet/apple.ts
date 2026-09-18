@@ -186,7 +186,7 @@ export function buildAppleWalletPassProps(
               {
                 key: "powered-by",
                 label: "PLATAFORMA",
-                value: "Powered by SwiftWallet",
+                value: "Powered by morrow",
               },
             ]),
       ],

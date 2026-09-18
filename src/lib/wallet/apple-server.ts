@@ -240,7 +240,7 @@ export function resolvePublicAppUrl(requestUrl: string) {
   const configured = process.env.SWIFTWALLET_PUBLIC_URL?.trim();
   const origin = resolvePublicOrigin(configured || new URL(requestUrl).origin);
   if (!origin) {
-    throw new Error("SwiftWallet public URL must use HTTPS.");
+    throw new Error("The public morrow URL must use HTTPS.");
   }
   return origin;
 }

@@ -1,6 +1,6 @@
 import { getSafeRedirectPath } from "@/lib/auth/redirects";
 import { SubmitButton } from "@/components/submit-button";
-import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
+import { MorrowBrand } from "@/components/morrow-brand";
 import { signInWithPassword } from "./actions";
 
 const errorMessages: Record<string, string> = {
@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <main className="public-shell">
       <div className="public-auth-layout">
-      <SwiftWalletBrand subtitle="Operación de fidelidad" />
+      <MorrowBrand subtitle="Operación de fidelidad" />
       <section className="public-card" aria-labelledby="login-title">
         <p className="public-eyebrow">Acceso interno</p>
         <h1 id="login-title" className="auth-title">

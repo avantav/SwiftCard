@@ -2,15 +2,16 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SwiftWallet",
+  title: "morrow",
   description: "SaaS multi-tenant para programas de fidelidad digitales",
-  applicationName: "SwiftWallet",
+  applicationName: "morrow",
   manifest: "/manifest.webmanifest",
   formatDetection: {
     telephone: false
   },
   icons: {
     icon: [
+      { url: "/icon.svg", sizes: "any", type: "image/svg+xml" },
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }
     ],
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "SwiftWallet"
+    title: "morrow"
   }
 };
 

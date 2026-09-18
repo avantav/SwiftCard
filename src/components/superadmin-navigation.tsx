@@ -3,8 +3,11 @@ import { EnterpriseNavigation, type EnterpriseNavGroup } from "@/components/ente
 const groups: EnterpriseNavGroup[] = [{
   label: "Operación",
   items: [
-    { href: "/superadmin", label: "Tenants", icon: "building", matches: ["/superadmin", "/superadmin/tenants"] },
-    { href: "/superadmin/imports", label: "Importaciones", icon: "import" }
+    { href: "/superadmin", label: "Tenants", icon: "building", matches: ["/superadmin/tenants"] },
+    { href: "/superadmin/imports", label: "Importaciones", icon: "import" },
+    { href: "/superadmin/billing/packages", label: "Paquetes", icon: "cart" },
+    { href: "/superadmin/billing/promotions", label: "Promociones", icon: "award" },
+    { href: "/superadmin/billing/affiliates", label: "Afiliados", icon: "user-plus" }
   ]
 }];
 

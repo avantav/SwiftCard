@@ -88,7 +88,7 @@ export async function saveAppleWalletDesign(formData: FormData) {
     );
     if (!path) {
       redirectWithError(
-        "Las imágenes nuevas deben cargarse desde el almacenamiento de SwiftWallet.",
+        "Las imágenes nuevas deben cargarse desde el almacenamiento de morrow.",
       );
     }
     return path;

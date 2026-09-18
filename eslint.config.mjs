@@ -5,9 +5,8 @@ const eslintConfig = [
   ...nextVitals,
   ...nextTypescript,
   {
-    ignores: ["node_modules/**", ".next/**", "coverage/**"]
+    ignores: ["node_modules/**", ".next/**", "coverage/**", "docs/design/**"]
   }
 ];
 
 export default eslintConfig;
-

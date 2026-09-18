@@ -2,61 +2,170 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LandingMotion } from "@/components/landing-motion";
-import { SwiftWalletBrand } from "@/components/swiftwallet-brand";
+import { MorrowBrand } from "@/components/morrow-brand";
 import { getStaffSessionContext } from "@/lib/auth/server";
 import { getDefaultInternalRoute } from "@/lib/auth/routes";
+import "./landing.css";
 
 export const metadata: Metadata = {
-  title: "SwiftWallet | Fidelidad digital fácil de entender",
+  title: "morrow | Lealtad digital que hace volver a tus clientes",
   description:
-    "Crea un programa de lealtad digital, entrega tarjetas para Apple Wallet y Google Wallet y opera recompensas desde cualquier sucursal."
+    "Crea un programa de lealtad fácil de usar, entrega tarjetas para Apple Wallet y Google Wallet y entiende qué hace volver a tus clientes."
 };
+
+type MarketingIconName =
+  | "arrow"
+  | "chart"
+  | "check"
+  | "gift"
+  | "scan"
+  | "shield"
+  | "store"
+  | "users"
+  | "wallet";
+
+function MarketingIcon({ name, size = 18 }: { name: MarketingIconName; size?: number }) {
+  const paths: Record<MarketingIconName, React.ReactNode> = {
+    arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
+    chart: <><path d="M4 19V9" /><path d="M10 19V5" /><path d="M16 19v-7" /><path d="M22 19H2" /></>,
+    check: <path d="m5 12 4 4L19 6" />,
+    gift: <><rect x="3" y="8" width="18" height="13" rx="2" /><path d="M12 8v13M3 12h18M7.5 8C5 8 4 6.8 4 5.5S5.1 3 6.5 3C9 3 12 8 12 8m4.5 0C19 8 20 6.8 20 5.5S18.9 3 17.5 3C15 3 12 8 12 8" /></>,
+    scan: <><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3" /><path d="M7 12h10" /></>,
+    shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></>,
+    store: <><path d="M3 9h18l-2-5H5L3 9Z" /><path d="M5 9v11h14V9M9 20v-6h6v6" /></>,
+    users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
+    wallet: <><path d="M4 5h15a2 2 0 0 1 2 2v12H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" /><path d="M16 11h5v5h-5a2.5 2.5 0 0 1 0-5Z" /></>
+  };
+
+  return (
+    <svg aria-hidden="true" fill="none" height={size} viewBox="0 0 24 24" width={size}>
+      <g stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8">
+        {paths[name]}
+      </g>
+    </svg>
+  );
+}
 
 const benefits = [
   {
-    title: "Una tarjeta que el cliente sí lleva",
-    description:
-      "La tarjeta vive en Apple Wallet, Google Wallet o en la web. No hay otra app que aprender ni una contraseña que recordar."
+    icon: "users" as const,
+    title: "Más visitas que sí puedes medir",
+    description: "Da a cada cliente una razón clara para volver y observa el avance de tu programa en un solo lugar."
   },
   {
-    title: "Reglas simples para tu negocio",
-    description:
-      "Define sellos por visita, sellos por monto o puntos acumulativos, con los premios que mejor funcionen para ti."
+    icon: "gift" as const,
+    title: "Premios que se entienden al instante",
+    description: "Tus clientes saben cuánto han avanzado, qué pueden ganar y cuándo pueden usar su recompensa."
   },
   {
-    title: "Operación clara para el equipo",
-    description:
-      "Tu personal escanea la tarjeta, registra la compra y confirma. SwiftWallet calcula el avance y entrega los premios."
-  },
-  {
-    title: "Visibilidad en todas tus sucursales",
-    description:
-      "Consulta clientes, compras, recompensas y resultados por sucursal desde un solo lugar."
+    icon: "wallet" as const,
+    title: "Una tarjeta que siempre llevan",
+    description: "La tarjeta vive en Apple Wallet, Google Wallet o en la web. No hay otra app que aprender."
   }
 ];
 
 const questions = [
   {
     question: "¿Mis clientes tienen que descargar una app?",
-    answer:
-      "No. Pueden guardar su tarjeta en Apple Wallet o Google Wallet y también abrir una versión web desde su teléfono."
+    answer: "No. Guardan su tarjeta en Apple Wallet o Google Wallet y también pueden abrir una versión web desde su teléfono."
   },
   {
     question: "¿Tengo que cambiar mi sistema de cobro?",
-    answer:
-      "No para comenzar. El equipo registra la compra desde la PWA de SwiftWallet y tu operación de cobro puede continuar como está."
+    answer: "No para comenzar. Tu equipo registra la compra desde morrow y tu operación de cobro puede continuar como está."
   },
   {
     question: "¿Funciona si tengo varias sucursales?",
-    answer:
-      "Sí. Puedes asignar programas a sucursales participantes, controlar el acceso del personal y consultar resultados por ubicación."
+    answer: "Sí. Puedes controlar el acceso de tu equipo, elegir sucursales participantes y consultar resultados por ubicación."
   },
   {
-    question: "¿Puedo contratar y pagar desde el sitio?",
-    answer:
-      "Todavía no. En esta etapa conocemos tu operación en una demo y definimos contigo la configuración adecuada, sin pedir pagos en línea."
+    question: "¿Puedo contratar y pagar desde este sitio?",
+    answer: "Todavía no. Primero conocemos tu operación en una demo y definimos contigo la configuración adecuada, sin pedir pagos en línea."
   }
 ];
+
+function WalletCard({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`mkt-wallet-card${compact ? " is-compact" : ""}`}>
+      <div className="mkt-wallet-brand">
+        <span className="mkt-pass-mark">S</span>
+        <span><strong>CAFÉ NORTE</strong><small>CLUB DE VISITAS</small></span>
+        <span className="mkt-qr" aria-hidden="true" />
+      </div>
+      <div className="mkt-wallet-progress">
+        <small>PROGRESO DE ANA</small>
+        <strong>7 de 10 visitas</strong>
+        <div className="mkt-stamp-row" aria-label="7 de 10 visitas completadas">
+          {Array.from({ length: 10 }, (_, index) => (
+            <span className={index < 7 ? "is-earned" : undefined} key={index}>
+              {index < 7 ? <MarketingIcon name="check" size={9} /> : null}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="mkt-wallet-reward">
+        <span><small>PRÓXIMO PREMIO</small><strong>Bebida de cortesía</strong></span>
+        <MarketingIcon name="gift" size={19} />
+      </div>
+    </div>
+  );
+}
+
+function DashboardPreview({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`mkt-dashboard${compact ? " is-compact" : ""}`} role="img" aria-label="Vista del panel de morrow con clientes, visitas y recompensas">
+      <aside>
+        <div className="mkt-dashboard-brand"><span>m</span> morrow</div>
+        <p>ESPACIO DE TRABAJO</p>
+        <ul>
+          <li className="is-active"><MarketingIcon name="chart" size={13} /> Resumen</li>
+          <li><MarketingIcon name="users" size={13} /> Clientes</li>
+          <li><MarketingIcon name="gift" size={13} /> Recompensas</li>
+          <li><MarketingIcon name="store" size={13} /> Sucursales</li>
+        </ul>
+        <div className="mkt-dashboard-user"><span>AM</span><small>Andrea M.<br />Administradora</small></div>
+      </aside>
+      <div className="mkt-dashboard-main">
+        <header><div><small>HOY</small><strong>Tu programa, de un vistazo</strong></div><span>+</span></header>
+        <div className="mkt-metrics">
+          <article><small>Clientes activos</small><strong>2,847</strong><em>+12.8%</em></article>
+          <article><small>Visitas este mes</small><strong>8,429</strong><em>+8.4%</em></article>
+          <article><small>Premios usados</small><strong>684</strong><em>+21.2%</em></article>
+        </div>
+        <div className="mkt-dashboard-panels">
+          <article className="mkt-chart-panel">
+            <div><strong>Actividad de clientes</strong><small>Últimos 30 días</small></div>
+            <div className="mkt-chart" aria-hidden="true"><i /><i /><i /><span /></div>
+            <footer><span>10 ago</span><span>20 ago</span><span>1 sep</span><span>9 sep</span></footer>
+          </article>
+          <article className="mkt-activity-panel">
+            <strong>Actividad reciente</strong>
+            <div><span><MarketingIcon name="gift" size={11} /></span><p><b>Premio canjeado</b><small>Hace un momento</small></p></div>
+            <div><span><MarketingIcon name="users" size={11} /></span><p><b>Nuevo registro</b><small>Hace 4 minutos</small></p></div>
+            <div><span><MarketingIcon name="check" size={11} /></span><p><b>Visita registrada</b><small>Hace 12 minutos</small></p></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PhonePreview() {
+  return (
+    <div className="mkt-phone-stage" role="img" aria-label="Tarjeta de lealtad de morrow dentro de la wallet de un teléfono">
+      <div className="mkt-phone-orbit" aria-hidden="true" />
+      <div className="mkt-phone">
+        <div className="mkt-phone-screen">
+          <span className="mkt-dynamic-island" />
+          <div className="mkt-phone-status"><b>9:41</b><span>● ◒ ▰</span></div>
+          <div className="mkt-phone-header"><span>‹</span><strong>Wallet</strong><span>•••</span></div>
+          <WalletCard />
+          <div className="mkt-phone-action"><MarketingIcon name="wallet" size={15} /> Detalles de la tarjeta</div>
+          <span className="mkt-home-indicator" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function HomePage() {
   const demoRequestHref = process.env.NEXT_PUBLIC_DEMO_REQUEST_URL?.trim() || "#demo-contacto";
@@ -67,253 +176,125 @@ export default async function HomePage() {
     context = null;
   }
 
-  if (context?.access.staffStatus === "PASSWORD_RESET_REQUIRED") {
-    redirect("/change-password");
-  }
-
-  if (context?.access.staffStatus === "ACTIVE") {
-    redirect(getDefaultInternalRoute(context.access.role));
-  }
+  if (context?.access.staffStatus === "PASSWORD_RESET_REQUIRED") redirect("/change-password");
+  if (context?.access.staffStatus === "ACTIVE") redirect(getDefaultInternalRoute(context.access.role));
 
   return (
-    <main className="landing-page">
+    <main className="landing-page mkt-page">
       <LandingMotion />
-      <header className="landing-header">
-        <div className="landing-container landing-header-inner">
-          <SwiftWalletBrand subtitle="Fidelidad digital" />
-          <nav className="landing-nav" aria-label="Navegación principal">
-            <a href="#como-funciona">Cómo funciona</a>
+      <header className="mkt-header">
+        <div className="mkt-container mkt-header-inner">
+          <MorrowBrand />
+          <nav className="mkt-nav" aria-label="Navegación principal">
+            <a href="#producto">Producto</a>
             <a href="#beneficios">Beneficios</a>
+            <a href="#como-funciona">Cómo funciona</a>
             <a href="#preguntas">Preguntas</a>
           </nav>
-          <div className="landing-header-actions">
-            <Link className="landing-login-link" href="/login">
-              Iniciar sesión
-            </Link>
-            <a className="landing-button landing-button-primary" href={demoRequestHref}>
-              Solicitar una demo
-            </a>
+          <div className="mkt-header-actions">
+            <Link href="/login">Iniciar sesión</Link>
+            <a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
           </div>
         </div>
       </header>
 
-      <section className="landing-hero" aria-labelledby="landing-title">
-        <div className="landing-hero-color-field" aria-hidden="true">
-          <span className="is-teal" />
-          <span className="is-blue" />
-          <span className="is-amber" />
-        </div>
-        <div className="landing-container landing-hero-grid">
-          <div className="landing-hero-copy">
-            <p className="landing-kicker">Fidelidad digital, sin complicaciones</p>
-            <h1 id="landing-title">Convierte cada compra en una <span>razón para volver.</span></h1>
-            <p className="landing-hero-description">
-              SwiftWallet ayuda a tu negocio a crear un programa de recompensas fácil para tus
-              clientes y sencillo de operar para tu equipo.
-            </p>
-            <div className="landing-hero-actions">
-              <a className="landing-button landing-button-primary" href={demoRequestHref}>
-                Solicitar una demo
-              </a>
-              <a className="landing-button landing-button-secondary" href="#como-funciona">
-                Ver cómo funciona
-              </a>
+      <section className="mkt-hero" aria-labelledby="landing-title">
+        <div className="mkt-container mkt-hero-grid">
+          <div className="mkt-hero-copy">
+            <p className="mkt-pill"><span /> Fidelidad digital para negocios locales</p>
+            <h1 id="landing-title">Haz que cada visita se convierta en <em>crecimiento.</em></h1>
+            <p>morrow reúne clientes, recompensas y tarjetas digitales en una plataforma clara, para que tu negocio pueda construir relaciones que duran.</p>
+            <div className="mkt-hero-actions">
+              <a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
+              <a className="mkt-text-link" href="#como-funciona">Ver cómo funciona <MarketingIcon name="arrow" size={15} /></a>
             </div>
-            <p className="landing-cta-note">
-              Sin tarjeta de crédito. Primero entendemos cómo funciona tu negocio.
-            </p>
+            <small className="mkt-trust-note"><MarketingIcon name="shield" size={15} /> Sin tarjeta de crédito. Primero entendemos cómo funciona tu negocio.</small>
           </div>
-
-          <figure className="landing-product-preview">
-            <div className="landing-preview-toolbar">
-              <span><i aria-hidden="true" /> Programa activo</span>
-              <small>Actualizado ahora</small>
-            </div>
-            <div className="landing-preview-sequence" aria-label="Flujo: compra, progreso y premio">
-              <span><i>1</i> Compra</span>
-              <b aria-hidden="true" />
-              <span><i>2</i> Progreso</span>
-              <b aria-hidden="true" />
-              <span><i>3</i> Premio</span>
-            </div>
-            <div className="landing-preview-body">
-              <article className="landing-wallet-card" aria-label="Ejemplo de tarjeta digital">
-                <div className="landing-wallet-topline">
-                  <span className="landing-wallet-logo" aria-hidden="true">C</span>
-                  <strong>Café Central</strong>
-                </div>
-                <div className="landing-wallet-balance">
-                  <span>Tu progreso</span>
-                  <strong>6 de 10 visitas</strong>
-                </div>
-                <div className="landing-stamps" aria-label="6 de 10 visitas completadas">
-                  {Array.from({ length: 10 }, (_, index) => (
-                    <span className={index < 6 ? "is-earned" : undefined} key={index}>
-                      {index < 6 ? "✓" : ""}
-                    </span>
-                  ))}
-                </div>
-                <div className="landing-wallet-footer">
-                  <span>Próximo premio</span>
-                  <strong>Café de cortesía</strong>
-                </div>
-              </article>
-
-              <div className="landing-activity-card">
-                <div>
-                  <span className="landing-activity-icon" aria-hidden="true">✓</span>
-                  <p><strong>Compra registrada</strong><span>El avance se actualizó automáticamente.</span></p>
-                </div>
-                <div>
-                  <span className="landing-activity-icon is-reward" aria-hidden="true">★</span>
-                  <p><strong>Premio disponible</strong><span>Listo para canjear en la próxima visita.</span></p>
-                </div>
-              </div>
-            </div>
-            <figcaption>Una experiencia clara para el cliente y para quien lo atiende.</figcaption>
-          </figure>
+          <div className="mkt-hero-visual" aria-hidden="true">
+            <div className="mkt-grid-field" />
+            <div className="mkt-orbit is-one" />
+            <div className="mkt-orbit is-two" />
+            <DashboardPreview />
+            <div className="mkt-floating-wallet"><WalletCard compact /></div>
+            <div className="mkt-floating-note"><span><MarketingIcon name="gift" size={13} /></span><p><strong>Premio desbloqueado</strong><small>Bebida de cortesía · Ana M.</small></p></div>
+          </div>
         </div>
       </section>
 
-      <section className="landing-proof" aria-label="Disponibilidad de la tarjeta" data-landing-reveal="fade">
-        <div className="landing-container landing-proof-inner">
-          <p>Una sola experiencia, disponible donde tus clientes ya están.</p>
-          <ul>
-            <li>Apple Wallet</li>
-            <li>Google Wallet</li>
-            <li>Tarjeta web</li>
-          </ul>
+      <section className="mkt-business-strip" aria-label="Negocios que pueden usar morrow">
+        <div className="mkt-container"><p>HECHO PARA NEGOCIOS A LOS QUE LA GENTE QUIERE VOLVER</p><ul><li><MarketingIcon name="store" size={16} /> CAFÉS</li><li>RESTAURANTES</li><li>RETAIL</li><li>ESTÉTICAS</li><li>SERVICIOS</li></ul></div>
+      </section>
+
+      <section className="mkt-section" id="beneficios" aria-labelledby="benefits-title">
+        <div className="mkt-container">
+          <div className="mkt-section-heading" data-landing-reveal="up"><p className="mkt-eyebrow">UNA MEJOR FORMA DE CREAR LEALTAD</p><h2 id="benefits-title">Simple para tu equipo.<br /><em>Valioso</em> para tus clientes.</h2></div>
+          <div className="mkt-benefit-grid">
+            {benefits.map((benefit, index) => <article key={benefit.title} data-landing-reveal="up" data-reveal-delay={`${index + 1}`}><span><MarketingIcon name={benefit.icon} size={21} /></span><h3>{benefit.title}</h3><p>{benefit.description}</p><a href="#producto">Conocer más <MarketingIcon name="arrow" size={14} /></a></article>)}
+          </div>
         </div>
       </section>
 
-      <section className="landing-section" id="como-funciona" aria-labelledby="how-title">
-        <div className="landing-container">
-          <div className="landing-section-heading" data-landing-reveal="up">
-            <p className="landing-kicker">Cómo funciona</p>
-            <h2 id="how-title">De tu idea a una tarjeta lista para usar.</h2>
-            <p>No necesitas conocer términos técnicos. Configuras el programa y SwiftWallet se encarga del resto.</p>
+      <section className="mkt-section mkt-product-section" id="producto" aria-labelledby="product-title">
+        <div className="mkt-container mkt-product-grid">
+          <div className="mkt-product-copy" data-landing-reveal="left">
+            <p className="mkt-eyebrow">TODO EN UN SOLO LUGAR</p>
+            <h2 id="product-title">Conoce a tus clientes. <em>Crece</em> con intención.</h2>
+            <p>Desde la primera visita hasta el premio número diez, morrow te muestra qué está pasando sin convertirte en especialista en datos.</p>
+            <ul>
+              <li><MarketingIcon name="users" /><span><strong>Clientes organizados</strong><small>Consulta el historial y el avance de cada persona.</small></span></li>
+              <li><MarketingIcon name="chart" /><span><strong>Resultados comprensibles</strong><small>Ve visitas, compras y recompensas sin hojas de cálculo.</small></span></li>
+              <li><MarketingIcon name="wallet" /><span><strong>Tarjetas digitales</strong><small>Permanece cerca del cliente en la wallet que ya usa.</small></span></li>
+            </ul>
           </div>
-          <ol className="landing-steps">
-            <li data-landing-reveal="up" data-reveal-delay="1">
-              <span>01</span>
-              <div><h3>Define cómo recompensar</h3><p>Elige qué acciones suman, cuántas visitas o puntos necesita el cliente y qué premios recibirá.</p></div>
-            </li>
-            <li data-landing-reveal="up" data-reveal-delay="2">
-              <span>02</span>
-              <div><h3>Invita a tus clientes</h3><p>Comparten sus datos desde un QR y guardan su tarjeta digital. No crean una cuenta ni descargan otra app.</p></div>
-            </li>
-            <li data-landing-reveal="up" data-reveal-delay="3">
-              <span>03</span>
-              <div><h3>Registra y reconoce cada visita</h3><p>Tu equipo escanea la tarjeta, registra la compra y confirma el canje cuando haya un premio disponible.</p></div>
-            </li>
+          <div className="mkt-dashboard-wrap" data-landing-reveal="right"><DashboardPreview compact /></div>
+        </div>
+      </section>
+
+      <section className="mkt-phone-section" aria-labelledby="phone-title">
+        <div className="mkt-container mkt-phone-grid">
+          <div className="mkt-phone-copy" data-landing-reveal="left">
+            <p className="mkt-eyebrow">UNA EXPERIENCIA MÁS CERCANA</p>
+            <h2 id="phone-title">Lealtad que se siente <em>personal.</em></h2>
+            <p>Tu cliente abre su tarjeta, ve cuánto ha avanzado y descubre su próximo premio. Sin buscar una tarjeta de papel ni recordar otra contraseña.</p>
+            <ul><li><MarketingIcon name="check" size={14} /> Siempre en su teléfono</li><li><MarketingIcon name="check" size={14} /> Lista para visitas rápidas</li><li><MarketingIcon name="check" size={14} /> Con la identidad de tu negocio</li></ul>
+          </div>
+          <div data-landing-reveal="right" data-reveal-delay="1"><PhonePreview /></div>
+        </div>
+      </section>
+
+      <section className="mkt-section mkt-process" id="como-funciona" aria-labelledby="how-title">
+        <div className="mkt-container">
+          <div className="mkt-section-heading is-centered" data-landing-reveal="up"><p className="mkt-eyebrow">CÓMO FUNCIONA</p><h2 id="how-title">Menos configuración. <em>Más movimiento.</em></h2><p>Tres pasos fáciles de entender para tu negocio y para tus clientes.</p></div>
+          <ol>
+            <li data-landing-reveal="up"><span>01</span><div><h3>Define tu programa</h3><p>Elige si quieres premiar visitas, compras o puntos, y establece recompensas claras.</p></div><MarketingIcon name="arrow" size={17} /></li>
+            <li data-landing-reveal="up" data-reveal-delay="1"><span>02</span><div><h3>Invita a tus clientes</h3><p>Se registran con un QR y guardan su tarjeta. No crean una cuenta ni descargan una app.</p></div><MarketingIcon name="arrow" size={17} /></li>
+            <li data-landing-reveal="up" data-reveal-delay="2"><span>03</span><div><h3>Reconoce cada visita</h3><p>Tu equipo escanea, registra y confirma. morrow calcula el avance automáticamente.</p></div></li>
           </ol>
         </div>
       </section>
 
-      <section className="landing-section landing-audience-section" aria-labelledby="audience-title">
-        <div className="landing-container">
-          <div className="landing-section-heading" data-landing-reveal="up">
-            <p className="landing-kicker">Dos experiencias, el mismo objetivo</p>
-            <h2 id="audience-title">Fácil para tus clientes. Ordenado para tu negocio.</h2>
-          </div>
-          <div className="landing-audience-grid">
-            <article data-landing-reveal="left">
-              <p className="landing-audience-label">Para tus clientes</p>
-              <h3>Participar toma menos esfuerzo.</h3>
-              <ul>
-                <li>Se registran desde un código QR.</li>
-                <li>Llevan la tarjeta en su propio teléfono.</li>
-                <li>Ven su avance y los premios disponibles.</li>
-                <li>No necesitan usuario ni contraseña.</li>
-              </ul>
-            </article>
-            <article data-landing-reveal="right" data-reveal-delay="1">
-              <p className="landing-audience-label">Para tu negocio</p>
-              <h3>Operar deja de depender del papel.</h3>
-              <ul>
-                <li>El equipo trabaja desde una PWA en el teléfono.</li>
-                <li>Los cálculos se realizan de forma automática.</li>
-                <li>Cada operación conserva su historial.</li>
-                <li>Las sucursales comparten una vista organizada.</li>
-              </ul>
-            </article>
+      <section className="mkt-wallet-section" aria-labelledby="wallet-title">
+        <div className="mkt-container mkt-wallet-grid">
+          <div data-landing-reveal="left"><p className="mkt-eyebrow">SIEMPRE A LA MANO</p><h2 id="wallet-title">Tu programa de lealtad,<br /><em>en su wallet.</em></h2><p>Dales una tarjeta que realmente van a usar. morrow permite emitir, actualizar y personalizar pases sin complicar la experiencia.</p><ul><li><MarketingIcon name="check" size={14} /> Apple Wallet</li><li><MarketingIcon name="check" size={14} /> Google Wallet</li><li><MarketingIcon name="check" size={14} /> Tarjeta web</li></ul><a className="mkt-button mkt-button-light" href={demoRequestHref}>Verlo en una demo <MarketingIcon name="arrow" size={15} /></a></div>
+          <div className="mkt-wallet-stage" data-landing-reveal="right"><span aria-hidden="true" /><WalletCard /></div>
+        </div>
+      </section>
+
+      <section className="mkt-section mkt-faq" id="preguntas" aria-labelledby="questions-title">
+        <div className="mkt-container mkt-faq-grid">
+          <div data-landing-reveal="left"><p className="mkt-eyebrow">PREGUNTAS FRECUENTES</p><h2 id="questions-title">Las buenas preguntas merecen <em>respuestas claras.</em></h2><p>En la demo también podemos revisar cualquier caso particular de tu operación.</p></div>
+          <div className="mkt-faq-list" data-landing-reveal="right">
+            {questions.map((item, index) => <details key={item.question} open={index === 0}><summary>{item.question}<span aria-hidden="true">⌄</span></summary><p>{item.answer}</p></details>)}
           </div>
         </div>
       </section>
 
-      <section className="landing-section" id="beneficios" aria-labelledby="benefits-title">
-        <div className="landing-container">
-          <div className="landing-section-heading" data-landing-reveal="up">
-            <p className="landing-kicker">Lo que resuelve SwiftWallet</p>
-            <h2 id="benefits-title">Todo lo necesario para operar un programa que se entiende.</h2>
-          </div>
-          <div className="landing-benefit-grid">
-            {benefits.map((benefit, index) => (
-              <article key={benefit.title} data-landing-reveal="up" data-reveal-delay={`${(index % 2) + 1}`}>
-                <span aria-hidden="true">0{index + 1}</span>
-                <h3>{benefit.title}</h3>
-                <p>{benefit.description}</p>
-              </article>
-            ))}
-          </div>
-        </div>
+      <section className="mkt-demo" id="solicitar-demo" aria-labelledby="demo-title">
+        <div className="mkt-container" data-landing-reveal="up"><p className="mkt-eyebrow">CUANDO ESTÉS LISTO</p><h2 id="demo-title">Crea una experiencia de lealtad<br />que tus clientes <em>sí quieran usar.</em></h2><p>Te mostramos el flujo completo con ejemplos cercanos a tu negocio. No necesitas elegir un plan ni realizar un pago.</p><a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a><small id="demo-contacto">El canal para agendar se habilitará antes de publicar esta página.</small></div>
       </section>
 
-      <section className="landing-section landing-confidence-section" aria-labelledby="confidence-title">
-        <div className="landing-container landing-confidence-grid" data-landing-reveal="scale">
-          <div>
-            <p className="landing-kicker">Control sin complejidad</p>
-            <h2 id="confidence-title">Tu equipo atiende. SwiftWallet cuida la lógica.</h2>
-            <p>Los sellos, puntos y premios no dependen de cálculos manuales en el teléfono. La plataforma valida cada operación y mantiene un historial para que puedas entender qué pasó.</p>
-          </div>
-          <dl>
-            <div><dt>Hasta 3</dt><dd>programas de tarjeta por negocio</dd></div>
-            <div><dt>1 lugar</dt><dd>para sucursales, equipo y resultados</dd></div>
-            <div><dt>0 cuentas</dt><dd>o contraseñas para tus clientes</dd></div>
-          </dl>
-        </div>
-      </section>
-
-      <section className="landing-section" id="preguntas" aria-labelledby="questions-title">
-        <div className="landing-container landing-faq-layout">
-          <div className="landing-section-heading" data-landing-reveal="left">
-            <p className="landing-kicker">Preguntas frecuentes</p>
-            <h2 id="questions-title">Lo esencial antes de una demo.</h2>
-            <p>Te mostramos el flujo completo con ejemplos cercanos a tu operación.</p>
-          </div>
-          <div className="landing-faq-list" data-landing-reveal="right" data-reveal-delay="1">
-            {questions.map((item, index) => (
-              <details key={item.question} open={index === 0}>
-                <summary>{item.question}</summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-demo-section" id="solicitar-demo" aria-labelledby="demo-title">
-        <div className="landing-container landing-demo-card" data-landing-reveal="scale">
-          <div>
-            <p className="landing-kicker">Conoce SwiftWallet</p>
-            <h2 id="demo-title">Veamos cómo funcionaría en tu negocio.</h2>
-            <p>En una demo revisamos tus sucursales, tu forma de recompensar y la experiencia que quieres ofrecer. No necesitas elegir un plan ni realizar un pago.</p>
-          </div>
-          <div className="landing-demo-action">
-            <a className="landing-button landing-button-primary" href={demoRequestHref}>
-              Solicitar una demo
-            </a>
-            <small id="demo-contacto">El canal para agendar se habilitará antes de publicar esta página.</small>
-          </div>
-        </div>
-      </section>
-
-      <footer className="landing-footer">
-        <div className="landing-container">
-          <SwiftWalletBrand subtitle="Fidelidad digital" />
-          <p>Programas de fidelidad claros para negocios y clientes.</p>
-          <Link href="/login">Acceso para equipos</Link>
-        </div>
+      <footer className="mkt-footer">
+        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a><a href="#preguntas">Preguntas</a></nav><p>© 2026 morrow</p></div>
       </footer>
     </main>
   );

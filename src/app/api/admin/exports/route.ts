@@ -19,7 +19,7 @@ function csv(rows: Array<Record<string, unknown>>, columns: string[]) {
 function xlsx(rows: Array<Record<string, unknown>>, columns: string[]) {
   const sheet = XLSX.utils.json_to_sheet(rows, { header: columns });
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, sheet, "SwiftWallet");
+  XLSX.utils.book_append_sheet(workbook, sheet, "morrow");
   return XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
 }
 
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
     return new NextResponse(xlsx(rows, columns), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": `attachment; filename="swiftwallet-${type}.xlsx"`
+        "Content-Disposition": `attachment; filename="morrow-${type}.xlsx"`
       }
     });
   }
@@ -89,7 +89,7 @@ export async function GET(request: Request) {
   return new NextResponse(csv(rows, columns), {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="swiftwallet-${type}.csv"`
+      "Content-Disposition": `attachment; filename="morrow-${type}.csv"`
     }
   });
 }

@@ -6,7 +6,7 @@ describe("PWA manifest", () => {
   it("declares an installable employee app with adaptive icons and shortcuts", () => {
     const value = manifest();
     expect(value.id).toBe("/app");
-    expect(value.name).toBe("SwiftWallet Operación");
+    expect(value.name).toBe("morrow Operación");
     expect(value.start_url).toBe("/app");
     expect(value.scope).toBe("/");
     expect(value.display).toBe("standalone");
