@@ -493,3 +493,22 @@
 - References: Apple Pass Designer image dimensions and Google Wallet loyalty
   card brand guidelines.
 - Status: Accepted.
+
+## DEC-0045 - Wallet Colors Do Not Enforce A Contrast Threshold
+
+- Date: 2026-09-20
+- Context: The Wallet card designer rejected otherwise valid brand colors when
+  the text or label color did not reach a 4.5:1 contrast ratio against the
+  selected background.
+- Decision: At the user's explicit request, remove the blocking contrast-ratio
+  validation and its interface notice. Continue validating that every color is
+  a complete hexadecimal value and preserve the live provider previews.
+- Alternatives considered: Keep the blocking validation, show a non-blocking
+  warning, or automatically replace tenant-selected colors.
+- Reason: The tenant must be able to save its selected Wallet brand palette
+  without the application rejecting it on contrast grounds.
+- Consequences: This is an explicit exception to the general WCAG AA color rule
+  in `docs/DESIGN_SYSTEM.md`, scoped only to tenant-selected Wallet pass colors.
+  Administrators are responsible for reviewing legibility in the Apple and
+  Google previews and on real devices.
+- Status: Accepted.

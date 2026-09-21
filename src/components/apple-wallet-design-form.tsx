@@ -192,9 +192,6 @@ export function AppleWalletDesignForm({
 
         <div className="admin-form-section">
           <h2 className="section-title">Colores</h2>
-          <p className="field-hint">
-            La validación exige contraste AA para texto y etiquetas.
-          </p>
           <div className="apple-wallet-color-grid">
             <label className="field">
               <span>Fondo</span>

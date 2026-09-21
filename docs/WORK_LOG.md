@@ -2191,3 +2191,26 @@ reviewed at 375, 768, 1280 and 1440 px with no overflow or hierarchy regression.
 **Validation**
 
 - In progress.
+# 2026-09-20 - Remove Wallet color-contrast blocking alert
+
+**Objective:** Allow tenant Admins to save valid Wallet brand colors without a
+blocking contrast-ratio error.
+
+**Changes made**
+
+- Removed the 4.5:1 text/background and label/background checks from the shared
+  Wallet design validator.
+- Removed the legacy interface notice that claimed AA contrast was mandatory.
+- Kept hexadecimal color-format validation and added coverage for accepting a
+  low-contrast but structurally valid palette.
+- Recorded the explicit design-system exception in `DEC-0045`.
+
+**Migrations added**
+
+- None.
+
+**Validation**
+
+- `npm run test:run -- src/lib/wallet/design.test.ts`: passed; 5 tests.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.

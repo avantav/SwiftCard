@@ -77,31 +77,6 @@ function integerValue(
   return value;
 }
 
-function linearColorPart(value: number) {
-  const normalized = value / 255;
-  return normalized <= 0.04045
-    ? normalized / 12.92
-    : ((normalized + 0.055) / 1.055) ** 2.4;
-}
-
-export function colorContrastRatio(first: string, second: string) {
-  const luminance = (color: string) => {
-    const channels = [
-      Number.parseInt(color.slice(1, 3), 16),
-      Number.parseInt(color.slice(3, 5), 16),
-      Number.parseInt(color.slice(5, 7), 16),
-    ];
-    return (
-      0.2126 * linearColorPart(channels[0]) +
-      0.7152 * linearColorPart(channels[1]) +
-      0.0722 * linearColorPart(channels[2])
-    );
-  };
-  const left = luminance(first);
-  const right = luminance(second);
-  return (Math.max(left, right) + 0.05) / (Math.min(left, right) + 0.05);
-}
-
 export function validateAppleWalletDesignForm(
   formData: FormData,
 ): AppleWalletDesignValidation {
@@ -132,21 +107,6 @@ export function validateAppleWalletDesignForm(
   }
   if (description.length < 1 || description.length > 120) {
     errors.push("La descripción debe tener entre 1 y 120 caracteres.");
-  }
-
-  if (
-    HEX_COLOR.test(backgroundColor) &&
-    HEX_COLOR.test(foregroundColor) &&
-    colorContrastRatio(backgroundColor, foregroundColor) < 4.5
-  ) {
-    errors.push("El texto debe tener contraste mínimo de 4.5:1 con el fondo.");
-  }
-  if (
-    HEX_COLOR.test(backgroundColor) &&
-    HEX_COLOR.test(labelColor) &&
-    colorContrastRatio(backgroundColor, labelColor) < 4.5
-  ) {
-    errors.push("Las etiquetas deben tener contraste mínimo de 4.5:1 con el fondo.");
   }
 
   const logoImageUrl = optionalHttpsUrl(

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  colorContrastRatio,
   hexToAppleRgb,
   validateAppleWalletDesignForm,
 } from "./design";
@@ -52,20 +51,24 @@ describe("Apple Wallet tenant design", () => {
     }
   });
 
-  it("rejects non-HTTPS assets and inaccessible color combinations", () => {
+  it("rejects non-HTTPS assets", () => {
     const form = validForm();
     form.set("logoImageUrl", "http://localhost/logo.png");
     form.set("notificationIconUrl", "http://localhost/notification.png");
-    form.set("foregroundColor", "#17202A");
     const result = validateAppleWalletDesignForm(form);
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.errors.join(" ")).toContain("URL HTTPS");
-    expect(result.errors.join(" ")).toContain("contraste");
+  });
+
+  it("accepts valid colors without enforcing a contrast ratio", () => {
+    const form = validForm();
+    form.set("foregroundColor", "#17202A");
+    form.set("labelColor", "#17202A");
+    expect(validateAppleWalletDesignForm(form).ok).toBe(true);
   });
 
   it("converts stored hex colors to Apple's RGB format", () => {
     expect(hexToAppleRgb("#149C91")).toBe("rgb(20, 156, 145)");
-    expect(colorContrastRatio("#000000", "#FFFFFF")).toBe(21);
   });
 });
