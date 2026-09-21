@@ -161,7 +161,7 @@ No deben configurarse ni committearse hasta implementar la unidad Stripe:
 
 ## Despliegue
 
-`0059` está validada solo en PostgreSQL temporal. No debe aplicarse al Supabase
-alojado hasta reconciliar `MIGRATIONS-001`; el historial remoto conocido termina
-antes de varias migraciones que ya existen parcialmente en producción. No usar
-el push masivo para desplegar esta fase.
+El propietario confirmó que `main` está actualizado y las migraciones
+comerciales hasta `0061` están aplicadas en Supabase. La activación de Stripe
+sigue dependiendo de credenciales, precios, impuestos y políticas de pago
+aprobadas.

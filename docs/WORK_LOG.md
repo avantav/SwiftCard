@@ -1,5 +1,38 @@
 # Work Log
 
+## 2026-09-20 - Simplify the Wallet card-design editor
+
+**Objective:** Replace the dense card-design form with an intuitive hierarchy
+and make white or transparent uploaded images visible before saving.
+
+**Changes made**
+
+- Grouped the design flow into three compact sections: identity, colors and
+  images, while preserving the live Apple/Android preview.
+- Replaced three large upload panels with concise asset rows that show the
+  current source, fallback state and direct choose/change/remove actions.
+- Added a checkerboard transparency canvas to every asset thumbnail so white
+  and transparent logos remain visible.
+- Moved six optional Apple image-size and margin sliders into one collapsed
+  advanced section and added per-image reset actions.
+- Replaced the availability checkbox with an accessible status toggle and
+  shortened provider caveats to the information needed at the point of use.
+- Adapted the layout for 375, 768, 1280 and 1440 px without horizontal overflow.
+
+**Migrations added**
+
+- None.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run test:run -- src/lib/loyalty/multi-card.test.ts src/lib/wallet/design.test.ts`: passed; 11 tests.
+- `npm run lint`: passed.
+- Chrome visual review passed at 375, 768, 1280 and 1440 px using a temporary
+  representative route; the route was removed after review.
+- `npm run test:run`: passed; 280 tests across 78 files.
+- `npm run build`: passed with webpack.
+
 ## 2026-09-17 - Per-Card Image Size And Margin Controls
 
 **Objective:** Let the tenant Admin tune uploaded image size and whitespace in

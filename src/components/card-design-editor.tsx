@@ -181,51 +181,93 @@ export function CardDesignEditor({
     setUploads((current) => ({ ...current, [kind]: { status: "idle", message: "La imagen se quitará al guardar esta etapa." } }));
   }
 
+  function resetImageLayout(kind: "logo" | "strip") {
+    if (kind === "logo") {
+      setDesign((current) => ({
+        ...current,
+        logoScalePercent: 100,
+        logoMarginXPercent: 0,
+        logoMarginYPercent: 0,
+      }));
+      return;
+    }
+    setDesign((current) => ({
+      ...current,
+      stripScalePercent: 100,
+      stripMarginXPercent: 0,
+      stripMarginYPercent: 0,
+    }));
+  }
+
   return (
     <div aria-busy={isUploading} className="card-design-layout" ref={editorRef}>
       <div className="card-design-fields">
-        <label className="check-field card-wizard-check">
-          <input
-            checked={design.appleEnabled}
-            name="appleEnabled"
-            onChange={(event) => update("appleEnabled", event.target.checked)}
-            type="checkbox"
-          />
-          <span>Habilitar descarga cuando el proveedor esté configurado</span>
-        </label>
-        <label className="field">
-          <span>Texto de marca</span>
-          <input maxLength={60} name="logoText" onChange={(event) => update("logoText", event.target.value)} onInput={(event) => update("logoText", event.currentTarget.value)} required value={design.logoText} />
-        </label>
-        <label className="field">
-          <span>Descripción del pase</span>
-          <input maxLength={120} name="description" onChange={(event) => update("description", event.target.value)} onInput={(event) => update("description", event.currentTarget.value)} required value={design.description} />
-          <small>Apple usa este texto como metadato; no aparece en el frente de la tarjeta.</small>
-        </label>
-        <div className="card-color-fields">
-          {([
-            ["backgroundColor", "Fondo"],
-            ["foregroundColor", "Texto"],
-            ["labelColor", "Etiquetas"],
-          ] as const).map(([key, label]) => (
-            <label className="field" key={key}>
-              <span>{label}</span>
-              <input name={key} onChange={(event) => update(key, event.target.value.toUpperCase())} onInput={(event) => update(key, event.currentTarget.value.toUpperCase())} type="color" value={design[key]} />
-              <small>{design[key]}</small>
+        <section className="card-design-section" aria-labelledby="card-identity-heading">
+          <div className="card-design-section-heading">
+            <div>
+              <h3 id="card-identity-heading">Identidad</h3>
+              <p>Define el nombre que verá el cliente.</p>
+            </div>
+            <label className="wallet-availability-toggle">
+              <input
+                checked={design.appleEnabled}
+                name="appleEnabled"
+                onChange={(event) => update("appleEnabled", event.target.checked)}
+                type="checkbox"
+              />
+              <span aria-hidden="true" />
+              <strong>{design.appleEnabled ? "Disponible" : "Deshabilitada"}</strong>
             </label>
-          ))}
-        </div>
-        <div className="admin-form-section">
-          <h3 className="section-title">Imágenes</h3>
-          <p className="field-hint">Sube PNG, JPEG o WebP de hasta 5 MB. Se guardan en el espacio seguro del tenant y se usan en la tarjeta correspondiente.</p>
+          </div>
+          <div className="card-design-copy-fields">
+            <label className="field">
+              <span>Nombre en la tarjeta</span>
+              <input maxLength={60} name="logoText" onChange={(event) => update("logoText", event.target.value)} onInput={(event) => update("logoText", event.currentTarget.value)} required value={design.logoText} />
+            </label>
+            <label className="field">
+              <span>Descripción interna</span>
+              <input maxLength={120} name="description" onChange={(event) => update("description", event.target.value)} onInput={(event) => update("description", event.currentTarget.value)} required value={design.description} />
+              <small>Apple la usa como metadato; no aparece al frente.</small>
+            </label>
+          </div>
+        </section>
+
+        <section className="card-design-section" aria-labelledby="card-colors-heading">
+          <div className="card-design-section-heading">
+            <div>
+              <h3 id="card-colors-heading">Colores</h3>
+              <p>Selecciona el fondo y los textos de la tarjeta.</p>
+            </div>
+          </div>
+          <div className="card-color-fields">
+            {([
+              ["backgroundColor", "Fondo"],
+              ["foregroundColor", "Texto principal"],
+              ["labelColor", "Etiquetas"],
+            ] as const).map(([key, label]) => (
+              <label className="card-color-field" key={key}>
+                <input aria-label={`Color de ${label.toLocaleLowerCase("es-MX")}`} name={key} onChange={(event) => update(key, event.target.value.toUpperCase())} onInput={(event) => update(key, event.currentTarget.value.toUpperCase())} type="color" value={design[key]} />
+                <span><strong>{label}</strong><small>{design[key]}</small></span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section className="card-design-section" aria-labelledby="card-images-heading">
+          <div className="card-design-section-heading">
+            <div>
+              <h3 id="card-images-heading">Imágenes</h3>
+              <p>PNG, JPEG o WebP de hasta 5 MB.</p>
+            </div>
+          </div>
           <input name="logoImageUrl" type="hidden" value={design.logoImageUrl} />
           <input name="stripImageUrl" type="hidden" value={design.stripImageUrl} />
           <input name="notificationIconUrl" type="hidden" value={design.notificationIconUrl} />
-          <div className="apple-wallet-upload-grid">
+          <div className="wallet-asset-list">
             {([
-              { kind: "logo" as const, label: "Logo", hint: "Preferentemente horizontal o cuadrado, con fondo transparente." },
-              { kind: "strip" as const, label: "Imagen principal", hint: lifetimePoints ? "Se usa como fondo visual detrás del saldo y el siguiente hito." : "Se usa como fondo visual detrás de los sellos." },
-              { kind: "notification" as const, label: "Logo de notificaciones", hint: "Usa una imagen cuadrada, sencilla y con buen contraste. Apple la muestra en los avisos de Wallet; si la dejas vacía, se usa el logo general." },
+              { kind: "logo" as const, label: "Logo", hint: "Identidad visible en la parte superior." },
+              { kind: "strip" as const, label: "Imagen principal", hint: lifetimePoints ? "Fondo del saldo y el siguiente hito." : "Fondo del progreso de sellos." },
+              { kind: "notification" as const, label: "Icono de notificaciones", hint: "Opcional y cuadrado. Si falta, se usa el logo." },
             ]).map((asset) => {
               const imageUrl = asset.kind === "logo"
                 ? effectiveDesign.logoImageUrl
@@ -233,12 +275,46 @@ export function CardDesignEditor({
                   ? effectiveDesign.stripImageUrl
                   : notificationIconPreviewUrl;
               const configuredImageUrl = design[assetDesignKey[asset.kind]];
+              const usesFallback = !configuredImageUrl && Boolean(imageUrl);
+              const imageState = localPreviews[asset.kind]
+                ? "Cambio sin guardar"
+                : usesFallback
+                  ? "Usando imagen de respaldo"
+                  : imageUrl
+                    ? "Imagen configurada"
+                    : "Sin imagen";
               return (
-                <div className="apple-wallet-upload-field" key={asset.kind}>
-                  <label className="field" htmlFor={`card-${asset.kind}-file`}>
-                    <span>{asset.label}</span>
+                <article className="wallet-asset-row" key={asset.kind}>
+                  <div className={`card-upload-image-preview is-${asset.kind}${imageUrl ? " has-image" : ""}`}>
+                    {imageUrl ? (
+                      <img
+                        alt={asset.kind === "logo"
+                          ? "Logo usado en la vista previa"
+                          : asset.kind === "strip"
+                            ? "Imagen principal usada en la vista previa"
+                            : "Icono usado en las notificaciones de Apple Wallet"}
+                        src={imageUrl}
+                      />
+                    ) : <span className="wallet-asset-empty" aria-hidden="true">Sin imagen</span>}
+                  </div>
+                  <div className="wallet-asset-copy">
+                    <div><h4>{asset.label}</h4><p>{asset.hint}</p></div>
+                    <small>{imageState}</small>
+                    {uploads[asset.kind].message ? (
+                      <p
+                        className={`apple-wallet-upload-status is-${uploads[asset.kind].status}`}
+                        role={uploads[asset.kind].status === "error" ? "alert" : "status"}
+                      >
+                        {uploads[asset.kind].message}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="wallet-asset-actions">
+                    <label className="secondary-button" htmlFor={`card-${asset.kind}-file`}>
+                      {configuredImageUrl ? "Cambiar" : "Elegir imagen"}
                     <input
                       accept="image/png,image/jpeg,image/webp"
+                      className="sr-only"
                       disabled={uploads[asset.kind].status === "uploading"}
                       id={`card-${asset.kind}-file`}
                       onChange={(event) => {
@@ -248,95 +324,68 @@ export function CardDesignEditor({
                       }}
                       type="file"
                     />
-                    <small>{asset.hint}</small>
-                  </label>
-                  {imageUrl ? (
-                    <div className={`card-upload-image-preview is-${asset.kind}`}>
-                      <img
-                        alt={asset.kind === "logo"
-                          ? "Logo usado en la vista previa"
-                          : asset.kind === "strip"
-                            ? "Imagen principal usada en la vista previa"
-                            : "Logo usado en las notificaciones de Apple Wallet"}
-                        src={imageUrl}
-                      />
-                      <span>{localPreviews[asset.kind]
-                        ? "Vista previa local"
-                        : asset.kind === "notification" && !design.notificationIconUrl
-                          ? "Logo general (respaldo)"
-                          : "Imagen actual"}</span>
-                    </div>
-                  ) : null}
+                    </label>
                   {configuredImageUrl ? (
-                    <button className="secondary-button" onClick={() => clearAsset(asset.kind)} type="button">
-                      Quitar imagen
+                    <button className="tertiary-button" onClick={() => clearAsset(asset.kind)} type="button">
+                      Quitar
                     </button>
                   ) : null}
-                  {uploads[asset.kind].message ? (
-                    <p
-                      className={`apple-wallet-upload-status is-${uploads[asset.kind].status}`}
-                      role={uploads[asset.kind].status === "error" ? "alert" : "status"}
-                    >
-                      {uploads[asset.kind].message}
-                    </p>
-                  ) : null}
-                </div>
+                  </div>
+                </article>
               );
             })}
           </div>
-          <div className="wallet-image-layout-controls">
-            <div className="wallet-image-layout-group">
-              <div>
-                <h4>Logo en la tarjeta</h4>
-                <p className="field-hint">Ajusta el contenido dentro del espacio reservado por Apple.</p>
-              </div>
+          <details className="wallet-advanced-controls">
+            <summary>
+              <span><strong>Ajustar tamaño y posición</strong><small>Opcional · Apple Wallet</small></span>
+            </summary>
+            <div className="wallet-image-layout-controls">
               {([
-                ["logoScalePercent", "Tamaño", 50, 100],
-                ["logoMarginXPercent", "Margen horizontal", 0, 20],
-                ["logoMarginYPercent", "Margen vertical", 0, 20],
-              ] as const).map(([key, label, min, max]) => (
-                <label className="field wallet-range-field" key={key}>
-                  <span>{label} <output>{design[key]}%</output></span>
-                  <input
-                    max={max}
-                    min={min}
-                    name={key}
-                    onChange={(event) => update(key, Number(event.target.value))}
-                    step="1"
-                    type="range"
-                    value={design[key]}
-                  />
-                </label>
+                {
+                  kind: "logo" as const,
+                  title: "Logo",
+                  fields: [
+                    ["logoScalePercent", "Tamaño", 50, 100],
+                    ["logoMarginXPercent", "Margen horizontal", 0, 20],
+                    ["logoMarginYPercent", "Margen vertical", 0, 20],
+                  ] as const,
+                },
+                {
+                  kind: "strip" as const,
+                  title: "Imagen principal",
+                  fields: [
+                    ["stripScalePercent", "Tamaño", 50, 150],
+                    ["stripMarginXPercent", "Margen horizontal", 0, 20],
+                    ["stripMarginYPercent", "Margen vertical", 0, 20],
+                  ] as const,
+                },
+              ]).map((group) => (
+                <div className="wallet-image-layout-group" key={group.kind}>
+                  <div className="wallet-image-layout-heading">
+                    <h4>{group.title}</h4>
+                    <button className="tertiary-button" onClick={() => resetImageLayout(group.kind)} type="button">Restablecer</button>
+                  </div>
+                  {group.fields.map(([key, label, min, max]) => (
+                    <label className="field wallet-range-field" key={key}>
+                      <span>{label} <output>{design[key]}%</output></span>
+                      <input
+                        max={max}
+                        min={min}
+                        name={key}
+                        onChange={(event) => update(key, Number(event.target.value))}
+                        step="1"
+                        type="range"
+                        value={design[key]}
+                      />
+                    </label>
+                  ))}
+                </div>
               ))}
             </div>
-            <div className="wallet-image-layout-group">
-              <div>
-                <h4>Imagen principal</h4>
-                <p className="field-hint">El tamaño puede acercar o alejar la imagen; los márgenes conservan una zona libre alrededor.</p>
-              </div>
-              {([
-                ["stripScalePercent", "Tamaño", 50, 150],
-                ["stripMarginXPercent", "Margen horizontal", 0, 20],
-                ["stripMarginYPercent", "Margen vertical", 0, 20],
-              ] as const).map(([key, label, min, max]) => (
-                <label className="field wallet-range-field" key={key}>
-                  <span>{label} <output>{design[key]}%</output></span>
-                  <input
-                    max={max}
-                    min={min}
-                    name={key}
-                    onChange={(event) => update(key, Number(event.target.value))}
-                    step="1"
-                    type="range"
-                    value={design[key]}
-                  />
-                </label>
-              ))}
-            </div>
-          </div>
-          <p className="field-hint">Estos controles se aplican al archivo firmado de Apple Wallet. Google Wallet adapta logo e imagen principal con su propia zona segura y puede recortarlos de forma diferente.</p>
+            <p>Google Wallet usa las imágenes originales y controla su propio recorte.</p>
+          </details>
           {isUploading ? <p className="enterprise-alert is-info" role="status">Espera a que terminen las cargas antes de guardar.</p> : null}
-        </div>
+        </section>
       </div>
       <aside className="card-provider-preview" aria-labelledby="card-preview-heading">
         <div className="card-preview-heading">
@@ -370,15 +419,7 @@ export function CardDesignEditor({
             <div className="unified-wallet-qr" aria-hidden="true"><span /><span /><span /></div>
           </div>
         )}
-        <dl className="card-preview-metadata">
-          <div><dt>Descripción del pase</dt><dd>{design.description || "Sin descripción"}</dd></div>
-          <div><dt>Disponibilidad</dt><dd>{design.appleEnabled ? "Descarga habilitada" : "Descarga deshabilitada"}</dd></div>
-        </dl>
-        <p className="field-hint">
-          {provider === "APPLE"
-            ? "La estructura, campos, colores, QR y proporción 375 × 144 corresponden al storeCard firmado. Apple controla el render final y en iOS 26 o posterior puede omitir las imágenes logo y strip; el progreso textual permanece visible."
-            : "La vista aproxima la jerarquía, colores, saldo y QR del pase de lealtad. Google controla el render final según el dispositivo y la versión de Wallet."}
-        </p>
+        <p className="card-preview-note">{provider === "APPLE" ? "Apple controla el acomodo final en cada dispositivo." : "Google controla el recorte y acomodo final."}</p>
       </aside>
     </div>
   );

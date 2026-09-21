@@ -32,9 +32,8 @@
   receives the shared original assets and retains provider-controlled cropping.
 - Defaults preserve the prior rendering: 100% size and 0% margins. Existing
   cards therefore do not change until an Admin edits the controls.
-- Do not apply `0062` remotely until `MIGRATIONS-001` is reconciled. Deploy code
-  after the migration, then process the Apple outbox or reinstall a pass for
-  device validation.
+- The product owner confirmed `main` is current and migration `0062` is applied
+  remotely. Process the Apple outbox or reinstall a pass for device validation.
 
 ## Commercial billing context
 
@@ -56,7 +55,9 @@
 - Billable membership means an active `customer_cards` row whose customer is active. Each period keeps current usage and a high-water mark; `0059` measures only and does not block registrations.
 - The complete disposable PostgreSQL migration/RLS harness passes through `0061`, including cross-tenant, Manager and browser-role denial, high-water behavior and RPC-only promotion/affiliate operations.
 - Next implementation unit: transactional promotion reservation/cap consumption, followed by affiliate attribution.
-- Do not apply `0059`–`0061` to hosted Supabase until `MIGRATIONS-001` is reconciled. Do not add live Stripe credentials or public pricing yet.
+- Migrations `0059`–`0061` are applied remotely. Do not add live Stripe
+  credentials or public pricing until the remaining commercial policies are
+  approved.
 
 ## Public landing context
 
@@ -85,8 +86,12 @@
 16. Apple terms repair: migration `0051` grants `service_role` execution of `app.public_card_terms_are_accepted`, matching the Admin client used by initial pass issuance. The targeted grant is already applied to hosted Supabase and a live check of the latest accepted card succeeds. Deploy the route change so future database errors return a verification error instead of the incorrect “debes aceptar” message.
 17. Casa Garmendia import: migration `0053` gives only that tenant's active general Admin a fixed, single-use profile. It auto-maps Nombre/Apellido/Email/Teléfono/Fecha de Nacimiento/Estampillas Actuales, converts 0–15 legacy stamps by the supplied milestone table, grants Churro individual plus reached configured tiers, and records the import identifier atomically.
 18. Imported recovery: an exact imported phone/name on the same public card resumes the existing claim instead of creating a duplicate. Employee search may always regenerate the claim QR for these imported cards, and both routes require current terms before Wallet delivery.
-19. Migration-history caution: hosted `supabase_migrations.schema_migrations` currently records only through `0034`, although later objects were applied manually. Do not run the bulk remote migration script until versions `0035` onward are reconciled; `0051` was intentionally applied as one targeted idempotent grant without altering that history.
-20. Immediate release step: deploy the application code first, reconcile hosted migration history and then apply migrations through `0055`. Process the Apple outbox after `0055`; afterward obtain the real workbook, verify the target card has active tiers 100/200/300/400/500/650/860, preview all errors and only then confirm the one-time import.
+19. Migration rollout: the product owner confirmed `main` is current and every
+    migration through `0062` is applied remotely.
+20. Immediate release step: process the Apple outbox; afterward obtain the real
+    workbook, verify the target card has active tiers
+    100/200/300/400/500/650/860, preview all errors and only then confirm the
+    one-time import.
 21. Local validation completed: lint, typecheck, all 245 Vitest tests in 71 files, the webpack production build and the previously completed disposable PostgreSQL migration/RLS suite through `0058` pass. Google Wallet public actions passed responsive review at 375, 768, 1280 and 1440 px; the Apple notification-logo editor passed at 375 and 1440 px, and the broader Apple preview was previously reviewed at all four widths.
 22. Shared PIN unlock: `/app/unlock` now uses a six-digit keypad with clear/backspace and physical-keyboard support. The server action returns success only after writing the HttpOnly operator cookie; the client then performs a full replacement navigation to `/app`, avoiding reuse of the locked layout context. Failed attempts clear the entered PIN and keep existing database lockout behavior.
 23. Welcome gift: targeted migration `0054` is now live in hosted production and the 16-parameter save path returned `SAVED` in an authenticated rollback test. Casa Garmendia remains intentionally disabled with no test data; retry the Admin form using the intended name/description/validity, then issue a new test customer card and verify exactly one reward. The behavior is non-retroactive, does not alter points and excludes the `0053` Casa import profile because it already grants its fixed Churro.
@@ -113,7 +118,8 @@
 12. Operational flow: scanner or manual customer selection must open one customer view with available rewards plus register-purchase action; each redemption remains one reward per operation.
 13. Validation: lint, typecheck, all 211 Vitest tests, webpack production build and disposable PostgreSQL/RLS through `0049` pass. Point-card compositions were reviewed at 375, 768, 1280 and 1440 px without overflow; temporary review code was removed.
 14. PWA viewport: `/app` fixes the viewport at scale 1, disables user scaling, rejects pinch/double-tap zoom gestures and keeps all form controls at 16px. This is intentionally scoped away from `/admin`.
-15. Next exact implementation: deploy application code, reconcile hosted history and apply additive migrations through `0055`; process the queued Apple refresh, then run the hosted points, welcome-gift and Casa import preview smoke paths.
+15. Next exact rollout validation: process the queued Apple refresh, then run
+    the hosted points, welcome-gift and Casa import preview smoke paths.
 16. Apple preview: the Admin mock now follows the official field hierarchy and `375 × 144 pt` strip proportion, and the real pass generator emits matching 1x/2x/3x strips. Exact OS rendering still requires Pass Designer or a real signed pass.
 17. Separate existing rollout: Apple QR/scanner deployment, real iPhone APNs validation, external retry cron and Google Wallet remain pending.
 18. Migration state: do not edit deployed migrations. Apply additive migrations in order through `0049_lifetime_points_engine.sql`.

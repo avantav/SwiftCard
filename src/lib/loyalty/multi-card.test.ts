@@ -85,10 +85,13 @@ describe("multi-card loyalty boundary", () => {
     expect(designEditor).toContain("AppleStoreCardPreview");
     expect(designEditor).toContain("URL.createObjectURL(file)");
     expect(designEditor).toContain("localPreviews.logo || design.logoImageUrl");
-    expect(designEditor).toContain('label: "Logo de notificaciones"');
+    expect(designEditor).toContain('label: "Icono de notificaciones"');
     expect(designEditor).toContain('name="notificationIconUrl"');
     expect(designEditor).toContain("preventSubmitWhileUploading");
     expect(designEditor).toContain("Mostrando cambios sin guardar");
+    expect(designEditor).toContain("wallet-asset-list");
+    expect(designEditor).toContain("wallet-advanced-controls");
+    expect(designEditor).toContain("resetImageLayout");
     expect(designEditor).toContain('name={key}');
     expect(designEditor).toContain('"logoScalePercent"');
     expect(designEditor).toContain('"stripMarginYPercent"');

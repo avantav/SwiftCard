@@ -4,11 +4,22 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Added per-card logo and main-image size plus horizontal/vertical margin controls with matching Apple preview and signed-pass composition.
+- Last completed task: Simplified the card-design editor into clear identity,
+  color and image sections, made transparent/white assets visible and moved
+  optional image-layout controls behind progressive disclosure.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Tenant Admins can tune Wallet image scale and margins without changing provider dimensions or weakening card authority.
-- Git status: Wallet image-layout controls pass lint, typecheck, all 279 tests across 78 files, webpack build, the complete migration/RLS harness through `0062` and responsive review at 375, 768, 1280 and 1440 px. Migration `0062` remains local pending hosted history reconciliation.
-- Remote backup: Targeted hosted changes `0051`, `0054` and `0056` are live. Canonical hosted migration history still requires reconciliation before any bulk push; the Casa Garmendia welcome configuration intentionally remains disabled until the Admin retries the form with the intended gift.
+- Last stable feature: Tenant Admins can configure Wallet branding from a
+  compact responsive editor with live provider previews and visible transparent
+  asset thumbnails, without changing provider dimensions or weakening card
+  authority.
+- Git status: The simplified card-design editor passes lint, typecheck, all 280
+  tests across 78 files, webpack build and responsive review at 375, 768, 1280
+  and 1440 px. The product owner confirmed `main` is current and every migration
+  through `0062` is applied remotely.
+- Remote backup: `main` contains the Wallet image-layout work and hosted
+  migrations are current through `0062`. The Casa Garmendia welcome
+  configuration intentionally remains disabled until the Admin retries the form
+  with the intended gift.
 
 ## Completed Functionality
 
@@ -193,7 +204,10 @@
   capture requires an approved privacy notice, consent copy, retention/deletion
   policy and abuse limits. Google rating/review synchronization additionally
   requires approved Business Profile OAuth access and tenant location ownership.
-- BILLING-001: Migration `0059` is validated locally but cannot be pushed safely until hosted migration history is reconciled under `MIGRATIONS-001`. Stripe test/live credentials, approved package prices, tax handling and payment policies have not been provided; local UI and webhook implementation can continue without production mutation.
+- BILLING-001: The commercial migrations are applied, but Stripe test/live
+  credentials, approved package prices, tax handling and payment policies have
+  not been provided. Local promotion, attribution and webhook implementation can
+  continue without enabling production payments.
 - WALLET-001: Apple and Google issuance are implemented. The Google issuer/service account and publishing access, real Android save, locally corrected Apple QR, employee camera scan, pass refresh/reinstallation, APNs validation and external retry cron remain deployment or device-validation work.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 

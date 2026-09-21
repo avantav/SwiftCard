@@ -22,11 +22,6 @@
   - **Recommendation:** Provide an approved Calendly, WhatsApp, email or form URL and set it as `NEXT_PUBLIC_DEMO_REQUEST_URL` in the deployment environment.
   - **Work that can continue:** Copy review, SEO refinement and all application functionality; no visitor data is collected by the placeholder.
 
-- **MIGRATIONS-001:** Hosted Supabase migration history currently records only through `0034`, although later schema objects were applied manually and targeted `0051`/`0054`/`0056` changes are live; canonical history through local migration `0062` is not reconciled.
-  - **Affected area:** Repeatable remote database deployment.
-  - **Consequence:** The bulk migration runner would try to replay migrations `0035` onward and may stop on objects that already exist.
-  - **Recommendation:** Reconcile each hosted schema change against migrations `0035` through `0062`, then repair canonical migration history before using `npm run db:push:remote`. Deploy the progress generator before applying `0057`; apply additive schema migrations before deploying code that reads their new columns and RPCs.
-
 - **IMPORT-001:** The three Casa Garmendia `.xlsx` files currently present in `/home/advanta/Downloads` are empty (0 bytes); only the screenshot exposes the expected headers.
   - **Affected area:** Real-data preview and execution of the one-time Casa Garmendia import.
   - **Consequence:** Code, mapping and conversion can be validated with fixtures, but the actual customer rows cannot be inspected or imported yet.
@@ -54,6 +49,11 @@
   - **Status:** Active.
 
 ## Historical Blockers
+
+### MIGRATIONS-001 - Resolved
+
+The product owner confirmed on 2026-09-20 that `main` is current and every
+migration through `0062` has been applied remotely.
 
 ### MULTICARD-001 - Resolved locally
 
