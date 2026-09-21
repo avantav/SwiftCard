@@ -237,7 +237,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
     );
   }
   const { data, error } = await context.supabase.schema("app").rpc(
-    "save_loyalty_card_design_v3",
+    "save_loyalty_card_design_v4",
     {
       target_card_id: cardId,
       target_wallet_enabled: input.appleEnabled,
@@ -255,6 +255,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
       target_strip_scale_percent: input.stripScalePercent,
       target_strip_margin_x_percent: input.stripMarginXPercent,
       target_strip_margin_y_percent: input.stripMarginYPercent,
+      target_strip_dimming_enabled: input.stripDimmingEnabled,
     },
   );
   if (error || data !== "SAVED") {

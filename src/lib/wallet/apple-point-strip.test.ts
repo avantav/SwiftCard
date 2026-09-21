@@ -44,4 +44,30 @@ describe("Apple Wallet graphical point progress", () => {
     });
     expect(twoHundred["strip.png"].equals(twoHundredFifty["strip.png"])).toBe(false);
   });
+
+  it("preserves the original image brightness when dimming is disabled", async () => {
+    const backgroundSource = await sharp({
+      create: {
+        width: 375,
+        height: 144,
+        channels: 4,
+        background: "#FFFFFF",
+      },
+    }).png().toBuffer();
+    const base = {
+      backgroundColor: "#17202A",
+      foregroundColor: "#FFFFFF",
+      pointBalance: 100,
+      nextGoal: 300,
+      backgroundSource,
+    };
+    const dimmed = await buildAppleWalletPointStrips({ ...base, dimBackground: true });
+    const original = await buildAppleWalletPointStrips({ ...base, dimBackground: false });
+    const [dimmedStats, originalStats] = await Promise.all([
+      sharp(dimmed["strip.png"]).stats(),
+      sharp(original["strip.png"]).stats(),
+    ]);
+
+    expect(originalStats.channels[0].mean).toBeGreaterThan(dimmedStats.channels[0].mean);
+  });
 });

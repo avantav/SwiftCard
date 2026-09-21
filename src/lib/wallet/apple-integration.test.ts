@@ -66,6 +66,13 @@ const imageLayoutMigration = readFileSync(
   ),
   "utf8",
 );
+const stripDimmingMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0063_wallet_strip_dimming_option.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -148,6 +155,9 @@ describe("Apple Wallet integration boundaries", () => {
     expect(source).toContain("marginYPercent: design.strip_margin_y_percent");
     expect(appleServer).toContain("renderAppleWalletPositionedImage");
     expect(imageLayoutMigration).toContain("save_loyalty_card_design_v3");
+    expect(source).toContain("stripDimmingEnabled: design.strip_dimming_enabled");
+    expect(appleServer).toContain("dimBackground: stripDimmingEnabled");
+    expect(stripDimmingMigration).toContain("save_loyalty_card_design_v4");
   });
 
   it("queues installed passes after the front progress layout is deployed", () => {

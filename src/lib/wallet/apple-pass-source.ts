@@ -28,6 +28,7 @@ export type AppleWalletPassSource = {
     notificationIconUrl: string | null;
     logoLayout: AppleWalletImageLayout;
     stripLayout: AppleWalletImageLayout;
+    stripDimmingEnabled: boolean;
   };
 };
 
@@ -90,7 +91,7 @@ export async function loadAppleWalletPassSource(
 
   const { data: cardConfiguration, error: cardConfigurationError } = await supabase
     .from("loyalty_cards")
-    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent")
+    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent,strip_dimming_enabled")
     .eq("id", card.loyalty_card_id)
     .eq("tenant_id", card.tenant_id)
     .maybeSingle();
@@ -292,6 +293,7 @@ export async function loadAppleWalletPassSource(
           marginXPercent: design.strip_margin_x_percent,
           marginYPercent: design.strip_margin_y_percent,
         },
+        stripDimmingEnabled: design.strip_dimming_enabled,
       },
     },
   };

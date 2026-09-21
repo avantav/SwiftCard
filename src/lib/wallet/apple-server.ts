@@ -136,6 +136,7 @@ async function buildPassImages(
   notificationIconUrl: string | null,
   logoLayout: AppleWalletImageLayout,
   stripLayout: AppleWalletImageLayout,
+  stripDimmingEnabled: boolean,
 ) {
   const fallback = await readFile(
     join(process.cwd(), "public", "icons", "apple-touch-icon.png"),
@@ -185,6 +186,7 @@ async function buildPassImages(
       nextGoal: nextPointGoal,
       backgroundSource: stripSource,
       backgroundLayout: stripLayout,
+      dimBackground: stripDimmingEnabled,
     })
     : await buildAppleWalletStampStrips({
       backgroundColor: input.backgroundColor,
@@ -195,6 +197,7 @@ async function buildPassImages(
       logoSource: tenantLogoSource,
       backgroundSource: stripSource,
       backgroundLayout: stripLayout,
+      dimBackground: stripDimmingEnabled,
     });
   if (Object.keys(progressStrips).length) {
     Object.assign(images, progressStrips);
@@ -219,6 +222,7 @@ export async function generateAppleWalletPass(
     notificationIconUrl: string | null;
     logoLayout: AppleWalletImageLayout;
     stripLayout: AppleWalletImageLayout;
+    stripDimmingEnabled: boolean;
   },
 ) {
   const signing = getAppleSigningConfig();
@@ -229,6 +233,7 @@ export async function generateAppleWalletPass(
     assets.notificationIconUrl,
     assets.logoLayout,
     assets.stripLayout,
+    assets.stripDimmingEnabled,
   );
   const { barcodes, locations, storeCard, ...props } =
     buildAppleWalletPassProps(input, signing.identity);

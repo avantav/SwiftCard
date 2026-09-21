@@ -18,6 +18,7 @@ type PointStripInput = {
   nextGoal: number | null;
   backgroundSource: Buffer | null;
   backgroundLayout?: AppleWalletImageLayout;
+  dimBackground?: boolean;
 };
 
 function safeHex(value: string, fallback: string) {
@@ -44,7 +45,7 @@ async function renderPointStrip(
   const fillWidth = trackWidth * progress;
   const overlay = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}" viewBox="0 0 ${size.width} ${size.height}">
-      ${input.backgroundSource ? `<rect width="100%" height="100%" fill="#000000" fill-opacity="0.34"/>` : ""}
+      ${input.backgroundSource && input.dimBackground !== false ? `<rect width="100%" height="100%" fill="#000000" fill-opacity="0.34"/>` : ""}
       <rect x="${trackX}" y="${trackY}" width="${trackWidth}" height="${trackHeight}" rx="${trackHeight / 2}" fill="#FFFFFF" fill-opacity="0.30"/>
       ${fillWidth > 0 ? `<rect x="${trackX}" y="${trackY}" width="${fillWidth}" height="${trackHeight}" rx="${trackHeight / 2}" fill="${foreground}"/>` : ""}
     </svg>`,

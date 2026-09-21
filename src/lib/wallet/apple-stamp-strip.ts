@@ -31,6 +31,7 @@ type StampStripInput = {
   logoSource: Buffer | null;
   backgroundSource: Buffer | null;
   backgroundLayout?: AppleWalletImageLayout;
+  dimBackground?: boolean;
 };
 
 function safeHex(value: string, fallback: string) {
@@ -94,7 +95,7 @@ async function renderStampStrip(
 
   const overlay = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}" viewBox="0 0 ${size.width} ${size.height}">
-      ${input.backgroundSource ? `<rect width="100%" height="100%" fill="#000000" fill-opacity="0.30"/>` : ""}
+      ${input.backgroundSource && input.dimBackground !== false ? `<rect width="100%" height="100%" fill="#000000" fill-opacity="0.30"/>` : ""}
       ${slots.map((slot) => slot.svg).join("")}
       ${input.logoSource ? "" : slots.filter((slot) => slot.filled).map((slot) => {
         const x = slot.x + diameter / 2;

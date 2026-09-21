@@ -389,6 +389,38 @@
   font-weight: 650;
 }
 
+.wallet-image-option {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 5px;
+  color: var(--enterprise-text);
+  cursor: pointer;
+}
+
+.wallet-image-option input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--enterprise-primary);
+}
+
+.wallet-image-option > span {
+  display: grid;
+  gap: 1px;
+}
+
+.wallet-image-option strong {
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.wallet-image-option small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.7rem;
+}
+
 .wallet-image-layout-controls {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6127,8 +6159,11 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   width: calc(100% - var(--apple-pass-strip-margin-x, 0%) - var(--apple-pass-strip-margin-x, 0%));
   height: calc(100% - var(--apple-pass-strip-margin-y, 0%) - var(--apple-pass-strip-margin-y, 0%));
   object-fit: cover;
-  filter: brightness(0.7);
   transform: scale(var(--apple-pass-strip-scale, 1));
+}
+
+.apple-pass-preview-strip.is-dimmed {
+  filter: brightness(0.7);
 }
 
 .apple-pass-preview-stamps {

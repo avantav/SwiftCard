@@ -14,6 +14,7 @@ export type AppleWalletDesignInput = {
   stripScalePercent: number;
   stripMarginXPercent: number;
   stripMarginYPercent: number;
+  stripDimmingEnabled: boolean;
 };
 
 export type AppleWalletDesignValidation =
@@ -153,6 +154,7 @@ export function validateAppleWalletDesignForm(
       stripScalePercent,
       stripMarginXPercent,
       stripMarginYPercent,
+      stripDimmingEnabled: formData.get("stripDimmingEnabled") === "on",
     },
   };
 }

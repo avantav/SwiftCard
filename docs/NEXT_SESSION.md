@@ -24,6 +24,15 @@
 
 ## Wallet image-layout context
 
+- Migration `0063_wallet_strip_dimming_option.sql` adds the per-card
+  `strip_dimming_enabled` preference and Admin-only
+  `save_loyalty_card_design_v4` RPC. The image row exposes one compact option:
+  when disabled, Apple pass strips and the live preview preserve the source
+  image brightness; when enabled, the existing 30–34% dark overlay remains.
+- Existing cards default to dimming enabled. Migration `0063` is validated
+  locally but has not been reported as applied remotely; apply it before
+  deploying the application code, then process the Apple outbox or reinstall a
+  pass for real-device validation.
 - Migration `0062_wallet_image_layout_controls.sql` adds per-card scale and
   horizontal/vertical margin values for the logo and main image plus the
   Admin-only `save_loyalty_card_design_v3` RPC.
@@ -33,7 +42,7 @@
 - Defaults preserve the prior rendering: 100% size and 0% margins. Existing
   cards therefore do not change until an Admin edits the controls.
 - The product owner confirmed `main` is current and migration `0062` is applied
-  remotely. Process the Apple outbox or reinstall a pass for device validation.
+  remotely.
 
 ## Commercial billing context
 

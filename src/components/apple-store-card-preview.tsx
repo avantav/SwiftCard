@@ -24,6 +24,7 @@ export type AppleStoreCardPreviewDesign = {
   stripScalePercent: number;
   stripMarginXPercent: number;
   stripMarginYPercent: number;
+  stripDimmingEnabled: boolean;
 };
 
 type AppleStoreCardPreviewProps = {
@@ -103,7 +104,7 @@ export function AppleStoreCardPreview({
         {design.stripImageUrl ? (
           <img
             alt="Imagen principal configurada"
-            className="apple-pass-preview-strip"
+            className={`apple-pass-preview-strip${design.stripDimmingEnabled ? " is-dimmed" : ""}`}
             src={design.stripImageUrl}
           />
         ) : null}

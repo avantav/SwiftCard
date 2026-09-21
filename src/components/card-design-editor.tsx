@@ -32,6 +32,7 @@ type CardWalletDesignValues = AppleWalletDesignValues & {
   stripScalePercent: number;
   stripMarginXPercent: number;
   stripMarginYPercent: number;
+  stripDimmingEnabled: boolean;
 };
 
 const assetDesignKey: Record<AppleWalletAssetKind, keyof Pick<
@@ -300,6 +301,20 @@ export function CardDesignEditor({
                   <div className="wallet-asset-copy">
                     <div><h4>{asset.label}</h4><p>{asset.hint}</p></div>
                     <small>{imageState}</small>
+                    {asset.kind === "strip" ? (
+                      <label className="wallet-image-option">
+                        <input
+                          checked={design.stripDimmingEnabled}
+                          name="stripDimmingEnabled"
+                          onChange={(event) => update("stripDimmingEnabled", event.target.checked)}
+                          type="checkbox"
+                        />
+                        <span>
+                          <strong>Oscurecer para resaltar el progreso</strong>
+                          <small>Desactívalo para conservar el brillo original.</small>
+                        </span>
+                      </label>
+                    ) : null}
                     {uploads[asset.kind].message ? (
                       <p
                         className={`apple-wallet-upload-status is-${uploads[asset.kind].status}`}

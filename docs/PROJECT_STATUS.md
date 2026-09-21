@@ -4,18 +4,18 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Simplified the card-design editor into clear identity,
-  color and image sections, made transparent/white assets visible and moved
-  optional image-layout controls behind progressive disclosure.
+- Last completed task: Added an explicit per-card option to preserve the
+  original brightness of Apple Wallet's main image in both the live preview
+  and signed pass assets.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Tenant Admins can configure Wallet branding from a
-  compact responsive editor with live provider previews and visible transparent
-  asset thumbnails, without changing provider dimensions or weakening card
-  authority.
-- Git status: The simplified card-design editor passes lint, typecheck, all 280
-  tests across 78 files, webpack build and responsive review at 375, 768, 1280
-  and 1440 px. The product owner confirmed `main` is current and every migration
-  through `0062` is applied remotely.
+- Last stable feature: Tenant Admins can choose whether Apple darkens the main
+  image behind progress while preserving provider dimensions, layout authority
+  and the original default for existing cards.
+- Git status: The image-brightness option passes lint, typecheck, all 283 tests
+  across 78 files, webpack build and disposable PostgreSQL migration/RLS
+  verification through `0063`. The product owner confirmed `main` is current
+  and every migration through `0062` is applied remotely; `0063` remains to be
+  applied remotely.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
   migrations are current through `0062`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
@@ -158,6 +158,10 @@
   card, restricts mutation to the tenant Admin, queues installed Apple passes,
   and the server applies the same safe-area composition to 1x/2x/3x signed
   assets shown by the live preview. Google continues to control its own crop.
+- The Apple main-image row now includes a compact, keyboard-native option to
+  turn off the contrast darkening. Migration `0063` stores the choice per card,
+  keeps dimming enabled for existing cards, queues installed passes and applies
+  the choice to generated point/stamp strips without moving any Wallet fields.
 - Google Wallet uses the same published card design to upsert one issuer-scoped loyalty class per card and one loyalty object per issued customer card. Issuance verifies current terms, includes the opaque Web Card QR, live balance/rewards, catalog, HTTPS imagery and up to ten active proximity locations, persists a provider-neutral pass record and redirects through a short signed Save to Google Wallet JWT. Credentials remain server-only and the customer UI uses Google's official Latin American Spanish badge.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
@@ -225,8 +229,14 @@
 - `npm run db:verify-rls`: passed through migration and test `0059`.
 - `npm run db:verify-rls`: passed through migration and test `0062`, including
   image-layout ranges, Admin persistence and Branch Administrator denial.
+- `npm run db:verify-rls`: passed through migration and test `0063`, including
+  Admin persistence, null rejection and Branch Administrator denial.
+- `npm run test:run`: passed; 283 tests across 78 files.
 - Wallet image-layout editor: reviewed at 375, 768, 1280 and 1440 px; controls
   stack on mobile, remain keyboard-native, and keep the preview contained.
+- Apple main-image dimming option: reviewed at 375, 768, 1280 and 1440 px;
+  its label wraps without overflow, retains a 44 px target and stays beside the
+  relevant image rather than adding another settings panel.
 - `/superadmin/billing/packages` representative populated state: reviewed at 375, 768, 1280 and 1440 px; form, capabilities, responsive catalog, status and actions remain contained.
 - `npm run build`: passed with webpack.
 - `npm audit --omit=dev`: completed with 5 high runtime advisories; none originates from the QR scanner packages, and the framework/export fixes remain separate risk work.

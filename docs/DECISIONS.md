@@ -512,3 +512,24 @@
   Administrators are responsible for reviewing legibility in the Apple and
   Google previews and on real devices.
 - Status: Accepted.
+
+## DEC-0046 - Optional Apple Main-Image Dimming
+
+- Date: 2026-09-20
+- Context: Apple progress strips were always composited with a 30–34% black
+  overlay, so a tenant's main image appeared darker on the customer's phone
+  even when the uploaded source had the intended brightness.
+- Decision: Store a per-card boolean that lets the tenant Admin disable the
+  overlay. Keep it enabled by default for compatibility, show the choice beside
+  the main image, mirror it in the live Apple preview and apply it to generated
+  point/stamp strip assets. The choice does not alter Apple's fixed canvas,
+  fields or `storeCard` structure and does not affect Google rendering.
+- Alternatives considered: Remove the overlay globally, expose another numeric
+  opacity slider, or leave the preview/pass mismatch unexplained.
+- Reason: A single option resolves the real-device issue without adding a
+  bloated control or unexpectedly changing every existing pass. Tenants retain
+  responsibility for legibility when using the original image brightness.
+- Consequences: Migration `0063` and application code deploy together. Existing
+  cards remain visually unchanged until an Admin turns the option off; saving
+  queues installed Apple passes for refresh.
+- Status: Accepted.

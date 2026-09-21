@@ -21,6 +21,7 @@ function validForm() {
   form.set("stripScalePercent", "115");
   form.set("stripMarginXPercent", "8");
   form.set("stripMarginYPercent", "10");
+  form.set("stripDimmingEnabled", "on");
   return form;
 }
 
@@ -34,6 +35,7 @@ describe("Apple Wallet tenant design", () => {
     expect(result.data.logoImageUrl).toBe("https://assets.example.com/logo.png");
     expect(result.data.logoScalePercent).toBe(85);
     expect(result.data.stripMarginYPercent).toBe(10);
+    expect(result.data.stripDimmingEnabled).toBe(true);
     expect(result.data.notificationIconUrl).toBe(
       "https://assets.example.com/notification.png",
     );
@@ -49,6 +51,14 @@ describe("Apple Wallet tenant design", () => {
       expect(result.errors).toContain("El tamaño del logo debe estar entre 50 y 100.");
       expect(result.errors).toContain("El margen horizontal de la imagen principal debe estar entre 0 y 20.");
     }
+  });
+
+  it("preserves the original image brightness when dimming is unchecked", () => {
+    const form = validForm();
+    form.delete("stripDimmingEnabled");
+    const result = validateAppleWalletDesignForm(form);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data.stripDimmingEnabled).toBe(false);
   });
 
   it("rejects non-HTTPS assets", () => {
