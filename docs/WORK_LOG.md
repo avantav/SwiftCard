@@ -15,6 +15,9 @@ and make white or transparent uploaded images visible before saving.
   and transparent logos remain visible.
 - Moved six optional Apple image-size and margin sliders into one collapsed
   advanced section and added per-image reset actions.
+- Clarified those controls as image framing inside Apple's fixed provider area;
+  the preview now clips zoomed artwork at that boundary and a pixel-level test
+  verifies the signed output preserves the untouched outer canvas.
 - Replaced the availability checkbox with an accessible status toggle and
   shortened provider caveats to the information needed at the point of use.
 - Adapted the layout for 375, 768, 1280 and 1440 px without horizontal overflow.
@@ -32,6 +35,7 @@ and make white or transparent uploaded images visible before saving.
   representative route; the route was removed after review.
 - `npm run test:run`: passed; 280 tests across 78 files.
 - `npm run build`: passed with webpack.
+- Follow-up framing tests passed: 9 focused tests, typecheck and lint.
 
 ## 2026-09-17 - Per-Card Image Size And Margin Controls
 

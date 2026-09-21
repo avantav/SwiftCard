@@ -38,4 +38,26 @@ describe("Apple Wallet image layout", () => {
       format: "png",
     });
   });
+
+  it("clips zoomed content inside the fixed provider canvas", async () => {
+    const source = await sharp({
+      create: { width: 200, height: 100, channels: 4, background: "#FF0000" },
+    }).png().toBuffer();
+    const output = await renderAppleWalletPositionedImage(
+      source,
+      375,
+      144,
+      { scalePercent: 150, marginXPercent: 10, marginYPercent: 10 },
+      { fit: "cover", background: "#0000FF" },
+    );
+    const { data, info } = await sharp(output).raw().toBuffer({ resolveWithObject: true });
+    const rgbaAt = (x: number, y: number) => {
+      const offset = (y * info.width + x) * info.channels;
+      return Array.from(data.subarray(offset, offset + 4));
+    };
+
+    expect(rgbaAt(0, 0)).toEqual([0, 0, 255, 255]);
+    expect(rgbaAt(187, 72)).toEqual([255, 0, 0, 255]);
+    expect(info).toMatchObject({ width: 375, height: 144, channels: 4 });
+  });
 });

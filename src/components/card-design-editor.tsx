@@ -337,7 +337,7 @@ export function CardDesignEditor({
           </div>
           <details className="wallet-advanced-controls">
             <summary>
-              <span><strong>Ajustar tamaño y posición</strong><small>Opcional · Apple Wallet</small></span>
+              <span><strong>Ajustar encuadre</strong><small>Opcional · dentro del área fija de Apple</small></span>
             </summary>
             <div className="wallet-image-layout-controls">
               {([
@@ -345,18 +345,18 @@ export function CardDesignEditor({
                   kind: "logo" as const,
                   title: "Logo",
                   fields: [
-                    ["logoScalePercent", "Tamaño", 50, 100],
-                    ["logoMarginXPercent", "Margen horizontal", 0, 20],
-                    ["logoMarginYPercent", "Margen vertical", 0, 20],
+                    ["logoScalePercent", "Tamaño dentro del área", 50, 100],
+                    ["logoMarginXPercent", "Espacio lateral", 0, 20],
+                    ["logoMarginYPercent", "Espacio superior e inferior", 0, 20],
                   ] as const,
                 },
                 {
                   kind: "strip" as const,
                   title: "Imagen principal",
                   fields: [
-                    ["stripScalePercent", "Tamaño", 50, 150],
-                    ["stripMarginXPercent", "Margen horizontal", 0, 20],
-                    ["stripMarginYPercent", "Margen vertical", 0, 20],
+                    ["stripScalePercent", "Tamaño dentro del área", 50, 150],
+                    ["stripMarginXPercent", "Espacio lateral", 0, 20],
+                    ["stripMarginYPercent", "Espacio superior e inferior", 0, 20],
                   ] as const,
                 },
               ]).map((group) => (
@@ -382,7 +382,7 @@ export function CardDesignEditor({
                 </div>
               ))}
             </div>
-            <p>Google Wallet usa las imágenes originales y controla su propio recorte.</p>
+            <p>El encuadre nunca mueve campos ni cambia la estructura del pase. Google Wallet usa las imágenes originales dentro de las zonas que controla.</p>
           </details>
           {isUploading ? <p className="enterprise-alert is-info" role="status">Espera a que terminen las cargas antes de guardar.</p> : null}
         </section>

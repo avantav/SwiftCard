@@ -6107,6 +6107,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 .apple-pass-preview-primary {
   position: relative;
   display: grid;
+  overflow: hidden;
   width: 100%;
   min-height: 92px;
   place-items: center;

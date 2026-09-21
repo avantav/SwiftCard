@@ -92,6 +92,7 @@ describe("multi-card loyalty boundary", () => {
     expect(designEditor).toContain("wallet-asset-list");
     expect(designEditor).toContain("wallet-advanced-controls");
     expect(designEditor).toContain("resetImageLayout");
+    expect(designEditor).toContain("El encuadre nunca mueve campos ni cambia la estructura del pase");
     expect(designEditor).toContain('name={key}');
     expect(designEditor).toContain('"logoScalePercent"');
     expect(designEditor).toContain('"stripMarginYPercent"');
