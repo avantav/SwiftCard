@@ -53,7 +53,9 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
       .eq("id", cardId)
       .eq("tenant_id", context.tenantId)
       .maybeSingle();
-    rawCard = fallback.data;
+    rawCard = fallback.data
+      ? { ...fallback.data, strip_dimming_enabled: true }
+      : null;
     cardError = fallback.error;
   }
   if (cardError || !rawCard) notFound();
