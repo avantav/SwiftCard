@@ -94,7 +94,7 @@ export function buildAppleWalletPassProps(
     organizationName: input.tenantName,
     description: input.description,
     voided: input.voided ?? false,
-    logoText: input.logoText,
+    ...(input.logoText.trim() ? { logoText: input.logoText.trim() } : {}),
     backgroundColor: hexToAppleRgb(input.backgroundColor),
     foregroundColor: hexToAppleRgb(input.foregroundColor),
     labelColor: hexToAppleRgb(input.labelColor),

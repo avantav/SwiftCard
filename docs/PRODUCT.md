@@ -279,6 +279,10 @@ fijas del proveedor. Google Wallet conservará los mismos activos, pero puede
 aplicar su propia zona segura y recorte; la interfaz no prometerá equivalencia
 pixel a pixel entre proveedores.
 
+El nombre visible junto al logo será opcional y admitirá hasta 60 caracteres.
+Cuando el logo ya contenga el nombre del negocio, el Admin podrá dejar este
+campo vacío y el pase Apple omitirá `logoText` en vez de repetir la identidad.
+
 En programas cíclicos, el Admin general podrá mostrar u ocultar los círculos
 de sellos sobre la imagen principal de Apple Wallet. Ocultarlos no modifica el
 saldo ni elimina el progreso textual exacto del pase. Las tarjetas existentes

@@ -35,6 +35,7 @@ and make white or transparent uploaded images visible before saving.
   representative route; the route was removed after review.
 - `npm run test:run`: passed; 280 tests across 78 files.
 - `npm run build`: passed with webpack.
+
 - Follow-up framing tests passed: 9 focused tests, typecheck and lint.
 
 ## 2026-09-17 - Per-Card Image Size And Margin Controls
@@ -2297,4 +2298,26 @@ Apple Wallet main image without changing loyalty accounting.
 - `npm run lint`: passed.
 - `npm run test:run`: passed; 285 tests across 78 files.
 - `npm run db:verify-rls`: passed through migration/test `0064`.
+- `npm run build`: passed with webpack.
+
+## 2026-09-23 - Optional Wallet card title
+
+**Objective:** Allow a logo that already contains the business name to stand
+alone without duplicating it as adjacent Wallet text.
+
+**Changes made**
+
+- Removed the required/minimum-length rule from the active card-title field and
+  clarified that it is optional when the logo includes the business name.
+- Kept the 60-character maximum in browser, server validation and PostgreSQL.
+- Updated Apple and Google previews to avoid inserting a fallback title.
+- Omitted `logoText` from signed Apple pass properties when the value is empty.
+- Added migration `0065` through the existing Admin-only design RPC chain.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run test:run`: passed; 286 tests across 78 files.
+- `npm run db:verify-rls`: passed through migration/test `0065`.
 - `npm run build`: passed with webpack.

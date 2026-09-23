@@ -53,6 +53,10 @@ const stripStampsMigration = readFileSync(
   new URL("../../../supabase/migrations/0064_wallet_strip_stamps_option.sql", import.meta.url),
   "utf8",
 );
+const optionalCardTitleMigration = readFileSync(
+  new URL("../../../supabase/migrations/0065_optional_wallet_card_title.sql", import.meta.url),
+  "utf8",
+);
 
 describe("multi-card loyalty boundary", () => {
   it("owns a program and limits each tenant to three durable cards", () => {
@@ -129,6 +133,8 @@ describe("multi-card loyalty boundary", () => {
     expect(stripStampsMigration).toContain("strip_stamps_enabled");
     expect(designEditor).toContain("Mostrar sellos sobre la imagen");
     expect(cardActions).toContain("target_strip_stamps_enabled");
+    expect(designEditor).toContain("Nombre en la tarjeta (opcional)");
+    expect(optionalCardTitleMigration).toContain("length(btrim(target_logo_text)) > 60");
     expect(cardActions).toContain("tenantAppleWalletAssetPath");
     expect(cardActions).toContain("notification_icon_url");
     expect(cardActions.match(/dispatchAppleWalletUpdatesBestEffort/g)?.length).toBeGreaterThanOrEqual(5);

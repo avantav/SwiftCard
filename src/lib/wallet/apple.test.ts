@@ -115,6 +115,12 @@ describe("Apple Wallet store card", () => {
     });
     expect(JSON.stringify(props)).not.toContain("morrow");
     expect(props.storeCard.auxiliaryFields[0]?.value).toBe("0 visitas");
+
+    const withoutTitle = buildAppleWalletPassProps(
+      { ...base, logoText: " " },
+      { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
+    );
+    expect(withoutTitle).not.toHaveProperty("logoText");
   });
 
   it("shows a non-resetting point balance and next milestone without stamp fields", () => {

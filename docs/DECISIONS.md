@@ -554,3 +554,20 @@
   `0063`. Saving the option queues installed Apple passes; devices require
   outbox delivery or pass reinstallation to receive the new strip.
 - Status: Accepted.
+
+## DEC-0048 - Optional Wallet Card Title
+
+- Date: 2026-09-23
+- Context: An uploaded logo may already contain the complete business name, so
+  requiring at least one character beside it duplicates the visible identity.
+- Decision: Make the per-card Wallet title optional, retain its 60-character
+  maximum and omit Apple's `logoText` property when the normalized value is
+  empty. The Admin preview must likewise show no fallback title beside the logo.
+- Alternatives considered: Keep one required character, insert the tenant name
+  automatically, or require tenants to upload a symbol-only logo.
+- Reason: Omitting redundant text respects the tenant artwork and Apple's
+  supported optional field without weakening any operational card content.
+- Consequences: Migration `0065` relaxes only the minimum-length constraint and
+  updates the existing trusted save boundary. Existing titles remain unchanged;
+  Admins may clear them explicitly after deployment.
+- Status: Accepted.

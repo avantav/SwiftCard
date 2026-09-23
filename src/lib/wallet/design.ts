@@ -104,8 +104,8 @@ export function validateAppleWalletDesignForm(
     errors,
   );
 
-  if (logoText.length < 1 || logoText.length > 60) {
-    errors.push("El texto del logo debe tener entre 1 y 60 caracteres.");
+  if (logoText.length > 60) {
+    errors.push("El texto del logo debe tener hasta 60 caracteres.");
   }
   if (description.length < 1 || description.length > 120) {
     errors.push("La descripción debe tener entre 1 y 120 caracteres.");

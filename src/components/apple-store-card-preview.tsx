@@ -95,7 +95,7 @@ export function AppleStoreCardPreview({
               {tenantInitials}
             </span>
           )}
-          <strong>{design.logoText || tenantName}</strong>
+          {design.logoText ? <strong>{design.logoText}</strong> : null}
         </div>
       </header>
 

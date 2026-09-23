@@ -227,8 +227,9 @@ export function CardDesignEditor({
           </div>
           <div className="card-design-copy-fields">
             <label className="field">
-              <span>Nombre en la tarjeta</span>
-              <input maxLength={60} name="logoText" onChange={(event) => update("logoText", event.target.value)} onInput={(event) => update("logoText", event.currentTarget.value)} required value={design.logoText} />
+              <span>Nombre en la tarjeta (opcional)</span>
+              <input maxLength={60} name="logoText" onChange={(event) => update("logoText", event.target.value)} onInput={(event) => update("logoText", event.currentTarget.value)} value={design.logoText} />
+              <small>Déjalo vacío si el logo ya incluye el nombre del negocio.</small>
             </label>
             <label className="field">
               <span>Descripción interna</span>
@@ -454,7 +455,7 @@ export function CardDesignEditor({
             {effectiveDesign.stripImageUrl ? <img alt="Imagen principal de la tarjeta" className="unified-wallet-strip-background" src={effectiveDesign.stripImageUrl} /> : null}
             <header>
               {effectiveDesign.logoImageUrl ? <img alt="Logo de la tarjeta" src={effectiveDesign.logoImageUrl} /> : <span aria-hidden="true">SW</span>}
-              <strong>{design.logoText || preview.tenantName}</strong>
+              {design.logoText ? <strong>{design.logoText}</strong> : null}
             </header>
             {lifetimePoints ? <div className="unified-wallet-points"><span>{preview.unitNamePlural}</span><strong>{previewBalance}</strong><div aria-hidden="true"><i style={{ width: `${Math.round((previewBalance / previewGoal) * 100)}%` }} /></div><small>Próximo premio al llegar a {previewGoal}</small></div> : <div className="unified-wallet-stamps" role="img" aria-label={`${previewBalance} de ${previewGoal} ${preview.unitNamePlural}`}>
               {Array.from({ length: googleVisibleStamps }, (_, index) => <span className={index < googleFilledStamps ? "is-filled" : ""} key={index}>{index < googleFilledStamps ? "✓" : ""}</span>)}

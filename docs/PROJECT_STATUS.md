@@ -4,17 +4,16 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Added an explicit per-card option to show or hide the
-  graphical stamp circles over Apple Wallet's main image while retaining the
-  exact textual progress field.
+- Last completed task: Made the Wallet card title optional so a logo that
+  already contains the business name does not repeat it in Apple Wallet.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Tenant Admins can independently control Apple main-image
-  dimming and graphical stamp visibility while preserving provider dimensions,
-  textual progress and the original defaults for existing cards.
-- Git status: The stamp-visibility option passes lint, typecheck, all 285 tests
+- Last stable feature: Tenant Admins can leave the Wallet card title empty;
+  preview and signed Apple passes omit the adjacent text while preserving the
+  logo and every operational field.
+- Git status: The optional-title change passes lint, typecheck, all 286 tests
   across 78 files, webpack build and disposable PostgreSQL migration/RLS
-  verification through `0064`. The product owner confirmed migrations through
-  `0062` are applied remotely; `0063` and `0064` remain to be applied remotely.
+  verification through `0065`. The product owner confirmed migrations through
+  `0062` are applied remotely; `0063` through `0065` remain to be applied remotely.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
   migrations are current through `0062`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
@@ -165,6 +164,9 @@
   stamp circles from Apple's main image. Migration `0064` stores the choice per
   card, keeps stamps visible for existing cards, queues installed passes and
   retains exact textual progress when the image is shown without circles.
+- The Wallet card title is optional in the active multi-card editor. Migration
+  `0065` removes the one-character database minimum while retaining the
+  60-character maximum, and signed Apple passes omit `logoText` when empty.
 - Google Wallet uses the same published card design to upsert one issuer-scoped loyalty class per card and one loyalty object per issued customer card. Issuance verifies current terms, includes the opaque Web Card QR, live balance/rewards, catalog, HTTPS imagery and up to ten active proximity locations, persists a provider-neutral pass record and redirects through a short signed Save to Google Wallet JWT. Credentials remain server-only and the customer UI uses Google's official Latin American Spanish badge.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.

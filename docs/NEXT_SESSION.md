@@ -24,6 +24,11 @@
 
 ## Wallet image-layout context
 
+- Migration `0065_optional_wallet_card_title.sql` removes the minimum length
+  from the per-card Wallet title while retaining the 60-character maximum.
+  The active editor labels it optional, previews no adjacent fallback text and
+  signed Apple passes omit `logoText` when empty. Apply it after `0064`.
+
 - Migration `0064_wallet_strip_stamps_option.sql` adds the per-card
   `strip_stamps_enabled` preference and Admin-only
   `save_loyalty_card_design_v5` RPC. Cyclic cards can hide their graphical

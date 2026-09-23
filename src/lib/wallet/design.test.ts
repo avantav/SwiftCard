@@ -71,6 +71,14 @@ describe("Apple Wallet tenant design", () => {
     if (result.ok) expect(result.data.stripStampsEnabled).toBe(false);
   });
 
+  it("accepts an empty optional card title", () => {
+    const form = validForm();
+    form.set("logoText", "");
+    const result = validateAppleWalletDesignForm(form);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data.logoText).toBe("");
+  });
+
   it("rejects non-HTTPS assets", () => {
     const form = validForm();
     form.set("logoImageUrl", "http://localhost/logo.png");
