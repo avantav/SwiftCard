@@ -49,6 +49,10 @@ const stripDimmingMigration = readFileSync(
   new URL("../../../supabase/migrations/0063_wallet_strip_dimming_option.sql", import.meta.url),
   "utf8",
 );
+const stripStampsMigration = readFileSync(
+  new URL("../../../supabase/migrations/0064_wallet_strip_stamps_option.sql", import.meta.url),
+  "utf8",
+);
 
 describe("multi-card loyalty boundary", () => {
   it("owns a program and limits each tenant to three durable cards", () => {
@@ -120,8 +124,11 @@ describe("multi-card loyalty boundary", () => {
     expect(imageLayoutMigration).toContain("strip_margin_y_percent");
     expect(stripDimmingMigration).toContain("save_loyalty_card_design_v4");
     expect(stripDimmingMigration).toContain("strip_dimming_enabled");
-    expect(wizard).toContain("{ ...fallback.data, strip_dimming_enabled: true }");
-    expect(cardActions).toContain("target_strip_dimming_enabled");
+    expect(wizard).toContain("strip_dimming_enabled: true, strip_stamps_enabled: true");
+    expect(stripStampsMigration).toContain("save_loyalty_card_design_v5");
+    expect(stripStampsMigration).toContain("strip_stamps_enabled");
+    expect(designEditor).toContain("Mostrar sellos sobre la imagen");
+    expect(cardActions).toContain("target_strip_stamps_enabled");
     expect(cardActions).toContain("tenantAppleWalletAssetPath");
     expect(cardActions).toContain("notification_icon_url");
     expect(cardActions.match(/dispatchAppleWalletUpdatesBestEffort/g)?.length).toBeGreaterThanOrEqual(5);

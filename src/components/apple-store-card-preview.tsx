@@ -25,6 +25,7 @@ export type AppleStoreCardPreviewDesign = {
   stripMarginXPercent: number;
   stripMarginYPercent: number;
   stripDimmingEnabled: boolean;
+  stripStampsEnabled: boolean;
 };
 
 type AppleStoreCardPreviewProps = {
@@ -115,7 +116,7 @@ export function AppleStoreCardPreview({
             <div aria-hidden="true"><i style={{ width: `${Math.round((exampleBalance / Math.max(progress.goal, 1)) * 100)}%` }} /></div>
             <small>Próximo premio al llegar a {progress.goal}</small>
           </div>
-        ) : progress.visible ? (
+        ) : progress.visible && design.stripStampsEnabled ? (
           <div
             aria-label={`${exampleBalance} de ${progress.goal} ${unitNamePlural}`}
             className="apple-pass-preview-stamps"

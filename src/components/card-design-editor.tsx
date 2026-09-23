@@ -33,6 +33,7 @@ type CardWalletDesignValues = AppleWalletDesignValues & {
   stripMarginXPercent: number;
   stripMarginYPercent: number;
   stripDimmingEnabled: boolean;
+  stripStampsEnabled: boolean;
 };
 
 const assetDesignKey: Record<AppleWalletAssetKind, keyof Pick<
@@ -48,11 +49,13 @@ export function CardDesignEditor({
   initial,
   preview,
   stripDimmingSupported = true,
+  stripStampsSupported = true,
   tenantId,
 }: {
   initial: CardWalletDesignValues;
   preview: CardDesignPreviewContext;
   stripDimmingSupported?: boolean;
+  stripStampsSupported?: boolean;
   tenantId: string;
 }) {
   const [design, setDesign] = useState(initial);
@@ -304,22 +307,42 @@ export function CardDesignEditor({
                     <div><h4>{asset.label}</h4><p>{asset.hint}</p></div>
                     <small>{imageState}</small>
                     {asset.kind === "strip" ? (
-                      <label className="wallet-image-option">
-                        {!stripDimmingSupported ? <input name="stripDimmingEnabled" type="hidden" value="on" /> : null}
-                        <input
-                          checked={design.stripDimmingEnabled}
-                          disabled={!stripDimmingSupported}
-                          name="stripDimmingEnabled"
-                          onChange={(event) => update("stripDimmingEnabled", event.target.checked)}
-                          type="checkbox"
-                        />
-                        <span>
-                          <strong>Oscurecer para resaltar el progreso</strong>
-                          <small>{stripDimmingSupported
-                            ? "Desactívalo para conservar el brillo original."
-                            : "Disponible al aplicar la migración 0063."}</small>
-                        </span>
-                      </label>
+                      <div className="wallet-image-options">
+                        {!lifetimePoints ? (
+                          <label className="wallet-image-option">
+                            {!stripStampsSupported ? <input name="stripStampsEnabled" type="hidden" value="on" /> : null}
+                            <input
+                              checked={design.stripStampsEnabled}
+                              disabled={!stripStampsSupported}
+                              name="stripStampsEnabled"
+                              onChange={(event) => update("stripStampsEnabled", event.target.checked)}
+                              type="checkbox"
+                            />
+                            <span>
+                              <strong>Mostrar sellos sobre la imagen</strong>
+                              <small>{stripStampsSupported
+                                ? "Desactívalo para mostrar la imagen principal sin los círculos de progreso."
+                                : "Disponible al aplicar la migración 0064."}</small>
+                            </span>
+                          </label>
+                        ) : <input name="stripStampsEnabled" type="hidden" value={design.stripStampsEnabled ? "on" : ""} />}
+                        <label className="wallet-image-option">
+                          {!stripDimmingSupported ? <input name="stripDimmingEnabled" type="hidden" value="on" /> : null}
+                          <input
+                            checked={design.stripDimmingEnabled}
+                            disabled={!stripDimmingSupported}
+                            name="stripDimmingEnabled"
+                            onChange={(event) => update("stripDimmingEnabled", event.target.checked)}
+                            type="checkbox"
+                          />
+                          <span>
+                            <strong>Oscurecer para resaltar el progreso</strong>
+                            <small>{stripDimmingSupported
+                              ? "Desactívalo para conservar el brillo original."
+                              : "Disponible al aplicar la migración 0063."}</small>
+                          </span>
+                        </label>
+                      </div>
                     ) : null}
                     {uploads[asset.kind].message ? (
                       <p

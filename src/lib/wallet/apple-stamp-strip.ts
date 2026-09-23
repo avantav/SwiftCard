@@ -32,6 +32,7 @@ type StampStripInput = {
   backgroundSource: Buffer | null;
   backgroundLayout?: AppleWalletImageLayout;
   dimBackground?: boolean;
+  showStamps?: boolean;
 };
 
 function safeHex(value: string, fallback: string) {
@@ -71,7 +72,7 @@ async function renderStampStrip(
       .toUpperCase() || "SW",
   );
 
-  const slots = Array.from({ length: progress.visible }, (_, index) => {
+  const slots = Array.from({ length: input.showStamps === false ? 0 : progress.visible }, (_, index) => {
     const row = Math.floor(index / layout.columns);
     const rowCount = Math.min(
       layout.columns,

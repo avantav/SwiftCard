@@ -72,4 +72,25 @@ describe("Apple Wallet graphical stamp strip", () => {
     });
     expect(fourStamps["strip.png"].equals(fiveStamps["strip.png"])).toBe(false);
   });
+
+  it("keeps the primary image free of stamp circles when stamps are hidden", async () => {
+    const base = {
+      backgroundColor: "#17202A",
+      foregroundColor: "#FFFFFF",
+      rewardGoal: 10,
+      tenantName: "Café Central",
+      logoSource: null,
+      backgroundSource: null,
+      showStamps: false,
+    };
+    const fourStamps = await buildAppleWalletStampStrips({ ...base, stampBalance: 4 });
+    const fiveStamps = await buildAppleWalletStampStrips({ ...base, stampBalance: 5 });
+
+    expect(fourStamps["strip.png"].equals(fiveStamps["strip.png"])).toBe(true);
+    await expect(sharp(fourStamps["strip.png"]).metadata()).resolves.toMatchObject({
+      width: 375,
+      height: 144,
+      format: "png",
+    });
+  });
 });

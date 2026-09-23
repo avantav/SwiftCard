@@ -399,6 +399,11 @@
   cursor: pointer;
 }
 
+.wallet-image-options {
+  display: grid;
+  gap: 4px;
+}
+
 .wallet-image-option input {
   width: 16px;
   height: 16px;

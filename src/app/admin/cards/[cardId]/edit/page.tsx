@@ -21,16 +21,17 @@ type CardRow = {
   notification_icon_url: string | null; logo_scale_percent: number; logo_margin_x_percent: number; logo_margin_y_percent: number;
   strip_scale_percent: number; strip_margin_x_percent: number; strip_margin_y_percent: number;
   strip_dimming_enabled: boolean;
+  strip_stamps_enabled: boolean;
 };
 
 const steps = ["Programa", "Diseño", "Sucursales", "Publicar"];
 const cardFields = "id,name,status,program_id,program_completed,design_completed,locations_completed,current_step,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent";
 
-function isMissingStripDimmingColumn(error: { code?: string; message?: string } | null) {
+function isMissingDesignColumn(error: { code?: string; message?: string } | null, column: string) {
   return Boolean(
     error
     && ["42703", "PGRST204"].includes(error.code ?? "")
-    && error.message?.includes("strip_dimming_enabled"),
+    && error.message?.includes(column),
   );
 }
 
@@ -39,14 +40,30 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
   const [{ cardId }, query] = await Promise.all([params, searchParams]);
   const [cardResult, { data: tenant }, { data: branches }] = await Promise.all([
-    context.supabase.from("loyalty_cards").select(`${cardFields},strip_dimming_enabled`).eq("id", cardId).eq("tenant_id", context.tenantId).maybeSingle(),
+    context.supabase.from("loyalty_cards").select(`${cardFields},strip_dimming_enabled,strip_stamps_enabled`).eq("id", cardId).eq("tenant_id", context.tenantId).maybeSingle(),
     context.supabase.from("tenants").select("name,currency_code,logo_url,banner_url").eq("id", context.tenantId).maybeSingle(),
     context.supabase.from("branches").select("id,name,address,status").eq("tenant_id", context.tenantId).eq("status", "ACTIVE").order("name"),
   ]);
-  let { data: rawCard, error: cardError } = cardResult;
+  let rawCard = cardResult.data as CardRow | null;
+  let cardError = cardResult.error;
   let stripDimmingSupported = true;
-  if (isMissingStripDimmingColumn(cardError)) {
+  let stripStampsSupported = true;
+  if (isMissingDesignColumn(cardError, "strip_stamps_enabled")) {
+    stripStampsSupported = false;
+    const fallback = await context.supabase
+      .from("loyalty_cards")
+      .select(`${cardFields},strip_dimming_enabled`)
+      .eq("id", cardId)
+      .eq("tenant_id", context.tenantId)
+      .maybeSingle();
+    rawCard = fallback.data
+      ? { ...fallback.data, strip_stamps_enabled: true } as CardRow
+      : null;
+    cardError = fallback.error;
+  }
+  if (isMissingDesignColumn(cardError, "strip_dimming_enabled")) {
     stripDimmingSupported = false;
+    stripStampsSupported = false;
     const fallback = await context.supabase
       .from("loyalty_cards")
       .select(cardFields)
@@ -54,7 +71,7 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
       .eq("tenant_id", context.tenantId)
       .maybeSingle();
     rawCard = fallback.data
-      ? { ...fallback.data, strip_dimming_enabled: true }
+      ? { ...fallback.data, strip_dimming_enabled: true, strip_stamps_enabled: true } as CardRow
       : null;
     cardError = fallback.error;
   }
@@ -114,7 +131,7 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
       <div className="card-stage-actions"><SubmitButton className="secondary-button" name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton>Guardar y continuar</SubmitButton></div>
     </form></section> : null}
 
-    {requestedStep === 2 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="design-step-title"><div className="card-stage-heading"><p>Etapa 2 de 4</p><h2 id="design-step-title">Diseño de la tarjeta</h2><span>Configura una identidad única y comprueba cómo se adapta en ambos dispositivos.</span></div><form action={saveDesign} className="auth-form"><CardDesignEditor initial={{ appleEnabled: card.wallet_enabled, logoText: card.logo_text, description: card.description, backgroundColor: card.background_color, foregroundColor: card.foreground_color, labelColor: card.label_color, logoImageUrl: card.logo_image_url ?? "", stripImageUrl: card.strip_image_url ?? "", notificationIconUrl: card.notification_icon_url ?? "", logoScalePercent: card.logo_scale_percent, logoMarginXPercent: card.logo_margin_x_percent, logoMarginYPercent: card.logo_margin_y_percent, stripScalePercent: card.strip_scale_percent, stripMarginXPercent: card.strip_margin_x_percent, stripMarginYPercent: card.strip_margin_y_percent, stripDimmingEnabled: card.strip_dimming_enabled ?? true }} preview={{ tenantName: tenant?.name ?? "Tu negocio", programName: program.name, programType: program.program_type, rewardGoal, unitNameSingular: program.unit_name_singular, unitNamePlural: program.unit_name_plural, fallbackLogoImageUrl: tenant?.logo_url ?? "", fallbackStripImageUrl: tenant?.banner_url ?? "" }} stripDimmingSupported={stripDimmingSupported} tenantId={context.tenantId} /><div className="card-stage-actions"><Link className="secondary-button" href={`/admin/cards/${card.id}/edit?step=1`}>Anterior</Link><div className="card-stage-save-actions"><SubmitButton className="secondary-button" name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton>Guardar y continuar</SubmitButton></div></div></form></section> : null}
+    {requestedStep === 2 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="design-step-title"><div className="card-stage-heading"><p>Etapa 2 de 4</p><h2 id="design-step-title">Diseño de la tarjeta</h2><span>Configura una identidad única y comprueba cómo se adapta en ambos dispositivos.</span></div><form action={saveDesign} className="auth-form"><CardDesignEditor initial={{ appleEnabled: card.wallet_enabled, logoText: card.logo_text, description: card.description, backgroundColor: card.background_color, foregroundColor: card.foreground_color, labelColor: card.label_color, logoImageUrl: card.logo_image_url ?? "", stripImageUrl: card.strip_image_url ?? "", notificationIconUrl: card.notification_icon_url ?? "", logoScalePercent: card.logo_scale_percent, logoMarginXPercent: card.logo_margin_x_percent, logoMarginYPercent: card.logo_margin_y_percent, stripScalePercent: card.strip_scale_percent, stripMarginXPercent: card.strip_margin_x_percent, stripMarginYPercent: card.strip_margin_y_percent, stripDimmingEnabled: card.strip_dimming_enabled ?? true, stripStampsEnabled: card.strip_stamps_enabled ?? true }} preview={{ tenantName: tenant?.name ?? "Tu negocio", programName: program.name, programType: program.program_type, rewardGoal, unitNameSingular: program.unit_name_singular, unitNamePlural: program.unit_name_plural, fallbackLogoImageUrl: tenant?.logo_url ?? "", fallbackStripImageUrl: tenant?.banner_url ?? "" }} stripDimmingSupported={stripDimmingSupported} stripStampsSupported={stripStampsSupported} tenantId={context.tenantId} /><div className="card-stage-actions"><Link className="secondary-button" href={`/admin/cards/${card.id}/edit?step=1`}>Anterior</Link><div className="card-stage-save-actions"><SubmitButton className="secondary-button" name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton>Guardar y continuar</SubmitButton></div></div></form></section> : null}
 
     {requestedStep === 3 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="locations-step-title"><div className="card-stage-heading"><p>Etapa 3 de 4</p><h2 id="locations-step-title">Sucursales participantes</h2><span>Elige una o varias. La tarjeta solo podrá registrarse y usarse en estas ubicaciones.</span></div><form action={saveLocations} className="auth-form"><fieldset className="card-location-list"><legend>Ubicaciones disponibles</legend>{branches?.length ? branches.map((branch) => <label className="card-location-option" key={branch.id}><input defaultChecked={assigned.has(branch.id)} name="branchId" type="checkbox" value={branch.id} /><span><strong>{branch.name}</strong><small>{branch.address || "Dirección no registrada"}</small></span></label>) : <p className="enterprise-alert is-warning">Crea una sucursal activa antes de publicar esta tarjeta.</p>}</fieldset><div className="card-stage-actions"><Link className="secondary-button" href={`/admin/cards/${card.id}/edit?step=2`}>Anterior</Link><div className="card-stage-save-actions"><SubmitButton className="secondary-button" disabled={!branches?.length} name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton disabled={!branches?.length}>Guardar y continuar</SubmitButton></div></div></form></section> : null}
 

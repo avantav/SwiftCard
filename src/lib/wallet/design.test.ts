@@ -22,6 +22,7 @@ function validForm() {
   form.set("stripMarginXPercent", "8");
   form.set("stripMarginYPercent", "10");
   form.set("stripDimmingEnabled", "on");
+  form.set("stripStampsEnabled", "on");
   return form;
 }
 
@@ -36,6 +37,7 @@ describe("Apple Wallet tenant design", () => {
     expect(result.data.logoScalePercent).toBe(85);
     expect(result.data.stripMarginYPercent).toBe(10);
     expect(result.data.stripDimmingEnabled).toBe(true);
+    expect(result.data.stripStampsEnabled).toBe(true);
     expect(result.data.notificationIconUrl).toBe(
       "https://assets.example.com/notification.png",
     );
@@ -59,6 +61,14 @@ describe("Apple Wallet tenant design", () => {
     const result = validateAppleWalletDesignForm(form);
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.data.stripDimmingEnabled).toBe(false);
+  });
+
+  it("hides graphical stamps when their option is unchecked", () => {
+    const form = validForm();
+    form.delete("stripStampsEnabled");
+    const result = validateAppleWalletDesignForm(form);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data.stripStampsEnabled).toBe(false);
   });
 
   it("rejects non-HTTPS assets", () => {
