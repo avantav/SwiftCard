@@ -2251,3 +2251,26 @@ blocking contrast-ratio error.
 - `npm run test:run -- src/lib/wallet/design.test.ts`: passed; 5 tests.
 - `npm run typecheck`: passed.
 - `npm run lint`: passed.
+
+## 2026-09-22 - Wallet dimming rollout fallback build fix
+
+**Objective:** Restore the production build while retaining compatibility with
+hosted databases that have not applied migration `0063` yet.
+
+**Changes made**
+
+- Normalized the legacy card-query fallback by supplying
+  `strip_dimming_enabled: true`, matching the migration default and the prior
+  Apple Wallet rendering behavior.
+- Added focused regression coverage for the fallback contract.
+
+**Migrations added**
+
+- None.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run test:run -- src/lib/loyalty/multi-card.test.ts`: passed; 6 tests.
+- `npm run build`: passed with webpack, including production TypeScript checks.

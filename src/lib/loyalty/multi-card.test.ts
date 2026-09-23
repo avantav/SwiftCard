@@ -120,6 +120,7 @@ describe("multi-card loyalty boundary", () => {
     expect(imageLayoutMigration).toContain("strip_margin_y_percent");
     expect(stripDimmingMigration).toContain("save_loyalty_card_design_v4");
     expect(stripDimmingMigration).toContain("strip_dimming_enabled");
+    expect(wizard).toContain("{ ...fallback.data, strip_dimming_enabled: true }");
     expect(cardActions).toContain("target_strip_dimming_enabled");
     expect(cardActions).toContain("tenantAppleWalletAssetPath");
     expect(cardActions).toContain("notification_icon_url");
