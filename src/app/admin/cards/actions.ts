@@ -28,6 +28,14 @@ function redirectAfterSave(cardId: string, nextStep: number, formData: FormData)
   redirect(cardPath(cardId, nextStep, { saved: "1" }));
 }
 
+function isMissingDesignV4(error: { code?: string; message?: string } | null) {
+  return Boolean(
+    error
+    && error.code === "PGRST202"
+    && error.message?.includes("save_loyalty_card_design_v4"),
+  );
+}
+
 async function requireTenantAdmin() {
   const context = await requireInternalArea("ADMIN");
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
@@ -236,7 +244,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
       "Las imágenes nuevas deben cargarse desde el almacenamiento de morrow.",
     );
   }
-  const { data, error } = await context.supabase.schema("app").rpc(
+  let { data, error } = await context.supabase.schema("app").rpc(
     "save_loyalty_card_design_v4",
     {
       target_card_id: cardId,
@@ -258,6 +266,31 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
       target_strip_dimming_enabled: input.stripDimmingEnabled,
     },
   );
+  if (input.stripDimmingEnabled && isMissingDesignV4(error)) {
+    const fallback = await context.supabase.schema("app").rpc(
+      "save_loyalty_card_design_v3",
+      {
+        target_card_id: cardId,
+        target_wallet_enabled: input.appleEnabled,
+        target_logo_text: input.logoText,
+        target_description: input.description,
+        target_background_color: input.backgroundColor,
+        target_foreground_color: input.foregroundColor,
+        target_label_color: input.labelColor,
+        target_logo_image_url: input.logoImageUrl ?? "",
+        target_strip_image_url: input.stripImageUrl ?? "",
+        target_notification_icon_url: input.notificationIconUrl ?? "",
+        target_logo_scale_percent: input.logoScalePercent,
+        target_logo_margin_x_percent: input.logoMarginXPercent,
+        target_logo_margin_y_percent: input.logoMarginYPercent,
+        target_strip_scale_percent: input.stripScalePercent,
+        target_strip_margin_x_percent: input.stripMarginXPercent,
+        target_strip_margin_y_percent: input.stripMarginYPercent,
+      },
+    );
+    data = fallback.data;
+    error = fallback.error;
+  }
   if (error || data !== "SAVED") {
     await removeNewAssets();
     redirectCardError(cardId, 2, "No se pudo guardar el diseño de la tarjeta.");

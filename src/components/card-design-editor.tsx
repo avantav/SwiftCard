@@ -47,10 +47,12 @@ const assetDesignKey: Record<AppleWalletAssetKind, keyof Pick<
 export function CardDesignEditor({
   initial,
   preview,
+  stripDimmingSupported = true,
   tenantId,
 }: {
   initial: CardWalletDesignValues;
   preview: CardDesignPreviewContext;
+  stripDimmingSupported?: boolean;
   tenantId: string;
 }) {
   const [design, setDesign] = useState(initial);
@@ -303,15 +305,19 @@ export function CardDesignEditor({
                     <small>{imageState}</small>
                     {asset.kind === "strip" ? (
                       <label className="wallet-image-option">
+                        {!stripDimmingSupported ? <input name="stripDimmingEnabled" type="hidden" value="on" /> : null}
                         <input
                           checked={design.stripDimmingEnabled}
+                          disabled={!stripDimmingSupported}
                           name="stripDimmingEnabled"
                           onChange={(event) => update("stripDimmingEnabled", event.target.checked)}
                           type="checkbox"
                         />
                         <span>
                           <strong>Oscurecer para resaltar el progreso</strong>
-                          <small>Desactívalo para conservar el brillo original.</small>
+                          <small>{stripDimmingSupported
+                            ? "Desactívalo para conservar el brillo original."
+                            : "Disponible al aplicar la migración 0063."}</small>
                         </span>
                       </label>
                     ) : null}
