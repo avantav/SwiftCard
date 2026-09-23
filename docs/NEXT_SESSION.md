@@ -24,6 +24,13 @@
 
 ## Wallet image-layout context
 
+- Migration `0064_wallet_strip_stamps_option.sql` adds the per-card
+  `strip_stamps_enabled` preference and Admin-only
+  `save_loyalty_card_design_v5` RPC. Cyclic cards can hide their graphical
+  stamp circles from the Apple main image while keeping exact textual progress;
+  existing cards default to visible stamps. Apply `0063` and then `0064` before
+  deploying this application code, and process the Apple outbox afterward.
+
 - Migration `0063_wallet_strip_dimming_option.sql` adds the per-card
   `strip_dimming_enabled` preference and Admin-only
   `save_loyalty_card_design_v4` RPC. The image row exposes one compact option:

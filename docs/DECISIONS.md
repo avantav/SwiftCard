@@ -533,3 +533,24 @@
   cards remain visually unchanged until an Admin turns the option off; saving
   queues installed Apple passes for refresh.
 - Status: Accepted.
+
+## DEC-0047 - Optional Graphical Stamps On Apple Main Image
+
+- Date: 2026-09-23
+- Context: Some tenants want the uploaded Apple Wallet main image to remain
+  visually unobstructed instead of always placing graphical stamp circles over
+  it. Removing those circles must not hide the authoritative customer balance.
+- Decision: Store a per-card boolean for cyclic cards that controls only the
+  graphical stamp circles in the Apple strip. Keep it enabled by default,
+  reflect it immediately in the Admin preview and use it during signed 1x/2x/3x
+  strip generation. Always retain the exact textual progress field. Point-card
+  progress and Google Wallet rendering remain unchanged.
+- Alternatives considered: Remove graphical stamps globally, hide the entire
+  main image, remove textual progress with the circles, or create a separate
+  Apple designer.
+- Reason: One explicit option preserves current cards and fidelity accounting
+  while allowing the tenant's artwork to be the primary visual when desired.
+- Consequences: Migration `0064` and application code deploy together after
+  `0063`. Saving the option queues installed Apple passes; devices require
+  outbox delivery or pass reinstallation to receive the new strip.
+- Status: Accepted.

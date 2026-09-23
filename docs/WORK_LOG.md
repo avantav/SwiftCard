@@ -2274,3 +2274,27 @@ hosted databases that have not applied migration `0063` yet.
 - `npm run lint`: passed.
 - `npm run test:run -- src/lib/loyalty/multi-card.test.ts`: passed; 6 tests.
 - `npm run build`: passed with webpack, including production TypeScript checks.
+
+## 2026-09-23 - Optional Apple stamp circles on the main image
+
+**Objective:** Let tenant Admins show or hide graphical stamp circles over the
+Apple Wallet main image without changing loyalty accounting.
+
+**Changes made**
+
+- Added a card-level “Mostrar sellos sobre la imagen” control for cyclic
+  programs and mirrored it immediately in the Apple preview.
+- Added migration `0064` with an Admin-only v5 design RPC, visible-stamp default
+  for existing cards and Apple outbox queuing.
+- Updated signed 1x/2x/3x stamp strips to omit circles and logos when disabled
+  while retaining the exact textual progress field.
+- Preserved staged rollout fallbacks: older databases keep the option enabled
+  and cannot silently save an unsupported hidden-stamp preference.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run test:run`: passed; 285 tests across 78 files.
+- `npm run db:verify-rls`: passed through migration/test `0064`.
+- `npm run build`: passed with webpack.

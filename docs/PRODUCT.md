@@ -279,6 +279,11 @@ fijas del proveedor. Google Wallet conservará los mismos activos, pero puede
 aplicar su propia zona segura y recorte; la interfaz no prometerá equivalencia
 pixel a pixel entre proveedores.
 
+En programas cíclicos, el Admin general podrá mostrar u ocultar los círculos
+de sellos sobre la imagen principal de Apple Wallet. Ocultarlos no modifica el
+saldo ni elimina el progreso textual exacto del pase. Las tarjetas existentes
+conservarán los sellos visibles hasta que el Admin cambie esta preferencia.
+
 ### Configuración administrativa de tarjetas
 
 El Admin general administrará las tarjetas desde `/admin/cards`. Puede conservar como máximo tres tarjetas no archivadas por tenant. Al iniciar una tarjeta, el backend crea inmediatamente un borrador y un programa pausado ligado de forma uno a uno. La configuración usa cuatro etapas simples:
