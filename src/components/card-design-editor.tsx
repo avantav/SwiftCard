@@ -12,6 +12,7 @@ import {
   validateAppleWalletAssetFile,
   type AppleWalletAssetKind,
 } from "@/lib/wallet/assets";
+import { normalizeAppleWalletStampRows } from "@/lib/wallet/apple-stamp-layout";
 
 type CardDesignPreviewContext = {
   tenantName: string;
@@ -34,26 +35,34 @@ type CardWalletDesignValues = AppleWalletDesignValues & {
   stripMarginYPercent: number;
   stripDimmingEnabled: boolean;
   stripStampsEnabled: boolean;
+  stampIconUrl: string;
+  stampEmptySlotsEnabled: boolean;
+  stampRowCounts: number[];
+  stampPositionXPercent: number;
+  stampPositionYPercent: number;
 };
 
 const assetDesignKey: Record<AppleWalletAssetKind, keyof Pick<
   CardWalletDesignValues,
-  "logoImageUrl" | "stripImageUrl" | "notificationIconUrl"
+  "logoImageUrl" | "stripImageUrl" | "notificationIconUrl" | "stampIconUrl"
 >> = {
   logo: "logoImageUrl",
   strip: "stripImageUrl",
   notification: "notificationIconUrl",
+  stamp: "stampIconUrl",
 };
 
 export function CardDesignEditor({
   initial,
   preview,
+  stampLayoutSupported = true,
   stripDimmingSupported = true,
   stripStampsSupported = true,
   tenantId,
 }: {
   initial: CardWalletDesignValues;
   preview: CardDesignPreviewContext;
+  stampLayoutSupported?: boolean;
   stripDimmingSupported?: boolean;
   stripStampsSupported?: boolean;
   tenantId: string;
@@ -61,13 +70,14 @@ export function CardDesignEditor({
   const [design, setDesign] = useState(initial);
   const [provider, setProvider] = useState<"APPLE" | "GOOGLE">("APPLE");
   const editorRef = useRef<HTMLDivElement>(null);
-  const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null });
-  const localPreviewUrls = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null });
-  const [localPreviews, setLocalPreviews] = useState<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null });
+  const pendingPaths = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null, stamp: null });
+  const localPreviewUrls = useRef<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null, stamp: null });
+  const [localPreviews, setLocalPreviews] = useState<Record<AppleWalletAssetKind, string | null>>({ logo: null, strip: null, notification: null, stamp: null });
   const [uploads, setUploads] = useState<Record<AppleWalletAssetKind, { status: "idle" | "uploading" | "success" | "error"; message: string }>>({
     logo: { status: "idle", message: "" },
     strip: { status: "idle", message: "" },
     notification: { status: "idle", message: "" },
+    stamp: { status: "idle", message: "" },
   });
   const update = <Key extends keyof CardWalletDesignValues>(
     key: Key,
@@ -88,6 +98,7 @@ export function CardDesignEditor({
     ...design,
     logoImageUrl: localPreviews.logo || design.logoImageUrl || preview.fallbackLogoImageUrl,
     stripImageUrl: localPreviews.strip || design.stripImageUrl || preview.fallbackStripImageUrl,
+    stampIconUrl: localPreviews.stamp || design.stampIconUrl,
   };
   const notificationIconPreviewUrl = localPreviews.notification
     || design.notificationIconUrl
@@ -98,6 +109,8 @@ export function CardDesignEditor({
     Math.max(1, Math.floor(previewGoal * 0.4)),
   );
   const lifetimePoints = preview.programType === "LIFETIME_POINTS";
+  const visibleStampCount = Math.min(previewGoal, 24);
+  const stampRows = normalizeAppleWalletStampRows(visibleStampCount, design.stampRowCounts);
   const googleVisibleStamps = Math.min(previewGoal, 10);
   const googleFilledStamps = Math.min(
     googleVisibleStamps,
@@ -111,6 +124,17 @@ export function CardDesignEditor({
       design[key as keyof CardWalletDesignValues]
         !== initial[key as keyof CardWalletDesignValues]
     ));
+
+  function removeLastStampRow() {
+    const candidate = stampRows.slice(0, -1);
+    let remaining = visibleStampCount - candidate.reduce((total, count) => total + count, 0);
+    for (let index = candidate.length - 1; index >= 0 && remaining > 0; index -= 1) {
+      const added = Math.min(8 - candidate[index], remaining);
+      candidate[index] += added;
+      remaining -= added;
+    }
+    update("stampRowCounts", normalizeAppleWalletStampRows(visibleStampCount, candidate));
+  }
 
   useEffect(() => {
     const form = editorRef.current?.closest("form");
@@ -270,17 +294,21 @@ export function CardDesignEditor({
           <input name="logoImageUrl" type="hidden" value={design.logoImageUrl} />
           <input name="stripImageUrl" type="hidden" value={design.stripImageUrl} />
           <input name="notificationIconUrl" type="hidden" value={design.notificationIconUrl} />
+          <input name="stampIconUrl" type="hidden" value={design.stampIconUrl} />
           <div className="wallet-asset-list">
             {([
               { kind: "logo" as const, label: "Logo", hint: "Identidad visible en la parte superior." },
               { kind: "strip" as const, label: "Imagen principal", hint: lifetimePoints ? "Fondo del saldo y el siguiente hito." : "Fondo del progreso de sellos." },
+              ...(!lifetimePoints && stampLayoutSupported ? [{ kind: "stamp" as const, label: "Icono de sello", hint: "Opcional. Se repite en cada sello obtenido; si falta, se usa el logo." }] : []),
               { kind: "notification" as const, label: "Icono de notificaciones", hint: "Opcional y cuadrado. Si falta, se usa el logo." },
             ]).map((asset) => {
               const imageUrl = asset.kind === "logo"
                 ? effectiveDesign.logoImageUrl
                 : asset.kind === "strip"
                   ? effectiveDesign.stripImageUrl
-                  : notificationIconPreviewUrl;
+                  : asset.kind === "stamp"
+                    ? effectiveDesign.stampIconUrl
+                    : notificationIconPreviewUrl;
               const configuredImageUrl = design[assetDesignKey[asset.kind]];
               const usesFallback = !configuredImageUrl && Boolean(imageUrl);
               const imageState = localPreviews[asset.kind]
@@ -299,7 +327,9 @@ export function CardDesignEditor({
                           ? "Logo usado en la vista previa"
                           : asset.kind === "strip"
                             ? "Imagen principal usada en la vista previa"
-                            : "Icono usado en las notificaciones de Apple Wallet"}
+                            : asset.kind === "stamp"
+                              ? "Icono usado dentro de los sellos"
+                              : "Icono usado en las notificaciones de Apple Wallet"}
                         src={imageUrl}
                       />
                     ) : <span className="wallet-asset-empty" aria-hidden="true">Sin imagen</span>}
@@ -380,6 +410,118 @@ export function CardDesignEditor({
               );
             })}
           </div>
+          {!lifetimePoints ? (
+            <section className="wallet-stamp-layout-editor" aria-labelledby="wallet-stamp-layout-heading">
+              <input name="stampRowCounts" type="hidden" value={stampLayoutSupported ? stampRows.join(",") : ""} />
+              <input name="stampPositionXPercent" type="hidden" value={design.stampPositionXPercent} />
+              <input name="stampPositionYPercent" type="hidden" value={design.stampPositionYPercent} />
+              <div className="wallet-image-layout-heading">
+                <div>
+                  <h4 id="wallet-stamp-layout-heading">Distribución de sellos</h4>
+                  <p>Define cuántos van en cada fila y arrastra el bloque sobre la cuadrícula de la vista previa.</p>
+                  {!stampLayoutSupported ? <p>Disponible al aplicar la migración 0066.</p> : null}
+                </div>
+                <button
+                  className="tertiary-button"
+                  disabled={!stampLayoutSupported}
+                  onClick={() => setDesign((current) => ({
+                    ...current,
+                    stampRowCounts: [],
+                    stampPositionXPercent: 50,
+                    stampPositionYPercent: 50,
+                  }))}
+                  type="button"
+                >Restablecer</button>
+              </div>
+              <div className="wallet-stamp-row-controls">
+                {stampRows.map((count, index) => (
+                  <label className="field" key={index}>
+                    <span>Fila {index + 1}</span>
+                    <input
+                      aria-label={`Sellos en fila ${index + 1}`}
+                      disabled={!stampLayoutSupported}
+                      max={8}
+                      min={1}
+                      onChange={(event) => {
+                        const candidate = [...stampRows];
+                        candidate[index] = Number(event.target.value);
+                        update("stampRowCounts", normalizeAppleWalletStampRows(visibleStampCount, candidate));
+                      }}
+                      type="number"
+                      value={count}
+                    />
+                  </label>
+                ))}
+              </div>
+              <div className="wallet-stamp-layout-actions">
+                <button
+                  className="secondary-button"
+                  disabled={!stampLayoutSupported || stampRows.length >= 6 || stampRows.every((count) => count <= 1)}
+                  onClick={() => {
+                    const candidate = [...stampRows];
+                    const splitIndex = candidate.findIndex((count) => count > 1);
+                    if (splitIndex < 0) return;
+                    const count = candidate[splitIndex];
+                    candidate.splice(splitIndex, 1, Math.ceil(count / 2), Math.floor(count / 2));
+                    update("stampRowCounts", normalizeAppleWalletStampRows(visibleStampCount, candidate));
+                  }}
+                  type="button"
+                >Agregar fila</button>
+                <button
+                  className="tertiary-button"
+                  disabled={!stampLayoutSupported || stampRows.length <= 1 || visibleStampCount > (stampRows.length - 1) * 8}
+                  onClick={removeLastStampRow}
+                  type="button"
+                >Quitar última fila</button>
+                <span>{stampRows.reduce((total, count) => total + count, 0)} sellos · posición {design.stampPositionXPercent}%, {design.stampPositionYPercent}%</span>
+              </div>
+              <div className="wallet-stamp-position-controls">
+                <label className="field wallet-range-field">
+                  <span>Posición horizontal <output>{design.stampPositionXPercent}%</output></span>
+                  <input
+                    disabled={!stampLayoutSupported}
+                    max="100"
+                    min="0"
+                    onChange={(event) => update("stampPositionXPercent", Number(event.target.value))}
+                    type="range"
+                    value={design.stampPositionXPercent}
+                  />
+                </label>
+                <label className="field wallet-range-field">
+                  <span>Posición vertical <output>{design.stampPositionYPercent}%</output></span>
+                  <input
+                    disabled={!stampLayoutSupported}
+                    max="100"
+                    min="0"
+                    onChange={(event) => update("stampPositionYPercent", Number(event.target.value))}
+                    type="range"
+                    value={design.stampPositionYPercent}
+                  />
+                </label>
+              </div>
+              <label className="wallet-image-option">
+                {!stampLayoutSupported ? <input name="stampEmptySlotsEnabled" type="hidden" value="on" /> : null}
+                <input
+                  checked={design.stampEmptySlotsEnabled}
+                  disabled={!stampLayoutSupported}
+                  name="stampEmptySlotsEnabled"
+                  onChange={(event) => update("stampEmptySlotsEnabled", event.target.checked)}
+                  type="checkbox"
+                />
+                <span>
+                  <strong>Mostrar espacios sin sellar</strong>
+                  <small>Desactívalo para enseñar únicamente los sellos obtenidos.</small>
+                </span>
+              </label>
+            </section>
+          ) : (
+            <>
+              <input name="stampRowCounts" type="hidden" value="" />
+              <input name="stampPositionXPercent" type="hidden" value="50" />
+              <input name="stampPositionYPercent" type="hidden" value="50" />
+              <input name="stampEmptySlotsEnabled" type="hidden" value="on" />
+            </>
+          )}
           <details className="wallet-advanced-controls">
             <summary>
               <span><strong>Ajustar encuadre</strong><small>Opcional · dentro del área fija de Apple</small></span>
@@ -443,6 +585,13 @@ export function CardDesignEditor({
         {provider === "APPLE" ? (
           <AppleStoreCardPreview
             design={effectiveDesign}
+            onStampPositionChange={lifetimePoints || !design.stripStampsEnabled || !stampLayoutSupported
+              ? undefined
+              : (xPercent, yPercent) => setDesign((current) => ({
+                  ...current,
+                  stampPositionXPercent: xPercent,
+                  stampPositionYPercent: yPercent,
+                }))}
             programType={preview.programType}
             programName={preview.programName}
             rewardGoal={preview.rewardGoal}

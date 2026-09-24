@@ -160,8 +160,9 @@ Ese endpoint procesa hasta 25 trabajos por llamada y nunca expone push tokens. H
 
 La imagen `strip` no se muestra en Apple Watch y la matriz vigente de Pass
 Designer indica compatibilidad limitada según la versión de iOS. Por ello, la
-validación debe registrar el modelo y versión del iPhone y confirmar siempre el
-campo textual aunque la imagen no aparezca.
+validación debe registrar el modelo y versión del iPhone y confirmar el campo
+textual cuando la tarjeta no tenga activado el modo explícito de imagen sin
+sellos ni progreso.
 
 Las notificaciones de actualización de pases funcionan únicamente contra APNs de producción y su entrega es best effort. La validación final requiere HTTPS público y un iPhone real.
 

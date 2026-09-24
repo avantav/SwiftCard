@@ -28,11 +28,19 @@ function redirectAfterSave(cardId: string, nextStep: number, formData: FormData)
   redirect(cardPath(cardId, nextStep, { saved: "1" }));
 }
 
-function isMissingDesignRpc(error: { code?: string; message?: string } | null, version: "v4" | "v5") {
+function isMissingDesignRpc(error: { code?: string; message?: string } | null, version: "v4" | "v5" | "v6") {
   return Boolean(
     error
     && error.code === "PGRST202"
     && error.message?.includes(`save_loyalty_card_design_${version}`),
+  );
+}
+
+function isMissingDesignColumn(error: { code?: string; message?: string } | null, column: string) {
+  return Boolean(
+    error
+    && ["42703", "PGRST204"].includes(error.code ?? "")
+    && error.message?.includes(column),
   );
 }
 
@@ -193,12 +201,24 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
   const context = await requireTenantAdmin();
   if (!UUID.test(cardId)) redirect("/admin/cards");
   const { url: supabaseUrl } = getRequiredPublicSupabaseConfig();
-  const { data: currentDesign, error: currentDesignError } = await context.supabase
+  let { data: currentDesign, error: currentDesignError } = await context.supabase
     .from("loyalty_cards")
-    .select("logo_image_url,strip_image_url,notification_icon_url")
+    .select("logo_image_url,strip_image_url,notification_icon_url,stamp_icon_url")
     .eq("id", cardId)
     .eq("tenant_id", context.tenantId)
     .maybeSingle();
+  if (isMissingDesignColumn(currentDesignError, "stamp_icon_url")) {
+    const fallback = await context.supabase
+      .from("loyalty_cards")
+      .select("logo_image_url,strip_image_url,notification_icon_url")
+      .eq("id", cardId)
+      .eq("tenant_id", context.tenantId)
+      .maybeSingle();
+    currentDesign = fallback.data
+      ? { ...fallback.data, stamp_icon_url: null }
+      : null;
+    currentDesignError = fallback.error;
+  }
   if (currentDesignError || !currentDesign) {
     redirectCardError(cardId, 2, "No se pudo verificar la configuración actual de imágenes.");
   }
@@ -211,6 +231,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
     { kind: "logo", value: formData.get("logoImageUrl")?.toString().trim() || null, currentValue: currentDesign.logo_image_url },
     { kind: "strip", value: formData.get("stripImageUrl")?.toString().trim() || null, currentValue: currentDesign.strip_image_url },
     { kind: "notification", value: formData.get("notificationIconUrl")?.toString().trim() || null, currentValue: currentDesign.notification_icon_url },
+    { kind: "stamp", value: formData.get("stampIconUrl")?.toString().trim() || null, currentValue: currentDesign.stamp_icon_url },
   ];
   const newAssetPaths = submittedAssets.flatMap(({ kind, value, currentValue }) => {
     if (!value || value === currentValue) return [];
@@ -245,7 +266,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
     );
   }
   let { data, error } = await context.supabase.schema("app").rpc(
-    "save_loyalty_card_design_v5",
+    "save_loyalty_card_design_v6",
     {
       target_card_id: cardId,
       target_wallet_enabled: input.appleEnabled,
@@ -265,8 +286,47 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
       target_strip_margin_y_percent: input.stripMarginYPercent,
       target_strip_dimming_enabled: input.stripDimmingEnabled,
       target_strip_stamps_enabled: input.stripStampsEnabled,
+      target_stamp_icon_url: input.stampIconUrl ?? "",
+      target_stamp_empty_slots_enabled: input.stampEmptySlotsEnabled,
+      target_stamp_row_counts: input.stampRowCounts,
+      target_stamp_position_x_percent: input.stampPositionXPercent,
+      target_stamp_position_y_percent: input.stampPositionYPercent,
     },
   );
+  if (
+    !input.stampIconUrl
+    && input.stampEmptySlotsEnabled
+    && input.stampRowCounts.length === 0
+    && input.stampPositionXPercent === 50
+    && input.stampPositionYPercent === 50
+    && isMissingDesignRpc(error, "v6")
+  ) {
+    const fallback = await context.supabase.schema("app").rpc(
+      "save_loyalty_card_design_v5",
+      {
+        target_card_id: cardId,
+        target_wallet_enabled: input.appleEnabled,
+        target_logo_text: input.logoText,
+        target_description: input.description,
+        target_background_color: input.backgroundColor,
+        target_foreground_color: input.foregroundColor,
+        target_label_color: input.labelColor,
+        target_logo_image_url: input.logoImageUrl ?? "",
+        target_strip_image_url: input.stripImageUrl ?? "",
+        target_notification_icon_url: input.notificationIconUrl ?? "",
+        target_logo_scale_percent: input.logoScalePercent,
+        target_logo_margin_x_percent: input.logoMarginXPercent,
+        target_logo_margin_y_percent: input.logoMarginYPercent,
+        target_strip_scale_percent: input.stripScalePercent,
+        target_strip_margin_x_percent: input.stripMarginXPercent,
+        target_strip_margin_y_percent: input.stripMarginYPercent,
+        target_strip_dimming_enabled: input.stripDimmingEnabled,
+        target_strip_stamps_enabled: input.stripStampsEnabled,
+      },
+    );
+    data = fallback.data;
+    error = fallback.error;
+  }
   if (input.stripStampsEnabled && isMissingDesignRpc(error, "v5")) {
     const fallback = await context.supabase.schema("app").rpc(
       "save_loyalty_card_design_v4",

@@ -269,7 +269,7 @@
 - Decision: Make the multi-card Apple preview consume the saved program goal, unit names, card design and the same tenant asset fallbacks used by pass generation. Share progress copy and bounded stamp-slot calculations between preview and signed pass code, preserve Apple's `storeCard` front hierarchy and 375 × 144 strip proportion, and identify Android as conceptual until generation exists. Add a card-scoped transactional queue function plus triggers for `loyalty_cards` design/status and `loyalty_card_branches` changes, then attempt immediate APNs dispatch after program, design and location saves.
 - Alternatives considered: Continue the generic preview, restore writes to `tenant_wallet_designs`, update every installed pass in the tenant for each card edit, or rely only on the future external retry cron.
 - Reason: One card-owned source prevents preview/pass drift, targeted queueing avoids unnecessary updates to other cards and immediate dispatch matches the current no-cron hosting constraint without coupling configuration success to Apple availability.
-- Consequences: Additive migration `0048` must be deployed before card design/location edits update installed passes. Existing passes still require a successful Apple device registration, and failed APNs work remains durable for the protected retry endpoint. Apple owns final rendering; according to current Pass Designer compatibility documentation, store-card logo and strip images may be omitted on iOS 26 or later, so the textual progress field remains mandatory.
+- Consequences: Additive migration `0048` must be deployed before card design/location edits update installed passes. Existing passes still require a successful Apple device registration, and failed APNs work remains durable for the protected retry endpoint. Apple owns final rendering; according to current Pass Designer compatibility documentation, store-card logo and strip images may be omitted on iOS 26 or later, so the textual progress field remains the default compatibility fallback unless the Admin explicitly requests an image-only cyclic front under DEC-0047.
 - References: [Creating a store card pass](https://developer.apple.com/documentation/walletpasses/creating-a-store-card-pass) and [Creating a pass with Pass Designer](https://developer.apple.com/documentation/walletpasses/creating-a-pass-with-pass-designer).
 - Status: Accepted.
 
@@ -538,16 +538,18 @@
 
 - Date: 2026-09-23
 - Context: Some tenants want the uploaded Apple Wallet main image to remain
-  visually unobstructed instead of always placing graphical stamp circles over
-  it. Removing those circles must not hide the authoritative customer balance.
-- Decision: Store a per-card boolean for cyclic cards that controls only the
-  graphical stamp circles in the Apple strip. Keep it enabled by default,
-  reflect it immediately in the Admin preview and use it during signed 1x/2x/3x
-  strip generation. Always retain the exact textual progress field. Point-card
-  progress and Google Wallet rendering remain unchanged.
+  visually unobstructed instead of always placing graphical stamp circles or
+  progress copy over it. The authoritative customer balance remains in the
+  backend even when the front intentionally suppresses that representation.
+- Decision: Store a per-card boolean for cyclic cards that controls the
+  graphical stamp circles and cyclic progress field together. Keep it enabled
+  by default, reflect it immediately in the Admin preview and use it during
+  signed 1x/2x/3x strip generation. When disabled, the primary region contains
+  only the configured image. Point-card progress and Google Wallet rendering
+  remain unchanged.
 - Alternatives considered: Remove graphical stamps globally, hide the entire
-  main image, remove textual progress with the circles, or create a separate
-  Apple designer.
+  main image, retain progress copy beneath the unobstructed image, or create a
+  separate Apple designer.
 - Reason: One explicit option preserves current cards and fidelity accounting
   while allowing the tenant's artwork to be the primary visual when desired.
 - Consequences: Migration `0064` and application code deploy together after
@@ -570,4 +572,30 @@
 - Consequences: Migration `0065` relaxes only the minimum-length constraint and
   updates the existing trusted save boundary. Existing titles remain unchanged;
   Admins may clear them explicitly after deployment.
+- Status: Accepted.
+
+## DEC-0049 - Configurable Cyclic Stamp Artwork And Placement
+
+- Date: 2026-09-23
+- Context: A fixed centered grid cannot accommodate tenant artwork with focal
+  areas, different goal shapes or a dedicated visual language for earned and
+  unearned stamps.
+- Decision: Store one optional repeated stamp icon, an empty-slot toggle, a
+  bounded list of row counts and normalized X/Y coordinates per card. The Admin
+  edits row quantities and drags the complete block over a zoned 375 × 144
+  preview. Normalize the saved layout to the program's visible goal (maximum
+  24, six rows and eight stamps per row), preserve uniform spacing and render
+  the same coordinates in each signed Apple image scale. Missing configuration
+  retains the existing automatic centered layout and tenant-logo fallback.
+- Alternatives considered: Store pixel coordinates per output scale, permit
+  free placement of every individual stamp, create separate phone-size layouts,
+  or bake stamps permanently into the uploaded main image.
+- Reason: Percentage coordinates and row counts provide useful art direction
+  without fragile per-device state. One repeated icon keeps upload management
+  and pass size bounded while the empty-slot switch covers both common visual
+  treatments.
+- Consequences: Migration `0066` follows `0065`, expands the tenant-scoped
+  Storage filename allowlist with `stamp-*`, introduces the Admin-only v6 save
+  RPC and queues installed Apple passes when any stamp-layout value changes.
+  Apple still controls whether strip imagery appears on a particular OS version.
 - Status: Accepted.

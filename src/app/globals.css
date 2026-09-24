@@ -935,8 +935,14 @@
   .card-review-grid,
   .card-color-fields,
   .card-design-copy-fields,
-  .wallet-image-layout-controls {
+  .wallet-image-layout-controls,
+  .wallet-stamp-position-controls {
     grid-template-columns: 1fr;
+  }
+
+  .wallet-stamp-layout-actions {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .card-design-section {
@@ -6041,6 +6047,53 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   object-fit: contain;
 }
 
+.card-upload-image-preview.is-stamp {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+
+.card-upload-image-preview.is-stamp img {
+  padding: 8px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.wallet-stamp-layout-editor {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: 10px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.wallet-stamp-layout-editor p,
+.wallet-stamp-layout-actions span {
+  margin: 4px 0 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+}
+
+.wallet-stamp-row-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 10px;
+}
+
+.wallet-stamp-position-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.wallet-stamp-layout-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
 .wallet-asset-empty {
   padding: 6px;
   color: #344054;
@@ -6157,6 +6210,29 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   aspect-ratio: 375 / 144;
 }
 
+.apple-pass-preview-placement-grid {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  pointer-events: none;
+}
+
+.apple-pass-preview-placement-grid i {
+  border-right: 1px solid rgb(255 255 255 / 22%);
+  border-bottom: 1px solid rgb(255 255 255 / 22%);
+}
+
+.apple-pass-preview-placement-grid i:nth-child(5n) {
+  border-right: 0;
+}
+
+.apple-pass-preview-placement-grid i:nth-child(n + 11) {
+  border-bottom: 0;
+}
+
 .apple-pass-preview-strip {
   position: absolute;
   z-index: -1;
@@ -6172,11 +6248,26 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 }
 
 .apple-pass-preview-stamps {
+  position: absolute;
+  z-index: 1;
+  top: var(--apple-pass-stamp-position-y, 50%);
+  left: var(--apple-pass-stamp-position-x, 50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--apple-pass-stamp-gap, 10px);
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
+  transform: translate(-50%, -50%);
+  touch-action: none;
+}
+
+.apple-pass-preview-primary.is-stamp-editable .apple-pass-preview-stamps {
+  cursor: grab;
+}
+
+.apple-pass-preview-primary.is-stamp-editable .apple-pass-preview-stamps:active {
+  cursor: grabbing;
 }
 
 .apple-pass-preview-stamp-row {
@@ -6185,9 +6276,13 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     var(--apple-pass-stamp-row-columns, 5),
     minmax(0, var(--apple-pass-stamp-diameter, 34px))
   );
-  width: 100%;
+  width: max-content;
   justify-content: center;
   column-gap: var(--apple-pass-stamp-gap, 10px);
+}
+
+.apple-pass-preview-stamp-row > span.is-hidden-slot {
+  visibility: hidden;
 }
 
 .apple-pass-preview-stamp-row > span {

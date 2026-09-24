@@ -27,6 +27,7 @@ export type AppleWalletPassData = {
   unitNamePlural: string;
   stampBalance: number;
   rewardGoal: number | null;
+  showStampProgress: boolean;
   availableRewards: number;
   termsAndConditions: string;
   rewardTiers: Array<{
@@ -145,7 +146,7 @@ export function buildAppleWalletPassProps(
             value: nextMilestoneText,
           },
         ]
-        : [{
+        : input.showStampProgress ? [{
           key: "stamp-progress",
           label: "PROGRESO",
           value: appleWalletProgressText({
@@ -155,7 +156,7 @@ export function buildAppleWalletPassProps(
             unitNamePlural: input.unitNamePlural,
           }),
           changeMessage: "Tu tarjeta ahora tiene %@.",
-        }],
+        }] : [],
       backFields: [
         { key: "program", label: "PROGRAMA", value: input.programName },
         {

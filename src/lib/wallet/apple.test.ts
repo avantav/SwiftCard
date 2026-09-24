@@ -22,6 +22,7 @@ describe("Apple Wallet store card", () => {
         unitNamePlural: "sellos",
         stampBalance: 4,
         rewardGoal: 10,
+        showStampProgress: true,
         availableRewards: 1,
         termsAndConditions: "Válido en sucursales participantes.",
         rewardTiers: [
@@ -101,6 +102,7 @@ describe("Apple Wallet store card", () => {
       unitNamePlural: "visitas",
       stampBalance: 0,
       rewardGoal: null,
+      showStampProgress: true,
       availableRewards: 0,
       termsAndConditions: "Términos vigentes.",
       rewardTiers: [],
@@ -121,6 +123,13 @@ describe("Apple Wallet store card", () => {
       { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
     );
     expect(withoutTitle).not.toHaveProperty("logoText");
+
+    const withoutStampProgress = buildAppleWalletPassProps(
+      { ...base, rewardGoal: 10, showStampProgress: false },
+      { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
+    );
+    expect(withoutStampProgress.storeCard.auxiliaryFields).toEqual([]);
+    expect(JSON.stringify(withoutStampProgress.storeCard)).not.toContain("stamp-progress");
   });
 
   it("shows a non-resetting point balance and next milestone without stamp fields", () => {
@@ -141,6 +150,7 @@ describe("Apple Wallet store card", () => {
         unitNamePlural: "puntos",
         stampBalance: 125,
         rewardGoal: 300,
+        showStampProgress: false,
         availableRewards: 1,
         termsAndConditions: "Los puntos nunca se reinician.",
         rewardTiers: [

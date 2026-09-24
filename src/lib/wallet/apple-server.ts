@@ -138,6 +138,11 @@ async function buildPassImages(
   stripLayout: AppleWalletImageLayout,
   stripDimmingEnabled: boolean,
   stripStampsEnabled: boolean,
+  stampIconUrl: string | null,
+  stampEmptySlotsEnabled: boolean,
+  stampRows: readonly number[],
+  stampPositionXPercent: number,
+  stampPositionYPercent: number,
 ) {
   const fallback = await readFile(
     join(process.cwd(), "public", "icons", "apple-touch-icon.png"),
@@ -145,6 +150,7 @@ async function buildPassImages(
   const tenantLogoSource = await fetchAllowedImage(logoUrl);
   const logoSource = tenantLogoSource ?? fallback;
   const notificationIconSource = await fetchAllowedImage(notificationIconUrl);
+  const stampIconSource = await fetchAllowedImage(stampIconUrl);
   const iconSource = notificationIconSource ?? logoSource;
   const logoMetadata = await sharp(logoSource, {
     limitInputPixels: 40_000_000,
@@ -195,11 +201,15 @@ async function buildPassImages(
       stampBalance: input.stampBalance,
       rewardGoal: input.rewardGoal,
       tenantName: input.tenantName,
-      logoSource: tenantLogoSource,
+      logoSource: stampIconSource ?? tenantLogoSource,
       backgroundSource: stripSource,
       backgroundLayout: stripLayout,
       dimBackground: stripDimmingEnabled,
       showStamps: stripStampsEnabled,
+      showEmptyStamps: stampEmptySlotsEnabled,
+      stampRows,
+      stampPositionXPercent,
+      stampPositionYPercent,
     });
   if (Object.keys(progressStrips).length) {
     Object.assign(images, progressStrips);
@@ -226,6 +236,11 @@ export async function generateAppleWalletPass(
     stripLayout: AppleWalletImageLayout;
     stripDimmingEnabled: boolean;
     stripStampsEnabled: boolean;
+    stampIconUrl: string | null;
+    stampEmptySlotsEnabled: boolean;
+    stampRowCounts: number[];
+    stampPositionXPercent: number;
+    stampPositionYPercent: number;
   },
 ) {
   const signing = getAppleSigningConfig();
@@ -238,6 +253,11 @@ export async function generateAppleWalletPass(
     assets.stripLayout,
     assets.stripDimmingEnabled,
     assets.stripStampsEnabled,
+    assets.stampIconUrl,
+    assets.stampEmptySlotsEnabled,
+    assets.stampRowCounts,
+    assets.stampPositionXPercent,
+    assets.stampPositionYPercent,
   );
   const { barcodes, locations, storeCard, ...props } =
     buildAppleWalletPassProps(input, signing.identity);

@@ -30,6 +30,11 @@ export type AppleWalletPassSource = {
     stripLayout: AppleWalletImageLayout;
     stripDimmingEnabled: boolean;
     stripStampsEnabled: boolean;
+    stampIconUrl: string | null;
+    stampEmptySlotsEnabled: boolean;
+    stampRowCounts: number[];
+    stampPositionXPercent: number;
+    stampPositionYPercent: number;
   };
 };
 
@@ -90,12 +95,33 @@ export async function loadAppleWalletPassSource(
     return { ok: false, status: 404, message: "La tarjeta no está disponible." };
   }
 
-  const { data: cardConfiguration, error: cardConfigurationError } = await supabase
+  let { data: cardConfiguration, error: cardConfigurationError } = await supabase
     .from("loyalty_cards")
-    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent,strip_dimming_enabled,strip_stamps_enabled")
+    .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent,strip_dimming_enabled,strip_stamps_enabled,stamp_icon_url,stamp_empty_slots_enabled,stamp_row_counts,stamp_position_x_percent,stamp_position_y_percent")
     .eq("id", card.loyalty_card_id)
     .eq("tenant_id", card.tenant_id)
     .maybeSingle();
+  if (
+    cardConfigurationError
+    && ["42703", "PGRST204"].includes(cardConfigurationError.code ?? "")
+    && cardConfigurationError.message?.includes("stamp_")
+  ) {
+    const fallback = await supabase
+      .from("loyalty_cards")
+      .select("id,program_id,status,wallet_enabled,logo_text,description,background_color,foreground_color,label_color,logo_image_url,strip_image_url,notification_icon_url,logo_scale_percent,logo_margin_x_percent,logo_margin_y_percent,strip_scale_percent,strip_margin_x_percent,strip_margin_y_percent,strip_dimming_enabled,strip_stamps_enabled")
+      .eq("id", card.loyalty_card_id)
+      .eq("tenant_id", card.tenant_id)
+      .maybeSingle();
+    cardConfiguration = fallback.data ? {
+      ...fallback.data,
+      stamp_icon_url: null,
+      stamp_empty_slots_enabled: true,
+      stamp_row_counts: [],
+      stamp_position_x_percent: 50,
+      stamp_position_y_percent: 50,
+    } : null;
+    cardConfigurationError = fallback.error;
+  }
   if (cardConfigurationError || !cardConfiguration) {
     return { ok: false, status: 404, message: "La tarjeta no está disponible." };
   }
@@ -259,6 +285,7 @@ export async function loadAppleWalletPassSource(
           ? Math.floor(Number(balanceResult.data?.lifetime_points_tenths ?? 0) / 10)
           : Number(balanceResult.data?.stamp_balance ?? 0),
         rewardGoal: program.reward_stamp_goal,
+        showStampProgress: design.strip_stamps_enabled,
         availableRewards: rewardsResult.count ?? 0,
         termsAndConditions:
           program.terms_and_conditions ??
@@ -296,6 +323,11 @@ export async function loadAppleWalletPassSource(
         },
         stripDimmingEnabled: design.strip_dimming_enabled,
         stripStampsEnabled: design.strip_stamps_enabled,
+        stampIconUrl: design.stamp_icon_url,
+        stampEmptySlotsEnabled: design.stamp_empty_slots_enabled,
+        stampRowCounts: design.stamp_row_counts,
+        stampPositionXPercent: design.stamp_position_x_percent,
+        stampPositionYPercent: design.stamp_position_y_percent,
       },
     },
   };

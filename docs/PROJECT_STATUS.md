@@ -163,10 +163,14 @@
 - Cyclic cards now include a separate keyboard-native option to hide graphical
   stamp circles from Apple's main image. Migration `0064` stores the choice per
   card, keeps stamps visible for existing cards, queues installed passes and
-  retains exact textual progress when the image is shown without circles.
+  omits cyclic progress copy when the image is shown without circles.
 - The Wallet card title is optional in the active multi-card editor. Migration
   `0065` removes the one-character database minimum while retaining the
   60-character maximum, and signed Apple passes omit `logoText` when empty.
+- Migration `0066` adds a custom cyclic-stamp icon, optional empty slots,
+  one-to-six configurable rows and percentage-based drag positioning. The live
+  preview exposes a zoned grid and the signed Apple renderer uses the same
+  normalized row counts, uniform gaps and coordinates at every asset scale.
 - Google Wallet uses the same published card design to upsert one issuer-scoped loyalty class per card and one loyalty object per issued customer card. Issuance verifies current terms, includes the opaque Web Card QR, live balance/rewards, catalog, HTTPS imagery and up to ten active proximity locations, persists a provider-neutral pass record and redirects through a short signed Save to Google Wallet JWT. Credentials remain server-only and the customer UI uses Google's official Latin American Spanish badge.
 - The public Web Card exposes an Apple download only when the tenant has enabled it and the complete signer configuration is present.
 - The public Web Card renders the existing opaque public card token as a real high-contrast PNG QR without including customer data or a second identifier.
@@ -183,7 +187,7 @@
 - Migration `0039` restores `service_role` usage of the update-tag sequence so the initial pass endpoint can insert `wallet_passes` rows; browser roles remain denied.
 - Production migration `0039` was applied manually and the user confirmed Apple Wallet pass generation works again.
 - Signed Apple passes now retain their QR barcode and branch locations by applying both through the PassKit generator methods that persist method-owned properties into `pass.json`.
-- Signed Apple passes now generate customer-specific `strip.png`, `strip@2x.png` and `strip@3x.png` assets from the authoritative cyclic balance. Earned circles repeat the tenant logo or initials, large goals stay bounded at 24 positions, and exact textual progress remains in an auxiliary field for Wallet versions or devices that omit the strip.
+- Signed Apple passes now generate customer-specific `strip.png`, `strip@2x.png` and `strip@3x.png` assets from the authoritative cyclic balance. Earned circles repeat the configured stamp icon, tenant logo or initials, large goals stay bounded at 24 positions, and exact textual progress remains by default for Wallet versions or devices that omit the strip; explicit image-only mode omits it.
 - The multi-card design editor now previews the same Apple `storeCard` field hierarchy, 375 × 144 strip proportion, QR treatment, bounded stamp-slot calculation and configured unit copy used by signed passes. Text and color inputs update during interaction, newly selected logo/strip files use short-lived local object URLs before upload/save, current image thumbnails remain visible, and the editor explicitly distinguishes unsaved changes and Apple's iOS 26+ image limitations.
 - Migration `0048` observes design/status changes on `loyalty_cards` and assignment changes on `loyalty_card_branches`, queues only installed passes issued from the affected card and preserves the service-role-only outbox boundary. Program, design and location saves all attempt immediate APNs dispatch after the transaction commits.
 - Loyalty balance, reward, customer/card, program, tier, design, branding and branch-location changes queue pass updates transactionally.

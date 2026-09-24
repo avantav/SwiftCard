@@ -80,6 +80,13 @@ const stripStampsMigration = readFileSync(
   ),
   "utf8",
 );
+const stampLayoutMigration = readFileSync(
+  new URL(
+    "../../../supabase/migrations/0066_wallet_stamp_layout_editor.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const registrationRoute = readFileSync(
   new URL(
     "../../app/api/wallet/apple/v1/devices/[deviceLibraryIdentifier]/registrations/[passTypeIdentifier]/[serialNumber]/route.ts",
@@ -164,10 +171,16 @@ describe("Apple Wallet integration boundaries", () => {
     expect(imageLayoutMigration).toContain("save_loyalty_card_design_v3");
     expect(source).toContain("stripDimmingEnabled: design.strip_dimming_enabled");
     expect(source).toContain("stripStampsEnabled: design.strip_stamps_enabled");
+    expect(source).toContain("showStampProgress: design.strip_stamps_enabled");
+    expect(source).toContain("stampRowCounts: design.stamp_row_counts");
+    expect(source).toContain("stampPositionXPercent: design.stamp_position_x_percent");
     expect(appleServer).toContain("dimBackground: stripDimmingEnabled");
     expect(appleServer).toContain("showStamps: stripStampsEnabled");
+    expect(appleServer).toContain("showEmptyStamps: stampEmptySlotsEnabled");
     expect(stripDimmingMigration).toContain("save_loyalty_card_design_v4");
     expect(stripStampsMigration).toContain("save_loyalty_card_design_v5");
+    expect(stampLayoutMigration).toContain("save_loyalty_card_design_v6");
+    expect(stampLayoutMigration).toContain("stamp_row_counts");
   });
 
   it("queues installed passes after the front progress layout is deployed", () => {

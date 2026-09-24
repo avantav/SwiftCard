@@ -27,6 +27,9 @@ describe("Apple Wallet Storage assets", () => {
     expect(
       createAppleWalletAssetPath(tenantId, "notification", "image/png", objectId),
     ).toBe(`${tenantId}/apple/notification-${objectId}.png`);
+    expect(
+      createAppleWalletAssetPath(tenantId, "stamp", "image/webp", objectId),
+    ).toBe(`${tenantId}/apple/stamp-${objectId}.webp`);
   });
 
   it("accepts only bounded Wallet image formats", () => {
@@ -57,6 +60,15 @@ describe("Apple Wallet Storage assets", () => {
         "notification",
       ),
     ).toBe(notificationPath);
+    const stampPath = `${tenantId}/apple/stamp-${objectId}.webp`;
+    expect(
+      tenantAppleWalletAssetPath(
+        `${supabaseUrl}/storage/v1/object/public/wallet-assets/${stampPath}`,
+        supabaseUrl,
+        tenantId,
+        "stamp",
+      ),
+    ).toBe(stampPath);
     expect(
       appleWalletAssetPathFromPublicUrl(
         `https://attacker.example/storage/v1/object/public/wallet-assets/${path}`,

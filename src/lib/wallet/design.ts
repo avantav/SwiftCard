@@ -8,6 +8,7 @@ export type AppleWalletDesignInput = {
   logoImageUrl: string | null;
   stripImageUrl: string | null;
   notificationIconUrl: string | null;
+  stampIconUrl: string | null;
   logoScalePercent: number;
   logoMarginXPercent: number;
   logoMarginYPercent: number;
@@ -16,6 +17,10 @@ export type AppleWalletDesignInput = {
   stripMarginYPercent: number;
   stripDimmingEnabled: boolean;
   stripStampsEnabled: boolean;
+  stampEmptySlotsEnabled: boolean;
+  stampRowCounts: number[];
+  stampPositionXPercent: number;
+  stampPositionYPercent: number;
 };
 
 export type AppleWalletDesignValidation =
@@ -79,6 +84,20 @@ function integerValue(
   return value;
 }
 
+function stampRowsValue(formData: FormData, errors: string[]) {
+  const raw = textValue(formData, "stampRowCounts");
+  if (!raw) return [];
+  const rows = raw.split(",").map(Number);
+  if (
+    rows.length > 6
+    || rows.some((value) => !Number.isInteger(value) || value < 1 || value > 8)
+    || rows.reduce((total, value) => total + value, 0) > 24
+  ) {
+    errors.push("La distribución de sellos debe usar hasta 6 filas, 8 sellos por fila y 24 en total.");
+  }
+  return rows;
+}
+
 export function validateAppleWalletDesignForm(
   formData: FormData,
 ): AppleWalletDesignValidation {
@@ -129,12 +148,21 @@ export function validateAppleWalletDesignForm(
     "El logo de notificaciones",
     errors,
   );
+  const stampIconUrl = optionalHttpsUrl(
+    formData,
+    "stampIconUrl",
+    "El icono de los sellos",
+    errors,
+  );
   const logoScalePercent = integerValue(formData, "logoScalePercent", "El tamaño del logo", 50, 100, 100, errors);
   const logoMarginXPercent = integerValue(formData, "logoMarginXPercent", "El margen horizontal del logo", 0, 20, 0, errors);
   const logoMarginYPercent = integerValue(formData, "logoMarginYPercent", "El margen vertical del logo", 0, 20, 0, errors);
   const stripScalePercent = integerValue(formData, "stripScalePercent", "El tamaño de la imagen principal", 50, 150, 100, errors);
   const stripMarginXPercent = integerValue(formData, "stripMarginXPercent", "El margen horizontal de la imagen principal", 0, 20, 0, errors);
   const stripMarginYPercent = integerValue(formData, "stripMarginYPercent", "El margen vertical de la imagen principal", 0, 20, 0, errors);
+  const stampRowCounts = stampRowsValue(formData, errors);
+  const stampPositionXPercent = integerValue(formData, "stampPositionXPercent", "La posición horizontal de los sellos", 0, 100, 50, errors);
+  const stampPositionYPercent = integerValue(formData, "stampPositionYPercent", "La posición vertical de los sellos", 0, 100, 50, errors);
 
   if (errors.length) return { ok: false, errors };
   return {
@@ -149,6 +177,7 @@ export function validateAppleWalletDesignForm(
       logoImageUrl,
       stripImageUrl,
       notificationIconUrl,
+      stampIconUrl,
       logoScalePercent,
       logoMarginXPercent,
       logoMarginYPercent,
@@ -157,6 +186,10 @@ export function validateAppleWalletDesignForm(
       stripMarginYPercent,
       stripDimmingEnabled: formData.get("stripDimmingEnabled") === "on",
       stripStampsEnabled: formData.get("stripStampsEnabled") === "on",
+      stampEmptySlotsEnabled: formData.get("stampEmptySlotsEnabled") === "on",
+      stampRowCounts,
+      stampPositionXPercent,
+      stampPositionYPercent,
     },
   };
 }

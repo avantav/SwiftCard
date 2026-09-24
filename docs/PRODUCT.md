@@ -266,9 +266,10 @@ El Admin general configurará cada tarjeta con un diseño neutral al proveedor: 
 En Apple Wallet, los programas cíclicos generarán en el servidor una imagen
 `strip` personalizada con el avance del cliente. Los círculos obtenidos
 mostrarán el logo del tenant o sus iniciales y la imagen se volverá a generar
-dentro del `.pkpass` firmado cuando cambie el saldo. El pase conservará además
-un campo textual exacto porque Wallet puede ajustar u omitir imágenes según la
-versión de iOS, Apple Watch y el dispositivo.
+dentro del `.pkpass` firmado cuando cambie el saldo. Mientras los sellos estén
+habilitados, el pase conservará además un campo textual exacto porque Wallet
+puede ajustar u omitir imágenes según la versión de iOS, Apple Watch y el
+dispositivo.
 
 El logo, la imagen principal y el logo de notificaciones se cargarán desde esta configuración a un bucket público de Supabase Storage dedicado a Wallet. La lectura pública permite que el servidor genere el pase, mientras RLS limita altas, reemplazos y bajas al Admin general dentro de la ruta de su propio tenant. Se aceptarán únicamente PNG, JPEG o WebP de hasta 5 MB.
 
@@ -285,8 +286,15 @@ campo vacío y el pase Apple omitirá `logoText` en vez de repetir la identidad.
 
 En programas cíclicos, el Admin general podrá mostrar u ocultar los círculos
 de sellos sobre la imagen principal de Apple Wallet. Ocultarlos no modifica el
-saldo ni elimina el progreso textual exacto del pase. Las tarjetas existentes
+saldo, pero elimina también el progreso textual cíclico del frente para que la
+zona principal muestre únicamente la imagen. Las tarjetas existentes
 conservarán los sellos visibles hasta que el Admin cambie esta preferencia.
+
+Cuando los sellos estén visibles, el Admin podrá cargar un icono personalizado,
+decidir si aparecen los espacios aún no sellados, repartir hasta 24 posiciones
+en un máximo de seis filas de ocho y arrastrar el bloque sobre una cuadrícula de
+la imagen principal. La vista previa y las imágenes Apple firmadas conservarán
+la misma separación uniforme, distribución y posición porcentual.
 
 ### Configuración administrativa de tarjetas
 

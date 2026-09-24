@@ -14,6 +14,7 @@ export {
   appleWalletStampLayout,
   appleWalletStampRows,
   appleWalletStampSlots,
+  normalizeAppleWalletStampRows,
 } from "./apple-stamp-layout";
 
 const stripSizes = [
@@ -33,6 +34,10 @@ type StampStripInput = {
   backgroundLayout?: AppleWalletImageLayout;
   dimBackground?: boolean;
   showStamps?: boolean;
+  showEmptyStamps?: boolean;
+  stampRows?: readonly number[];
+  stampPositionXPercent?: number;
+  stampPositionYPercent?: number;
 };
 
 function safeHex(value: string, fallback: string) {
@@ -54,12 +59,14 @@ async function renderStampStrip(
 ) {
   const scale = size.width / 375;
   const progress = appleWalletStampSlots(input.stampBalance, input.rewardGoal);
-  const layout = appleWalletStampLayout(progress.visible);
-  const rows = Math.ceil(progress.visible / layout.columns);
+  const layout = appleWalletStampLayout(progress.visible, input.stampRows);
+  const rows = layout.rows.length;
   const diameter = layout.diameter * scale;
   const gap = layout.gap * scale;
   const gridHeight = rows * diameter + (rows - 1) * gap;
-  const startY = (size.height - gridHeight) / 2;
+  const centerX = size.width * Math.min(1, Math.max(0, (input.stampPositionXPercent ?? 50) / 100));
+  const centerY = size.height * Math.min(1, Math.max(0, (input.stampPositionYPercent ?? 50) / 100));
+  const startY = centerY - gridHeight / 2;
   const foreground = safeHex(input.foregroundColor, "#FFFFFF");
   const background = safeHex(input.backgroundColor, "#17202A");
   const initials = escapeXml(
@@ -72,14 +79,12 @@ async function renderStampStrip(
       .toUpperCase() || "SW",
   );
 
-  const slots = Array.from({ length: input.showStamps === false ? 0 : progress.visible }, (_, index) => {
-    const row = Math.floor(index / layout.columns);
-    const rowCount = Math.min(
-      layout.columns,
-      progress.visible - row * layout.columns,
-    );
+  let slotIndex = 0;
+  const slots = (input.showStamps === false ? [] : layout.rows).flatMap((rowCount, row) => (
+    Array.from({ length: rowCount }, (_, column) => {
+    const index = slotIndex++;
     const rowWidth = rowCount * diameter + (rowCount - 1) * gap;
-    const x = (size.width - rowWidth) / 2 + (index % layout.columns) * (diameter + gap);
+    const x = centerX - rowWidth / 2 + column * (diameter + gap);
     const y = startY + row * (diameter + gap);
     const cx = x + diameter / 2;
     const cy = y + diameter / 2;
@@ -90,9 +95,11 @@ async function renderStampStrip(
       filled,
       svg: filled
         ? `<circle cx="${cx}" cy="${cy}" r="${diameter / 2 - scale}" fill="${foreground}" stroke="#FFFFFF" stroke-width="${2 * scale}"/>`
-        : `<circle cx="${cx}" cy="${cy}" r="${diameter / 2 - 2 * scale}" fill="#FFFFFF" fill-opacity="0.16" stroke="${foreground}" stroke-width="${2 * scale}" stroke-dasharray="${3 * scale} ${3 * scale}"/>`,
+        : input.showEmptyStamps === false
+          ? ""
+          : `<circle cx="${cx}" cy="${cy}" r="${diameter / 2 - 2 * scale}" fill="#FFFFFF" fill-opacity="0.16" stroke="${foreground}" stroke-width="${2 * scale}" stroke-dasharray="${3 * scale} ${3 * scale}"/>`,
     };
-  });
+  })));
 
   const overlay = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}" viewBox="0 0 ${size.width} ${size.height}">

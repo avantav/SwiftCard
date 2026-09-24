@@ -15,6 +15,7 @@ function validForm() {
   form.set("logoImageUrl", "https://assets.example.com/logo.png");
   form.set("stripImageUrl", "https://assets.example.com/strip.jpg");
   form.set("notificationIconUrl", "https://assets.example.com/notification.png");
+  form.set("stampIconUrl", "https://assets.example.com/stamp.png");
   form.set("logoScalePercent", "85");
   form.set("logoMarginXPercent", "4");
   form.set("logoMarginYPercent", "6");
@@ -23,6 +24,10 @@ function validForm() {
   form.set("stripMarginYPercent", "10");
   form.set("stripDimmingEnabled", "on");
   form.set("stripStampsEnabled", "on");
+  form.set("stampEmptySlotsEnabled", "on");
+  form.set("stampRowCounts", "3,3,4");
+  form.set("stampPositionXPercent", "35");
+  form.set("stampPositionYPercent", "62");
   return form;
 }
 
@@ -38,9 +43,26 @@ describe("Apple Wallet tenant design", () => {
     expect(result.data.stripMarginYPercent).toBe(10);
     expect(result.data.stripDimmingEnabled).toBe(true);
     expect(result.data.stripStampsEnabled).toBe(true);
+    expect(result.data.stampIconUrl).toBe("https://assets.example.com/stamp.png");
+    expect(result.data.stampEmptySlotsEnabled).toBe(true);
+    expect(result.data.stampRowCounts).toEqual([3, 3, 4]);
+    expect(result.data.stampPositionXPercent).toBe(35);
+    expect(result.data.stampPositionYPercent).toBe(62);
     expect(result.data.notificationIconUrl).toBe(
       "https://assets.example.com/notification.png",
     );
+  });
+
+  it("rejects stamp rows and drag positions outside Apple-safe bounds", () => {
+    const form = validForm();
+    form.set("stampRowCounts", "9,8,8");
+    form.set("stampPositionXPercent", "101");
+    const result = validateAppleWalletDesignForm(form);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.join(" ")).toContain("distribución de sellos");
+      expect(result.errors.join(" ")).toContain("posición horizontal");
+    }
   });
 
   it("rejects image scale and margin values outside their safe ranges", () => {

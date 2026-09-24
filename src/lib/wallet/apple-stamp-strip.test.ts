@@ -6,6 +6,7 @@ import {
   appleWalletStampLayout,
   appleWalletStampRows,
   appleWalletStampSlots,
+  normalizeAppleWalletStampRows,
   buildAppleWalletStampStrips,
 } from "./apple-stamp-strip";
 
@@ -34,9 +35,38 @@ describe("Apple Wallet graphical stamp strip", () => {
       columns: 5,
       diameter: 46,
       gap: 14,
+      rows: [5, 5],
     });
     expect(appleWalletStampLayout(24).columns).toBe(8);
     expect(appleWalletStampRows(6, 5)).toEqual([[0, 1, 2, 3, 4], [5]]);
+    expect(normalizeAppleWalletStampRows(10, [3, 3])).toEqual([3, 3, 4]);
+    expect(appleWalletStampLayout(10, [3, 3, 4]).rows).toEqual([3, 3, 4]);
+  });
+
+  it("renders custom row positions and optional empty slots into signed assets", async () => {
+    const base = {
+      backgroundColor: "#17202A",
+      foregroundColor: "#FFFFFF",
+      rewardGoal: 10,
+      stampBalance: 4,
+      tenantName: "Café Central",
+      logoSource: logo,
+      backgroundSource: null,
+      stampRows: [3, 3, 4],
+    };
+    const centered = await buildAppleWalletStampStrips(base);
+    const moved = await buildAppleWalletStampStrips({
+      ...base,
+      stampPositionXPercent: 30,
+      stampPositionYPercent: 65,
+    });
+    const withoutEmptySlots = await buildAppleWalletStampStrips({
+      ...base,
+      showEmptyStamps: false,
+    });
+
+    expect(centered["strip.png"].equals(moved["strip.png"])).toBe(false);
+    expect(centered["strip.png"].equals(withoutEmptySlots["strip.png"])).toBe(false);
   });
 
   it("renders current customer progress into every signed-pass strip scale", async () => {

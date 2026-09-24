@@ -6,7 +6,7 @@ export const APPLE_WALLET_ASSET_MIME_TYPES = [
   "image/webp",
 ] as const;
 
-export type AppleWalletAssetKind = "logo" | "strip" | "notification";
+export type AppleWalletAssetKind = "logo" | "strip" | "notification" | "stamp";
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

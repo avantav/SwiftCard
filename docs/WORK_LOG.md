@@ -2288,7 +2288,7 @@ Apple Wallet main image without changing loyalty accounting.
 - Added migration `0064` with an Admin-only v5 design RPC, visible-stamp default
   for existing cards and Apple outbox queuing.
 - Updated signed 1x/2x/3x stamp strips to omit circles and logos when disabled
-  while retaining the exact textual progress field.
+  and later aligned hidden mode to omit cyclic progress copy as well.
 - Preserved staged rollout fallbacks: older databases keep the option enabled
   and cannot silently save an unsupported hidden-stamp preference.
 
@@ -2299,6 +2299,34 @@ Apple Wallet main image without changing loyalty accounting.
 - `npm run test:run`: passed; 285 tests across 78 files.
 - `npm run db:verify-rls`: passed through migration/test `0064`.
 - `npm run build`: passed with webpack.
+
+## 2026-09-23 - Custom Apple stamp layout editor
+
+**Objective:** Let tenant Admins customize cyclic stamp artwork, row
+distribution and placement over the Apple Wallet main image.
+
+**Changes made**
+
+- Added an optional per-card stamp icon with tenant-scoped `stamp-*` uploads
+  and tenant-logo fallback.
+- Added an empty-slot toggle plus bounded row controls for up to 24 visible
+  positions across six rows of eight.
+- Added a zoned 375 × 144 preview where the complete stamp block can be dragged;
+  normalized percentage coordinates and uniform gaps are reused by signed
+  1x/2x/3x strips.
+- When graphical stamps are disabled, removed the program-name fallback from
+  the image and the cyclic progress field from both preview and signed pass so
+  the main region contains only the configured image.
+- Added migration `0066` with validated columns, Admin-only v6 save RPC,
+  expanded Storage policy, Apple outbox trigger coverage and RLS regression
+  tests. Older databases retain the automatic centered layout through staged
+  read/save fallbacks.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- Focused Wallet tests: passed; 30 tests across 5 files.
 
 ## 2026-09-23 - Optional Wallet card title
 

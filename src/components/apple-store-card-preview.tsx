@@ -1,9 +1,10 @@
+"use client";
+
 /* The preview renders only validated tenant-hosted HTTPS images. */
 /* eslint-disable @next/next/no-img-element */
-import type { CSSProperties } from "react";
+import { useRef, type CSSProperties, type PointerEvent } from "react";
 import {
   appleWalletStampLayout,
-  appleWalletStampRows,
   appleWalletStampSlots,
 } from "@/lib/wallet/apple-stamp-layout";
 import {
@@ -26,6 +27,11 @@ export type AppleStoreCardPreviewDesign = {
   stripMarginYPercent: number;
   stripDimmingEnabled: boolean;
   stripStampsEnabled: boolean;
+  stampIconUrl: string;
+  stampEmptySlotsEnabled: boolean;
+  stampRowCounts: number[];
+  stampPositionXPercent: number;
+  stampPositionYPercent: number;
 };
 
 type AppleStoreCardPreviewProps = {
@@ -36,6 +42,7 @@ type AppleStoreCardPreviewProps = {
   rewardGoal: number | null;
   unitNameSingular: string;
   unitNamePlural: string;
+  onStampPositionChange?: (xPercent: number, yPercent: number) => void;
 };
 
 function initials(value: string) {
@@ -56,12 +63,17 @@ export function AppleStoreCardPreview({
   rewardGoal,
   unitNameSingular,
   unitNamePlural,
+  onStampPositionChange,
 }: AppleStoreCardPreviewProps) {
   const exampleBalance = rewardGoal
     ? Math.min(rewardGoal, Math.max(1, Math.floor(rewardGoal * 0.4)))
     : 0;
   const progress = appleWalletStampSlots(exampleBalance, rewardGoal);
-  const layout = appleWalletStampLayout(progress.visible);
+  const layout = appleWalletStampLayout(progress.visible, design.stampRowCounts);
+  let stampIndex = 0;
+  const stampRows = layout.rows.map((count) => (
+    Array.from({ length: count }, () => stampIndex++)
+  ));
   const progressText = appleWalletProgressText({
     balance: exampleBalance,
     goal: rewardGoal,
@@ -80,9 +92,20 @@ export function AppleStoreCardPreview({
     "--apple-pass-strip-scale": design.stripScalePercent / 100,
     "--apple-pass-strip-margin-x": `${design.stripMarginXPercent}%`,
     "--apple-pass-strip-margin-y": `${design.stripMarginYPercent}%`,
+    "--apple-pass-stamp-position-x": `${design.stampPositionXPercent}%`,
+    "--apple-pass-stamp-position-y": `${design.stampPositionYPercent}%`,
   } as CSSProperties;
   const tenantInitials = initials(tenantName);
   const lifetimePoints = programType === "LIFETIME_POINTS";
+  const primaryRef = useRef<HTMLDivElement>(null);
+
+  function moveStamps(event: PointerEvent<HTMLDivElement>) {
+    if (!onStampPositionChange || !primaryRef.current) return;
+    const bounds = primaryRef.current.getBoundingClientRect();
+    const x = Math.round(Math.min(100, Math.max(0, ((event.clientX - bounds.left) / bounds.width) * 100)));
+    const y = Math.round(Math.min(100, Math.max(0, ((event.clientY - bounds.top) / bounds.height) * 100)));
+    onStampPositionChange(x, y);
+  }
 
   return (
     <div className="apple-pass-preview" style={style}>
@@ -100,7 +123,8 @@ export function AppleStoreCardPreview({
       </header>
 
       <div
-        className={`apple-pass-preview-primary${design.stripImageUrl || progress.visible ? " has-strip" : ""}`}
+        className={`apple-pass-preview-primary${design.stripImageUrl || progress.visible ? " has-strip" : ""}${onStampPositionChange && design.stripStampsEnabled ? " is-stamp-editable" : ""}`}
+        ref={primaryRef}
       >
         {design.stripImageUrl ? (
           <img
@@ -109,6 +133,11 @@ export function AppleStoreCardPreview({
             src={design.stripImageUrl}
           />
         ) : null}
+        {onStampPositionChange && design.stripStampsEnabled ? (
+          <span className="apple-pass-preview-placement-grid" aria-hidden="true">
+            {Array.from({ length: 15 }, (_, index) => <i key={index} />)}
+          </span>
+        ) : null}
         {lifetimePoints ? (
           <div className="apple-pass-preview-points">
             <span>{unitNamePlural.toLocaleUpperCase("es-MX")}</span>
@@ -116,32 +145,41 @@ export function AppleStoreCardPreview({
             <div aria-hidden="true"><i style={{ width: `${Math.round((exampleBalance / Math.max(progress.goal, 1)) * 100)}%` }} /></div>
             <small>Próximo premio al llegar a {progress.goal}</small>
           </div>
-        ) : progress.visible && design.stripStampsEnabled ? (
-          <div
-            aria-label={`${exampleBalance} de ${progress.goal} ${unitNamePlural}`}
-            className="apple-pass-preview-stamps"
-            role="img"
-          >
-            {appleWalletStampRows(progress.visible, layout.columns).map((row, rowIndex) => (
-              <span
-                className="apple-pass-preview-stamp-row"
-                key={rowIndex}
-                style={{ "--apple-pass-stamp-row-columns": row.length } as CSSProperties}
-              >
-                {row.map((index) => (
-                  <span className={index < progress.filled ? "is-filled" : ""} key={index}>
-                    {index < progress.filled ? (
-                      design.logoImageUrl ? (
-                        <img alt="" src={design.logoImageUrl} />
-                      ) : (
-                        <small>{tenantInitials}</small>
-                      )
-                    ) : null}
-                  </span>
-                ))}
-              </span>
-            ))}
-          </div>
+        ) : progress.visible ? (
+          design.stripStampsEnabled ? (
+            <div
+              aria-label={`${exampleBalance} de ${progress.goal} ${unitNamePlural}`}
+              className="apple-pass-preview-stamps"
+              onPointerDown={(event) => {
+                event.currentTarget.setPointerCapture(event.pointerId);
+                moveStamps(event);
+              }}
+              onPointerMove={(event) => {
+                if (event.currentTarget.hasPointerCapture(event.pointerId)) moveStamps(event);
+              }}
+              role="img"
+            >
+              {stampRows.map((row, rowIndex) => (
+                <span
+                  className="apple-pass-preview-stamp-row"
+                  key={rowIndex}
+                  style={{ "--apple-pass-stamp-row-columns": row.length } as CSSProperties}
+                >
+                  {row.map((index) => (
+                    <span className={`${index < progress.filled ? "is-filled" : ""}${index >= progress.filled && !design.stampEmptySlotsEnabled ? " is-hidden-slot" : ""}`} key={index}>
+                      {index < progress.filled ? (
+                        design.stampIconUrl || design.logoImageUrl ? (
+                          <img alt="" src={design.stampIconUrl || design.logoImageUrl} />
+                        ) : (
+                          <small>{tenantInitials}</small>
+                        )
+                      ) : null}
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </div>
+          ) : null
         ) : (
           <p className="apple-pass-preview-program-name">{programName}</p>
         )}
@@ -157,12 +195,14 @@ export function AppleStoreCardPreview({
             <span>PREMIOS</span>
             <strong>1</strong>
           </p>
-          <p>
-            <span>PROGRESO</span>
-            <strong>{lifetimePoints
-              ? appleWalletPointProgressText({ balance: exampleBalance, goal: progress.goal })
-              : progressText}</strong>
-          </p>
+          {lifetimePoints || design.stripStampsEnabled ? (
+            <p>
+              <span>PROGRESO</span>
+              <strong>{lifetimePoints
+                ? appleWalletPointProgressText({ balance: exampleBalance, goal: progress.goal })
+                : progressText}</strong>
+            </p>
+          ) : null}
           {lifetimePoints ? <p><span>SIGUIENTE</span><strong>Próximo premio</strong></p> : null}
         </div>
         <figure className="apple-pass-preview-code">

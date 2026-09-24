@@ -24,6 +24,12 @@
 
 ## Wallet image-layout context
 
+- Migration `0066_wallet_stamp_layout_editor.sql` adds custom stamp artwork,
+  optional empty slots, bounded row counts and percentage-based drag position,
+  plus the Admin-only `save_loyalty_card_design_v6` RPC and `stamp-*` Storage
+  path. Apply it after `0065`, then process the Apple outbox. Existing cards use
+  their automatic centered layout until saved.
+
 - Migration `0065_optional_wallet_card_title.sql` removes the minimum length
   from the per-card Wallet title while retaining the 60-character maximum.
   The active editor labels it optional, previews no adjacent fallback text and
@@ -32,7 +38,7 @@
 - Migration `0064_wallet_strip_stamps_option.sql` adds the per-card
   `strip_stamps_enabled` preference and Admin-only
   `save_loyalty_card_design_v5` RPC. Cyclic cards can hide their graphical
-  stamp circles from the Apple main image while keeping exact textual progress;
+  stamp circles and cyclic progress copy from the Apple main image;
   existing cards default to visible stamps. Apply `0063` and then `0064` before
   deploying this application code, and process the Apple outbox afterward.
 
