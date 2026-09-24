@@ -2349,3 +2349,28 @@ alone without duplicating it as adjacent Wallet text.
 - `npm run test:run`: passed; 286 tests across 78 files.
 - `npm run db:verify-rls`: passed through migration/test `0065`.
 - `npm run build`: passed with webpack.
+
+## 2026-09-24 - Google Wallet object refresh correction
+
+**Objective:** Restore Google Wallet add/resynchronization for an existing
+loyalty object that the API rejected with a generic customer-facing error.
+
+**Changes made**
+
+- Reproduced the live failure safely and confirmed OAuth, Issuer access, the
+  approved class, active object, public assets and Supabase write authority.
+- Captured Google's HTTP 400 response identifying `notifyPreference: "NOTIFY"`
+  as invalid and replaced it with the documented `NOTIFY_ON_UPDATE` enum.
+- Added a safe server diagnostic for future synchronization failures without
+  exposing credentials or customer payloads.
+- Added focused regression coverage for the accepted enum value.
+
+**Validation**
+
+- Focused Google Wallet tests: passed; 6 tests across 2 files.
+- Full test suite: passed; 288 tests across 78 files.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run build`: passed with webpack.
+- Live idempotent Google Wallet object PATCH: passed with HTTP 200 and active
+  object state.

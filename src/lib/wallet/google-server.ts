@@ -163,7 +163,7 @@ async function upsertWalletResource(
   );
   if (existing.ok) {
     const updatedResource = resourceName === "loyaltyObject"
-      ? { ...resource, notifyPreference: "NOTIFY" }
+      ? { ...resource, notifyPreference: "NOTIFY_ON_UPDATE" }
       : resource;
     const updated = await walletApiRequest(
       `/${resourceName}/${encodedId}`,

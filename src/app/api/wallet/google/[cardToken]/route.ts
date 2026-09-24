@@ -69,7 +69,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
     response.headers.set("Cache-Control", "private, no-store");
     response.headers.set("Referrer-Policy", "no-referrer");
     return response;
-  } catch {
+  } catch (error) {
+    console.error(
+      "Unable to synchronize Google Wallet pass.",
+      error instanceof Error ? error.message : "Unknown error.",
+    );
     await supabase.from("wallet_passes").upsert(
       {
         tenant_id: source.tenantId,

@@ -86,6 +86,17 @@
   credentials or public pricing until the remaining commercial policies are
   approved.
 
+## Google Wallet refresh correction
+
+- Google OAuth, the configured Issuer ID, Wallet Console Developer access,
+  public images and the existing approved class/active object were validated
+  against the live APIs on 2026-09-24.
+- Existing-object refreshes previously failed because the application sent
+  `notifyPreference: "NOTIFY"`; Google accepts the documented enum value
+  `NOTIFY_ON_UPDATE`. The corrected idempotent PATCH returned HTTP 200.
+- Deploy the application correction before retrying the public Google Wallet
+  action. No database migration is required.
+
 ## Public landing context
 
 - `/` is now a buyer-facing educational landing rather than an internal gateway. It preserves authenticated staff redirects and the secondary `/login` path.

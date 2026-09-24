@@ -32,6 +32,8 @@ describe("Google Wallet integration boundary", () => {
     expect(server).toContain('aud: "google"');
     expect(server).toContain('typ: "savetowallet"');
     expect(server).toContain("loyaltyObjects");
+    expect(server).toContain('notifyPreference: "NOTIFY_ON_UPDATE"');
+    expect(server).not.toContain('notifyPreference: "NOTIFY"');
     expect(googleButton).not.toContain("GOOGLE_WALLET_SERVICE_ACCOUNT");
   });
 

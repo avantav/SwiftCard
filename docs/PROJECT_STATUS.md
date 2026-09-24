@@ -4,16 +4,17 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Made the Wallet card title optional so a logo that
-  already contains the business name does not repeat it in Apple Wallet.
+- Last completed task: Corrected Google Wallet object refreshes to use the
+  documented `NOTIFY_ON_UPDATE` enum instead of the rejected `NOTIFY` value.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Tenant Admins can leave the Wallet card title empty;
-  preview and signed Apple passes omit the adjacent text while preserving the
-  logo and every operational field.
-- Git status: The optional-title change passes lint, typecheck, all 286 tests
-  across 78 files, webpack build and disposable PostgreSQL migration/RLS
-  verification through `0065`. The product owner confirmed migrations through
-  `0062` are applied remotely; `0063` through `0065` remain to be applied remotely.
+- Last stable feature: Existing Google Wallet loyalty objects can be refreshed
+  without the API rejecting their notification preference; synchronization
+  failures now record a safe server-side diagnostic.
+- Git status: The Google Wallet refresh correction passes lint, typecheck, all
+  288 tests across 78 files and the webpack build; its live idempotent object
+  update returned HTTP 200. The product owner confirmed migrations through
+  `0062` are applied remotely; `0063` through `0066` remain to be applied
+  remotely.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
   migrations are current through `0062`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
