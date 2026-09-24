@@ -2374,3 +2374,26 @@ loyalty object that the API rejected with a generic customer-facing error.
 - `npm run build`: passed with webpack.
 - Live idempotent Google Wallet object PATCH: passed with HTTP 200 and active
   object state.
+
+## 2026-09-24 - Stable mobile form focus
+
+**Objective:** Prevent disruptive automatic zoom when an employee focuses a
+form field on a phone, including the individual-account login flow.
+
+**Changes made**
+
+- Added a mobile-wide 16px minimum font size for text-like inputs, selects and
+  textareas so iOS does not enlarge the viewport on focus.
+- Excluded checkboxes, radios, range/color/file controls, hidden fields and
+  button-like inputs so their established sizing remains unchanged.
+- Preserved manual pinch zoom outside the employee operations PWA; `/app`
+  retains its existing fixed viewport and pan-only gesture behavior.
+- Added a regression assertion for the global mobile form rule.
+
+**Validation**
+
+- Focused PWA runtime tests: passed; 4 tests.
+- Full test suite: passed; 288 tests across 78 files.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run build`: passed with webpack.

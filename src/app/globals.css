@@ -2439,6 +2439,16 @@ textarea {
   }
 }
 
+/* iOS automatically zooms focused text controls rendered below 16px. Keep
+   every mobile form stable, including login and required-password flows. */
+@media (max-width: 639px) {
+  input:not([type="button"]):not([type="checkbox"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="image"]):not([type="radio"]):not([type="range"]):not([type="reset"]):not([type="submit"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

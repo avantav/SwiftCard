@@ -4,17 +4,16 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Corrected Google Wallet object refreshes to use the
-  documented `NOTIFY_ON_UPDATE` enum instead of the rejected `NOTIFY` value.
+- Last completed task: Prevented iOS focus zoom on every mobile text field,
+  including individual employee login and required-password forms.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Existing Google Wallet loyalty objects can be refreshed
-  without the API rejecting their notification preference; synchronization
-  failures now record a safe server-side diagnostic.
-- Git status: The Google Wallet refresh correction passes lint, typecheck, all
-  288 tests across 78 files and the webpack build; its live idempotent object
-  update returned HTTP 200. The product owner confirmed migrations through
-  `0062` are applied remotely; `0063` through `0066` remain to be applied
-  remotely.
+- Last stable feature: Mobile text inputs, selects and textareas render at a
+  minimum 16px so iOS does not enlarge the viewport on focus; the operations
+  PWA retains its existing fixed-scale viewport and gesture protection.
+- Git status: The mobile focus-zoom correction passes lint, typecheck, all 288
+  tests across 78 files and the webpack build. The product owner confirmed
+  migrations through `0062` are applied remotely; `0063` through `0066` remain
+  to be applied remotely.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
   migrations are current through `0062`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
