@@ -31,6 +31,14 @@ const branchesPage = readFileSync(
   join(process.cwd(), "src/app/admin/branches/page.tsx"),
   "utf8",
 );
+const branchesLoading = readFileSync(
+  join(process.cwd(), "src/app/admin/branches/loading.tsx"),
+  "utf8",
+);
+const submitButton = readFileSync(
+  join(process.cwd(), "src/components/submit-button.tsx"),
+  "utf8",
+);
 
 function form(values: Record<string, string>) {
   const data = new FormData();
@@ -237,6 +245,16 @@ describe("validateBranchCreateForm", () => {
     expect(branchForm).toContain("Ubicación");
     expect(branchForm).toContain("Acceso");
     expect(branchForm).toContain("setStep");
+  });
+
+  it("reports route, form, map, place and geolocation loading states", () => {
+    expect(branchesLoading).toContain('aria-busy="true"');
+    expect(branchesLoading).toContain("enterprise-skeleton");
+    expect(submitButton).toContain("aria-busy={pending}");
+    expect(submitButton).toContain("enterprise-spinner");
+    expect(branchLocationPicker).toContain("mapLoading");
+    expect(branchLocationPicker).toContain("placeLoading");
+    expect(branchLocationPicker).toContain("locationLoading");
   });
 
   it("generates the registration QR only for the selected branch", () => {

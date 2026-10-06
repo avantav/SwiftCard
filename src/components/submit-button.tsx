@@ -4,7 +4,7 @@ import { useFormStatus } from "react-dom";
 
 export function SubmitButton({ children, className = "primary-button", confirmMessage, disabled = false, name, value }: { children: React.ReactNode; className?: string; confirmMessage?: string; disabled?: boolean; name?: string; value?: string }) {
   const { pending } = useFormStatus();
-  return <button className={className} type="submit" disabled={pending || disabled} name={name} value={value} onClick={(event) => {
+  return <button aria-busy={pending} className={className} type="submit" disabled={pending || disabled} name={name} value={value} onClick={(event) => {
     if (confirmMessage && !window.confirm(confirmMessage)) event.preventDefault();
-  }}>{pending ? "Procesando..." : children}</button>;
+  }}>{pending ? <><span aria-hidden="true" className="enterprise-spinner" />Procesando…</> : children}</button>;
 }

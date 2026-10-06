@@ -2424,6 +2424,9 @@ page of competing forms or repeated accordions.
   the existing policy modal as the configuration destination.
 - Collapsed the branch inventory heading into a compact single-line title and
   count, removing the inherited panel height that left unused vertical space.
+- Added accessible pending feedback for the branches route, server-action
+  submissions, Google Maps initialization, place resolution and browser
+  geolocation, with reduced-motion behavior for animated indicators.
 
 **Validation**
 

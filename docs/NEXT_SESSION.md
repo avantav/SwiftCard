@@ -7,6 +7,9 @@
   tooltip explains the current mode and missing-location prerequisite. At tablet/mobile
   widths the page uses the remaining viewport for an internally scrolling
   inventory instead of extending the document.
+- Route transitions use a compact skeleton, server actions expose a disabled
+  spinner state, and the location flow reports map, place lookup and browser
+  geolocation waits independently.
 - `view=create` opens a modal with three real steps: identity, location and
   staff access. Server errors return the user to the first step containing an
   invalid field and preserve non-sensitive values.

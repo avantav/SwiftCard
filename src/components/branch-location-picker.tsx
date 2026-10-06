@@ -54,6 +54,9 @@ export function BranchLocationPicker({
   const [longitude, setLongitude] = useState(defaultLongitude);
   const [radius, setRadius] = useState(defaultRadius);
   const [shouldLoadMap, setShouldLoadMap] = useState(false);
+  const [mapLoading, setMapLoading] = useState(Boolean(mapsApiKey));
+  const [placeLoading, setPlaceLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [status, setStatus] = useState(
     defaultLatitude && defaultLongitude
       ? "Ubicación guardada. Puedes buscar otro lugar o ajustar el punto en el mapa."
@@ -84,6 +87,7 @@ export function BranchLocationPicker({
 
     async function initialize() {
       try {
+        setMapLoading(true);
         configureMaps();
         const [{ Map, Circle }, { PlaceAutocompleteElement }] = await Promise.all([
           importLibrary("maps"),
@@ -116,6 +120,7 @@ export function BranchLocationPicker({
         });
         mapRef.current = map;
         circleRef.current = circle;
+        setMapLoading(false);
 
         autocomplete = new PlaceAutocompleteElement({
           description: "Buscar negocio o dirección de la sucursal",
@@ -131,6 +136,8 @@ export function BranchLocationPicker({
         });
         autocomplete.addEventListener("gmp-select", async (event) => {
           const place = event.placePrediction.toPlace();
+          setPlaceLoading(true);
+          setStatus("Consultando los datos del lugar…");
           try {
             await place.fetchFields({ fields: ["displayName", "formattedAddress", "location", "viewport"] });
             if (!place.location) {
@@ -150,6 +157,8 @@ export function BranchLocationPicker({
             circle.setCenter(nextCenter);
           } catch {
             setMapError("No se pudieron cargar los datos de ese lugar. Intenta con otra sugerencia.");
+          } finally {
+            setPlaceLoading(false);
           }
         });
         autocompleteHostRef.current.replaceChildren(autocomplete);
@@ -165,6 +174,7 @@ export function BranchLocationPicker({
         });
       } catch {
         if (!cancelled) {
+          setMapLoading(false);
           setMapError("Google Maps no pudo iniciar. Revisa la clave, las restricciones del dominio y las APIs habilitadas.");
         }
       }
@@ -190,6 +200,7 @@ export function BranchLocationPicker({
       setMapError("Este navegador no permite obtener la ubicación actual.");
       return;
     }
+    setLocationLoading(true);
     setStatus("Obteniendo tu ubicación…");
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -204,6 +215,7 @@ export function BranchLocationPicker({
         mapRef.current?.setCenter(nextCenter);
         mapRef.current?.setZoom(17);
         circleRef.current?.setCenter(nextCenter);
+        setLocationLoading(false);
       },
       (error) => {
         const message = error.code === error.PERMISSION_DENIED
@@ -211,6 +223,7 @@ export function BranchLocationPicker({
           : "No pudimos obtener tu ubicación actual. Busca el lugar en el mapa.";
         setMapError(message);
         setStatus("La ubicación no se modificó.");
+        setLocationLoading(false);
       },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 },
     );
@@ -221,7 +234,7 @@ export function BranchLocationPicker({
   const longitudeErrorId = `${id}-longitude-error`;
   const radiusErrorId = `${id}-radius-error`;
 
-  return <fieldset className="branch-location-picker">
+  return <fieldset aria-busy={mapLoading || placeLoading || locationLoading} className="branch-location-picker">
     <legend>Ubicación y geofence</legend>
     <p className="branch-location-copy">Busca la ubicación y ajusta el punto con un clic. El círculo muestra el radio donde se permiten operaciones.</p>
     <input name="address" type="hidden" value={address} />
@@ -234,11 +247,12 @@ export function BranchLocationPicker({
     <div className="branch-map-shell">
       <div aria-label="Mapa para seleccionar la ubicación de la sucursal" className="branch-map" ref={mapElementRef} role="application" />
       <span aria-hidden="true" className="branch-map-center-pin">●</span>
+      {mapLoading ? <div className="branch-map-loader" role="status"><span aria-hidden="true" className="enterprise-spinner" />Cargando mapa…</div> : null}
     </div>
     {mapError ? <p className="enterprise-alert is-error branch-map-alert" role="alert">{mapError}</p> : null}
     <div className="branch-location-actions">
-      <button className="secondary-button" onClick={useCurrentLocation} type="button">Usar mi ubicación actual</button>
-      <p aria-live="polite" role="status">{status}</p>
+      <button aria-busy={locationLoading} className="secondary-button" disabled={locationLoading} onClick={useCurrentLocation} type="button">{locationLoading ? <><span aria-hidden="true" className="enterprise-spinner" />Obteniendo ubicación…</> : "Usar mi ubicación actual"}</button>
+      <p aria-live="polite" role="status">{placeLoading ? <span aria-hidden="true" className="enterprise-spinner" /> : null}{status}</p>
     </div>
     <div className="branch-location-selection">
       <div><span>Dirección seleccionada</span><strong>{address || "Sin dirección seleccionada"}</strong></div>
