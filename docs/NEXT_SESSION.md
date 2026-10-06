@@ -1,5 +1,18 @@
 # Next Session
 
+## Staff administration context
+
+- `/admin/staff` is organized branch-first: one compact branch selector drives
+  a unified inventory of individual accounts, branch Administrators and PIN
+  operators for that location.
+- Creation and administration live in focused URL-addressable modals. The
+  selected branch determines the default access path, while Admins can still
+  create a personal branch-Administrator account for a PIN-operated location.
+- Individual workspaces separate summary, branch scope and security. PIN
+  workspaces separate summary from status, PIN reset and branch lockout reset.
+- Route skeletons, link-level pending indicators and submit-button spinners
+  cover navigation and server calls without changing control dimensions.
+
 ## Branch administration context
 
 - `/admin/branches` is now a compact control surface with a GPS policy button

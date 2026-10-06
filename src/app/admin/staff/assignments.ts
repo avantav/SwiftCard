@@ -35,5 +35,5 @@ export async function assignStaffBranch(formData: FormData) {
     redirectWithError("No se pudo asignar la sucursal.");
   }
 
-  redirect("/admin/staff?assigned=1");
+  redirect(`/admin/staff?${new URLSearchParams({ branch: branchId, assigned: "1" })}`);
 }

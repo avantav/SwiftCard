@@ -2430,13 +2430,25 @@ page of competing forms or repeated accordions.
 - Added in-control pending indicators to branch navigation actions so the exact
   button or tab that triggers a server-rendered transition owns its feedback
   without changing dimensions while loading.
+- Reorganized Personal around a branch-first selector and a unified, bounded
+  inventory containing personal accounts, branch Administrators and PIN
+  operators for the selected location.
+- Replaced permanent staff and PIN forms with URL-addressable creation and
+  management modals that isolate summary, branch scope and credential actions.
+- Preserved branch context after mutations, added route and in-control loading
+  feedback, and retained the existing tenant-, role- and branch-scoped backend
+  authority.
 
 **Validation**
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 291 tests across 78 files.
+- `npm run test:run`: passed; 294 tests across 78 files.
 - `npm run build`: passed with webpack.
+- Personal was reviewed against the mandatory application checklist: shared
+  shell and tokens, compact hierarchy, keyboard-native dialog behavior,
+  responsive table-to-card conversion, empty/error/loading/success states,
+  visible focus behavior and reduced-motion loading feedback are covered.
 - Representative base, management-modal and creation-step states reviewed at
   375, 768, 1280 and 1440 px; the tablet inventory switches to structured
   blocks to prevent horizontal overflow.
