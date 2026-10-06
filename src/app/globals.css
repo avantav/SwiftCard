@@ -306,59 +306,15 @@
 }
 
 .cards-gallery-preview {
-  position: relative;
-  display: grid;
-  aspect-ratio: 1.6;
+  display: block;
   overflow: hidden;
-  align-content: space-between;
   border-radius: 14px;
-  padding: 16px;
-  background: var(--card-menu-bg, #103f3b);
-  color: var(--card-menu-fg, #fff);
   box-shadow: 0 8px 18px rgb(16 24 40 / 12%);
 }
 
-.cards-gallery-brand {
-  display: grid;
-  max-width: 82%;
-  gap: 3px;
-}
-
-.cards-gallery-brand strong {
-  overflow: hidden;
-  font-size: 0.82rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cards-gallery-brand small,
-.cards-gallery-preview-footer {
-  color: var(--card-menu-label, rgb(255 255 255 / 72%));
-  font-size: 0.62rem;
-}
-
-.cards-gallery-stamps {
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 5px;
-}
-
-.cards-gallery-stamps i {
-  aspect-ratio: 1;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  opacity: 0.55;
-}
-
-.cards-gallery-stamps i.is-filled {
-  background: currentColor;
-  opacity: 1;
-}
-
-.cards-gallery-preview-footer {
-  justify-self: end;
-  font-family: Georgia, serif;
-  font-style: italic;
+.cards-gallery-preview .apple-pass-preview {
+  border-radius: 14px;
+  box-shadow: none;
 }
 
 .cards-gallery-meta {

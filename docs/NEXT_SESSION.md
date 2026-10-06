@@ -3,8 +3,10 @@
 ## Card administration context
 
 - `/admin/cards` now separates current cards from archived records in a compact
-  viewport-contained gallery. Each item contains only a visual card preview,
-  its name and lifecycle status; clicking it continues a draft or opens the
+  viewport-contained gallery. Each item contains only an Apple Store Card
+  preview, its name and lifecycle status; the preview reuses the production
+  renderer with the saved palette, program progress and effective card/tenant
+  logo and strip image. Clicking it continues a draft or opens the
   published/archived summary.
 - New-card naming lives in a modal and still delegates draft creation,
   duplicate resumption and the three-card limit to the existing trusted RPC.

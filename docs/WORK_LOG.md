@@ -2448,8 +2448,10 @@ page of competing forms or repeated accordions.
   Tarjetas and Personal to their own contextual inventory instead of routing
   every reused workspace back to Sucursales.
 - Simplified the Tarjetas inventory further into a three-item visual gallery:
-  each surface now shows only a provider-neutral card preview, name and status,
-  while readiness, metrics and lifecycle controls remain inside the summary.
+  each surface now shows only its name, status and a production Apple Store
+  Card preview that reflects the saved palette, loyalty model, reward goal and
+  effective card- or tenant-level logo and strip image. Readiness, metrics and
+  lifecycle controls remain inside the summary.
 
 **Validation**
 

@@ -132,6 +132,9 @@ describe("multi-card loyalty boundary", () => {
     expect(cardsPage).toContain("cards-inventory-panel");
     expect(cardsPage).toContain("cards-gallery-card");
     expect(cardsPage).toContain("cards-gallery-preview");
+    expect(cardsPage).toContain("AppleStoreCardPreview");
+    expect(cardsPage).toContain('tenant?.logo_url');
+    expect(cardsPage).toContain('tenant?.banner_url');
     expect(cardsPage).toContain("card-readiness-list");
     expect(cardsPage).toContain("BranchWorkspaceDialog");
     expect(cardsPage).toContain("closeHref=");

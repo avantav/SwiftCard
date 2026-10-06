@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import type { CSSProperties } from "react";
+import { AppleStoreCardPreview } from "@/components/apple-store-card-preview";
 import { BranchWorkspaceDialog } from "@/components/branch-workspace-dialog";
 import { PendingLinkContent } from "@/components/pending-link-content";
 import { SubmitButton } from "@/components/submit-button";
@@ -25,6 +25,8 @@ type CardRow = {
   label_color: string;
   logo_text: string | null;
   description: string;
+  logo_image_url: string | null;
+  strip_image_url: string | null;
 };
 type CardStats = {
   issued_cards: number | string;
@@ -33,6 +35,13 @@ type CardStats = {
   units_awarded: number | string;
   rewards_generated: number | string;
   rewards_redeemed: number | string;
+};
+type CardProgram = {
+  id: string;
+  name: string;
+  program_type: "STAMPS_PER_PURCHASE" | "STAMPS_PER_AMOUNT" | "LIFETIME_POINTS";
+  unit_name_singular: string;
+  unit_name_plural: string;
 };
 
 function cardsHref(values: Record<string, string> = {}) {
@@ -58,10 +67,16 @@ export default async function CardsPage({ searchParams }: CardsPageProps) {
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
   const query = await searchParams;
   const [{ data: tenant }, { data: rawCards, error }] = await Promise.all([
-    context.supabase.from("tenants").select("name,currency_code").eq("id", context.tenantId).maybeSingle(),
-    context.supabase.from("loyalty_cards").select("id,name,status,current_step,updated_at,program_id,published_at,program_completed,design_completed,locations_completed,background_color,foreground_color,label_color,logo_text,description").eq("tenant_id", context.tenantId).order("updated_at", { ascending: false }),
+    context.supabase.from("tenants").select("name,currency_code,logo_url,banner_url").eq("id", context.tenantId).maybeSingle(),
+    context.supabase.from("loyalty_cards").select("id,name,status,current_step,updated_at,program_id,published_at,program_completed,design_completed,locations_completed,background_color,foreground_color,label_color,logo_text,description,logo_image_url,strip_image_url").eq("tenant_id", context.tenantId).order("updated_at", { ascending: false }),
   ]);
   const cards = consolidateDraftCards((rawCards ?? []) as CardRow[]);
+  const programIds = [...new Set(cards.map((card) => card.program_id))];
+  const [{ data: rawPrograms }, { data: rawTiers }] = programIds.length ? await Promise.all([
+    context.supabase.from("loyalty_programs").select("id,name,program_type,unit_name_singular,unit_name_plural").in("id", programIds),
+    context.supabase.from("loyalty_reward_tiers").select("program_id,stamps_required").in("program_id", programIds).eq("active", true),
+  ]) : [{ data: [] }, { data: [] }];
+  const programsById = new Map((rawPrograms ?? []).map((program) => [program.id, program as CardProgram]));
   const activeCards = cards.filter((card) => card.status !== "ARCHIVED");
   const archivedCards = cards.filter((card) => card.status === "ARCHIVED");
   const archivedView = query.view === "archived";
@@ -90,9 +105,10 @@ export default async function CardsPage({ searchParams }: CardsPageProps) {
       <div className="enterprise-panel-header cards-inventory-heading"><div><h2 id="cards-inventory-title">{archivedView ? "Tarjetas archivadas" : "Tarjetas actuales"}</h2><p>{visibleCards.length} {visibleCards.length === 1 ? "tarjeta" : "tarjetas"}</p></div></div>
       {visibleCards.length ? <div className="cards-gallery">{visibleCards.map((card) => {
         const wasPublished = Boolean(card.published_at);
+        const program = programsById.get(card.program_id);
+        const rewardGoal = (rawTiers ?? []).filter((tier) => tier.program_id === card.program_id).reduce((maximum, tier) => Math.max(maximum, Number(tier.stamps_required)), 0) || null;
         const destination = card.status === "DRAFT" ? `/admin/cards/${card.id}/edit?step=${card.current_step}` : cardsHref({ ...(archivedView ? { view: "archived" } : {}), card: card.id });
-        const previewStyle = { "--card-menu-bg": card.background_color, "--card-menu-fg": card.foreground_color, "--card-menu-label": card.label_color } as CSSProperties;
-        return <Link className="cards-gallery-card" href={destination} key={card.id}><PendingLinkContent label={`Abriendo ${card.name}`}><span aria-hidden="true" className="cards-gallery-preview" style={previewStyle}><span className="cards-gallery-brand"><strong>{card.logo_text || card.name}</strong><small>{card.description || "Tarjeta de recompensas"}</small></span><span className="cards-gallery-stamps">{Array.from({ length: 8 }, (_, index) => <i className={index < 5 ? "is-filled" : undefined} key={index} />)}</span><span className="cards-gallery-preview-footer">morrow</span></span><span className="cards-gallery-meta"><strong>{card.name}</strong><span className={`enterprise-badge ${card.status === "PUBLISHED" ? "is-active" : card.status === "ARCHIVED" ? "is-neutral" : "is-suspended"}`}>{card.status === "PUBLISHED" ? "Publicada" : card.status === "ARCHIVED" ? (wasPublished ? "Desactivada" : "Borrador descartado") : "Borrador"}</span></span></PendingLinkContent></Link>;
+        return <Link className="cards-gallery-card" href={destination} key={card.id}><PendingLinkContent label={`Abriendo ${card.name}`}><span aria-hidden="true" className="cards-gallery-preview"><AppleStoreCardPreview design={{ logoText: card.logo_text ?? "", backgroundColor: card.background_color, foregroundColor: card.foreground_color, labelColor: card.label_color, logoImageUrl: card.logo_image_url ?? tenant?.logo_url ?? "", stripImageUrl: card.strip_image_url ?? tenant?.banner_url ?? "", logoScalePercent: 100, logoMarginXPercent: 0, logoMarginYPercent: 0, stripScalePercent: 100, stripMarginXPercent: 0, stripMarginYPercent: 0, stripDimmingEnabled: true, stripStampsEnabled: true, stampIconUrl: "", stampEmptySlotsEnabled: true, stampRowCounts: [], stampPositionXPercent: 50, stampPositionYPercent: 50 }} programName={program?.name ?? card.name} programType={program?.program_type ?? "STAMPS_PER_PURCHASE"} rewardGoal={rewardGoal} tenantName={tenant?.name ?? "Negocio"} unitNamePlural={program?.unit_name_plural ?? "sellos"} unitNameSingular={program?.unit_name_singular ?? "sello"} /></span><span className="cards-gallery-meta"><strong>{card.name}</strong><span className={`enterprise-badge ${card.status === "PUBLISHED" ? "is-active" : card.status === "ARCHIVED" ? "is-neutral" : "is-suspended"}`}>{card.status === "PUBLISHED" ? "Publicada" : card.status === "ARCHIVED" ? (wasPublished ? "Desactivada" : "Borrador descartado") : "Borrador"}</span></span></PendingLinkContent></Link>;
       })}</div> : <div className="enterprise-empty-state admin-compact-empty"><h3>{archivedView ? "No hay tarjetas archivadas" : "Crea tu primera tarjeta"}</h3><p>{archivedView ? "Las tarjetas desactivadas y borradores descartados aparecerán aquí." : "Configura programa, diseño y sucursales en cuatro pasos guardados."}</p>{!archivedView && activeCards.length < 3 ? <Link className="enterprise-primary-action" href={cardsHref({ view: "create" })}><PendingLinkContent>Nueva tarjeta</PendingLinkContent></Link> : null}</div>}
     </section>
 
