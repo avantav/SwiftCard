@@ -2419,6 +2419,9 @@ page of competing forms or repeated accordions.
 - Compressed the branch-specific page header by removing its inherited minimum
   height and reducing top padding and internal spacing without changing the
   shared Admin header pattern elsewhere.
+- Replaced the full-width GPS policy row with a compact header button that
+  exposes the current mode and an accessible hover/focus tooltip, while keeping
+  the existing policy modal as the configuration destination.
 
 **Validation**
 

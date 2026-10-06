@@ -2670,47 +2670,77 @@ textarea {
   line-height: 1.35;
 }
 
-.branch-policy-bar {
+.branch-header-actions {
   display: flex;
-  min-height: 62px;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 8px;
+}
+
+.branch-policy-trigger {
+  position: relative;
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
   border: 1px solid var(--enterprise-border);
-  border-radius: var(--enterprise-radius-lg);
-  padding: 10px 12px 10px 16px;
+  border-radius: var(--enterprise-radius-md);
+  padding: 7px 10px;
   background: var(--enterprise-surface);
-}
-
-.branch-policy-bar > div {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 12px;
-}
-
-.branch-policy-bar > div > span:last-child {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
-}
-
-.branch-policy-bar strong {
-  font-size: 0.82rem;
-}
-
-.branch-policy-bar small {
-  overflow: hidden;
-  color: var(--enterprise-text-muted);
-  font-size: 0.72rem;
-  text-overflow: ellipsis;
+  color: var(--enterprise-text);
+  font-size: 0.78rem;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.branch-policy-error {
+.branch-policy-trigger:hover {
+  border-color: var(--enterprise-border-strong);
+  background: var(--enterprise-surface-subtle);
+}
+
+.branch-policy-trigger::after {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(280px, calc(100vw - 32px));
+  border-radius: var(--enterprise-radius-md);
+  padding: 9px 11px;
+  transform: translateY(-4px);
+  background: var(--enterprise-sidebar);
+  box-shadow: var(--enterprise-shadow-menu);
+  color: #fff;
+  content: attr(data-tooltip);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  white-space: normal;
+}
+
+.branch-policy-trigger:hover::after,
+.branch-policy-trigger:focus-visible::after {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.branch-policy-trigger.is-disabled {
   color: var(--enterprise-danger);
-  font-size: 0.76rem;
-  font-weight: 650;
+  cursor: not-allowed;
+}
+
+.branch-policy-info-icon {
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  border: 1px solid var(--enterprise-border-strong);
+  border-radius: 50%;
+  color: var(--enterprise-text-muted);
+  font-family: Georgia, serif;
+  font-size: 0.72rem;
+  font-style: italic;
 }
 
 .branch-geofence-control {
@@ -7040,7 +7070,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .branches-control-page {
     height: calc(100dvh - 64px);
     min-height: 0;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     gap: 16px;
     overflow: hidden;
   }
@@ -7142,17 +7172,18 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     width: 100%;
   }
 
-  .branch-policy-bar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .branches-control-page {
     padding-top: 12px;
   }
 
-  .branch-policy-bar .enterprise-secondary-action {
+  .branch-header-actions {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     width: 100%;
+  }
+
+  .branch-policy-trigger {
+    justify-content: center;
   }
 
   .branch-inventory-table .enterprise-row-actions .enterprise-secondary-action {

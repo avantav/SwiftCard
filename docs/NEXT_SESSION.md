@@ -2,8 +2,9 @@
 
 ## Branch administration context
 
-- `/admin/branches` is now a compact control surface with one collapsed-height
-  GPS policy row and a bounded inventory. At tablet/mobile
+- `/admin/branches` is now a compact control surface with a GPS policy button
+  in the page header and a bounded inventory. Its accessible hover/focus
+  tooltip explains the current mode and missing-location prerequisite. At tablet/mobile
   widths the page uses the remaining viewport for an internally scrolling
   inventory instead of extending the document.
 - `view=create` opens a modal with three real steps: identity, location and

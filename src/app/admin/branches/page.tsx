@@ -67,6 +67,12 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
   const showPolicy = params.view === "policy";
   const requestedSection = workspaceSections.find((section) => section === params.section);
   const activeSection: WorkspaceSection = requestedSection ?? "details";
+  const policyLabel = strictGeofencing ? "Estricto" : "Flexible";
+  const policyTooltip = strictGeofencing
+    ? "El GPS bloquea compras y canjes fuera del radio configurado."
+    : branchesMissingCoordinates.length
+      ? `${branchesMissingCoordinates.length} ${branchesMissingCoordinates.length === 1 ? "sucursal activa necesita" : "sucursales activas necesitan"} ubicación antes de activar el modo estricto.`
+      : "El GPS se registra como referencia y no bloquea operaciones.";
   let registrationUrl: string | null = null;
   let qrDataUrl: string | null = null;
 
@@ -93,9 +99,16 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           <h1 id="branches-title">Sucursales</h1>
           <p>Prepara cada ubicación para operar, registrar clientes y asignar personal.</p>
         </div>
-        <Link className="enterprise-primary-action" href="/admin/branches?view=create">
-          Crear sucursal
-        </Link>
+        <div className="branch-header-actions">
+          {tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
+            <Link aria-label={`Política GPS: ${policyLabel}. ${policyTooltip}`} className="branch-policy-trigger" data-tooltip={policyTooltip} href="/admin/branches?view=policy">
+              <span className="branch-policy-info-icon" aria-hidden="true">i</span>
+              <span>GPS</span>
+              <span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span>
+            </Link>
+          )}
+          <Link className="enterprise-primary-action" href="/admin/branches?view=create">Crear sucursal</Link>
+        </div>
       </header>
 
       {params.created ? <p className="enterprise-alert is-success" role="status">Sucursal creada. Ya puedes revisar su configuración.</p> : null}
@@ -103,14 +116,6 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
       {params.accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
       {params.geofenceUpdated ? <p className="enterprise-alert is-success" role="status">Política de ubicación actualizada.</p> : null}
       {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
-
-      <section className="branch-policy-bar" aria-labelledby="tenant-geofence-title">
-        <div>
-          <span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{strictGeofencing ? "Validación estricta" : "Validación flexible"}</span>
-          <span><strong id="tenant-geofence-title">Política GPS</strong><small>{strictGeofencing ? "La distancia bloquea operaciones fuera del radio." : branchesMissingCoordinates.length ? `${branchesMissingCoordinates.length} ${branchesMissingCoordinates.length === 1 ? "ubicación pendiente" : "ubicaciones pendientes"} para poder activarla.` : "Lista para activar cuando la operación lo requiera."}</small></span>
-        </div>
-        {tenantError ? <span className="branch-policy-error" role="alert">No disponible</span> : <Link className="enterprise-secondary-action" href="/admin/branches?view=policy">Revisar política</Link>}
-      </section>
 
       <section className="enterprise-data-panel branches-inventory-panel" aria-labelledby="branch-list-title">
         <div className="enterprise-panel-header">
