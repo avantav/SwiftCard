@@ -2405,8 +2405,8 @@ page of competing forms or repeated accordions.
 
 **Changes made**
 
-- Replaced the permanent create form and per-row accordions with a compact
-  readiness summary, bounded inventory and URL-addressable task modals.
+- Replaced the permanent create form and per-row accordions with a bounded
+  inventory and URL-addressable task modals.
 - Exposed branch status, location/radius, proximity, public registration and
   staff access at scan speed in the inventory.
 - Moved tenant-wide GPS policy into a focused modal and branch administration

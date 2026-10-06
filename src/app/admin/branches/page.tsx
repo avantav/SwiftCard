@@ -61,11 +61,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
   const branchesMissingCoordinates = activeBranches.filter(
     (branch) => branch.latitude === null || branch.longitude === null,
   );
-  const locatedActiveBranches = activeBranches.length - branchesMissingCoordinates.length;
   const publicOrigin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
-  const registrationReadyBranches = activeBranches.filter(
-    (branch) => Boolean(publicOrigin && branch.public_registration_token),
-  ).length;
   const selectedBranch = branchRows.find((branch) => branch.id === params.branch) ?? null;
   const showCreate = params.view === "create" || (!branchesError && branchRows.length === 0);
   const showPolicy = params.view === "policy";
@@ -107,13 +103,6 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
       {params.accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
       {params.geofenceUpdated ? <p className="enterprise-alert is-success" role="status">Política de ubicación actualizada.</p> : null}
       {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
-
-      <section className="branch-readiness-summary" aria-label="Preparación de sucursales">
-        <div><span>Total</span><strong>{branchRows.length}</strong><small>Sucursales configuradas</small></div>
-        <div><span>Operando</span><strong>{activeBranches.length}</strong><small>Disponibles para nuevas operaciones</small></div>
-        <div><span>Con ubicación</span><strong>{locatedActiveBranches}/{activeBranches.length}</strong><small>Activas listas para validar GPS</small></div>
-        <div><span>Registro público</span><strong>{registrationReadyBranches}/{activeBranches.length}</strong><small>Activas con enlace disponible</small></div>
-      </section>
 
       <section className="branch-policy-bar" aria-labelledby="tenant-geofence-title">
         <div>

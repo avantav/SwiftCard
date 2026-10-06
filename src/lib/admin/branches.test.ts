@@ -214,8 +214,8 @@ describe("validateBranchCreateForm", () => {
     expect(branchesPage).toContain("Validación estricta");
   });
 
-  it("organizes branch administration around readiness and one focused workspace", () => {
-    expect(branchesPage).toContain('className="branch-readiness-summary"');
+  it("organizes branch administration around a compact inventory and one focused workspace", () => {
+    expect(branchesPage).not.toContain('className="branch-readiness-summary"');
     expect(branchesPage).toContain("Inventario de sucursales");
     expect(branchesPage).toContain('className="branch-workspace-nav"');
     expect(branchesPage).toContain("Datos y ubicación");

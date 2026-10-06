@@ -2652,50 +2652,6 @@ textarea {
   gap: 24px;
 }
 
-.branch-readiness-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  overflow: hidden;
-  border: 1px solid var(--enterprise-border);
-  border-radius: var(--enterprise-radius-lg);
-  background: var(--enterprise-surface);
-}
-
-.branch-readiness-summary > div {
-  display: grid;
-  min-width: 0;
-  gap: 4px;
-  border-right: 1px solid var(--enterprise-border);
-  padding: 16px 20px;
-}
-
-.branch-readiness-summary > div:last-child {
-  border-right: 0;
-}
-
-.branch-readiness-summary span,
-.branch-readiness-summary small {
-  color: var(--enterprise-text-muted);
-}
-
-.branch-readiness-summary span {
-  font-size: 0.75rem;
-  font-weight: 650;
-}
-
-.branch-readiness-summary strong {
-  color: var(--enterprise-text);
-  font-size: 1.35rem;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
-
-.branch-readiness-summary small {
-  overflow-wrap: anywhere;
-  font-size: 0.7rem;
-  line-height: 1.4;
-}
-
 .branch-policy-bar {
   display: flex;
   min-height: 62px;
@@ -7066,7 +7022,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .branches-control-page {
     height: calc(100dvh - 64px);
     min-height: 0;
-    grid-template-rows: auto auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
     gap: 16px;
     overflow: hidden;
   }
@@ -7081,18 +7037,6 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .branches-inventory-panel .branch-inventory-scroll {
     max-height: none;
     min-height: 0;
-  }
-
-  .branch-readiness-summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .branch-readiness-summary > div:nth-child(2) {
-    border-right: 0;
-  }
-
-  .branch-readiness-summary > div:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--enterprise-border);
   }
 
   .admin-form-card {
@@ -7178,18 +7122,6 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .admin-pin-branch > header form,
   .admin-pin-branch > header button {
     width: 100%;
-  }
-
-  .branch-readiness-summary {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .branch-readiness-summary > div {
-    padding: 14px;
-  }
-
-  .branch-readiness-summary strong {
-    font-size: 1.18rem;
   }
 
   .branch-policy-bar {

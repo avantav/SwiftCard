@@ -7,7 +7,7 @@
 - Last completed task: Reorganized `/admin/branches` into a compact operational
   inventory with focused modal and multi-step journeys.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Branch readiness, global GPS policy, branch editing,
+- Last stable feature: Global GPS policy, branch editing,
   public registration sharing and sensitive staff access are separated into
   clear task contexts; branch creation is a guided three-step flow.
 - Git status: The branch experience refactor passes lint, typecheck, all 291
@@ -21,8 +21,8 @@
 
 ## Completed Functionality
 
-- `/admin/branches` now prioritizes operational readiness instead of rendering
-  every form at once. Its compact inventory exposes status, location/radius,
+- `/admin/branches` no longer renders every form at once. Its compact inventory
+  exposes status, location/radius,
   registration availability, proximity and staff access mode; global GPS policy,
   creation and per-branch administration open in keyboard-accessible modals.
 - Branch creation advances through identity, location and access steps while

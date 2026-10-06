@@ -58,7 +58,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement minimum branch management.
 - [x] [Terminada] Add accessible field-level branch validation, retained non-sensitive values, and safe database/Auth error diagnostics.
 - [x] [Terminada] Add Admin-only branch editing for general data, location, geofence, proximity and status with tenant-scoped writes and explicit deactivation confirmation.
-- [x] [Terminada] Reorganize branch administration around operational readiness, a compact inventory and focused modal journeys for GPS policy, three-step creation, registration sharing and sensitive staff access.
+- [x] [Terminada] Reorganize branch administration around a compact inventory and focused modal journeys for GPS policy, three-step creation, registration sharing and sensitive staff access.
 - [x] [Terminada] Implement tenant staff account provisioning.
 - [x] [Terminada] Implement staff branch assignments and primary branch management.
 - [x] [Terminada] Add branch-scoped Administrator semantics, per-branch employee access modes, shared branch accounts, PIN operators, revocable PIN sessions, and individual actor attribution.
