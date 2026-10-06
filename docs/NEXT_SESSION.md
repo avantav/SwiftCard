@@ -1,5 +1,18 @@
 # Next Session
 
+## Card administration context
+
+- `/admin/cards` now separates current cards from archived records in a compact
+  viewport-contained inventory. Each row prioritizes identity, four-stage
+  readiness and one contextual continuation/summary action.
+- New-card naming lives in a modal and still delegates draft creation,
+  duplicate resumption and the three-card limit to the existing trusted RPC.
+- Selecting a card opens a read-only menu summary; only that card's metrics are
+  requested. Editor stages remain unchanged and open only from an explicit
+  continue/edit action.
+- Archive, restore and permanent-delete controls moved into the summary modal;
+  their existing confirmations and backend history checks remain authoritative.
+
 ## Staff administration context
 
 - `/admin/staff` is organized branch-first: one compact branch selector drives

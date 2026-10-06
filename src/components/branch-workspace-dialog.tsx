@@ -5,9 +5,11 @@ import { type ReactNode, useEffect, useRef } from "react";
 
 export function BranchWorkspaceDialog({
   children,
+  closeHref = "/admin/branches",
   labelledBy,
 }: {
   children: ReactNode;
+  closeHref?: string;
   labelledBy: string;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -30,7 +32,7 @@ export function BranchWorkspaceDialog({
       className="branch-workspace-dialog"
       onCancel={(event) => {
         event.preventDefault();
-        router.replace("/admin/branches", { scroll: false });
+        router.replace(closeHref, { scroll: false });
       }}
       ref={dialogRef}
     >

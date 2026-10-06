@@ -2438,12 +2438,21 @@ page of competing forms or repeated accordions.
 - Preserved branch context after mutations, added route and in-control loading
   feedback, and retained the existing tenant-, role- and branch-scoped backend
   authority.
+- Refactored the Tarjetas landing menu into compact current/archive views with
+  four-stage readiness, a modal draft-creation entry point and a selected-card
+  summary that keeps lifecycle actions out of the primary inventory.
+- Removed the eager per-card metrics fan-out from the menu; activity statistics
+  now load only for the explicitly selected card while the existing editor,
+  lifecycle RPCs and three-card authority remain unchanged.
+- Generalized the shared native dialog close destination so Escape returns
+  Tarjetas and Personal to their own contextual inventory instead of routing
+  every reused workspace back to Sucursales.
 
 **Validation**
 
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test:run`: passed; 294 tests across 78 files.
+- `npm run test:run`: passed; 295 tests across 78 files.
 - `npm run build`: passed with webpack.
 - Personal was reviewed against the mandatory application checklist: shared
   shell and tokens, compact hierarchy, keyboard-native dialog behavior,
