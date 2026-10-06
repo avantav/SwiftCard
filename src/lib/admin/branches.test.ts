@@ -23,6 +23,10 @@ const branchLocationPicker = readFileSync(
   join(process.cwd(), "src/components/branch-location-picker.tsx"),
   "utf8",
 );
+const branchWorkspaceDialog = readFileSync(
+  join(process.cwd(), "src/components/branch-workspace-dialog.tsx"),
+  "utf8",
+);
 const branchesPage = readFileSync(
   join(process.cwd(), "src/app/admin/branches/page.tsx"),
   "utf8",
@@ -207,7 +211,35 @@ describe("validateBranchCreateForm", () => {
     expect(branchLocationPicker).toContain('name="longitude"');
     expect(branchLocationPicker).toContain("geofenceRadiusMeters");
     expect(branchesPage).toContain("configureTenantGeofencing");
-    expect(branchesPage).toContain("Geofence activo");
+    expect(branchesPage).toContain("Validación estricta");
+  });
+
+  it("organizes branch administration around readiness and one focused workspace", () => {
+    expect(branchesPage).toContain('className="branch-readiness-summary"');
+    expect(branchesPage).toContain("Inventario de sucursales");
+    expect(branchesPage).toContain('className="branch-workspace-nav"');
+    expect(branchesPage).toContain("Datos y ubicación");
+    expect(branchesPage).toContain("Registro público");
+    expect(branchesPage).toContain("Acceso del personal");
+    expect(branchesPage).toContain("workspaceHref(branch.id, \"details\")");
+    expect(branchesPage).toContain("BranchWorkspaceDialog");
+    expect(branchWorkspaceDialog).toContain("showModal()");
+    expect(branchWorkspaceDialog).toContain('onCancel=');
+    expect(branchesPage).not.toContain("admin-inline-details");
+  });
+
+  it("guides branch creation through three bounded steps", () => {
+    expect(branchForm).toContain("branch-create-wizard");
+    expect(branchForm).toContain("branch-wizard-progress");
+    expect(branchForm).toContain("Identidad");
+    expect(branchForm).toContain("Ubicación");
+    expect(branchForm).toContain("Acceso");
+    expect(branchForm).toContain("setStep");
+  });
+
+  it("generates the registration QR only for the selected branch", () => {
+    expect(branchesPage).toContain("if (selectedBranch && publicOrigin");
+    expect(branchesPage).not.toContain("Promise.all(\n    (branches ?? []).map");
   });
 });
 

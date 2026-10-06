@@ -2281,6 +2281,64 @@ textarea {
   }
 }
 
+@media (max-width: 900px) {
+  .branch-inventory-table,
+  .branch-inventory-table tbody,
+  .branch-inventory-table tr,
+  .branch-inventory-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .branch-inventory-table thead {
+    display: none;
+  }
+
+  .branch-inventory-table tr {
+    border-bottom: 1px solid var(--enterprise-border);
+    padding: 14px 16px;
+  }
+
+  .branch-inventory-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .branch-inventory-table td {
+    display: grid;
+    grid-template-columns: minmax(115px, 0.4fr) minmax(0, 1fr);
+    align-items: center;
+    border: 0;
+    padding: 6px 0;
+  }
+
+  .branch-inventory-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--enterprise-text-muted);
+    font-size: 0.69rem;
+    font-weight: 750;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .branch-inventory-table td:first-child {
+    display: block;
+    padding: 2px 0 10px;
+  }
+
+  .branch-inventory-table td:first-child::before {
+    display: none;
+  }
+
+  .branch-inventory-table .enterprise-row-actions {
+    display: block !important;
+    padding-top: 10px !important;
+  }
+
+  .branch-inventory-table .enterprise-row-actions .enterprise-secondary-action {
+    width: 100%;
+  }
+}
+
 @media (max-width: 767px) {
   .enterprise-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2594,12 +2652,100 @@ textarea {
   gap: 24px;
 }
 
+.branch-readiness-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  background: var(--enterprise-surface);
+}
+
+.branch-readiness-summary > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  border-right: 1px solid var(--enterprise-border);
+  padding: 16px 20px;
+}
+
+.branch-readiness-summary > div:last-child {
+  border-right: 0;
+}
+
+.branch-readiness-summary span,
+.branch-readiness-summary small {
+  color: var(--enterprise-text-muted);
+}
+
+.branch-readiness-summary span {
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.branch-readiness-summary strong {
+  color: var(--enterprise-text);
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.branch-readiness-summary small {
+  overflow-wrap: anywhere;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.branch-policy-bar {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 10px 12px 10px 16px;
+  background: var(--enterprise-surface);
+}
+
+.branch-policy-bar > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.branch-policy-bar > div > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.branch-policy-bar strong {
+  font-size: 0.82rem;
+}
+
+.branch-policy-bar small {
+  overflow: hidden;
+  color: var(--enterprise-text-muted);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branch-policy-error {
+  color: var(--enterprise-danger);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
 .branch-geofence-control {
   display: flex;
+  width: 100%;
+  max-width: none;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 24px;
   padding: 20px 24px;
 }
 
@@ -2781,6 +2927,416 @@ textarea {
 
 .admin-record-list {
   display: grid;
+}
+
+.branch-inventory-table tbody tr.is-selected {
+  background: var(--enterprise-primary-soft);
+}
+
+.branch-inventory-scroll {
+  max-height: min(44vh, 430px);
+  overflow-y: auto;
+}
+
+.branch-inventory-table thead {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+
+.branch-inventory-table + * {
+  margin-top: 0;
+}
+
+.branch-name-cell,
+.branch-table-stack {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.branch-name-cell {
+  min-width: 190px;
+}
+
+.branch-name-cell strong,
+.branch-table-stack strong {
+  color: var(--enterprise-text);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.branch-name-cell small,
+.branch-table-stack small {
+  max-width: 260px;
+  overflow-wrap: anywhere;
+  color: var(--enterprise-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.branch-inventory-table .enterprise-row-actions .enterprise-secondary-action {
+  min-height: 36px;
+  padding: 7px 11px;
+}
+
+html.has-branch-modal {
+  overflow: hidden;
+}
+
+.branch-workspace-dialog {
+  width: min(980px, calc(100vw - 48px));
+  max-width: none;
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--enterprise-radius-lg);
+  padding: 0;
+  background: transparent;
+  box-shadow: var(--enterprise-shadow-menu);
+}
+
+.branch-workspace-dialog::backdrop {
+  background: rgb(12 22 24 / 52%);
+}
+
+.branch-workspace-card,
+.branch-workspace-panel,
+.branch-workspace-empty {
+  width: 100%;
+  max-height: calc(100dvh - 48px);
+}
+
+.branch-workspace-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.branch-workspace-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.branch-workspace-heading h2,
+.branch-workspace-heading p,
+.branch-workspace-section h3,
+.branch-workspace-section p {
+  margin: 0;
+}
+
+.branch-workspace-heading h2 {
+  margin: 3px 0 5px;
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
+}
+
+.branch-workspace-heading > div:first-child > p:last-child,
+.branch-workspace-section > div:first-child > p {
+  color: var(--enterprise-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.branch-workspace-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.branch-flow-guide {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 24px 0;
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 0;
+  background: var(--enterprise-border);
+  list-style: none;
+}
+
+.branch-flow-guide li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.branch-flow-guide li > span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary);
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.branch-flow-guide li > div {
+  display: grid;
+  gap: 2px;
+}
+
+.branch-flow-guide strong {
+  font-size: 0.78rem;
+}
+
+.branch-flow-guide small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.69rem;
+}
+
+.branch-create-wizard {
+  min-height: 0;
+  flex: 1;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  margin-top: 20px;
+}
+
+.branch-create-wizard > .branch-validation-summary {
+  max-height: 120px;
+  overflow: auto;
+}
+
+.branch-wizard-progress {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 0;
+  background: var(--enterprise-border);
+  list-style: none;
+}
+
+.branch-wizard-progress li {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--enterprise-surface-subtle);
+  color: var(--enterprise-text-muted);
+}
+
+.branch-wizard-progress li > span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7ebee;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.branch-wizard-progress strong {
+  overflow: hidden;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+}
+
+.branch-wizard-progress li.is-current,
+.branch-wizard-progress li.is-complete {
+  color: var(--enterprise-text);
+}
+
+.branch-wizard-progress li.is-current > span {
+  background: var(--enterprise-primary);
+  color: #fff;
+}
+
+.branch-wizard-progress li.is-complete > span {
+  background: var(--enterprise-primary-soft);
+  color: var(--enterprise-primary-hover);
+}
+
+.branch-wizard-step {
+  display: grid;
+  min-height: 0;
+  align-content: start;
+  gap: 16px;
+  overflow-y: auto;
+  padding: 4px 4px 8px;
+}
+
+.branch-wizard-step[hidden] {
+  display: none;
+}
+
+.branch-wizard-step-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.branch-wizard-step-heading h3,
+.branch-wizard-step-heading p {
+  margin: 0;
+}
+
+.branch-wizard-step-heading h3 {
+  font-size: 0.95rem;
+}
+
+.branch-wizard-step-heading p {
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.branch-wizard-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--enterprise-border);
+  padding-top: 16px;
+}
+
+.branch-policy-dialog {
+  display: grid;
+  width: min(100%, 680px);
+  gap: 20px;
+}
+
+.branch-policy-choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 16px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.branch-policy-choice > div {
+  display: grid;
+  gap: 4px;
+}
+
+.branch-policy-choice strong {
+  font-size: 0.86rem;
+}
+
+.branch-policy-choice p,
+.branch-policy-note {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.branch-policy-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.branch-workspace-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-top: 1px solid var(--enterprise-border);
+  border-bottom: 1px solid var(--enterprise-border);
+  padding: 0 20px;
+  scrollbar-width: thin;
+}
+
+.branch-workspace-panel > .branch-workspace-heading {
+  padding: 20px;
+}
+
+.branch-workspace-nav a {
+  display: inline-flex;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  padding: 0 12px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.branch-workspace-nav a:hover {
+  color: var(--enterprise-text);
+}
+
+.branch-workspace-nav a.is-active {
+  border-bottom-color: var(--enterprise-primary);
+  color: var(--enterprise-primary-hover);
+}
+
+.branch-workspace-body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.branch-workspace-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.branch-workspace-body > .admin-inline-form {
+  border-top: 0;
+  padding: 0;
+}
+
+.branch-workspace-section {
+  display: grid;
+  gap: 20px;
+}
+
+.branch-workspace-section > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.branch-workspace-section h3 {
+  font-size: 1rem;
+}
+
+.branch-access-form {
+  max-width: 680px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  padding: 20px;
+  background: var(--enterprise-surface-subtle);
+}
+
+.branch-workspace-empty {
+  min-height: 220px;
+  border: 1px dashed var(--enterprise-border-strong);
+  border-radius: var(--enterprise-radius-lg);
+  background: var(--enterprise-surface);
+}
+
+.branch-workspace-empty h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.branch-workspace-empty p {
+  max-width: 520px;
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
 .admin-record {
@@ -6507,6 +7063,38 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     grid-template-columns: 1fr;
   }
 
+  .branches-control-page {
+    height: calc(100dvh - 64px);
+    min-height: 0;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  .branches-inventory-panel {
+    display: grid;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .branches-inventory-panel .branch-inventory-scroll {
+    max-height: none;
+    min-height: 0;
+  }
+
+  .branch-readiness-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .branch-readiness-summary > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .branch-readiness-summary > div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--enterprise-border);
+  }
+
   .admin-form-card {
     position: static;
   }
@@ -6590,6 +7178,111 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .admin-pin-branch > header form,
   .admin-pin-branch > header button {
     width: 100%;
+  }
+
+  .branch-readiness-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .branch-readiness-summary > div {
+    padding: 14px;
+  }
+
+  .branch-readiness-summary strong {
+    font-size: 1.18rem;
+  }
+
+  .branch-policy-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .branch-policy-bar .enterprise-secondary-action {
+    width: 100%;
+  }
+
+  .branch-inventory-table .enterprise-row-actions .enterprise-secondary-action {
+    width: 100%;
+  }
+
+  .branch-workspace-heading {
+    display: grid;
+    gap: 14px;
+  }
+
+  .branch-workspace-heading-actions,
+  .branch-workspace-heading-actions .enterprise-secondary-action {
+    width: 100%;
+  }
+
+  .branch-workspace-heading-actions {
+    justify-content: space-between;
+  }
+
+  .branch-flow-guide {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-workspace-nav {
+    padding: 0 8px;
+  }
+
+  .branch-workspace-nav a {
+    min-height: 52px;
+    padding: 0 10px;
+    font-size: 0.74rem;
+  }
+
+  .branch-workspace-body,
+  .branch-workspace-panel > .branch-workspace-heading,
+  .branch-workspace-card {
+    padding: 16px;
+  }
+
+  .branch-access-form {
+    padding: 16px;
+  }
+
+  .branch-workspace-dialog {
+    width: calc(100vw - 16px);
+    height: auto;
+    max-height: calc(100dvh - 16px);
+    border-radius: var(--enterprise-radius-lg);
+  }
+
+  .branch-workspace-card,
+  .branch-workspace-panel,
+  .branch-workspace-empty {
+    height: auto;
+    max-height: calc(100dvh - 16px);
+  }
+
+  .branch-workspace-card {
+    padding: 16px;
+  }
+
+  .branch-create-wizard {
+    margin-top: 16px;
+  }
+
+  .branch-wizard-progress li {
+    justify-content: center;
+    padding: 9px 6px;
+  }
+
+  .branch-wizard-progress strong {
+    font-size: 0.68rem;
+  }
+
+  .branch-wizard-actions > *,
+  .branch-wizard-actions button {
+    min-height: 44px;
+  }
+
+  .branch-policy-dialog {
+    align-content: start;
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
   }
 
   .admin-pin-branches {

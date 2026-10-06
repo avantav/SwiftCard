@@ -2397,3 +2397,32 @@ form field on a phone, including the individual-account login flow.
 - `npm run typecheck`: passed.
 - `npm run lint`: passed.
 - `npm run build`: passed with webpack.
+
+## 2026-10-05 - Branch administration journey refactor
+
+**Objective:** Make branch administration functional and guided without a long
+page of competing forms or repeated accordions.
+
+**Changes made**
+
+- Replaced the permanent create form and per-row accordions with a compact
+  readiness summary, bounded inventory and URL-addressable task modals.
+- Exposed branch status, location/radius, proximity, public registration and
+  staff access at scan speed in the inventory.
+- Moved tenant-wide GPS policy into a focused modal and branch administration
+  into separate data/location, registration and access sections.
+- Converted branch creation into identity, location and access steps with
+  server-error routing back to the relevant step.
+- Locked background scroll while a task modal is open, contained unavoidable
+  form/map scrolling, generated registration QR data only for the selected
+  branch and retained all existing backend authority and confirmations.
+
+**Validation**
+
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 291 tests across 78 files.
+- `npm run build`: passed with webpack.
+- Representative base, management-modal and creation-step states reviewed at
+  375, 768, 1280 and 1440 px; the tablet inventory switches to structured
+  blocks to prevent horizontal overflow.

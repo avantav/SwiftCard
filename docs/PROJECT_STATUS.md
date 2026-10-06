@@ -4,13 +4,13 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Prevented iOS focus zoom on every mobile text field,
-  including individual employee login and required-password forms.
+- Last completed task: Reorganized `/admin/branches` into a compact operational
+  inventory with focused modal and multi-step journeys.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Mobile text inputs, selects and textareas render at a
-  minimum 16px so iOS does not enlarge the viewport on focus; the operations
-  PWA retains its existing fixed-scale viewport and gesture protection.
-- Git status: The mobile focus-zoom correction passes lint, typecheck, all 288
+- Last stable feature: Branch readiness, global GPS policy, branch editing,
+  public registration sharing and sensitive staff access are separated into
+  clear task contexts; branch creation is a guided three-step flow.
+- Git status: The branch experience refactor passes lint, typecheck, all 291
   tests across 78 files and the webpack build. The product owner confirmed
   migrations through `0062` are applied remotely; `0063` through `0066` remain
   to be applied remotely.
@@ -21,6 +21,15 @@
 
 ## Completed Functionality
 
+- `/admin/branches` now prioritizes operational readiness instead of rendering
+  every form at once. Its compact inventory exposes status, location/radius,
+  registration availability, proximity and staff access mode; global GPS policy,
+  creation and per-branch administration open in keyboard-accessible modals.
+- Branch creation advances through identity, location and access steps while
+  retaining existing server validation and safe error recovery. Per-branch
+  administration separates data/location, public registration and sensitive
+  staff access, generates a QR only for the selected branch and contains long
+  content inside the modal rather than extending the whole page.
 - The root route follows the supplied morrow reference: warm editorial canvas, large Inter/Georgia hierarchy, navy/teal palette, product dashboard, floating loyalty card, phone Wallet experience, spacious benefit cards and one repeated “Solicitar una demo” conversion goal. It contains no pricing, checkout or payment collection.
 - The visible product identity is now lowercase morrow with its navy rounded-square italic `m` monogram. Public/authenticated navigation, metadata, install surfaces, offline UI, exports and non-white-label Wallet attribution use the new brand; stable SwiftWallet technical identifiers remain unchanged for compatibility.
 - Landing product layers float at slow independent rhythms and below-fold content reveals once on entry; `prefers-reduced-motion` removes ambient motion and leaves the complete experience readable.

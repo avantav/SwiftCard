@@ -1,5 +1,24 @@
 # Next Session
 
+## Branch administration context
+
+- `/admin/branches` is now a compact control surface: readiness summary, one
+  collapsed-height GPS policy row and a bounded inventory. At tablet/mobile
+  widths the page uses the remaining viewport for an internally scrolling
+  inventory instead of extending the document.
+- `view=create` opens a modal with three real steps: identity, location and
+  staff access. Server errors return the user to the first step containing an
+  invalid field and preserve non-sensitive values.
+- `view=policy` isolates the tenant-wide strict/flexible GPS decision in its own
+  confirmation modal. `branch={id}&section=details|registration|access` opens
+  one selected branch and avoids mounting every map, QR and credential form.
+- The dialog uses native modal focus/escape behavior, locks background scroll
+  and contains unavoidable long map/form content inside its body. Sensitive
+  shared-account credentials remain separated from general branch editing.
+- No database migration or authority change is involved. RLS, server-derived
+  tenant scope, deactivation confirmation and password non-retention remain
+  unchanged.
+
 ## Reviews product context
 
 - `docs/reviews_plan.md` was reviewed on 2026-09-17 and is now an authorized

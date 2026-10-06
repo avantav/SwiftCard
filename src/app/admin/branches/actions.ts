@@ -244,7 +244,7 @@ export async function createBranch(
     limit: 25,
     tenantId: context.tenantId,
   });
-  redirect("/admin/branches?created=1");
+  redirect(`/admin/branches?created=1&branch=${branchId}&section=details`);
 }
 
 export async function updateBranch(
@@ -310,7 +310,7 @@ export async function updateBranch(
     limit: 25,
     tenantId: context.tenantId,
   });
-  redirect("/admin/branches?updated=1");
+  redirect(`/admin/branches?updated=1&branch=${validation.data.branchId}&section=details`);
 }
 
 export async function configureBranchAccess(formData: FormData) {
@@ -346,7 +346,7 @@ export async function configureBranchAccess(formData: FormData) {
         ban_duration: "876000h"
       });
     }
-    redirect("/admin/branches?accessUpdated=1");
+    redirect(`/admin/branches?accessUpdated=1&branch=${branchId}&section=access`);
   }
 
   if (accessMode !== "SHARED_ACCOUNT_PIN") {
@@ -391,7 +391,7 @@ export async function configureBranchAccess(formData: FormData) {
     redirectWithError("No se pudo activar el acceso por PIN.");
   }
 
-  redirect("/admin/branches?accessUpdated=1");
+  redirect(`/admin/branches?accessUpdated=1&branch=${branchId}&section=access`);
 }
 
 export async function configureTenantGeofencing(formData: FormData) {
