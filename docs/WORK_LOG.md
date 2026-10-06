@@ -2416,6 +2416,9 @@ page of competing forms or repeated accordions.
 - Locked background scroll while a task modal is open, contained unavoidable
   form/map scrolling, generated registration QR data only for the selected
   branch and retained all existing backend authority and confirmations.
+- Compressed the branch-specific page header by removing its inherited minimum
+  height and reducing top padding and internal spacing without changing the
+  shared Admin header pattern elsewhere.
 
 **Validation**
 

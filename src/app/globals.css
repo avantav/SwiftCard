@@ -2652,6 +2652,24 @@ textarea {
   gap: 24px;
 }
 
+.branches-control-page {
+  gap: 16px;
+  padding-top: 20px;
+}
+
+.branches-control-page .enterprise-page-header {
+  min-height: 0;
+  align-items: center;
+}
+
+.branches-control-page .enterprise-page-header h1 {
+  margin: 0 0 2px;
+}
+
+.branches-control-page .enterprise-page-header > div > p:last-child {
+  line-height: 1.35;
+}
+
 .branch-policy-bar {
   display: flex;
   min-height: 62px;
@@ -7127,6 +7145,10 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .branch-policy-bar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .branches-control-page {
+    padding-top: 12px;
   }
 
   .branch-policy-bar .enterprise-secondary-action {
