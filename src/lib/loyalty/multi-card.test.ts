@@ -130,11 +130,14 @@ describe("multi-card loyalty boundary", () => {
   it("keeps the card menu compact and defers metrics to a selected-card summary", () => {
     expect(cardsPage).toContain("cards-view-nav");
     expect(cardsPage).toContain("cards-inventory-panel");
+    expect(cardsPage).toContain("cards-gallery-card");
+    expect(cardsPage).toContain("cards-gallery-preview");
     expect(cardsPage).toContain("card-readiness-list");
     expect(cardsPage).toContain("BranchWorkspaceDialog");
     expect(cardsPage).toContain("closeHref=");
     expect(cardsPage).toContain("Crear y configurar");
     expect(cardsPage).toContain("selectedCard");
+    expect(cardsPage).not.toContain("card-config-stats");
     expect(cardsPage).not.toContain("Promise.all(cards.map");
     expect(cardsLoading).toContain('aria-busy="true"');
     expect(cardsLoading).toContain("enterprise-skeleton");

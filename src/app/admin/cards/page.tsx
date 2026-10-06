@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { CSSProperties } from "react";
 import { BranchWorkspaceDialog } from "@/components/branch-workspace-dialog";
 import { PendingLinkContent } from "@/components/pending-link-content";
 import { SubmitButton } from "@/components/submit-button";
@@ -19,6 +20,11 @@ type CardRow = {
   program_completed: boolean;
   design_completed: boolean;
   locations_completed: boolean;
+  background_color: string;
+  foreground_color: string;
+  label_color: string;
+  logo_text: string | null;
+  description: string;
 };
 type CardStats = {
   issued_cards: number | string;
@@ -53,7 +59,7 @@ export default async function CardsPage({ searchParams }: CardsPageProps) {
   const query = await searchParams;
   const [{ data: tenant }, { data: rawCards, error }] = await Promise.all([
     context.supabase.from("tenants").select("name,currency_code").eq("id", context.tenantId).maybeSingle(),
-    context.supabase.from("loyalty_cards").select("id,name,status,current_step,updated_at,program_id,published_at,program_completed,design_completed,locations_completed").eq("tenant_id", context.tenantId).order("updated_at", { ascending: false }),
+    context.supabase.from("loyalty_cards").select("id,name,status,current_step,updated_at,program_id,published_at,program_completed,design_completed,locations_completed,background_color,foreground_color,label_color,logo_text,description").eq("tenant_id", context.tenantId).order("updated_at", { ascending: false }),
   ]);
   const cards = consolidateDraftCards((rawCards ?? []) as CardRow[]);
   const activeCards = cards.filter((card) => card.status !== "ARCHIVED");
@@ -82,13 +88,11 @@ export default async function CardsPage({ searchParams }: CardsPageProps) {
 
     <section className="enterprise-data-panel cards-inventory-panel" aria-labelledby="cards-inventory-title">
       <div className="enterprise-panel-header cards-inventory-heading"><div><h2 id="cards-inventory-title">{archivedView ? "Tarjetas archivadas" : "Tarjetas actuales"}</h2><p>{visibleCards.length} {visibleCards.length === 1 ? "tarjeta" : "tarjetas"}</p></div></div>
-      {visibleCards.length ? <div className="cards-inventory-list">{visibleCards.map((card) => {
+      {visibleCards.length ? <div className="cards-gallery">{visibleCards.map((card) => {
         const wasPublished = Boolean(card.published_at);
-        return <article className={`cards-inventory-row ${card.status === "ARCHIVED" ? "is-archived" : ""}`} key={card.id}>
-          <div className="cards-inventory-identity"><span className={`enterprise-badge ${card.status === "PUBLISHED" ? "is-active" : card.status === "ARCHIVED" ? "is-neutral" : "is-suspended"}`}>{card.status === "PUBLISHED" ? "Publicada" : card.status === "ARCHIVED" ? (wasPublished ? "Desactivada" : "Borrador descartado") : "Borrador"}</span><Link href={cardsHref({ ...(archivedView ? { view: "archived" } : {}), card: card.id })}><PendingLinkContent label={`Abriendo ${card.name}`}>{card.name}</PendingLinkContent></Link><small>Actualizada {formatUpdated(card.updated_at)}</small></div>
-          <ol aria-label={`Preparación de ${card.name}`} className="card-readiness-list">{readiness(card).map(([label, complete]) => <li className={complete ? "is-complete" : undefined} key={label}><span aria-hidden="true">{complete ? "✓" : "·"}</span>{label}</li>)}</ol>
-          <div className="cards-inventory-action">{card.status === "DRAFT" ? <Link className="enterprise-primary-action" href={`/admin/cards/${card.id}/edit?step=${card.current_step}`}><PendingLinkContent label="Abriendo configuración">Continuar configuración</PendingLinkContent></Link> : <Link className="enterprise-secondary-action" href={cardsHref({ ...(archivedView ? { view: "archived" } : {}), card: card.id })}><PendingLinkContent label="Cargando resumen">Ver resumen</PendingLinkContent></Link>}</div>
-        </article>;
+        const destination = card.status === "DRAFT" ? `/admin/cards/${card.id}/edit?step=${card.current_step}` : cardsHref({ ...(archivedView ? { view: "archived" } : {}), card: card.id });
+        const previewStyle = { "--card-menu-bg": card.background_color, "--card-menu-fg": card.foreground_color, "--card-menu-label": card.label_color } as CSSProperties;
+        return <Link className="cards-gallery-card" href={destination} key={card.id}><PendingLinkContent label={`Abriendo ${card.name}`}><span aria-hidden="true" className="cards-gallery-preview" style={previewStyle}><span className="cards-gallery-brand"><strong>{card.logo_text || card.name}</strong><small>{card.description || "Tarjeta de recompensas"}</small></span><span className="cards-gallery-stamps">{Array.from({ length: 8 }, (_, index) => <i className={index < 5 ? "is-filled" : undefined} key={index} />)}</span><span className="cards-gallery-preview-footer">morrow</span></span><span className="cards-gallery-meta"><strong>{card.name}</strong><span className={`enterprise-badge ${card.status === "PUBLISHED" ? "is-active" : card.status === "ARCHIVED" ? "is-neutral" : "is-suspended"}`}>{card.status === "PUBLISHED" ? "Publicada" : card.status === "ARCHIVED" ? (wasPublished ? "Desactivada" : "Borrador descartado") : "Borrador"}</span></span></PendingLinkContent></Link>;
       })}</div> : <div className="enterprise-empty-state admin-compact-empty"><h3>{archivedView ? "No hay tarjetas archivadas" : "Crea tu primera tarjeta"}</h3><p>{archivedView ? "Las tarjetas desactivadas y borradores descartados aparecerán aquí." : "Configura programa, diseño y sucursales en cuatro pasos guardados."}</p>{!archivedView && activeCards.length < 3 ? <Link className="enterprise-primary-action" href={cardsHref({ view: "create" })}><PendingLinkContent>Nueva tarjeta</PendingLinkContent></Link> : null}</div>}
     </section>
 

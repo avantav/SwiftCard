@@ -3,8 +3,9 @@
 ## Card administration context
 
 - `/admin/cards` now separates current cards from archived records in a compact
-  viewport-contained inventory. Each row prioritizes identity, four-stage
-  readiness and one contextual continuation/summary action.
+  viewport-contained gallery. Each item contains only a visual card preview,
+  its name and lifecycle status; clicking it continues a draft or opens the
+  published/archived summary.
 - New-card naming lives in a modal and still delegates draft creation,
   duplicate resumption and the three-card limit to the existing trusted RPC.
 - Selecting a card opens a read-only menu summary; only that card's metrics are

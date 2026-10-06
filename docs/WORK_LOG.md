@@ -2447,6 +2447,9 @@ page of competing forms or repeated accordions.
 - Generalized the shared native dialog close destination so Escape returns
   Tarjetas and Personal to their own contextual inventory instead of routing
   every reused workspace back to Sucursales.
+- Simplified the Tarjetas inventory further into a three-item visual gallery:
+  each surface now shows only a provider-neutral card preview, name and status,
+  while readiness, metrics and lifecycle controls remain inside the summary.
 
 **Validation**
 
