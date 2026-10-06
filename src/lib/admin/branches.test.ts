@@ -39,6 +39,10 @@ const submitButton = readFileSync(
   join(process.cwd(), "src/components/submit-button.tsx"),
   "utf8",
 );
+const pendingLinkContent = readFileSync(
+  join(process.cwd(), "src/components/pending-link-content.tsx"),
+  "utf8",
+);
 
 function form(values: Record<string, string>) {
   const data = new FormData();
@@ -252,6 +256,9 @@ describe("validateBranchCreateForm", () => {
     expect(branchesLoading).toContain("enterprise-skeleton");
     expect(submitButton).toContain("aria-busy={pending}");
     expect(submitButton).toContain("enterprise-spinner");
+    expect(pendingLinkContent).toContain("useLinkStatus");
+    expect(pendingLinkContent).toContain("pending-link-indicator");
+    expect(branchesPage).toContain("PendingLinkContent");
     expect(branchLocationPicker).toContain("mapLoading");
     expect(branchLocationPicker).toContain("placeLoading");
     expect(branchLocationPicker).toContain("locationLoading");

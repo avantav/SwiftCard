@@ -3015,6 +3015,32 @@ button .enterprise-spinner,
   font-weight: 650;
 }
 
+.pending-link-content {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+}
+
+.pending-link-content > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
+
+.pending-link-content > .is-hidden {
+  visibility: hidden;
+}
+
+.pending-link-indicator {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
 .branch-loading-table {
   display: grid;
   gap: 14px;

@@ -2427,6 +2427,9 @@ page of competing forms or repeated accordions.
 - Added accessible pending feedback for the branches route, server-action
   submissions, Google Maps initialization, place resolution and browser
   geolocation, with reduced-motion behavior for animated indicators.
+- Added in-control pending indicators to branch navigation actions so the exact
+  button or tab that triggers a server-rendered transition owns its feedback
+  without changing dimensions while loading.
 
 **Validation**
 

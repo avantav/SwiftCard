@@ -5,6 +5,7 @@ import { BranchAccessFields } from "@/components/branch-access-fields";
 import { BranchCreateForm } from "@/components/branch-create-form";
 import { BranchEditForm } from "@/components/branch-edit-form";
 import { BranchWorkspaceDialog } from "@/components/branch-workspace-dialog";
+import { PendingLinkContent } from "@/components/pending-link-content";
 import { PublicRegistrationShare } from "@/components/public-registration-share";
 import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
@@ -102,12 +103,10 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
         <div className="branch-header-actions">
           {tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
             <Link aria-label={`Política GPS: ${policyLabel}. ${policyTooltip}`} className="branch-policy-trigger" data-tooltip={policyTooltip} href="/admin/branches?view=policy">
-              <span className="branch-policy-info-icon" aria-hidden="true">i</span>
-              <span>GPS</span>
-              <span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span>
+              <PendingLinkContent label="Abriendo política GPS"><span className="branch-policy-info-icon" aria-hidden="true">i</span><span>GPS</span><span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span></PendingLinkContent>
             </Link>
           )}
-          <Link className="enterprise-primary-action" href="/admin/branches?view=create">Crear sucursal</Link>
+          <Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link>
         </div>
       </header>
 
@@ -139,7 +138,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
                       <td data-label="Ubicación"><div className="branch-table-stack"><strong>{hasLocation ? `${branch.geofence_radius_meters} m de radio` : "Pendiente"}</strong><small>{hasLocation ? (branch.proximity_enabled ? "Proximidad activa" : "Sin avisos de proximidad") : "Selecciona un punto en el mapa"}</small></div></td>
                       <td data-label="Registro público"><span className={`enterprise-badge ${registrationReady ? "is-active" : "is-neutral"}`}>{registrationReady ? "Disponible" : branch.status === "INACTIVE" ? "Pausado" : "No disponible"}</span></td>
                       <td data-label="Acceso"><div className="branch-table-stack"><strong>{branch.employee_access_mode === "SHARED_ACCOUNT_PIN" ? "Cuenta compartida" : "Cuentas individuales"}</strong><small>{branch.employee_access_mode === "SHARED_ACCOUNT_PIN" ? "Identificación por PIN" : "Correo y contraseña por persona"}</small></div></td>
-                      <td className="enterprise-row-actions" data-label="Acción"><Link className="enterprise-secondary-action" href={workspaceHref(branch.id, "details")} aria-current={selectedBranch?.id === branch.id ? "page" : undefined}>{selectedBranch?.id === branch.id ? "Administrando" : "Administrar"}</Link></td>
+                      <td className="enterprise-row-actions" data-label="Acción"><Link className="enterprise-secondary-action" href={workspaceHref(branch.id, "details")} aria-current={selectedBranch?.id === branch.id ? "page" : undefined}><PendingLinkContent label={`Abriendo ${branch.name}`}>{selectedBranch?.id === branch.id ? "Administrando" : "Administrar"}</PendingLinkContent></Link></td>
                     </tr>
                   );
                 })}
@@ -147,7 +146,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
             </table>
           </div>
         ) : (
-          <div className="enterprise-empty-state admin-compact-empty"><span className="enterprise-empty-icon" aria-hidden="true">+</span><h3>Crea tu primera sucursal</h3><p>Una sucursal conecta clientes, personal, ubicación y operación.</p><Link className="enterprise-primary-action" href="/admin/branches?view=create">Crear sucursal</Link></div>
+          <div className="enterprise-empty-state admin-compact-empty"><span className="enterprise-empty-icon" aria-hidden="true">+</span><h3>Crea tu primera sucursal</h3><p>Una sucursal conecta clientes, personal, ubicación y operación.</p><Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link></div>
         )}
       </section>
 
@@ -179,9 +178,9 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
               <div className="branch-workspace-heading-actions"><span className={`enterprise-badge ${selectedBranch.status === "ACTIVE" ? "is-active" : "is-suspended"}`}>{selectedBranch.status === "ACTIVE" ? "Activa" : "Inactiva"}</span><Link className="enterprise-secondary-action" href="/admin/branches">Cerrar</Link></div>
             </div>
             <nav className="branch-workspace-nav" aria-label={`Configuración de ${selectedBranch.name}`}>
-              <Link aria-current={activeSection === "details" ? "page" : undefined} className={activeSection === "details" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "details")}>Datos y ubicación</Link>
-              <Link aria-current={activeSection === "registration" ? "page" : undefined} className={activeSection === "registration" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "registration")}>Registro público</Link>
-              <Link aria-current={activeSection === "access" ? "page" : undefined} className={activeSection === "access" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "access")}>Acceso del personal</Link>
+              <Link aria-current={activeSection === "details" ? "page" : undefined} className={activeSection === "details" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "details")}><PendingLinkContent>Datos y ubicación</PendingLinkContent></Link>
+              <Link aria-current={activeSection === "registration" ? "page" : undefined} className={activeSection === "registration" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "registration")}><PendingLinkContent>Registro público</PendingLinkContent></Link>
+              <Link aria-current={activeSection === "access" ? "page" : undefined} className={activeSection === "access" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "access")}><PendingLinkContent>Acceso del personal</PendingLinkContent></Link>
             </nav>
             <div className="branch-workspace-body">
               {activeSection === "details" ? <BranchEditForm branch={selectedBranch} /> : null}

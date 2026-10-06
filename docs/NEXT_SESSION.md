@@ -9,7 +9,8 @@
   inventory instead of extending the document.
 - Route transitions use a compact skeleton, server actions expose a disabled
   spinner state, and the location flow reports map, place lookup and browser
-  geolocation waits independently.
+  geolocation waits independently. Buttons and workspace tabs that initiate a
+  server-rendered transition also show the spinner inside the clicked control.
 - `view=create` opens a modal with three real steps: identity, location and
   staff access. Server errors return the user to the first step containing an
   invalid field and preserve non-sensitive values.
