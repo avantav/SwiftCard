@@ -2422,6 +2422,8 @@ page of competing forms or repeated accordions.
 - Replaced the full-width GPS policy row with a compact header button that
   exposes the current mode and an accessible hover/focus tooltip, while keeping
   the existing policy modal as the configuration destination.
+- Collapsed the branch inventory heading into a compact single-line title and
+  count, removing the inherited panel height that left unused vertical space.
 
 **Validation**
 
