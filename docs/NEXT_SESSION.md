@@ -80,20 +80,22 @@
 - Migration `0066_wallet_stamp_layout_editor.sql` adds custom stamp artwork,
   optional empty slots, bounded row counts and percentage-based drag position,
   plus the Admin-only `save_loyalty_card_design_v6` RPC and `stamp-*` Storage
-  path. Apply it after `0065`, then process the Apple outbox. Existing cards use
-  their automatic centered layout until saved.
+  path. It is applied remotely and tracked; process the Apple outbox before
+  device validation. Existing cards use their automatic centered layout until
+  saved.
 
 - Migration `0065_optional_wallet_card_title.sql` removes the minimum length
   from the per-card Wallet title while retaining the 60-character maximum.
   The active editor labels it optional, previews no adjacent fallback text and
-  signed Apple passes omit `logoText` when empty. Apply it after `0064`.
+  signed Apple passes omit `logoText` when empty. It is applied remotely and
+  tracked after `0064`.
 
 - Migration `0064_wallet_strip_stamps_option.sql` adds the per-card
   `strip_stamps_enabled` preference and Admin-only
   `save_loyalty_card_design_v5` RPC. Cyclic cards can hide their graphical
   stamp circles and cyclic progress copy from the Apple main image;
-  existing cards default to visible stamps. Apply `0063` and then `0064` before
-  deploying this application code, and process the Apple outbox afterward.
+  existing cards default to visible stamps. `0063` and `0064` are applied
+  remotely and tracked; process the Apple outbox after deployment.
 
 - Migration `0063_wallet_strip_dimming_option.sql` adds the per-card
   `strip_dimming_enabled` preference and Admin-only
@@ -101,9 +103,8 @@
   when disabled, Apple pass strips and the live preview preserve the source
   image brightness; when enabled, the existing 30–34% dark overlay remains.
 - Existing cards default to dimming enabled. Migration `0063` is validated
-  locally but has not been reported as applied remotely; apply it before
-  deploying the application code, then process the Apple outbox or reinstall a
-  pass for real-device validation.
+  locally, applied remotely and tracked. Process the Apple outbox or reinstall
+  a pass for real-device validation after deployment.
 - Migration `0062_wallet_image_layout_controls.sql` adds per-card scale and
   horizontal/vertical margin values for the logo and main image plus the
   Admin-only `save_loyalty_card_design_v3` RPC.
@@ -177,8 +178,9 @@
 16. Apple terms repair: migration `0051` grants `service_role` execution of `app.public_card_terms_are_accepted`, matching the Admin client used by initial pass issuance. The targeted grant is already applied to hosted Supabase and a live check of the latest accepted card succeeds. Deploy the route change so future database errors return a verification error instead of the incorrect “debes aceptar” message.
 17. Casa Garmendia import: migration `0053` gives only that tenant's active general Admin a fixed, single-use profile. It auto-maps Nombre/Apellido/Email/Teléfono/Fecha de Nacimiento/Estampillas Actuales, converts 0–15 legacy stamps by the supplied milestone table, grants Churro individual plus reached configured tiers, and records the import identifier atomically.
 18. Imported recovery: an exact imported phone/name on the same public card resumes the existing claim instead of creating a duplicate. Employee search may always regenerate the claim QR for these imported cards, and both routes require current terms before Wallet delivery.
-19. Migration rollout: the product owner confirmed `main` is current and every
-    migration through `0062` is applied remotely.
+19. Migration rollout: remote schema fingerprints and canonical history were
+    reconciled on 2026-10-30. The runner now reports every migration through
+    `0066` applied and tracked.
 20. Immediate release step: process the Apple outbox; afterward obtain the real
     workbook, verify the target card has active tiers
     100/200/300/400/500/650/860, preview all errors and only then confirm the

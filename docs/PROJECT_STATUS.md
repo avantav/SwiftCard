@@ -11,11 +11,12 @@
   public registration sharing and sensitive staff access are separated into
   clear task contexts; branch creation is a guided three-step flow.
 - Git status: The branch experience refactor passes lint, typecheck, all 291
-  tests across 78 files and the webpack build. The product owner confirmed
-  migrations through `0062` are applied remotely; `0063` through `0066` remain
-  to be applied remotely.
+  tests across 78 files and the webpack build. Remote migration history was
+  reconciled against verified schema fingerprints, the missing `0042`, `0055`,
+  `0057` and `0065` units were applied, and the canonical runner now reports
+  every migration through `0066` up to date.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
-  migrations are current through `0062`. The Casa Garmendia welcome
+  migrations are current through `0066`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
   with the intended gift.
 
@@ -241,6 +242,11 @@
 
 ## Last Validation Commands
 
+- `npm run db:push:remote`: passed idempotently; all 65 tracked migrations from
+  `0001` through `0066` are current remotely (the sequence intentionally has no
+  `0014` file).
+- Remote schema verification: the `0042` lifetime conversion function/trigger
+  are present and the `0065` Wallet title constraint accepts 0–60 characters.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
 - `npm run test:run`: passed; 279 tests across 78 files.
@@ -327,4 +333,4 @@
 
 ## Next Exact Step
 
-Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Do not apply `0059`–`0061` remotely or begin Stripe live-mode work until hosted migration history, package pricing, taxes and payment policies are approved.
+Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0066`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.
