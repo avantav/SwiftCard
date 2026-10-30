@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const migration = readFileSync(new URL("../../../supabase/migrations/0013_purchase_operations.sql", import.meta.url), "utf8");
+const purchaseActions = readFileSync(new URL("../../app/app/purchase/actions.ts", import.meta.url), "utf8");
 
 describe("purchase operations", () => {
   it("locks balances, derives staff access, and creates ledger/reward records server-side", () => {
@@ -11,5 +12,10 @@ describe("purchase operations", () => {
     expect(migration).toContain("stamp_ledger");
     expect(migration).toContain("rewards");
     expect(migration).toContain("to authenticated");
+  });
+
+  it("dispatches the Apple Wallet update for the purchased customer's card", () => {
+    expect(purchaseActions).toContain('.select("customer_id")');
+    expect(purchaseActions).toContain("customerId: cardOwner?.customer_id");
   });
 });
