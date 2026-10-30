@@ -6,6 +6,9 @@
   tracked. It adds forced-RLS, RPC-only support sessions with hashed opaque
   tokens, a required reason, a one-hour maximum and immutable start/end audit
   events.
+- Migration `0068_reexpose_app_api_schema.sql` repairs the PostgREST
+  `authenticator` configuration if the deployed project stops exposing the
+  `app` schema.
 - Active Superadmins enter from a tenant row through
   `/superadmin/tenants/[tenantId]/support`. Suspended tenants are rejected and
   no tenant password, Auth token or Administrator session is exposed.
@@ -17,7 +20,7 @@
   receives a tenant Admin identity. Do not broaden this to write impersonation
   without a new operation-scoped authorization and audit decision.
 - Validation completed: lint, typecheck, 298 Vitest tests across 79 files,
-  disposable PostgreSQL/RLS through `0067`, webpack build and an idempotent
+  disposable PostgreSQL/RLS through `0068`, webpack build and an idempotent
   remote migration rerun.
 
 ## Card administration context

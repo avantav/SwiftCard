@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-10-30 - Repair Hosted PostgREST App Schema Exposure
+
+**Issue:** Hostinger returned `PGRST106` because the deployed Supabase
+PostgREST instance exposed only `public` and `graphql_public`, even though
+the original app-schema migration was tracked as applied.
+
+**Resolution:** Added and applied migration `0068`, which idempotently restores
+`pgrst.db_schemas = 'public, app, graphql_public'` for the `authenticator` role
+and reloads PostgREST. A REST probe now recognizes the `app` schema and returns
+the expected permission response instead of `Invalid schema: app`.
+
+**Validation:** Remote migration runner, full RLS harness through `0068`,
+focused support tests and typecheck passed.
+
 ## 2026-10-30 - Audited Superadmin Support Mode
 
 **Objective:** Let support inspect an active tenant's real Admin experience

@@ -53,7 +53,7 @@
 ### MIGRATIONS-001 - Resolved
 
 Remote schema fingerprints and canonical migration history were reconciled on
-2026-10-30. The safe runner now reports every migration through `0067` applied
+2026-10-30. The safe runner now reports every migration through `0068` applied
 and tracked.
 
 ### MULTICARD-001 - Resolved locally

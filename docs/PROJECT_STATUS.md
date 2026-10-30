@@ -15,9 +15,9 @@
   files, the full migration/RLS harness and the webpack build. Remote migration history was
   reconciled against verified schema fingerprints, the missing `0042`, `0055`,
   `0057` and `0065` units were applied, and the canonical runner now reports
-  every migration through `0067` up to date.
+  every migration through `0068` up to date.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
-  migrations are current through `0067`. The Casa Garmendia welcome
+  migrations are current through `0068`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
   with the intended gift.
 
@@ -34,6 +34,8 @@
   identifies the session as read-only in a persistent banner and offers a
   visible return to Control center. Middleware blocks non-read `/admin`
   requests while the support cookie exists; logout clears the cookie.
+- Migration `0068` repairs PostgREST's `app` schema exposure when the
+  `authenticator` role configuration drifts after deployment.
 - `/admin/branches` no longer renders every form at once. Its compact inventory
   exposes status, location/radius,
   registration availability, proximity and staff access mode; global GPS policy,
@@ -257,14 +259,14 @@
 - `npm run lint`: passed for the support-session implementation.
 - `npm run typecheck`: passed.
 - `npm run test:run`: passed; 298 tests across 79 files.
-- `npm run db:verify-rls`: passed through migration/test `0067`, including
+- `npm run db:verify-rls`: passed through migration/test `0068`, including
   Superadmin-only start, active-tenant enforcement, forced-RLS storage denial,
   token-bound resolution, explicit exit and immutable audit evidence.
 - `npm run build`: passed with webpack and the three new dynamic support routes.
-- `npm run db:push:remote`: applied `0067`; the immediate idempotent rerun
+- `npm run db:push:remote`: applied `0068`; the immediate idempotent rerun
   skipped it and reported remote migrations up to date.
 - `npm run db:push:remote`: passed idempotently; all 66 tracked migrations from
-  `0001` through `0067` are current remotely (the sequence intentionally has no
+  `0001` through `0068` are current remotely (the sequence intentionally has no
   `0014` file).
 - Remote schema verification: the `0042` lifetime conversion function/trigger
   are present and the `0065` Wallet title constraint accepts 0–60 characters.
@@ -354,4 +356,4 @@
 
 ## Next Exact Step
 
-Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0067`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.
+Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0068`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.
