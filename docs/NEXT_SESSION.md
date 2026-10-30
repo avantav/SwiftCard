@@ -1,5 +1,78 @@
 # Next Session
 
+## Superadmin support context
+
+- Migration `0067_superadmin_support_sessions.sql` is applied remotely and
+  tracked. It adds forced-RLS, RPC-only support sessions with hashed opaque
+  tokens, a required reason, a one-hour maximum and immutable start/end audit
+  events.
+- Active Superadmins enter from a tenant row through
+  `/superadmin/tenants/[tenantId]/support`. Suspended tenants are rejected and
+  no tenant password, Auth token or Administrator session is exposed.
+- The validated HttpOnly cookie gives the existing `/admin` shell an effective
+  tenant context while retaining the real Superadmin actor. A persistent
+  warning identifies the tenant and provides `Salir del modo soporte`.
+- This release is intentionally read-only. Middleware rejects non-read requests
+  below `/admin`; Storage writes also remain denied because browser RLS never
+  receives a tenant Admin identity. Do not broaden this to write impersonation
+  without a new operation-scoped authorization and audit decision.
+- Validation completed: lint, typecheck, 298 Vitest tests across 79 files,
+  disposable PostgreSQL/RLS through `0067`, webpack build and an idempotent
+  remote migration rerun.
+
+## Card administration context
+
+- `/admin/cards` now separates current cards from archived records in a compact
+  viewport-contained gallery. Each item contains only an Apple Store Card
+  preview, its name and lifecycle status; the preview reuses the production
+  renderer with the saved palette, program progress and effective card/tenant
+  logo and strip image. Clicking it continues a draft or opens the
+  published/archived summary.
+- New-card naming lives in a modal and still delegates draft creation,
+  duplicate resumption and the three-card limit to the existing trusted RPC.
+- Selecting a card opens a read-only menu summary; only that card's metrics are
+  requested. Editor stages remain unchanged and open only from an explicit
+  continue/edit action.
+- Archive, restore and permanent-delete controls moved into the summary modal;
+  their existing confirmations and backend history checks remain authoritative.
+
+## Staff administration context
+
+- `/admin/staff` is organized branch-first: one compact branch selector drives
+  a unified inventory of individual accounts, branch Administrators and PIN
+  operators for that location.
+- Creation and administration live in focused URL-addressable modals. The
+  selected branch determines the default access path, while Admins can still
+  create a personal branch-Administrator account for a PIN-operated location.
+- Individual workspaces separate summary, branch scope and security. PIN
+  workspaces separate summary from status, PIN reset and branch lockout reset.
+- Route skeletons, link-level pending indicators and submit-button spinners
+  cover navigation and server calls without changing control dimensions.
+
+## Branch administration context
+
+- `/admin/branches` is now a compact control surface with a GPS policy button
+  in the page header and a bounded inventory. Its accessible hover/focus
+  tooltip explains the current mode and missing-location prerequisite. At tablet/mobile
+  widths the page uses the remaining viewport for an internally scrolling
+  inventory instead of extending the document.
+- Route transitions use a compact skeleton, server actions expose a disabled
+  spinner state, and the location flow reports map, place lookup and browser
+  geolocation waits independently. Buttons and workspace tabs that initiate a
+  server-rendered transition also show the spinner inside the clicked control.
+- `view=create` opens a modal with three real steps: identity, location and
+  staff access. Server errors return the user to the first step containing an
+  invalid field and preserve non-sensitive values.
+- `view=policy` isolates the tenant-wide strict/flexible GPS decision in its own
+  confirmation modal. `branch={id}&section=details|registration|access` opens
+  one selected branch and avoids mounting every map, QR and credential form.
+- The dialog uses native modal focus/escape behavior, locks background scroll
+  and contains unavoidable long map/form content inside its body. Sensitive
+  shared-account credentials remain separated from general branch editing.
+- No database migration or authority change is involved. RLS, server-derived
+  tenant scope, deactivation confirmation and password non-retention remain
+  unchanged.
+
 ## Reviews product context
 
 - `docs/reviews_plan.md` was reviewed on 2026-09-17 and is now an authorized
@@ -27,20 +100,22 @@
 - Migration `0066_wallet_stamp_layout_editor.sql` adds custom stamp artwork,
   optional empty slots, bounded row counts and percentage-based drag position,
   plus the Admin-only `save_loyalty_card_design_v6` RPC and `stamp-*` Storage
-  path. Apply it after `0065`, then process the Apple outbox. Existing cards use
-  their automatic centered layout until saved.
+  path. It is applied remotely and tracked; process the Apple outbox before
+  device validation. Existing cards use their automatic centered layout until
+  saved.
 
 - Migration `0065_optional_wallet_card_title.sql` removes the minimum length
   from the per-card Wallet title while retaining the 60-character maximum.
   The active editor labels it optional, previews no adjacent fallback text and
-  signed Apple passes omit `logoText` when empty. Apply it after `0064`.
+  signed Apple passes omit `logoText` when empty. It is applied remotely and
+  tracked after `0064`.
 
 - Migration `0064_wallet_strip_stamps_option.sql` adds the per-card
   `strip_stamps_enabled` preference and Admin-only
   `save_loyalty_card_design_v5` RPC. Cyclic cards can hide their graphical
   stamp circles and cyclic progress copy from the Apple main image;
-  existing cards default to visible stamps. Apply `0063` and then `0064` before
-  deploying this application code, and process the Apple outbox afterward.
+  existing cards default to visible stamps. `0063` and `0064` are applied
+  remotely and tracked; process the Apple outbox after deployment.
 
 - Migration `0063_wallet_strip_dimming_option.sql` adds the per-card
   `strip_dimming_enabled` preference and Admin-only
@@ -48,9 +123,8 @@
   when disabled, Apple pass strips and the live preview preserve the source
   image brightness; when enabled, the existing 30–34% dark overlay remains.
 - Existing cards default to dimming enabled. Migration `0063` is validated
-  locally but has not been reported as applied remotely; apply it before
-  deploying the application code, then process the Apple outbox or reinstall a
-  pass for real-device validation.
+  locally, applied remotely and tracked. Process the Apple outbox or reinstall
+  a pass for real-device validation after deployment.
 - Migration `0062_wallet_image_layout_controls.sql` adds per-card scale and
   horizontal/vertical margin values for the logo and main image plus the
   Admin-only `save_loyalty_card_design_v3` RPC.
@@ -124,8 +198,9 @@
 16. Apple terms repair: migration `0051` grants `service_role` execution of `app.public_card_terms_are_accepted`, matching the Admin client used by initial pass issuance. The targeted grant is already applied to hosted Supabase and a live check of the latest accepted card succeeds. Deploy the route change so future database errors return a verification error instead of the incorrect “debes aceptar” message.
 17. Casa Garmendia import: migration `0053` gives only that tenant's active general Admin a fixed, single-use profile. It auto-maps Nombre/Apellido/Email/Teléfono/Fecha de Nacimiento/Estampillas Actuales, converts 0–15 legacy stamps by the supplied milestone table, grants Churro individual plus reached configured tiers, and records the import identifier atomically.
 18. Imported recovery: an exact imported phone/name on the same public card resumes the existing claim instead of creating a duplicate. Employee search may always regenerate the claim QR for these imported cards, and both routes require current terms before Wallet delivery.
-19. Migration rollout: the product owner confirmed `main` is current and every
-    migration through `0062` is applied remotely.
+19. Migration rollout: remote schema fingerprints and canonical history were
+    reconciled on 2026-10-30. The runner now reports every migration through
+    `0066` applied and tracked.
 20. Immediate release step: process the Apple outbox; afterward obtain the real
     workbook, verify the target card has active tiers
     100/200/300/400/500/650/860, preview all errors and only then confirm the

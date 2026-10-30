@@ -1,6 +1,6 @@
 import { EnterpriseNavigation, type EnterpriseNavGroup } from "@/components/enterprise-navigation";
 
-export function AdminNavigation({ email, role }: { email: string | null; role: "ADMIN" | "MANAGER" }) {
+export function AdminNavigation({ email, role, supportMode = false }: { email: string | null; role: "ADMIN" | "MANAGER"; supportMode?: boolean }) {
   const configuration = role === "ADMIN" ? [
     { href: "/admin/branches", label: "Sucursales", icon: "building" as const },
     { href: "/admin/staff", label: "Personal", icon: "users" as const },
@@ -19,5 +19,5 @@ export function AdminNavigation({ email, role }: { email: string | null; role: "
       { href: "/admin/exports", label: "Exportaciones", icon: "download" }
     ] }
   ];
-  return <EnterpriseNavigation areaLabel="Administración" email={email} groups={groups} roleLabel={role === "ADMIN" ? "Admin general" : "Administrador de sucursal"} />;
+  return <EnterpriseNavigation areaLabel={supportMode ? "Soporte de tenant" : "Administración"} email={email} groups={groups} roleLabel={supportMode ? "Superadmin en soporte" : role === "ADMIN" ? "Admin general" : "Administrador de sucursal"} />;
 }

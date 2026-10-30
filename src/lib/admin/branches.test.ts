@@ -23,8 +23,24 @@ const branchLocationPicker = readFileSync(
   join(process.cwd(), "src/components/branch-location-picker.tsx"),
   "utf8",
 );
+const branchWorkspaceDialog = readFileSync(
+  join(process.cwd(), "src/components/branch-workspace-dialog.tsx"),
+  "utf8",
+);
 const branchesPage = readFileSync(
   join(process.cwd(), "src/app/admin/branches/page.tsx"),
+  "utf8",
+);
+const branchesLoading = readFileSync(
+  join(process.cwd(), "src/app/admin/branches/loading.tsx"),
+  "utf8",
+);
+const submitButton = readFileSync(
+  join(process.cwd(), "src/components/submit-button.tsx"),
+  "utf8",
+);
+const pendingLinkContent = readFileSync(
+  join(process.cwd(), "src/components/pending-link-content.tsx"),
   "utf8",
 );
 
@@ -207,7 +223,50 @@ describe("validateBranchCreateForm", () => {
     expect(branchLocationPicker).toContain('name="longitude"');
     expect(branchLocationPicker).toContain("geofenceRadiusMeters");
     expect(branchesPage).toContain("configureTenantGeofencing");
-    expect(branchesPage).toContain("Geofence activo");
+    expect(branchesPage).toContain("Validación estricta");
+  });
+
+  it("organizes branch administration around a compact inventory and one focused workspace", () => {
+    expect(branchesPage).not.toContain('className="branch-readiness-summary"');
+    expect(branchesPage).toContain("Inventario de sucursales");
+    expect(branchesPage).toContain('className="branch-policy-trigger"');
+    expect(branchesPage).toContain("data-tooltip={policyTooltip}");
+    expect(branchesPage).toContain('className="branch-workspace-nav"');
+    expect(branchesPage).toContain("Datos y ubicación");
+    expect(branchesPage).toContain("Registro público");
+    expect(branchesPage).toContain("Acceso del personal");
+    expect(branchesPage).toContain("workspaceHref(branch.id, \"details\")");
+    expect(branchesPage).toContain("BranchWorkspaceDialog");
+    expect(branchWorkspaceDialog).toContain("showModal()");
+    expect(branchWorkspaceDialog).toContain('onCancel=');
+    expect(branchesPage).not.toContain("admin-inline-details");
+  });
+
+  it("guides branch creation through three bounded steps", () => {
+    expect(branchForm).toContain("branch-create-wizard");
+    expect(branchForm).toContain("branch-wizard-progress");
+    expect(branchForm).toContain("Identidad");
+    expect(branchForm).toContain("Ubicación");
+    expect(branchForm).toContain("Acceso");
+    expect(branchForm).toContain("setStep");
+  });
+
+  it("reports route, form, map, place and geolocation loading states", () => {
+    expect(branchesLoading).toContain('aria-busy="true"');
+    expect(branchesLoading).toContain("enterprise-skeleton");
+    expect(submitButton).toContain("aria-busy={pending}");
+    expect(submitButton).toContain("enterprise-spinner");
+    expect(pendingLinkContent).toContain("useLinkStatus");
+    expect(pendingLinkContent).toContain("pending-link-indicator");
+    expect(branchesPage).toContain("PendingLinkContent");
+    expect(branchLocationPicker).toContain("mapLoading");
+    expect(branchLocationPicker).toContain("placeLoading");
+    expect(branchLocationPicker).toContain("locationLoading");
+  });
+
+  it("generates the registration QR only for the selected branch", () => {
+    expect(branchesPage).toContain("if (selectedBranch && publicOrigin");
+    expect(branchesPage).not.toContain("Promise.all(\n    (branches ?? []).map");
   });
 });
 

@@ -58,6 +58,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement minimum branch management.
 - [x] [Terminada] Add accessible field-level branch validation, retained non-sensitive values, and safe database/Auth error diagnostics.
 - [x] [Terminada] Add Admin-only branch editing for general data, location, geofence, proximity and status with tenant-scoped writes and explicit deactivation confirmation.
+- [x] [Terminada] Reorganize branch administration around a compact inventory and focused modal journeys for GPS policy, three-step creation, registration sharing and sensitive staff access.
 - [x] [Terminada] Implement tenant staff account provisioning.
 - [x] [Terminada] Implement staff branch assignments and primary branch management.
 - [x] [Terminada] Add branch-scoped Administrator semantics, per-branch employee access modes, shared branch accounts, PIN operators, revocable PIN sessions, and individual actor attribution.
@@ -238,6 +239,33 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Explain the customer journey, business operation, Wallet channels, multi-branch value and common purchasing questions in plain Spanish.
 - [x] [Terminada] Add a responsive animated product illustration, accessible section navigation, FAQ, purposeful scroll reveals and repeated demo-first CTA without pricing or payment claims.
 - [ ] [Pendiente] Configure the real scheduling/contact destination in `NEXT_PUBLIC_DEMO_REQUEST_URL` before publishing the landing.
+
+## Cross-cutting - Audited support access
+
+**Objective:** Let an active Superadmin inspect an active tenant's Admin area
+for support without obtaining tenant credentials or silently assuming another
+staff identity.
+
+**Tasks**
+
+- [x] [Terminada] Add opaque, hashed, one-hour support sessions bound to the
+  authenticated Superadmin and selected active tenant.
+- [x] [Terminada] Require a support reason and audit session start and exit.
+- [x] [Terminada] Reuse the Admin shell with an effective tenant context, a
+  persistent read-only banner and explicit return to Control center.
+- [x] [Terminada] Block `/admin` mutations while the support cookie is active;
+  keep direct support-session storage behind forced RLS and RPC-only access.
+- [x] [Terminada] Add migration/RLS and application contract coverage.
+- [ ] [Pendiente] Authorize and design operation-scoped support writes if the
+  product later requires more than read-only diagnosis.
+
+**Acceptance Criteria**
+
+- Tenant staff credentials and Auth sessions are never read, reset or copied.
+- Only an active Superadmin can enter an active tenant.
+- The real Superadmin remains the audit actor.
+- The target tenant and read-only state remain visible throughout the session.
+- Sessions expire within one hour and can be ended explicitly.
 
 ## Phase 9 - Piloto
 

@@ -1,5 +1,23 @@
 # Work Log
 
+## 2026-10-30 - Audited Superadmin Support Mode
+
+**Objective:** Let support inspect an active tenant's real Admin experience
+without asking for or exposing tenant credentials.
+
+**Implemented:** Added migration `0067` with opaque, hashed, one-hour support
+sessions behind forced RLS and three permission-scoped RPCs. Superadmin now
+enters through a reason-required confirmation page, retains the real Auth/audit
+identity, receives an effective tenant context in the existing Admin shell and
+sees a persistent read-only banner with explicit exit. Middleware blocks
+non-read `/admin` requests while the HttpOnly support cookie is active; logout
+also clears it. Suspended tenants and non-Superadmin actors are rejected.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 298 Vitest tests across
+79 files, `npm run db:verify-rls`, `npm run build` and the remote migration
+runner passed. `0067` is applied remotely and its immediate rerun was
+idempotent.
+
 ## 2026-09-20 - Simplify the Wallet card-design editor
 
 **Objective:** Replace the dense card-design form with an intuitive hierarchy
@@ -2374,3 +2392,95 @@ loyalty object that the API rejected with a generic customer-facing error.
 - `npm run build`: passed with webpack.
 - Live idempotent Google Wallet object PATCH: passed with HTTP 200 and active
   object state.
+
+## 2026-09-24 - Stable mobile form focus
+
+**Objective:** Prevent disruptive automatic zoom when an employee focuses a
+form field on a phone, including the individual-account login flow.
+
+**Changes made**
+
+- Added a mobile-wide 16px minimum font size for text-like inputs, selects and
+  textareas so iOS does not enlarge the viewport on focus.
+- Excluded checkboxes, radios, range/color/file controls, hidden fields and
+  button-like inputs so their established sizing remains unchanged.
+- Preserved manual pinch zoom outside the employee operations PWA; `/app`
+  retains its existing fixed viewport and pan-only gesture behavior.
+- Added a regression assertion for the global mobile form rule.
+
+**Validation**
+
+- Focused PWA runtime tests: passed; 4 tests.
+- Full test suite: passed; 288 tests across 78 files.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run build`: passed with webpack.
+
+## 2026-10-05 - Branch administration journey refactor
+
+**Objective:** Make branch administration functional and guided without a long
+page of competing forms or repeated accordions.
+
+**Changes made**
+
+- Replaced the permanent create form and per-row accordions with a bounded
+  inventory and URL-addressable task modals.
+- Exposed branch status, location/radius, proximity, public registration and
+  staff access at scan speed in the inventory.
+- Moved tenant-wide GPS policy into a focused modal and branch administration
+  into separate data/location, registration and access sections.
+- Converted branch creation into identity, location and access steps with
+  server-error routing back to the relevant step.
+- Locked background scroll while a task modal is open, contained unavoidable
+  form/map scrolling, generated registration QR data only for the selected
+  branch and retained all existing backend authority and confirmations.
+- Compressed the branch-specific page header by removing its inherited minimum
+  height and reducing top padding and internal spacing without changing the
+  shared Admin header pattern elsewhere.
+- Replaced the full-width GPS policy row with a compact header button that
+  exposes the current mode and an accessible hover/focus tooltip, while keeping
+  the existing policy modal as the configuration destination.
+- Collapsed the branch inventory heading into a compact single-line title and
+  count, removing the inherited panel height that left unused vertical space.
+- Added accessible pending feedback for the branches route, server-action
+  submissions, Google Maps initialization, place resolution and browser
+  geolocation, with reduced-motion behavior for animated indicators.
+- Added in-control pending indicators to branch navigation actions so the exact
+  button or tab that triggers a server-rendered transition owns its feedback
+  without changing dimensions while loading.
+- Reorganized Personal around a branch-first selector and a unified, bounded
+  inventory containing personal accounts, branch Administrators and PIN
+  operators for the selected location.
+- Replaced permanent staff and PIN forms with URL-addressable creation and
+  management modals that isolate summary, branch scope and credential actions.
+- Preserved branch context after mutations, added route and in-control loading
+  feedback, and retained the existing tenant-, role- and branch-scoped backend
+  authority.
+- Refactored the Tarjetas landing menu into compact current/archive views with
+  four-stage readiness, a modal draft-creation entry point and a selected-card
+  summary that keeps lifecycle actions out of the primary inventory.
+- Removed the eager per-card metrics fan-out from the menu; activity statistics
+  now load only for the explicitly selected card while the existing editor,
+  lifecycle RPCs and three-card authority remain unchanged.
+- Generalized the shared native dialog close destination so Escape returns
+  Tarjetas and Personal to their own contextual inventory instead of routing
+  every reused workspace back to Sucursales.
+- Simplified the Tarjetas inventory further into a three-item visual gallery:
+  each surface now shows only its name, status and a production Apple Store
+  Card preview that reflects the saved palette, loyalty model, reward goal and
+  effective card- or tenant-level logo and strip image. Readiness, metrics and
+  lifecycle controls remain inside the summary.
+
+**Validation**
+
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 295 tests across 78 files.
+- `npm run build`: passed with webpack.
+- Personal was reviewed against the mandatory application checklist: shared
+  shell and tokens, compact hierarchy, keyboard-native dialog behavior,
+  responsive table-to-card conversion, empty/error/loading/success states,
+  visible focus behavior and reduced-motion loading feedback are covered.
+- Representative base, management-modal and creation-step states reviewed at
+  375, 768, 1280 and 1440 px; the tablet inventory switches to structured
+  blocks to prevent horizontal overflow.

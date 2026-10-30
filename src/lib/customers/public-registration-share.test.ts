@@ -23,6 +23,6 @@ describe("public registration sharing", () => {
     expect(branchesPageSource).toContain("public_registration_token");
     expect(branchesPageSource).toContain("SWIFTWALLET_PUBLIC_URL");
     expect(branchesPageSource).toContain("PublicRegistrationShare");
-    expect(branchesPageSource).toContain('branch.status !== "ACTIVE"');
+    expect(branchesPageSource).toContain('selectedBranch.status !== "ACTIVE"');
   });
 });

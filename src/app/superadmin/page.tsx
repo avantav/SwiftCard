@@ -158,6 +158,7 @@ export default async function SuperadminPage({ searchParams }: SuperadminPagePro
                         <div className="enterprise-row-menu">
                           <Link href={`/superadmin/tenants/${tenant.id}/administrator/new`}>Administrador</Link>
                           <Link href={`/superadmin/tenants/${tenant.id}/branding`}>Branding</Link>
+                          {tenant.status === "ACTIVE" ? <Link href={`/superadmin/tenants/${tenant.id}/support`}>Entrar en modo soporte</Link> : null}
                           <TenantStatusForm tenantId={tenant.id} status={tenant.status} tenantName={tenant.name} />
                         </div>
                       </details>

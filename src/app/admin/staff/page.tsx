@@ -1,30 +1,15 @@
+import Link from "next/link";
+import { BranchWorkspaceDialog } from "@/components/branch-workspace-dialog";
+import { PendingLinkContent } from "@/components/pending-link-content";
+import { StaffCreateWizard } from "@/components/staff-create-wizard";
 import { SubmitButton } from "@/components/submit-button";
-import { StaffRoleBranchFields } from "@/components/staff-role-branch-fields";
 import { requireInternalArea } from "@/lib/auth/server";
-import {
-  createStaff,
-  resetEmployeePassword,
-  setEmployeeStatus
-} from "./actions";
+import { resetEmployeePassword, setEmployeeStatus } from "./actions";
 import { assignStaffBranch } from "./assignments";
-import {
-  clearPinLockout,
-  createPinOperator,
-  resetPinOperator,
-  setPinOperatorStatus
-} from "./pin-actions";
+import { clearPinLockout, resetPinOperator, setPinOperatorStatus } from "./pin-actions";
 
 type StaffPageProps = {
-  searchParams: Promise<{
-    assigned?: string;
-    created?: string;
-    error?: string;
-    lockCleared?: string;
-    passwordReset?: string;
-    pinCreated?: string;
-    pinUpdated?: string;
-    staffUpdated?: string;
-  }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 };
 
 type PinOperator = {
@@ -34,9 +19,17 @@ type PinOperator = {
   created_at: string;
 };
 
+function staffHref(branchId: string, params: Record<string, string>) {
+  return `/admin/staff?${new URLSearchParams({ branch: branchId, ...params })}`;
+}
+
+function initials(name: string) {
+  return name.split(/\s+/).map((word) => word[0]).join("").slice(0, 2).toUpperCase();
+}
+
 export default async function StaffPage({ searchParams }: StaffPageProps) {
   const context = await requireInternalArea("ADMIN");
-  const messages = await searchParams;
+  const params = await searchParams;
   if (!context.tenantId) return null;
 
   let staffQuery = context.supabase
@@ -50,78 +43,64 @@ export default async function StaffPage({ searchParams }: StaffPageProps) {
 
   const [staffResult, branchesResult, assignmentsResult] = await Promise.all([
     staffQuery,
-    context.supabase
-      .from("branches")
-      .select("id,name,status,employee_access_mode")
-      .eq("status", "ACTIVE")
-      .order("name"),
-    context.supabase
-      .from("staff_branch_assignments")
-      .select("staff_profile_id,branch_id,is_primary")
-      .eq("tenant_id", context.tenantId)
+    context.supabase.from("branches").select("id,name,status,employee_access_mode").eq("status", "ACTIVE").order("name"),
+    context.supabase.from("staff_branch_assignments").select("staff_profile_id,branch_id,is_primary").eq("tenant_id", context.tenantId),
   ]);
 
   const staff = staffResult.data ?? [];
   const branches = branchesResult.data ?? [];
   const assignments = assignmentsResult.data ?? [];
-  const pinBranches = branches.filter((branch) => branch.employee_access_mode === "SHARED_ACCOUNT_PIN");
-  const pinGroups = await Promise.all(pinBranches.map(async (branch) => {
-    const { data, error } = await context.supabase.schema("app").rpc("list_branch_pin_operators", {
-      target_branch_id: branch.id
-    });
-    return { branch, error, operators: (data ?? []) as PinOperator[] };
-  }));
+  const selectedBranch = branches.find((branch) => branch.id === params.branch) ?? branches[0] ?? null;
+  const selectedAssignments = selectedBranch ? assignments.filter((assignment) => assignment.branch_id === selectedBranch.id) : [];
+  const branchStaff = staff.filter((member) => selectedAssignments.some((assignment) => assignment.staff_profile_id === member.id));
+  const pinEnabled = selectedBranch?.employee_access_mode === "SHARED_ACCOUNT_PIN";
+  const pinResult = selectedBranch && pinEnabled
+    ? await context.supabase.schema("app").rpc("list_branch_pin_operators", { target_branch_id: selectedBranch.id })
+    : { data: [], error: null };
+  const pinOperators = (pinResult.data ?? []) as PinOperator[];
+  const selectedMember = branchStaff.find((member) => member.id === params.staff) ?? null;
+  const selectedPin = pinOperators.find((operator) => operator.id === params.pin) ?? null;
+  const showCreate = params.view === "create" && selectedBranch;
+  const createType = params.type === "individual" || !pinEnabled ? "individual" : "pin";
+  const success = params.created || params.assigned || params.pinCreated || params.pinUpdated || params.staffUpdated || params.passwordReset || params.lockCleared;
   const individualBranches = branches.filter((branch) => branch.employee_access_mode === "INDIVIDUAL_CREDENTIALS");
-  const success = messages.created || messages.assigned || messages.pinCreated || messages.pinUpdated || messages.staffUpdated || messages.passwordReset || messages.lockCleared;
 
-  return <main className="enterprise-page">
-    <header className="enterprise-page-header">
-      <div><p className="enterprise-breadcrumb">Configuración</p><h1 id="staff-title">Personal</h1><p>Administra cuentas personales y usuarios PIN dentro de tus sucursales.</p></div>
-      <a className="enterprise-primary-action" href="#new-staff">Crear cuenta</a>
+  return <main className="enterprise-page staff-control-page">
+    <header className="enterprise-page-header staff-compact-header">
+      <div><p className="enterprise-breadcrumb">Configuración</p><h1 id="staff-title">Personal</h1><p>Selecciona una sucursal para administrar a las personas que operan ahí.</p></div>
+      {selectedBranch ? <Link className="enterprise-primary-action" href={staffHref(selectedBranch.id, { view: "create", type: pinEnabled ? "pin" : "individual" })}><PendingLinkContent label="Abriendo alta">{pinEnabled ? "Agregar usuario PIN" : "Agregar personal"}</PendingLinkContent></Link> : null}
     </header>
+
     {success ? <p className="enterprise-alert is-success" role="status">La configuración de personal se actualizó correctamente.</p> : null}
-    {messages.error ? <p className="enterprise-alert is-error" role="alert">{messages.error}</p> : null}
+    {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
 
-    <div className="admin-management-grid">
-      <section className="enterprise-data-panel" aria-labelledby="staff-list-title">
-        <div className="enterprise-panel-header"><div><h2 id="staff-list-title">Cuentas individuales</h2><p>{staff.length} {staff.length === 1 ? "cuenta" : "cuentas"}</p></div></div>
-        <div className="admin-record-list">
-          {staffResult.error ? <div className="enterprise-empty-state is-error admin-compact-empty" role="alert"><h3>No se pudo cargar el personal</h3><p>Actualiza la página para volver a intentarlo.</p></div> : staff.length ? staff.map((member) => {
-            const memberAssignments = assignments.filter((assignment) => assignment.staff_profile_id === member.id);
-            const isEmployee = member.role === "EMPLOYEE";
-            return <article key={member.id} className="admin-record admin-staff-record">
-              <div className="admin-staff-heading"><span className="enterprise-user-avatar" aria-hidden="true">{String(member.full_name).split(/\s+/).map((word) => word[0]).join("").slice(0, 2).toUpperCase()}</span><span><strong>{member.full_name}</strong><small>{member.email}</small></span></div>
-              <div className="admin-record-meta"><span className={`enterprise-badge ${member.status === "ACTIVE" ? "is-active" : "is-neutral"}`}>{member.status === "ACTIVE" ? "Activo" : member.status === "PASSWORD_RESET_REQUIRED" ? "Cambio de contraseña pendiente" : "Inactivo"}</span><span>{member.role === "MANAGER" ? "Administrador de sucursal" : "Empleado"}</span></div>
-              <span className="admin-assignment-copy">Sucursales: {memberAssignments.map((assignment) => { const branch = branches.find((item) => item.id === assignment.branch_id); return `${branch?.name ?? "Desconocida"}${assignment.is_primary ? " (principal)" : ""}`; }).join(", ") || "Sin asignar"}</span>
-              {context.access.role === "ADMIN" || isEmployee ? <form className="inline-assignment-form" action={assignStaffBranch}><input type="hidden" name="staffProfileId" value={member.id} /><label className="field"><span>Asignar sucursal</span><select name="branchId" required defaultValue=""><option value="">Selecciona</option>{(context.access.role === "ADMIN" ? branches : individualBranches).map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label><label className="check-field"><input name="makePrimary" type="checkbox" /><span>Hacer principal</span></label><SubmitButton className="secondary-button">Asignar</SubmitButton></form> : null}
-              {isEmployee ? <div className="admin-record-actions"><form action={setEmployeeStatus}><input type="hidden" name="staffProfileId" value={member.id} /><input type="hidden" name="status" value={member.status === "INACTIVE" ? "ACTIVE" : "INACTIVE"} /><SubmitButton className="secondary-button">{member.status === "INACTIVE" ? "Activar" : "Desactivar"}</SubmitButton></form><details className="admin-inline-details"><summary>Restablecer contraseña</summary><form className="auth-form admin-inline-form" action={resetEmployeePassword}><input type="hidden" name="staffProfileId" value={member.id} /><label className="field"><span>Contraseña temporal</span><input name="temporaryPassword" type="password" minLength={12} maxLength={72} required /></label><label className="field"><span>Confirmar contraseña</span><input name="passwordConfirmation" type="password" minLength={12} maxLength={72} required /></label><SubmitButton className="secondary-button">Restablecer</SubmitButton></form></details></div> : null}
-            </article>;
-          }) : <div className="enterprise-empty-state admin-compact-empty"><h3>Sin cuentas individuales</h3><p>Crea un Administrador de sucursal o empleado para una ubicación con acceso individual.</p></div>}
+    {branchesResult.error ? <section className="enterprise-empty-state is-error" role="alert"><h2>No se pudieron cargar las sucursales</h2><p>Actualiza la página para volver a intentarlo.</p></section> : branches.length ? <>
+      <nav className="staff-branch-nav" aria-label="Sucursales">
+        {branches.map((branch) => <Link aria-current={selectedBranch?.id === branch.id ? "page" : undefined} className={selectedBranch?.id === branch.id ? "is-active" : undefined} href={`/admin/staff?branch=${encodeURIComponent(branch.id)}`} key={branch.id}><PendingLinkContent label={`Cargando ${branch.name}`}>{branch.name}</PendingLinkContent></Link>)}
+      </nav>
+
+      <section className="enterprise-data-panel staff-inventory-panel" aria-labelledby="staff-list-title">
+        <div className="enterprise-panel-header staff-inventory-heading">
+          <div><h2 id="staff-list-title">{selectedBranch?.name}</h2><p>{branchStaff.length + pinOperators.length} {(branchStaff.length + pinOperators.length) === 1 ? "persona" : "personas"}</p></div>
+          <span className={`enterprise-badge ${pinEnabled ? "is-neutral" : "is-active"}`}>{pinEnabled ? "Cuenta compartida + PIN" : "Cuentas individuales"}</span>
         </div>
+        {staffResult.error || assignmentsResult.error || pinResult.error ? <div className="enterprise-empty-state is-error admin-compact-empty" role="alert"><h3>No se pudo cargar el personal</h3><p>Actualiza la página para volver a intentarlo.</p></div> : branchStaff.length || pinOperators.length ? <div className="enterprise-table-wrap staff-inventory-scroll"><table className="enterprise-table staff-inventory-table"><caption className="sr-only">Personal asignado a {selectedBranch?.name}</caption><thead><tr><th>Persona</th><th>Rol</th><th>Acceso</th><th>Estado</th><th>Asignación</th><th><span className="sr-only">Acción</span></th></tr></thead><tbody>
+          {branchStaff.map((member) => {
+            const assignment = selectedAssignments.find((item) => item.staff_profile_id === member.id);
+            return <tr key={member.id}><td data-label="Persona"><div className="staff-person-cell"><span className="enterprise-user-avatar" aria-hidden="true">{initials(String(member.full_name))}</span><span><strong>{member.full_name}</strong><small>{member.email}</small></span></div></td><td data-label="Rol">{member.role === "MANAGER" ? "Administrador de sucursal" : "Empleado"}</td><td data-label="Acceso">Cuenta individual</td><td data-label="Estado"><span className={`enterprise-badge ${member.status === "ACTIVE" ? "is-active" : "is-neutral"}`}>{member.status === "ACTIVE" ? "Activo" : member.status === "PASSWORD_RESET_REQUIRED" ? "Contraseña pendiente" : "Inactivo"}</span></td><td data-label="Asignación">{assignment?.is_primary ? <span className="enterprise-badge is-active">Principal</span> : "Secundaria"}</td><td className="enterprise-row-actions"><Link className="enterprise-secondary-action" href={staffHref(selectedBranch!.id, { staff: member.id, section: "summary" })}><PendingLinkContent label={`Abriendo ${member.full_name}`}>Administrar</PendingLinkContent></Link></td></tr>;
+          })}
+          {pinOperators.map((operator) => <tr key={operator.id}><td data-label="Persona"><div className="staff-person-cell"><span className="enterprise-user-avatar" aria-hidden="true">{initials(operator.full_name)}</span><span><strong>{operator.full_name}</strong><small>Sin correo personal</small></span></div></td><td data-label="Rol">Operador</td><td data-label="Acceso">PIN personal</td><td data-label="Estado"><span className={`enterprise-badge ${operator.status === "ACTIVE" ? "is-active" : "is-neutral"}`}>{operator.status === "ACTIVE" ? "Activo" : "Inactivo"}</span></td><td data-label="Asignación"><span className="enterprise-badge is-neutral">Exclusiva</span></td><td className="enterprise-row-actions"><Link className="enterprise-secondary-action" href={staffHref(selectedBranch!.id, { pin: operator.id, section: "summary" })}><PendingLinkContent label={`Abriendo ${operator.full_name}`}>Administrar</PendingLinkContent></Link></td></tr>)}
+        </tbody></table></div> : <div className="enterprise-empty-state admin-compact-empty"><h3>Esta sucursal todavía no tiene personal</h3><p>Agrega la primera persona con el método de acceso configurado.</p><Link className="enterprise-primary-action" href={staffHref(selectedBranch!.id, { view: "create", type: pinEnabled ? "pin" : "individual" })}><PendingLinkContent>Agregar personal</PendingLinkContent></Link></div>}
       </section>
+    </> : <section className="enterprise-empty-state"><h2>Primero crea una sucursal</h2><p>El personal siempre se administra dentro del contexto de una ubicación.</p><Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent>Crear sucursal</PendingLinkContent></Link></section>}
 
-      <section className="enterprise-content-card admin-form-card" id="new-staff" aria-labelledby="new-staff-title">
-        <h2 id="new-staff-title" className="admin-card-title">Nueva cuenta individual</h2>
-        <p className="admin-card-copy">La persona deberá cambiar su contraseña temporal al ingresar.</p>
-        <form className="auth-form" action={createStaff}>
-          <label className="field"><span>Nombre completo</span><input name="fullName" required /></label>
-          <label className="field"><span>Correo</span><input name="email" type="email" required /></label>
-          <StaffRoleBranchFields branches={branches} canCreateBranchAdmin={context.access.role === "ADMIN"} />
-          <label className="field"><span>Contraseña temporal</span><input name="temporaryPassword" type="password" minLength={12} maxLength={72} required /></label>
-          <label className="field"><span>Confirmar contraseña</span><input name="passwordConfirmation" type="password" minLength={12} maxLength={72} required /></label>
-          <SubmitButton>Crear personal</SubmitButton>
-        </form>
-      </section>
-    </div>
-
-    <section className="enterprise-data-panel" aria-labelledby="pin-users-title">
-      <div className="enterprise-panel-header"><div><h2 id="pin-users-title">Usuarios con PIN</h2><p>Operadores sin correo personal en sucursales con cuenta compartida.</p></div></div>
-      {branchesResult.error ? <div className="enterprise-empty-state is-error admin-compact-empty" role="alert"><h3>No se pudieron cargar las sucursales</h3></div> : pinGroups.length ? <div className="admin-pin-branches">{pinGroups.map(({ branch, error, operators }) => <article className="admin-pin-branch" key={branch.id}>
-        <header><div><h3>{branch.name}</h3><p>{operators.length} {operators.length === 1 ? "usuario PIN" : "usuarios PIN"}</p></div><form action={clearPinLockout}><input type="hidden" name="branchId" value={branch.id} /><SubmitButton className="secondary-button">Desbloquear intentos</SubmitButton></form></header>
-        {error ? <p className="enterprise-alert is-error" role="alert">No se pudieron cargar los usuarios.</p> : null}
-        <div className="admin-record-list">{operators.map((operator) => <article className="admin-record" key={operator.id}><div><strong>{operator.full_name}</strong><span>Acceso mediante PIN personal</span></div><div className="admin-record-meta"><span className={`enterprise-badge ${operator.status === "ACTIVE" ? "is-active" : "is-neutral"}`}>{operator.status === "ACTIVE" ? "Activo" : "Inactivo"}</span></div><div className="admin-record-actions"><form action={setPinOperatorStatus}><input type="hidden" name="operatorId" value={operator.id} /><input type="hidden" name="status" value={operator.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"} /><SubmitButton className="secondary-button">{operator.status === "ACTIVE" ? "Desactivar" : "Activar"}</SubmitButton></form><details className="admin-inline-details"><summary>Restablecer PIN</summary><form className="inline-assignment-form" action={resetPinOperator}><input type="hidden" name="operatorId" value={operator.id} /><label className="field"><span>PIN nuevo</span><input name="pin" type="password" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} required /></label><SubmitButton className="secondary-button">Guardar PIN</SubmitButton></form></details></div></article>)}</div>
-        <form className="auth-form admin-pin-create" action={createPinOperator}><input type="hidden" name="branchId" value={branch.id} /><h4>Agregar usuario PIN</h4><label className="field"><span>Nombre completo</span><input name="fullName" required /></label><label className="field"><span>PIN de seis dígitos</span><input name="pin" type="password" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} required /></label><SubmitButton className="secondary-button">Crear usuario PIN</SubmitButton></form>
-      </article>)}</div> : <div className="enterprise-empty-state admin-compact-empty"><h3>No hay sucursales con acceso PIN</h3><p>El Admin general puede habilitarlo desde Sucursales.</p></div>}
-    </section>
+    {showCreate || selectedMember || selectedPin ? <BranchWorkspaceDialog closeHref={`/admin/staff?branch=${selectedBranch?.id}`} labelledBy="staff-workspace-title">
+      {showCreate ? <div className="enterprise-content-card staff-workspace-card"><div className="branch-workspace-heading"><div><p className="enterprise-breadcrumb">{selectedBranch.name}</p><h2 id="staff-workspace-title">Agregar personal</h2><p>{createType === "pin" ? "Crea una identidad operativa para la cuenta compartida de esta sucursal." : "Crea una cuenta personal y asigna su ubicación inicial."}</p></div><Link className="enterprise-secondary-action" href={`/admin/staff?branch=${selectedBranch.id}`}>Cancelar</Link></div>
+        {pinEnabled && context.access.role === "ADMIN" ? <nav className="branch-workspace-nav" aria-label="Tipo de acceso"><Link className={createType === "pin" ? "is-active" : undefined} href={staffHref(selectedBranch.id, { view: "create", type: "pin" })}><PendingLinkContent>Usuario PIN</PendingLinkContent></Link><Link className={createType === "individual" ? "is-active" : undefined} href={staffHref(selectedBranch.id, { view: "create", type: "individual" })}><PendingLinkContent>Cuenta administrativa</PendingLinkContent></Link></nav> : null}
+        <div className="branch-workspace-body"><StaffCreateWizard branchId={selectedBranch.id} branches={branches} canCreateBranchAdmin={context.access.role === "ADMIN"} mode={createType} /></div>
+      </div> : selectedMember ? <div className="enterprise-data-panel branch-workspace-panel staff-workspace-panel"><div className="branch-workspace-heading"><div><p className="enterprise-breadcrumb">{selectedBranch?.name}</p><h2 id="staff-workspace-title">{selectedMember.full_name}</h2><p>{selectedMember.email}</p></div><Link className="enterprise-secondary-action" href={`/admin/staff?branch=${selectedBranch?.id}`}>Cerrar</Link></div><nav className="branch-workspace-nav"><Link className={params.section !== "branches" && params.section !== "security" ? "is-active" : undefined} href={staffHref(selectedBranch!.id, { staff: selectedMember.id, section: "summary" })}><PendingLinkContent>Resumen</PendingLinkContent></Link><Link className={params.section === "branches" ? "is-active" : undefined} href={staffHref(selectedBranch!.id, { staff: selectedMember.id, section: "branches" })}><PendingLinkContent>Sucursales</PendingLinkContent></Link>{selectedMember.role === "EMPLOYEE" ? <Link className={params.section === "security" ? "is-active" : undefined} href={staffHref(selectedBranch!.id, { staff: selectedMember.id, section: "security" })}><PendingLinkContent>Seguridad</PendingLinkContent></Link> : null}</nav><div className="branch-workspace-body">
+        {params.section === "branches" ? <div className="branch-workspace-section"><div><h3>Alcance operativo</h3><p>Agrega otra sucursal y decide si será la ubicación principal.</p></div><div className="staff-assignment-list">{assignments.filter((item) => item.staff_profile_id === selectedMember.id).map((item) => <span key={item.branch_id}><strong>{branches.find((branch) => branch.id === item.branch_id)?.name ?? "Sucursal"}</strong>{item.is_primary ? <span className="enterprise-badge is-active">Principal</span> : null}</span>)}</div><form className="auth-form inline-assignment-form" action={assignStaffBranch}><input type="hidden" name="staffProfileId" value={selectedMember.id} /><label className="field"><span>Agregar sucursal</span><select name="branchId" required defaultValue=""><option value="">Selecciona</option>{(context.access.role === "ADMIN" ? branches : individualBranches).map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label><label className="check-field"><input name="makePrimary" type="checkbox" /><span>Hacer principal</span></label><SubmitButton className="secondary-button">Asignar</SubmitButton></form></div> : params.section === "security" && selectedMember.role === "EMPLOYEE" ? <div className="branch-workspace-section"><div><h3>Acceso y seguridad</h3><p>Restablece la contraseña o cambia el estado de la cuenta.</p></div><form action={setEmployeeStatus}><input type="hidden" name="staffProfileId" value={selectedMember.id} /><input type="hidden" name="returnBranch" value={selectedBranch?.id} /><input type="hidden" name="status" value={selectedMember.status === "INACTIVE" ? "ACTIVE" : "INACTIVE"} /><SubmitButton className="secondary-button" confirmMessage="Esta acción cambiará inmediatamente el acceso de la persona. ¿Deseas continuar?">{selectedMember.status === "INACTIVE" ? "Activar cuenta" : "Desactivar cuenta"}</SubmitButton></form><form className="auth-form" action={resetEmployeePassword}><input type="hidden" name="staffProfileId" value={selectedMember.id} /><input type="hidden" name="returnBranch" value={selectedBranch?.id} /><label className="field"><span>Contraseña temporal</span><input name="temporaryPassword" type="password" minLength={12} maxLength={72} required /></label><label className="field"><span>Confirmar contraseña</span><input name="passwordConfirmation" type="password" minLength={12} maxLength={72} required /></label><SubmitButton className="secondary-button">Restablecer contraseña</SubmitButton></form></div> : <div className="branch-workspace-section"><div><h3>Resumen de acceso</h3><p>Consulta cómo entra esta persona y dónde opera.</p></div><dl className="staff-summary-list"><div><dt>Rol</dt><dd>{selectedMember.role === "MANAGER" ? "Administrador de sucursal" : "Empleado"}</dd></div><div><dt>Estado</dt><dd>{selectedMember.status === "ACTIVE" ? "Activo" : selectedMember.status === "PASSWORD_RESET_REQUIRED" ? "Cambio de contraseña pendiente" : "Inactivo"}</dd></div><div><dt>Método</dt><dd>Correo y contraseña</dd></div><div><dt>Sucursales</dt><dd>{assignments.filter((item) => item.staff_profile_id === selectedMember.id).length}</dd></div></dl></div>}
+      </div></div> : selectedPin ? <div className="enterprise-data-panel branch-workspace-panel staff-workspace-panel"><div className="branch-workspace-heading"><div><p className="enterprise-breadcrumb">{selectedBranch?.name}</p><h2 id="staff-workspace-title">{selectedPin.full_name}</h2><p>Usuario operativo con PIN personal.</p></div><Link className="enterprise-secondary-action" href={`/admin/staff?branch=${selectedBranch?.id}`}>Cerrar</Link></div><nav className="branch-workspace-nav"><Link className={params.section !== "security" ? "is-active" : undefined} href={staffHref(selectedBranch!.id, { pin: selectedPin.id, section: "summary" })}><PendingLinkContent>Resumen</PendingLinkContent></Link><Link className={params.section === "security" ? "is-active" : undefined} href={staffHref(selectedBranch!.id, { pin: selectedPin.id, section: "security" })}><PendingLinkContent>Seguridad</PendingLinkContent></Link></nav><div className="branch-workspace-body">{params.section === "security" ? <div className="branch-workspace-section"><div><h3>PIN y estado</h3><p>El PIN actual nunca se muestra ni se puede recuperar.</p></div><form action={setPinOperatorStatus}><input type="hidden" name="operatorId" value={selectedPin.id} /><input type="hidden" name="returnBranch" value={selectedBranch?.id} /><input type="hidden" name="status" value={selectedPin.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"} /><SubmitButton className="secondary-button">{selectedPin.status === "ACTIVE" ? "Desactivar usuario" : "Activar usuario"}</SubmitButton></form><form className="auth-form" action={resetPinOperator}><input type="hidden" name="operatorId" value={selectedPin.id} /><input type="hidden" name="returnBranch" value={selectedBranch?.id} /><label className="field"><span>PIN nuevo</span><input name="pin" type="password" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} required /></label><SubmitButton className="secondary-button">Restablecer PIN</SubmitButton></form><form action={clearPinLockout}><input type="hidden" name="branchId" value={selectedBranch?.id} /><SubmitButton className="secondary-button">Desbloquear intentos</SubmitButton></form></div> : <div className="branch-workspace-section"><div><h3>Resumen de acceso</h3><p>Este usuario solo puede operar mediante la cuenta compartida de esta sucursal.</p></div><dl className="staff-summary-list"><div><dt>Rol</dt><dd>Operador</dd></div><div><dt>Estado</dt><dd>{selectedPin.status === "ACTIVE" ? "Activo" : "Inactivo"}</dd></div><div><dt>Método</dt><dd>PIN personal</dd></div><div><dt>Asignación</dt><dd>{selectedBranch?.name}</dd></div></dl></div>}</div></div> : null}
+    </BranchWorkspaceDialog> : null}
   </main>;
 }

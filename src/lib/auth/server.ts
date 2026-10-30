@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   STAFF_ROLES,
@@ -18,6 +19,8 @@ import {
   type InternalArea
 } from "@/lib/auth/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { SUPPORT_SESSION_COOKIE } from "@/lib/auth/support-cookie";
+import { hashSupportSessionToken } from "@/lib/auth/support-session";
 
 function isStaffRole(value: unknown): value is StaffRole {
   return typeof value === "string" && STAFF_ROLES.includes(value as StaffRole);
@@ -47,6 +50,14 @@ type PinOperatorContext = {
   fullName: string;
   branchId: string;
   branchName: string;
+};
+
+export type SupportSessionContext = {
+  id: string;
+  tenantId: string;
+  tenantName: string;
+  expiresAt: string;
+  reason: string;
 };
 
 export async function getStaffSessionContext() {
@@ -93,6 +104,42 @@ export async function getStaffSessionContext() {
     staffStatus: profile.status,
     tenantStatus
   };
+  const actorAccess = access;
+
+  let supportSession: SupportSessionContext | null = null;
+  if (profile.role === "SUPERADMIN" && profile.status === "ACTIVE") {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SUPPORT_SESSION_COOKIE)?.value;
+    if (token) {
+      const { data } = await supabase
+        .schema("app")
+        .rpc("get_support_impersonation_session", {
+          target_token_hash: hashSupportSessionToken(token)
+        });
+      const session = Array.isArray(data) ? data[0] : null;
+      if (
+        session &&
+        typeof session.session_id === "string" &&
+        typeof session.tenant_id === "string" &&
+        typeof session.tenant_name === "string" &&
+        session.tenant_status === "ACTIVE" &&
+        typeof session.expires_at === "string" &&
+        typeof session.reason === "string"
+      ) {
+        supportSession = {
+          id: session.session_id,
+          tenantId: session.tenant_id,
+          tenantName: session.tenant_name,
+          expiresAt: session.expires_at,
+          reason: session.reason
+        };
+      }
+    }
+  }
+
+  const effectiveAccess: StaffAccessContext = supportSession
+    ? { role: "ADMIN", staffStatus: "ACTIVE", tenantStatus: "ACTIVE" }
+    : access;
 
   let pinOperator: PinOperatorContext | null = null;
   if (profile.account_kind === "BRANCH_SHARED" && profile.status === "ACTIVE") {
@@ -115,12 +162,14 @@ export async function getStaffSessionContext() {
   }
 
   return {
-    access,
+    access: effectiveAccess,
     accountKind: profile.account_kind,
+    actorAccess,
     email: user.email ?? null,
     pinOperator,
+    supportSession,
     supabase,
-    tenantId: profile.tenant_id as string | null,
+    tenantId: supportSession?.tenantId ?? (profile.tenant_id as string | null),
     userId: user.id
   };
 }
@@ -130,8 +179,9 @@ export async function getActiveSuperadminContext() {
 
   if (
     !context ||
-    context.access.role !== "SUPERADMIN" ||
-    context.access.staffStatus !== "ACTIVE"
+    context.supportSession ||
+    context.actorAccess.role !== "SUPERADMIN" ||
+    context.actorAccess.staffStatus !== "ACTIVE"
   ) {
     return null;
   }
@@ -151,6 +201,10 @@ export async function requireInternalArea(
 
   if (context.access.staffStatus === "PASSWORD_RESET_REQUIRED") {
     redirect("/change-password");
+  }
+
+  if (context.supportSession && area === "SUPERADMIN") {
+    redirect("/admin");
   }
 
   if (

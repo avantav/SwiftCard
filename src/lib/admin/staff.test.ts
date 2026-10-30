@@ -7,6 +7,18 @@ const actionSource = readFileSync(
   join(process.cwd(), "src/app/admin/staff/actions.ts"),
   "utf8"
 );
+const staffPageSource = readFileSync(
+  join(process.cwd(), "src/app/admin/staff/page.tsx"),
+  "utf8",
+);
+const staffLoadingSource = readFileSync(
+  join(process.cwd(), "src/app/admin/staff/loading.tsx"),
+  "utf8",
+);
+const staffCreateWizardSource = readFileSync(
+  join(process.cwd(), "src/components/staff-create-wizard.tsx"),
+  "utf8",
+);
 
 function form(values: Record<string, string>) {
   const data = new FormData();
@@ -75,6 +87,28 @@ describe("validateStaffCreateForm", () => {
     expect(actionSource).toContain("createSupabaseAdminClient");
     expect(actionSource).toContain("adminClient.auth.admin.createUser");
     expect(actionSource).toContain("adminClient.auth.admin.deleteUser");
+  });
+
+  it("organizes people by branch and opens focused workspaces", () => {
+    expect(staffPageSource).toContain('className="staff-branch-nav"');
+    expect(staffPageSource).toContain("selectedBranch");
+    expect(staffPageSource).toContain("branchStaff");
+    expect(staffPageSource).toContain("pinOperators");
+    expect(staffPageSource).toContain("BranchWorkspaceDialog");
+    expect(staffPageSource).toContain("Resumen");
+    expect(staffPageSource).toContain("Sucursales");
+    expect(staffPageSource).toContain("Seguridad");
+    expect(staffPageSource).toContain("StaffCreateWizard");
+    expect(staffCreateWizardSource).toContain("branch-wizard-progress");
+    expect(staffCreateWizardSource).toContain("setStep");
+    expect(staffPageSource).not.toContain("admin-management-grid");
+  });
+
+  it("provides route and in-control loading feedback", () => {
+    expect(staffLoadingSource).toContain('aria-busy="true"');
+    expect(staffLoadingSource).toContain("enterprise-skeleton");
+    expect(staffPageSource).toContain("PendingLinkContent");
+    expect(staffPageSource).toContain("SubmitButton");
   });
 });
 

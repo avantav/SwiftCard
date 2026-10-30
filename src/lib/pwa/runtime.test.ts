@@ -49,7 +49,9 @@ describe("PWA runtime contract", () => {
     expect(nextConfig).toContain("Service-Worker-Allowed");
   });
 
-  it("disables automatic and manual zoom only in the operations PWA", () => {
+  it("prevents focus zoom on mobile forms and manual zoom only in the operations PWA", () => {
+    expect(styles).toContain("every mobile form stable");
+    expect(styles).toMatch(/@media \(max-width: 639px\) \{[\s\S]*?textarea \{\s*font-size: 16px !important;/);
     expect(styles).toContain('.operations-app input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
     expect(styles).toContain(".operations-app select");
     expect(styles).toContain(".operations-app textarea");

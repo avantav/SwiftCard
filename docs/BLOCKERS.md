@@ -52,8 +52,9 @@
 
 ### MIGRATIONS-001 - Resolved
 
-The product owner confirmed on 2026-09-20 that `main` is current and every
-migration through `0062` has been applied remotely.
+Remote schema fingerprints and canonical migration history were reconciled on
+2026-10-30. The safe runner now reports every migration through `0067` applied
+and tracked.
 
 ### MULTICARD-001 - Resolved locally
 

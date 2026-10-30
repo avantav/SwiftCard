@@ -14,6 +14,14 @@ const wizard = readFileSync(
   new URL("../../app/admin/cards/[cardId]/edit/page.tsx", import.meta.url),
   "utf8",
 );
+const cardsPage = readFileSync(
+  new URL("../../app/admin/cards/page.tsx", import.meta.url),
+  "utf8",
+);
+const cardsLoading = readFileSync(
+  new URL("../../app/admin/cards/loading.tsx", import.meta.url),
+  "utf8",
+);
 const designEditor = readFileSync(
   new URL("../../components/card-design-editor.tsx", import.meta.url),
   "utf8",
@@ -117,6 +125,25 @@ describe("multi-card loyalty boundary", () => {
     expect(applePreview).toContain("appleWalletStampSlots");
     expect(applePreview).toContain("appleWalletProgressText");
     expect(applePreview).toContain("apple-pass-preview-supporting-fields");
+  });
+
+  it("keeps the card menu compact and defers metrics to a selected-card summary", () => {
+    expect(cardsPage).toContain("cards-view-nav");
+    expect(cardsPage).toContain("cards-inventory-panel");
+    expect(cardsPage).toContain("cards-gallery-card");
+    expect(cardsPage).toContain("cards-gallery-preview");
+    expect(cardsPage).toContain("AppleStoreCardPreview");
+    expect(cardsPage).toContain('tenant?.logo_url');
+    expect(cardsPage).toContain('tenant?.banner_url');
+    expect(cardsPage).toContain("card-readiness-list");
+    expect(cardsPage).toContain("BranchWorkspaceDialog");
+    expect(cardsPage).toContain("closeHref=");
+    expect(cardsPage).toContain("Crear y configurar");
+    expect(cardsPage).toContain("selectedCard");
+    expect(cardsPage).not.toContain("card-config-stats");
+    expect(cardsPage).not.toContain("Promise.all(cards.map");
+    expect(cardsLoading).toContain('aria-busy="true"');
+    expect(cardsLoading).toContain("enterprise-skeleton");
   });
 
   it("queues and immediately dispatches installed pass updates after card edits", () => {

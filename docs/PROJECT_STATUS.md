@@ -4,24 +4,45 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Corrected Google Wallet object refreshes to use the
-  documented `NOTIFY_ON_UPDATE` enum instead of the rejected `NOTIFY` value.
+- Last completed task: Added audited, one-hour Superadmin support sessions that
+  open an active tenant's Admin shell in read-only mode without tenant
+  credentials.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Existing Google Wallet loyalty objects can be refreshed
-  without the API rejecting their notification preference; synchronization
-  failures now record a safe server-side diagnostic.
-- Git status: The Google Wallet refresh correction passes lint, typecheck, all
-  288 tests across 78 files and the webpack build; its live idempotent object
-  update returned HTTP 200. The product owner confirmed migrations through
-  `0062` are applied remotely; `0063` through `0066` remain to be applied
-  remotely.
+- Last stable feature: Superadmin can enter an active tenant with a required
+  support reason, persistent identity banner, explicit exit and immutable
+  start/end audit events; `/admin` mutations remain blocked.
+- Git status: The support mode passes lint, typecheck, all 298 tests across 79
+  files, the full migration/RLS harness and the webpack build. Remote migration history was
+  reconciled against verified schema fingerprints, the missing `0042`, `0055`,
+  `0057` and `0065` units were applied, and the canonical runner now reports
+  every migration through `0067` up to date.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
-  migrations are current through `0062`. The Casa Garmendia welcome
+  migrations are current through `0067`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
   with the intended gift.
 
 ## Completed Functionality
 
+- Superadmin tenant rows expose an explicit support entry. A dedicated
+  confirmation page requires a 10–500 character reason and refuses suspended
+  tenants before issuing a random one-hour HttpOnly support token.
+- Migration `0067` stores only token hashes behind forced RLS and RPC-only
+  access. The original Superadmin remains authenticated and is recorded as the
+  actor for immutable `SUPPORT_IMPERSONATION_STARTED` and
+  `SUPPORT_IMPERSONATION_ENDED` events.
+- The Admin shell derives the selected tenant only after validating that token,
+  identifies the session as read-only in a persistent banner and offers a
+  visible return to Control center. Middleware blocks non-read `/admin`
+  requests while the support cookie exists; logout clears the cookie.
+- `/admin/branches` no longer renders every form at once. Its compact inventory
+  exposes status, location/radius,
+  registration availability, proximity and staff access mode; global GPS policy,
+  creation and per-branch administration open in keyboard-accessible modals.
+- Branch creation advances through identity, location and access steps while
+  retaining existing server validation and safe error recovery. Per-branch
+  administration separates data/location, public registration and sensitive
+  staff access, generates a QR only for the selected branch and contains long
+  content inside the modal rather than extending the whole page.
 - The root route follows the supplied morrow reference: warm editorial canvas, large Inter/Georgia hierarchy, navy/teal palette, product dashboard, floating loyalty card, phone Wallet experience, spacious benefit cards and one repeated “Solicitar una demo” conversion goal. It contains no pricing, checkout or payment collection.
 - The visible product identity is now lowercase morrow with its navy rounded-square italic `m` monogram. Public/authenticated navigation, metadata, install surfaces, offline UI, exports and non-white-label Wallet attribution use the new brand; stable SwiftWallet technical identifiers remain unchanged for compatibility.
 - Landing product layers float at slow independent rhythms and below-fold content reveals once on entry; `prefers-reduced-motion` removes ambient motion and leaves the complete experience readable.
@@ -233,6 +254,20 @@
 
 ## Last Validation Commands
 
+- `npm run lint`: passed for the support-session implementation.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 298 tests across 79 files.
+- `npm run db:verify-rls`: passed through migration/test `0067`, including
+  Superadmin-only start, active-tenant enforcement, forced-RLS storage denial,
+  token-bound resolution, explicit exit and immutable audit evidence.
+- `npm run build`: passed with webpack and the three new dynamic support routes.
+- `npm run db:push:remote`: applied `0067`; the immediate idempotent rerun
+  skipped it and reported remote migrations up to date.
+- `npm run db:push:remote`: passed idempotently; all 66 tracked migrations from
+  `0001` through `0067` are current remotely (the sequence intentionally has no
+  `0014` file).
+- Remote schema verification: the `0042` lifetime conversion function/trigger
+  are present and the `0065` Wallet title constraint accepts 0–60 characters.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
 - `npm run test:run`: passed; 279 tests across 78 files.
@@ -319,4 +354,4 @@
 
 ## Next Exact Step
 
-Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Do not apply `0059`–`0061` remotely or begin Stripe live-mode work until hosted migration history, package pricing, taxes and payment policies are approved.
+Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0067`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.

@@ -7,7 +7,8 @@ const adminLinks = [
   { href: "/admin/program", title: "Programa de fidelidad", description: "Reglas, sellos y recompensa principal." }
 ];
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ supportError?: string }> }) {
+  const { supportError } = await searchParams;
   const context = await requireInternalArea("ADMIN");
   const { data: tenant, error: tenantError } = context.tenantId ? await context.supabase.from("tenants").select("name,status,currency_code").eq("id", context.tenantId).maybeSingle() : { data: null, error: null };
   const links = context.access.role === "ADMIN" ? adminLinks : [];
@@ -15,6 +16,7 @@ export default async function AdminPage() {
   return <main className="enterprise-page">
     <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Vista general</p><h1>{tenant?.name ?? "Administración"}</h1><p>Supervisa el programa, la operación y los datos del tenant.</p></div><Link className="enterprise-primary-action" href="/admin/dashboard">Ver dashboard</Link></header>
     {tenantError ? <p className="enterprise-alert is-error" role="alert">No se pudo cargar la información del tenant. Actualiza la página.</p> : null}
+    {supportError === "read_only" ? <p className="enterprise-alert is-warning" role="alert"><strong>Acción bloqueada.</strong> El modo soporte permite consultar información, pero no modificarla.</p> : null}
     <section aria-label="Contexto de la cuenta" className="enterprise-metrics admin-overview-metrics">
       <article className="enterprise-metric"><span>Estado del tenant</span><strong className="enterprise-metric-text">{tenant?.status === "ACTIVE" ? "Activo" : "No disponible"}</strong><small>Acceso operativo actual</small></article>
       <article className="enterprise-metric"><span>Tu rol</span><strong className="enterprise-metric-text">{context.access.role === "ADMIN" ? "Admin general" : "Administrador de sucursal"}</strong><small>Permisos aplicados por sesión</small></article>
