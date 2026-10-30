@@ -6,6 +6,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isPublicAppleWalletAvailable, isPublicGoogleWalletAvailable } from "@/lib/wallet/public-availability";
 import { acceptCardTerms } from "./actions";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type CardPageProps = { params: Promise<{ cardToken: string }>; searchParams: Promise<{ claim?: string; error?: string }> };
 
 export default async function CardPage({ params, searchParams }: CardPageProps) {
