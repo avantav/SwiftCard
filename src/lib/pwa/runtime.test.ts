@@ -18,6 +18,10 @@ describe("PWA runtime contract", () => {
     expect(layout).toContain("PwaController");
     expect(controller).toContain('.register("/sw.js"');
     expect(controller).toContain('updateViaCache: "none"');
+    expect(controller).toContain("registration.update()");
+    expect(controller).toContain("controllerchange");
+    expect(controller).toContain("No puedes operar hasta confirmar");
+    expect(controller).toContain('setAttribute("inert", "")');
     expect(controller).toContain('window.addEventListener("beforeinstallprompt"');
     expect(controller).toContain('(display-mode: standalone)');
     expect(controller).toContain("Agregar a pantalla de inicio");
@@ -30,6 +34,7 @@ describe("PWA runtime contract", () => {
   it("keeps tenant and session data out of offline storage", () => {
     expect(serviceWorker).toContain('const OFFLINE_URL = "/offline.html"');
     expect(serviceWorker).toContain("cache.add(OFFLINE_URL)");
+    expect(serviceWorker).toContain('event.data?.type === "SKIP_WAITING"');
     expect(serviceWorker).toContain('event.request.mode !== "navigate"');
     expect(serviceWorker).not.toContain("cache.addAll");
     expect(serviceWorker).not.toContain('"/app"');
@@ -55,6 +60,8 @@ describe("PWA runtime contract", () => {
     expect(styles).toContain('.operations-app input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
     expect(styles).toContain(".operations-app select");
     expect(styles).toContain(".operations-app textarea");
+    expect(styles).toContain(".pwa-update-gate");
+    expect(styles).toContain("z-index: 1000");
     expect(styles).toMatch(/\.operations-app textarea \{\s*font-size: 16px;/);
     expect(styles).toMatch(/\.operations-app \{[\s\S]*?touch-action: pan-x pan-y;/);
     expect(layout).toContain("maximumScale: 1");

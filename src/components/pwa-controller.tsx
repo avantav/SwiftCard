@@ -25,6 +25,9 @@ function isIosDevice() {
 }
 
 export function PwaController() {
+  const [updateState, setUpdateState] = useState<"checking" | "updating" | "ready" | "error">("checking");
+  const [updateError, setUpdateError] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const [online, setOnline] = useState(true);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
@@ -32,6 +35,18 @@ export function PwaController() {
   const [helpDismissed, setHelpDismissed] = useState(true);
 
   useEffect(() => {
+    const operationsMain = document.querySelector<HTMLElement>(".operations-main");
+    const setOperationsBlocked = (blocked: boolean) => {
+      if (!operationsMain) return;
+      operationsMain.setAttribute("aria-busy", String(blocked));
+      for (const child of Array.from(operationsMain.children)) {
+        if (!(child instanceof HTMLElement) || child.classList.contains("pwa-status-region")) continue;
+        if (blocked) child.setAttribute("inert", "");
+        else child.removeAttribute("inert");
+      }
+    };
+    setOperationsBlocked(true);
+
     const updateConnection = () => {
       const current = navigator.onLine;
       setOnline(current);
@@ -51,14 +66,41 @@ export function PwaController() {
         setOnline(false);
       }
     };
-    const registerServiceWorker = () => {
-      if ("serviceWorker" in navigator) {
-        void navigator.serviceWorker
-          .register("/sw.js", {
-            scope: "/",
-            updateViaCache: "none"
-          })
-          .catch(() => undefined);
+    const handleControllerChange = () => {
+      window.location.reload();
+    };
+    const registerServiceWorker = async () => {
+      if (!("serviceWorker" in navigator)) {
+        setUpdateError(true);
+        setUpdateState("error");
+        return;
+      }
+      try {
+        navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange, { once: true });
+        const registration = await navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
+          updateViaCache: "none"
+        });
+        await registration.update();
+        if (registration.waiting) {
+          setUpdateState("updating");
+          registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          return;
+        }
+        if (registration.installing) {
+          setUpdateState("updating");
+          registration.installing.addEventListener("statechange", () => {
+            if (registration.installing?.state === "installed") {
+              registration.installing.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+          return;
+        }
+        setUpdateState("ready");
+        setOperationsBlocked(false);
+      } catch {
+        setUpdateError(true);
+        setUpdateState("error");
       }
     };
 
@@ -76,8 +118,8 @@ export function PwaController() {
     window.addEventListener("appinstalled", handleInstalled);
     document.addEventListener("submit", blockOfflineSubmission, true);
 
-    if (document.readyState === "complete") registerServiceWorker();
-    else window.addEventListener("load", registerServiceWorker, { once: true });
+    if (document.readyState === "complete") void registerServiceWorker();
+    else window.addEventListener("load", () => void registerServiceWorker(), { once: true });
 
     return () => {
       window.removeEventListener("online", updateConnection);
@@ -85,11 +127,13 @@ export function PwaController() {
       window.removeEventListener("beforeinstallprompt", handleInstallPrompt);
       window.removeEventListener("appinstalled", handleInstalled);
       window.removeEventListener("load", registerServiceWorker);
+      navigator.serviceWorker?.removeEventListener("controllerchange", handleControllerChange);
       document.removeEventListener("submit", blockOfflineSubmission, true);
       window.clearTimeout(initialization);
       delete document.documentElement.dataset.connection;
+      setOperationsBlocked(false);
     };
-  }, []);
+  }, [retryAttempt]);
 
   const dismissHelp = () => {
     window.sessionStorage.setItem(INSTALL_HELP_KEY, "true");
@@ -105,6 +149,21 @@ export function PwaController() {
   };
 
   const showInstallHelp = !installed && !helpDismissed && (installPrompt !== null || showIosHelp);
+
+  if (updateState !== "ready") {
+    return (
+      <section aria-label="Actualización de la aplicación" className="pwa-status-region pwa-update-gate" role="alertdialog" aria-modal="true">
+        <div className="pwa-update-card">
+          <span className="pwa-notice-icon" aria-hidden="true"><EnterpriseIcon name="download" /></span>
+          <div>
+            <strong>{updateState === "error" ? "No se pudo verificar la actualización" : updateState === "updating" ? "Actualizando la aplicación" : "Buscando actualizaciones"}</strong>
+            <p>{updateState === "error" ? "No puedes operar hasta confirmar que la PWA está actualizada." : "Espera un momento. Las operaciones estarán disponibles al terminar."}</p>
+          </div>
+          {updateError ? <button className="pwa-install-button" onClick={() => { setUpdateError(false); setUpdateState("checking"); setRetryAttempt((attempt) => attempt + 1); }} type="button">Reintentar</button> : null}
+        </div>
+      </section>
+    );
+  }
 
   if (online && !showInstallHelp) return null;
 

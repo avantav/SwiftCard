@@ -1,5 +1,18 @@
 # Work Log
 
+## 2026-10-30 - PWA Update Gate Before Operations
+
+**Objective:** Prevent the installed employee PWA from operating on stale code
+and remove the need to uninstall/reinstall it after a deployment.
+
+**Implemented:** On every `/app` open, the client calls the service worker's
+`registration.update()` with cache bypass, waits for a new worker to activate,
+reloads on `controllerchange` and keeps the operations shell inert until the
+check succeeds. A failed check shows an accessible retry gate. The worker now
+accepts `SKIP_WAITING`; offline storage remains limited to the static notice.
+
+**Validation:** Lint, typecheck and the PWA runtime contract tests pass.
+
 ## 2026-10-30 - Scoped Support Configuration Writes
 
 **Objective:** Let Superadmin support correct tenant branches and location/GPS

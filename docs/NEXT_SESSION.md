@@ -24,6 +24,15 @@
   disposable PostgreSQL/RLS through `0069`; deploy the migration and run the
   full suite before commit.
 
+## PWA update gate
+
+- The employee PWA registers `/sw.js` with `updateViaCache: "none"`, calls
+  `registration.update()` on every open and blocks the operations shell with an
+  accessible gate until the worker is current. A `controllerchange` reloads the
+  page after activation; failed checks expose only a retry action.
+- The worker accepts `SKIP_WAITING` and still caches only `offline.html`; no
+  tenant/session data is stored offline.
+
 ## Card administration context
 
 - `/admin/cards` now separates current cards from archived records in a compact
