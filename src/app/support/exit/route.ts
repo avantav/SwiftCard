@@ -5,8 +5,10 @@ import {
   supportSessionCookieOptions
 } from "@/lib/auth/support-cookie";
 import { hashSupportSessionToken } from "@/lib/auth/support-session";
+import { resolvePublicRequestOrigin } from "@/lib/public-origin";
 
 export async function POST(request: NextRequest) {
+  const origin = resolvePublicRequestOrigin(request.url, request.headers);
   const context = await getStaffSessionContext();
   const token = request.cookies.get(SUPPORT_SESSION_COOKIE)?.value;
 
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const response = NextResponse.redirect(new URL("/superadmin", request.url), 303);
+  const response = NextResponse.redirect(new URL("/superadmin", origin), 303);
   response.cookies.set(SUPPORT_SESSION_COOKIE, "", {
     ...supportSessionCookieOptions,
     maxAge: 0
