@@ -41,6 +41,14 @@ export async function POST(request: NextRequest) {
     });
 
   if (error || !Array.isArray(data) || data.length !== 1) {
+    console.error("[support] start session failed", {
+      code: error?.code ?? "INVALID_RPC_RESPONSE",
+      details: error?.details ?? null,
+      hint: error?.hint ?? null,
+      message: error?.message ?? "RPC returned an unexpected response",
+      tenantId,
+      userId: context.userId
+    });
     return NextResponse.redirect(supportPage(request, tenantId, "unavailable"), 303);
   }
 
