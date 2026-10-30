@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-10-30 - Direct Apple Wallet Refresh After Purchase
+
+**Objective:** Make Apple Wallet points refresh with the same immediacy as
+reward redemptions.
+
+**Implemented:** Both purchase paths now resolve the purchased card's
+`customer_id` before dispatching Apple Wallet updates. The immediate dispatcher
+claims only that customer's pending pass update, sends APNs in the same request
+and leaves the durable outbox only for retry when APNs is unavailable; it no
+longer consumes an unrelated customer's update.
+
+**Validation:** Lint, typecheck and focused purchase/customer-operation tests
+pass.
+
 ## 2026-10-30 - PWA Update Gate Before Operations
 
 **Objective:** Prevent the installed employee PWA from operating on stale code

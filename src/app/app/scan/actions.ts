@@ -128,6 +128,11 @@ export async function confirmCustomerPurchase(formData: FormData) {
   const returnParams = { customerCardId, loyaltyCardId };
   const confirmationParams = { ...returnParams, flow: "purchase", step: "confirm", branchId, amount };
   const context = await requireInternalArea("APP", { writable: true });
+  const { data: cardOwner } = await context.supabase
+    .from("customer_cards")
+    .select("customer_id")
+    .eq("id", customerCardId)
+    .maybeSingle();
   const { data: tenant } = await context.supabase
     .from("tenants")
     .select("currency_code")
@@ -153,7 +158,10 @@ export async function confirmCustomerPurchase(formData: FormData) {
   if (error || !result || result.result !== "CONFIRMED") {
     back({ ...confirmationParams, error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
   }
-  await dispatchAppleWalletUpdatesBestEffort({ limit: 1 });
+  await dispatchAppleWalletUpdatesBestEffort({
+    limit: 1,
+    customerId: cardOwner?.customer_id ?? undefined,
+  });
   back({ ...returnParams, purchaseConfirmed: "1", rewards: String(result.rewards_generated), stamps: String(result.stamps_awarded) });
 }
 

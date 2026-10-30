@@ -44,6 +44,13 @@
   HTTPS origin. If the origin is missing, it shows a translated warning rather
   than generating a localhost link.
 
+## Apple Wallet purchase refresh
+
+- `src/app/app/purchase/actions.ts` and `src/app/app/scan/actions.ts` resolve
+  `customer_cards.customer_id` before dispatching Apple updates. Purchases now
+  use the same customer-targeted immediate APNs dispatch as reward redemption;
+  the outbox remains only as a durable retry fallback for APNs/network failure.
+
 ## Card administration context
 
 - `/admin/cards` now separates current cards from archived records in a compact

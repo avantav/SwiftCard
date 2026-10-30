@@ -32,6 +32,8 @@ describe("guided customer operations", () => {
     expect(scanActions).toContain("DUPLICATE_TICKET");
     expect(scanActions).toContain("readOperationCoordinates");
     expect(scanActions).toContain("isGeofenceRejection");
+    expect(scanActions).toContain('.select("customer_id")');
+    expect(scanActions).toContain("customerId: cardOwner?.customer_id");
     expect(scanPage).toContain("OperationLocationSubmit");
     expect(scanPage).toContain("location_validation_mode");
   });
