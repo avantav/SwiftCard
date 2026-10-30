@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro de ventas · morrow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+    <style>
+      :root { --navy: #14233b; --teal: #0f766e; --ink: #273449; --canvas: #f5f7f4; }
+      body { background: var(--canvas); color: var(--ink); }
+      .reveal { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .reveal .slides { text-align: left; }
+      .reveal h1, .reveal h2 { color: var(--navy); letter-spacing: -.035em; text-transform: none; }
+      .reveal h1 { font-size: 2.25em; }
+      .reveal h2 { font-size: 1.55em; }
+      .reveal p, .reveal li { font-size: .82em; line-height: 1.45; }
+      .eyebrow { color: var(--teal); font-size: .55em !important; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+      .lead { color: #59687d; font-size: 1em !important; max-width: 760px; }
+      .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+      .step { background: #fff; border: 1px solid #d8e0df; border-radius: 18px; padding: 18px; min-height: 130px; }
+      .step strong { color: var(--navy); display: block; font-size: .72em; margin-bottom: 8px; }
+      .step span { background: var(--teal); border-radius: 999px; color: #fff; display: inline-grid; font-size: .7em; font-weight: 800; height: 28px; place-items: center; width: 28px; }
+      .callout { background: #e2f3ee; border-left: 6px solid var(--teal); border-radius: 12px; padding: 16px 20px; }
+      .warning { background: #fff4d8; border-left-color: #b7791f; }
+      .phone { background: var(--navy); border-radius: 26px; color: #fff; margin: 0 auto; max-width: 360px; padding: 24px; }
+      .phone strong { color: #fff; display: block; font-size: .8em; margin-bottom: 14px; }
+      .phone div { background: #fff; border-radius: 10px; color: var(--ink); margin: 10px 0; padding: 10px; }
+      .footer-note { bottom: 12px; color: #718096; font-size: .45em; position: fixed; right: 22px; }
+      @media (max-width: 700px) { .step-grid { grid-template-columns: 1fr; } .reveal p, .reveal li { font-size: .7em; } }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="eyebrow">Capacitación · empleados generales</p>
+          <h1>Registrar una venta, paso a paso</h1>
+          <p class="lead">Una guía breve para identificar al cliente, registrar el ticket y confirmar los puntos sin salir de morrow.</p>
+          <p class="callout">Usa siempre tu cuenta personal o tu sesión PIN. Nunca compartas contraseñas.</p>
+        </section>
+
+        <section>
+          <p class="eyebrow">El flujo completo</p>
+          <h2>De la tarjeta al comprobante</h2>
+          <div class="step-grid">
+            <div class="step"><span>1</span><strong>Identifica</strong><p>Escanea el QR del cliente o búscalo por nombre/teléfono.</p></div>
+            <div class="step"><span>2</span><strong>Captura</strong><p>Selecciona sucursal, monto y número de ticket.</p></div>
+            <div class="step"><span>3</span><strong>Confirma</strong><p>Revisa el cálculo y confirma cuando el cliente esté presente.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Paso 1 · Identificación</p>
+          <h2>Abre “Clientes”</h2>
+          <ul>
+            <li>Presiona <strong>Escanear tarjeta</strong> y apunta al QR de la tarjeta web o Apple Wallet.</li>
+            <li>Si no puedes escanear, abre la búsqueda y escribe nombre o teléfono.</li>
+            <li>Confirma que el nombre y teléfono correspondan al cliente antes de continuar.</li>
+          </ul>
+          <p class="callout warning">No registres la venta en otra tarjeta. Una tarjeta por cliente mantiene el saldo correcto.</p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Paso 2 · Captura</p>
+          <h2>Registra los datos del ticket</h2>
+          <div class="phone">
+            <strong>Registro de compra</strong>
+            <div>Sucursal de compra</div>
+            <div>Monto de compra · MXN</div>
+            <div>Calcular y revisar</div>
+          </div>
+          <p class="lead">Selecciona la sucursal donde ocurrió la compra e ingresa el importe exacto del ticket.</p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Paso 3 · Revisión</p>
+          <h2>Confirma una sola vez</h2>
+          <ul>
+            <li>Revisa el nuevo saldo, los puntos/sellos y el monto.</li>
+            <li>Escribe el número de ticket tal como aparece en el comprobante.</li>
+            <li>Permite la ubicación cuando el negocio usa validación GPS.</li>
+            <li>Presiona <strong>Confirmar compra</strong> y espera el mensaje de éxito.</li>
+          </ul>
+          <p class="callout">Si aparece “ticket duplicado”, no vuelvas a capturarlo: verifica el comprobante y consulta al responsable.</p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Después de confirmar</p>
+          <h2>El cliente puede ver su saldo actualizado</h2>
+          <p class="lead">La tarjeta Apple Wallet se actualiza automáticamente cuando hay conexión y el dispositivo está registrado. El cliente no necesita reinstalarla.</p>
+          <p class="callout">Si todavía no cambia, no repitas la compra. Confirma que el ticket quedó registrado y avisa al responsable.</p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Errores comunes</p>
+          <h2>Qué hacer cuando algo no sale bien</h2>
+          <ul>
+            <li><strong>Sin conexión:</strong> recupera internet; las operaciones quedan bloqueadas.</li>
+            <li><strong>GPS rechazado:</strong> activa la ubicación del dispositivo y vuelve a intentar.</li>
+            <li><strong>Cliente no encontrado:</strong> revisa el teléfono o pide que muestre su QR.</li>
+            <li><strong>Compra no disponible:</strong> no inventes un saldo; consulta al Administrador.</li>
+          </ul>
+        </section>
+
+        <section>
+          <p class="eyebrow">Resumen</p>
+          <h2>La regla de oro</h2>
+          <p class="lead">Identifica al cliente, captura el ticket real, revisa el cálculo y confirma una sola vez.</p>
+          <p class="callout">¿Dudas? Detén la operación y solicita apoyo. No compartas credenciales ni registres ventas fuera de morrow.</p>
+        </section>
+      </div>
+    </div>
+    <p class="footer-note">morrow · Registro de ventas</p>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script>Reveal.initialize({ hash: true, slideNumber: true, controls: true, progress: true, transition: "slide" });</script>
+  </body>
+</html>

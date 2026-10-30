@@ -13,6 +13,19 @@ accepts `SKIP_WAITING`; offline storage remains limited to the static notice.
 
 **Validation:** Lint, typecheck and the PWA runtime contract tests pass.
 
+## 2026-10-30 - Employee Sales Training And Branch Registration QR
+
+**Objective:** Give general employees a concise sales-registration guide and
+make the registration QR available from the operational Program tab.
+
+**Implemented:** Added the static Reveal.js deck
+`/presentacion-registro-ventas.html` and added per-active-branch QR cards to
+`/app/program`, reusing the configured public HTTPS origin and opaque branch
+registration tokens. The QR is scoped by the authenticated staff session and
+does not include tenant or customer data.
+
+**Validation:** Lint, typecheck and employee program tests pass.
+
 ## 2026-10-30 - Scoped Support Configuration Writes
 
 **Objective:** Let Superadmin support correct tenant branches and location/GPS

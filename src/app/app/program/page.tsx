@@ -1,4 +1,7 @@
+import QRCode from "qrcode";
+import { PublicRegistrationShare } from "@/components/public-registration-share";
 import { requireInternalArea } from "@/lib/auth/server";
+import { publicRegistrationUrl, resolvePublicOrigin } from "@/lib/public-origin";
 
 type RewardTier = {
   description: string;
@@ -59,9 +62,34 @@ export default async function ProgramPage() {
   const context = await requireInternalArea("APP");
   const { data, error } = await context.supabase.schema("app").rpc("get_staff_program_catalog");
   const programs = (data ?? []) as ProgramCatalogItem[];
+  const publicOrigin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
+  const { data: branchRows } = await context.supabase
+    .from("branches")
+    .select("id,name,public_registration_token")
+    .eq("status", "ACTIVE")
+    .order("name");
+  const branchRegistrationShares = [] as Array<{ branchName: string; qrDataUrl: string; registrationUrl: string }>;
+  if (publicOrigin) {
+    for (const branch of branchRows ?? []) {
+      if (!branch.public_registration_token) continue;
+      try {
+        const registrationUrl = publicRegistrationUrl(publicOrigin, branch.public_registration_token);
+        const qrDataUrl = await QRCode.toDataURL(registrationUrl, {
+          color: { dark: "#111827", light: "#ffffff" },
+          errorCorrectionLevel: "M",
+          margin: 2,
+          width: 512,
+        });
+        branchRegistrationShares.push({ branchName: branch.name, qrDataUrl, registrationUrl });
+      } catch {
+        // Do not render a misleading QR when the public origin or token is invalid.
+      }
+    }
+  }
 
   return <main className="operations-page">
     <header className="operations-page-header"><p>Programa</p><h1>Premios y condiciones</h1><span>Consulta cómo se acumulan beneficios, el catálogo vigente y sus términos.</span></header>
+    {branchRegistrationShares.length ? <section className="operations-card operations-branch-qr-card" aria-labelledby="branch-registration-qr-title"><div className="operations-card-header"><h2 id="branch-registration-qr-title">Registro de clientes por sucursal</h2><p>Comparte el QR de la sucursal donde estás atendiendo para que el cliente se registre en el lugar correcto.</p></div><div className="operations-branch-qr-list">{branchRegistrationShares.map((share) => <PublicRegistrationShare branchName={share.branchName} qrDataUrl={share.qrDataUrl} registrationUrl={share.registrationUrl} key={share.registrationUrl} />)}</div></section> : publicOrigin ? null : <p className="operations-alert is-warning" role="status">El QR de registro estará disponible cuando se configure el dominio público de la aplicación.</p>}
     {error ? <p className="operations-alert is-error" role="alert">No se pudo cargar la información del programa. Actualiza la página.</p> : null}
     {!error && !programs.length ? <div className="operations-empty-state"><h2>No hay programas publicados</h2><p>Cuando el negocio publique una tarjeta, sus premios y condiciones aparecerán aquí.</p></div> : null}
     {!error ? <section className="operations-program-list" aria-label="Programas disponibles">

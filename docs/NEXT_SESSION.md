@@ -33,6 +33,17 @@
 - The worker accepts `SKIP_WAITING` and still caches only `offline.html`; no
   tenant/session data is stored offline.
 
+## Employee sales training and branch QR
+
+- `/presentacion-registro-ventas.html` is a static Reveal.js deck for general
+  employees. It covers customer identification, ticket capture, GPS,
+  confirmation, Apple Wallet timing and common errors without exposing tenant
+  data.
+- `/app/program` queries only active branches visible to the current staff
+  session and renders each branch's public registration QR using the configured
+  HTTPS origin. If the origin is missing, it shows a translated warning rather
+  than generating a localhost link.
+
 ## Card administration context
 
 - `/admin/cards` now separates current cards from archived records in a compact

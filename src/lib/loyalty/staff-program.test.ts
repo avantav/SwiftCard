@@ -34,6 +34,9 @@ describe("employee customer and program flow", () => {
     expect(programPage).toContain("Catálogo de premios");
     expect(programPage).toContain("Términos y condiciones");
     expect(programPage).toContain("Cómo acumular");
+    expect(programPage).toContain("Registro de clientes por sucursal");
+    expect(programPage).toContain("publicRegistrationUrl");
+    expect(programPage).toContain("PublicRegistrationShare");
     expect(scanPage).toContain("operations-customer-summary");
     expect(scanPage).toContain("redeemCustomerReward");
     expect(scanPage).toContain("Registrar compra");
