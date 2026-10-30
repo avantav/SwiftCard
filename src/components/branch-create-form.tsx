@@ -24,7 +24,7 @@ function describedBy(hintId: string | null, errorId: string, hasError: boolean) 
   return [hintId, hasError ? errorId : null].filter(Boolean).join(" ") || undefined;
 }
 
-export function BranchCreateForm() {
+export function BranchCreateForm({ supportMode = false }: { supportMode?: boolean }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   async function submit(previousState: BranchCreateActionState, formData: FormData) {
     const nextState = await createBranch(previousState, formData);
@@ -71,7 +71,7 @@ export function BranchCreateForm() {
       <ol className="branch-wizard-progress" aria-label="Progreso del alta">
         <li className={step === 1 ? "is-current" : step > 1 ? "is-complete" : undefined}><span>1</span><strong>Identidad</strong></li>
         <li className={step === 2 ? "is-current" : step > 2 ? "is-complete" : undefined}><span>2</span><strong>Ubicación</strong></li>
-        <li className={step === 3 ? "is-current" : undefined}><span>3</span><strong>Acceso</strong></li>
+        <li className={step === 3 ? "is-current" : undefined}><span>3</span><strong>{supportMode ? "Confirmación" : "Acceso"}</strong></li>
       </ol>
 
       <section className="branch-wizard-step" hidden={step !== 1} aria-labelledby={`${id}-identity-title`}>
@@ -93,8 +93,8 @@ export function BranchCreateForm() {
       </section>
 
       <section className="branch-wizard-step" hidden={step !== 3} aria-labelledby={`${id}-access-title`}>
-        <div className="branch-wizard-step-heading"><h3 id={`${id}-access-title`}>Elige cómo entra el personal</h3><p>Puedes cambiar este modo después desde la administración de la sucursal.</p></div>
-        <BranchAccessFields defaultMode={state.values.employeeAccessMode} errors={errors} sharedEmailDefaultValue={state.values.sharedEmail} />
+        <div className="branch-wizard-step-heading"><h3 id={`${id}-access-title`}>{supportMode ? "Confirma la ubicación" : "Elige cómo entra el personal"}</h3><p>{supportMode ? "El acceso del personal se configura después por un Administrador del tenant." : "Puedes cambiar este modo después desde la administración de la sucursal."}</p></div>
+        {supportMode ? <input name="employeeAccessMode" type="hidden" value="INDIVIDUAL_CREDENTIALS" /> : <BranchAccessFields defaultMode={state.values.employeeAccessMode} errors={errors} sharedEmailDefaultValue={state.values.sharedEmail} />}
       </section>
 
       <div className="branch-wizard-actions">

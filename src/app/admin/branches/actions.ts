@@ -153,12 +153,19 @@ export async function createBranch(
     };
   }
 
-  const context = await requireInternalArea("ADMIN", { writable: true });
+  const context = await requireInternalArea("ADMIN", { writable: true, allowSupportWrites: true });
 
   if (context.access.role !== "ADMIN" || !context.tenantId) {
     return createErrorState(
       validation.data,
       "Solo el Admin general del tenant puede crear sucursales.",
+    );
+  }
+
+  if (context.supportSession && validation.data.employeeAccessMode !== "INDIVIDUAL_CREDENTIALS") {
+    return createErrorState(
+      validation.data,
+      "En modo soporte el acceso del personal debe configurarlo un Administrador del tenant.",
     );
   }
 
@@ -262,7 +269,7 @@ export async function updateBranch(
     };
   }
 
-  const context = await requireInternalArea("ADMIN", { writable: true });
+  const context = await requireInternalArea("ADMIN", { writable: true, allowSupportWrites: true });
 
   if (context.access.role !== "ADMIN" || !context.tenantId) {
     return createUpdateErrorState(
@@ -399,13 +406,24 @@ export async function configureTenantGeofencing(formData: FormData) {
   if (targetMode !== "STRICT" && targetMode !== "FLEXIBLE") {
     redirectWithError("El modo de validación de ubicación no es válido.");
   }
-  const context = await requireInternalArea("ADMIN", { writable: true });
+  const context = await requireInternalArea("ADMIN", { writable: true, allowSupportWrites: true });
   if (context.access.role !== "ADMIN") {
     redirectWithError("Solo el Administrador general puede cambiar el geofence.");
   }
   const { data, error } = await context.supabase
     .schema("app")
-    .rpc("set_tenant_location_validation_mode", { target_mode: targetMode });
+    .rpc(
+      context.supportSession
+        ? "support_set_tenant_location_validation_mode"
+        : "set_tenant_location_validation_mode",
+      context.supportSession
+        ? {
+            target_mode: targetMode,
+            target_tenant_id: context.tenantId,
+            target_token_hash: context.supportSessionTokenHash
+          }
+        : { target_mode: targetMode },
+    );
   if (error) redirectWithError("No se pudo actualizar la validación de ubicación.");
   if (data === "MISSING_COORDINATES") {
     redirectWithError("Todas las sucursales activas deben tener una ubicación seleccionada antes de activar el geofence.");

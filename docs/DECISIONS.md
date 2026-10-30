@@ -10,6 +10,27 @@
 - Consequences: Every stable work unit must update documentation before commit.
 - Status: Accepted.
 
+## DEC-0051 - Scoped Support Writes For Branches And Location
+
+- Date: 2026-10-30
+- Context: Support must correct a tenant's branch and location/GPS
+  configuration without exposing tenant credentials or granting unrestricted
+  impersonation.
+- Decision: Permit support sessions to create and update branches and change
+  the tenant location-validation mode only. Bind the GPS-mode RPC to the active
+  support-session token hash, require the target tenant to match the session,
+  and audit every permitted write against the real Superadmin. Keep purchases,
+  balances, customers, users, permissions, credentials and other financial or
+  identity mutations blocked.
+- Alternatives considered: Keep support fully read-only, grant unrestricted
+  tenant writes, or expose a separate support-only configuration UI.
+- Reason: Branch and GPS configuration are the requested operational support
+  scope; operation-level authorization preserves auditability and limits blast
+  radius.
+- Consequences: Migration `0069` is required. Future write categories require
+  a separate decision, authorization and audit contract.
+- Status: Accepted.
+
 ## DEC-0002 - Use Webpack For Production Build In Local Scaffold
 
 - Date: 2026-07-23

@@ -1,5 +1,21 @@
 # Work Log
 
+## 2026-10-30 - Scoped Support Configuration Writes
+
+**Objective:** Let Superadmin support correct tenant branches and location/GPS
+settings without exposing tenant credentials or enabling financial/identity
+impersonation.
+
+**Implemented:** Support sessions may create/edit branches and change the
+tenant location-validation mode. The GPS operation uses a token-bound
+security-definer RPC and audits the real Superadmin; purchases, balances,
+customers, users, permissions and credentials remain blocked. Middleware no
+longer rejects all support POSTs because authorization is enforced per server
+action.
+
+**Validation:** Lint, typecheck, focused support/branch tests and the complete
+local PostgreSQL/RLS harness pass through migration `0069`.
+
 ## 2026-10-30 - Repair Hosted PostgREST App Schema Exposure
 
 **Issue:** Hostinger returned `PGRST106` because the deployed Supabase

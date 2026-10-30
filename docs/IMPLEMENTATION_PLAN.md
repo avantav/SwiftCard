@@ -252,12 +252,13 @@ staff identity.
   authenticated Superadmin and selected active tenant.
 - [x] [Terminada] Require a support reason and audit session start and exit.
 - [x] [Terminada] Reuse the Admin shell with an effective tenant context, a
-  persistent read-only banner and explicit return to Control center.
-- [x] [Terminada] Block `/admin` mutations while the support cookie is active;
-  keep direct support-session storage behind forced RLS and RPC-only access.
+  persistent support banner and explicit return to Control center.
+- [x] [Terminada] Allow only operation-scoped branch and location/GPS
+  configuration writes while the support cookie is active; keep purchases,
+  balances, identity, permissions and credentials blocked.
 - [x] [Terminada] Add migration/RLS and application contract coverage.
-- [ ] [Pendiente] Authorize and design operation-scoped support writes if the
-  product later requires more than read-only diagnosis.
+- [ ] [Pendiente] Authorize additional operation-scoped support writes only if
+  the product later requires changes beyond branches and location/GPS.
 
 **Acceptance Criteria**
 

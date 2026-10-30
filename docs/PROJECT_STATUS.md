@@ -4,13 +4,13 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Added audited, one-hour Superadmin support sessions that
-  open an active tenant's Admin shell in read-only mode without tenant
-  credentials.
+- Last completed task: Added scoped Superadmin support writes for tenant
+  branches and location/GPS configuration without tenant credentials.
 - Current branch: `codex/google-wallet`.
 - Last stable feature: Superadmin can enter an active tenant with a required
   support reason, persistent identity banner, explicit exit and immutable
-  start/end audit events; `/admin` mutations remain blocked.
+  start/end audit events; only branch and location/GPS configuration writes are
+  allowed, while financial and identity mutations remain blocked.
 - Git status: The support mode passes lint, typecheck, all 298 tests across 79
   files, the full migration/RLS harness and the webpack build. Remote migration history was
   reconciled against verified schema fingerprints, the missing `0042`, `0055`,
@@ -36,6 +36,9 @@
   requests while the support cookie exists; logout clears the cookie.
 - Migration `0068` repairs PostgREST's `app` schema exposure when the
   `authenticator` role configuration drifts after deployment.
+- Migration `0069` adds a token-bound, audited support RPC for tenant
+  location-validation mode changes; support branch writes remain tenant-scoped
+  through the existing server actions and RLS.
 - `/admin/branches` no longer renders every form at once. Its compact inventory
   exposes status, location/radius,
   registration availability, proximity and staff access mode; global GPS policy,
@@ -356,4 +359,7 @@
 
 ## Next Exact Step
 
-Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0068`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.
+Deploy and smoke-test migration `0069` for support branch and location/GPS
+configuration, then return to transactional promotion reservation/cap
+consumption before Checkout. Do not begin Stripe live-mode work until package
+pricing, taxes and payment policies are approved.

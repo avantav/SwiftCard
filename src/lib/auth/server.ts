@@ -107,6 +107,7 @@ export async function getStaffSessionContext() {
   const actorAccess = access;
 
   let supportSession: SupportSessionContext | null = null;
+  let supportSessionTokenHash: string | null = null;
   if (profile.role === "SUPERADMIN" && profile.status === "ACTIVE") {
     const cookieStore = await cookies();
     const token = cookieStore.get(SUPPORT_SESSION_COOKIE)?.value;
@@ -126,6 +127,7 @@ export async function getStaffSessionContext() {
         typeof session.expires_at === "string" &&
         typeof session.reason === "string"
       ) {
+        supportSessionTokenHash = hashSupportSessionToken(token);
         supportSession = {
           id: session.session_id,
           tenantId: session.tenant_id,
@@ -168,6 +170,7 @@ export async function getStaffSessionContext() {
     email: user.email ?? null,
     pinOperator,
     supportSession,
+    supportSessionTokenHash,
     supabase,
     tenantId: supportSession?.tenantId ?? (profile.tenant_id as string | null),
     userId: user.id
@@ -191,7 +194,7 @@ export async function getActiveSuperadminContext() {
 
 export async function requireInternalArea(
   area: InternalArea,
-  options: { allowLockedShared?: boolean; writable?: boolean } = {}
+  options: { allowLockedShared?: boolean; writable?: boolean; allowSupportWrites?: boolean } = {}
 ) {
   const context = await getStaffSessionContext();
 
@@ -207,7 +210,7 @@ export async function requireInternalArea(
     redirect("/admin");
   }
 
-  if (context.supportSession && options.writable) {
+  if (context.supportSession && options.writable && !options.allowSupportWrites) {
     redirect("/admin?supportError=read_only");
   }
 

@@ -4,7 +4,6 @@ import {
   copyAuthCookies,
   updateSupabaseSession
 } from "@/lib/supabase/middleware";
-import { SUPPORT_SESSION_COOKIE } from "@/lib/auth/support-cookie";
 
 const protectedPrefixes = ["/superadmin", "/admin", "/app", "/change-password"];
 
@@ -32,19 +31,6 @@ export async function middleware(request: NextRequest) {
 
   if (isProtectedPath(request.nextUrl.pathname) && !auth.user) {
     return redirectToLogin(request, auth.response);
-  }
-
-  if (
-    request.cookies.has(SUPPORT_SESSION_COOKIE) &&
-    request.nextUrl.pathname.startsWith("/admin") &&
-    !["GET", "HEAD", "OPTIONS"].includes(request.method)
-  ) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/admin";
-    redirectUrl.search = "?supportError=read_only";
-    const response = NextResponse.redirect(redirectUrl, 303);
-    copyAuthCookies(auth.response, response);
-    return response;
   }
 
   return auth.response;

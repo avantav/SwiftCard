@@ -878,12 +878,16 @@ sesión conserva la identidad real del Superadmin, exige un motivo de 10 a 500
 caracteres, usa un token opaco HttpOnly ligado al actor y expira como máximo en
 una hora.
 
-La interfaz muestra permanentemente el tenant y el estado **Solo lectura**, y
-ofrece una salida explícita al Control center. Inicio y salida se registran en
+La interfaz muestra permanentemente el tenant y el estado **Modo soporte**, y
+ofrece una salida explícita al Control center. Inicio, salida y cambios de
+configuración se registran en
 la auditoría inmutable con tenant, actor, motivo y tiempos. Los tenants
 suspendidos no admiten sesiones de soporte.
 
-Esta primera versión no permite mutaciones, no expone contraseñas, tokens de
-Auth ni secretos del tenant, y no suplanta la identidad de un Administrador.
-Una futura capacidad de escritura requerirá autorización explícita, permisos
-por operación y atribución separada del actor real y del tenant asistido.
+El modo soporte permite únicamente administrar sucursales y la configuración de
+ubicación/GPS del tenant asistido. Compras, saldos, clientes, usuarios,
+permisos, credenciales y demás operaciones financieras o de identidad siguen
+bloqueados. No expone contraseñas, tokens de Auth ni secretos del tenant, y no
+suplanta la identidad de un Administrador. Cada escritura permitida requiere
+autorización por operación y queda atribuida al Superadmin real y al tenant
+asistido.

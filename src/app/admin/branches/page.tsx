@@ -66,10 +66,10 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
   );
   const publicOrigin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
   const selectedBranch = branchRows.find((branch) => branch.id === params.branch) ?? null;
-  const showCreate = !readOnlySupport && (params.view === "create" || (!branchesError && branchRows.length === 0));
-  const showPolicy = !readOnlySupport && params.view === "policy";
+  const showCreate = params.view === "create" || (!branchesError && branchRows.length === 0);
+  const showPolicy = params.view === "policy";
   const requestedSection = workspaceSections.find((section) => section === params.section);
-  const activeSection: WorkspaceSection = requestedSection ?? "details";
+  const activeSection: WorkspaceSection = readOnlySupport && requestedSection === "access" ? "details" : requestedSection ?? "details";
   const policyLabel = strictGeofencing ? "Estricto" : "Flexible";
   const policyTooltip = strictGeofencing
     ? "El GPS bloquea compras y canjes fuera del radio configurado."
@@ -103,12 +103,12 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           <p>Prepara cada ubicación para operar, registrar clientes y asignar personal.</p>
         </div>
         <div className="branch-header-actions">
-          {readOnlySupport ? <span className="branch-policy-trigger is-disabled" role="status">GPS · Solo lectura</span> : tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
+          {tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
             <Link aria-label={`Política GPS: ${policyLabel}. ${policyTooltip}`} className="branch-policy-trigger" data-tooltip={policyTooltip} href="/admin/branches?view=policy">
               <PendingLinkContent label="Abriendo política GPS"><span className="branch-policy-info-icon" aria-hidden="true">i</span><span>GPS</span><span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span></PendingLinkContent>
             </Link>
           )}
-          {!readOnlySupport ? <Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link> : null}
+          <Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link>
         </div>
       </header>
 
@@ -116,7 +116,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
       {params.updated ? <p className="enterprise-alert is-success" role="status">Datos de la sucursal actualizados.</p> : null}
       {params.accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
       {params.geofenceUpdated ? <p className="enterprise-alert is-success" role="status">Política de ubicación actualizada.</p> : null}
-      {readOnlySupport ? <p className="enterprise-alert is-warning" role="status">Modo soporte activo: puedes consultar las sucursales de este tenant, pero no cambiar su configuración.</p> : null}
+      {readOnlySupport ? <p className="enterprise-alert is-warning" role="status">Modo soporte activo: puedes cambiar sucursales y ubicación/GPS. Las demás configuraciones permanecen protegidas.</p> : null}
       {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
 
       <section className="enterprise-data-panel branches-inventory-panel" aria-labelledby="branch-list-title">
@@ -172,7 +172,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           ) : showCreate ? (
           <div className="enterprise-content-card branch-workspace-card">
             <div className="branch-workspace-heading"><div><p className="enterprise-breadcrumb">Nueva ubicación</p><h2 id="branch-workspace-title">Crear sucursal</h2><p>Define identidad, ubicación y acceso inicial en un solo flujo.</p></div><Link className="enterprise-secondary-action" href="/admin/branches">Cancelar</Link></div>
-            <BranchCreateForm />
+            <BranchCreateForm supportMode={readOnlySupport} />
           </div>
         ) : selectedBranch ? (
           <div className="enterprise-data-panel branch-workspace-panel">
@@ -183,7 +183,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
             <nav className="branch-workspace-nav" aria-label={`Configuración de ${selectedBranch.name}`}>
               <Link aria-current={activeSection === "details" ? "page" : undefined} className={activeSection === "details" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "details")}><PendingLinkContent>Datos y ubicación</PendingLinkContent></Link>
               <Link aria-current={activeSection === "registration" ? "page" : undefined} className={activeSection === "registration" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "registration")}><PendingLinkContent>Registro público</PendingLinkContent></Link>
-              <Link aria-current={activeSection === "access" ? "page" : undefined} className={activeSection === "access" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "access")}><PendingLinkContent>Acceso del personal</PendingLinkContent></Link>
+              {!readOnlySupport ? <Link aria-current={activeSection === "access" ? "page" : undefined} className={activeSection === "access" ? "is-active" : undefined} href={workspaceHref(selectedBranch.id, "access")}><PendingLinkContent>Acceso del personal</PendingLinkContent></Link> : null}
             </nav>
             <div className="branch-workspace-body">
               {activeSection === "details" ? <BranchEditForm branch={selectedBranch} /> : null}
@@ -193,7 +193,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
                   {selectedBranch.status !== "ACTIVE" ? <p className="enterprise-alert is-warning" role="status">La sucursal está inactiva. El enlace se conserva, pero no acepta registros hasta reactivarla.</p> : registrationUrl && qrDataUrl ? <PublicRegistrationShare branchName={selectedBranch.name} qrDataUrl={qrDataUrl} registrationUrl={registrationUrl} /> : <p className="enterprise-alert is-error" role="alert">Configura SWIFTWALLET_PUBLIC_URL con el dominio HTTPS de la aplicación para generar el enlace.</p>}
                 </div>
               ) : null}
-              {activeSection === "access" ? (
+              {activeSection === "access" && !readOnlySupport ? (
                 <div className="branch-workspace-section">
                   <div><h3>Entrada de usuarios operativos</h3><p>Elige credenciales personales o una cuenta común con PIN individual. Cambiar el modo revoca las sesiones incompatibles.</p></div>
                   <form className="auth-form branch-access-form" action={configureBranchAccess}><input type="hidden" name="branchId" value={selectedBranch.id} /><BranchAccessFields compact defaultMode={selectedBranch.employee_access_mode} /><SubmitButton className="secondary-button" confirmMessage="Cambiar el modo revocará las sesiones incompatibles de esta sucursal. ¿Deseas continuar?">Guardar modo de acceso</SubmitButton></form>

@@ -30,17 +30,16 @@ describe("Superadmin support mode", () => {
 
   it("exposes explicit entry and exit while blocking tenant mutations", () => {
     expect(superadmin).toContain("Entrar en modo soporte");
-    expect(adminLayout).toContain("Solo lectura");
+    expect(adminLayout).toContain("Sucursales y ubicación/GPS editables");
     expect(adminLayout).toContain('action="/support/exit"');
-    expect(middleware).toContain("SUPPORT_SESSION_COOKIE");
-    expect(middleware).toContain('request.nextUrl.pathname.startsWith("/admin")');
-    expect(middleware).toContain('supportError=read_only');
+    expect(middleware).toContain("updateSupabaseSession");
     expect(startRoute).toContain("createSupportSessionToken");
     expect(startRoute).toContain("hashSupportSessionToken");
   });
 
   it("keeps support reads tenant-scoped and rejects server mutations", () => {
     expect(authServer).toContain("options.writable");
+    expect(authServer).toContain("allowSupportWrites");
     expect(authServer).toContain('supportError=read_only');
     expect(branchesPage).toContain('.eq("tenant_id", context.tenantId)');
     expect(branchesPage).toContain("readOnlySupport");

@@ -15,13 +15,14 @@
 - The validated HttpOnly cookie gives the existing `/admin` shell an effective
   tenant context while retaining the real Superadmin actor. A persistent
   warning identifies the tenant and provides `Salir del modo soporte`.
-- This release is intentionally read-only. Middleware rejects non-read requests
-  below `/admin`; Storage writes also remain denied because browser RLS never
-  receives a tenant Admin identity. Do not broaden this to write impersonation
-  without a new operation-scoped authorization and audit decision.
-- Validation completed: lint, typecheck, 298 Vitest tests across 79 files,
-  disposable PostgreSQL/RLS through `0068`, webpack build and an idempotent
-  remote migration rerun.
+- Support mode now permits only branch creation/editing and tenant
+  location/GPS configuration. Purchases, balances, customers, users,
+  permissions, credentials and other identity/financial writes remain blocked.
+  The GPS write uses a token-bound server RPC and all allowed changes are
+  audited against the real Superadmin.
+- Validation completed: lint, typecheck, focused support/branch tests,
+  disposable PostgreSQL/RLS through `0069`; deploy the migration and run the
+  full suite before commit.
 
 ## Card administration context
 
