@@ -153,6 +153,52 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [ ] [Pendiente] Expose purchase cancellation, redemption reversal, stamp adjustment, and reward cancellation controls to authorized Admin/Manager users.
 - [ ] [Pendiente] Add permission-scoped operational history and audit-log views.
 
+## Security - Purchase Location Visibility
+
+**Objective:** Give authorized tenant operators a security view of where
+purchases are being performed, using the server-recorded coordinates and the
+configured branch geofences to support fraud review and operational follow-up.
+
+**Scope:** This is an observation and investigation capability. It does not
+change purchase authority, geofence enforcement or the source coordinates
+already recorded by the purchase transaction.
+
+**Tasks**
+
+- [ ] [Pendiente] Define the permission boundary: tenant Admins can review all
+  tenant purchases; Managers can review only assigned branches; Employees have
+  no location-monitoring view.
+- [ ] [Pendiente] Add a tenant-scoped purchase-location projection that exposes
+  purchase date/time, branch, operator, ticket reference, recorded latitude and
+  longitude, geofence result and distance from the configured branch point,
+  without exposing unnecessary customer PII.
+- [ ] [Pendiente] Build a security view with map markers and a table fallback,
+  filters for date range, branch, operator and geofence result, plus a detail
+  panel that links each observation to its immutable purchase/audit record.
+- [ ] [Pendiente] Highlight purchases outside the configured radius, missing
+  coordinates and clusters that warrant review without automatically changing
+  or cancelling a purchase.
+- [ ] [Pendiente] Record access to the location-monitoring view in the audit
+  log, apply a documented retention/privacy policy and cover tenant/branch
+  isolation with positive and negative RLS tests.
+- [ ] [Pendiente] Add focused security, accessibility, responsive and export
+  validation before enabling the view for a pilot tenant.
+
+**Dependencies:** Existing purchase geolocation capture, server-side geofence
+authority, immutable audit logs, tenant/branch permissions and the Phase 5
+operational history foundation.
+
+**Acceptance Criteria**
+
+- No location record from another tenant or unassigned branch is visible.
+- The map and table show the same authoritative purchase rows and preserve the
+  original recorded coordinates; client-provided filters are never authority.
+- Authorized reviewers can identify the branch, operator, timestamp, ticket
+  and geofence outcome for each purchase without needing customer credentials.
+- Employees cannot access the security view, and every access is auditable.
+- Missing or suspicious locations are visible as review states, not silently
+  rewritten or used to alter completed financial records.
+
 ## Phase 6 - Dashboard And Exportaciones
 
 **Objective:** Implement KPIs, filters, trends, rankings, and CSV/XLSX exports respecting permissions.
