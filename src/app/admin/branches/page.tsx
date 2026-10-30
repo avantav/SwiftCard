@@ -42,6 +42,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
     redirect("/admin");
   }
 
+  const readOnlySupport = Boolean(context.supportSession);
   const params = await searchParams;
   const [{ data: branches, error: branchesError }, { data: tenant, error: tenantError }] = await Promise.all([
     context.supabase
@@ -49,6 +50,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
       .select(
         "id,name,address,latitude,longitude,status,geofence_radius_meters,proximity_enabled,proximity_message,employee_access_mode,public_registration_token",
       )
+      .eq("tenant_id", context.tenantId)
       .order("name"),
     context.supabase
       .from("tenants")
@@ -64,8 +66,8 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
   );
   const publicOrigin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
   const selectedBranch = branchRows.find((branch) => branch.id === params.branch) ?? null;
-  const showCreate = params.view === "create" || (!branchesError && branchRows.length === 0);
-  const showPolicy = params.view === "policy";
+  const showCreate = !readOnlySupport && (params.view === "create" || (!branchesError && branchRows.length === 0));
+  const showPolicy = !readOnlySupport && params.view === "policy";
   const requestedSection = workspaceSections.find((section) => section === params.section);
   const activeSection: WorkspaceSection = requestedSection ?? "details";
   const policyLabel = strictGeofencing ? "Estricto" : "Flexible";
@@ -101,12 +103,12 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           <p>Prepara cada ubicación para operar, registrar clientes y asignar personal.</p>
         </div>
         <div className="branch-header-actions">
-          {tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
+          {readOnlySupport ? <span className="branch-policy-trigger is-disabled" role="status">GPS · Solo lectura</span> : tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
             <Link aria-label={`Política GPS: ${policyLabel}. ${policyTooltip}`} className="branch-policy-trigger" data-tooltip={policyTooltip} href="/admin/branches?view=policy">
               <PendingLinkContent label="Abriendo política GPS"><span className="branch-policy-info-icon" aria-hidden="true">i</span><span>GPS</span><span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span></PendingLinkContent>
             </Link>
           )}
-          <Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link>
+          {!readOnlySupport ? <Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link> : null}
         </div>
       </header>
 
@@ -114,6 +116,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
       {params.updated ? <p className="enterprise-alert is-success" role="status">Datos de la sucursal actualizados.</p> : null}
       {params.accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
       {params.geofenceUpdated ? <p className="enterprise-alert is-success" role="status">Política de ubicación actualizada.</p> : null}
+      {readOnlySupport ? <p className="enterprise-alert is-warning" role="status">Modo soporte activo: puedes consultar las sucursales de este tenant, pero no cambiar su configuración.</p> : null}
       {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
 
       <section className="enterprise-data-panel branches-inventory-panel" aria-labelledby="branch-list-title">

@@ -191,7 +191,7 @@ export async function getActiveSuperadminContext() {
 
 export async function requireInternalArea(
   area: InternalArea,
-  options: { allowLockedShared?: boolean } = {}
+  options: { allowLockedShared?: boolean; writable?: boolean } = {}
 ) {
   const context = await getStaffSessionContext();
 
@@ -205,6 +205,10 @@ export async function requireInternalArea(
 
   if (context.supportSession && area === "SUPERADMIN") {
     redirect("/admin");
+  }
+
+  if (context.supportSession && options.writable) {
+    redirect("/admin?supportError=read_only");
   }
 
   if (

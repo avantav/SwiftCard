@@ -24,7 +24,7 @@ function required(formData: FormData, name: string) {
 export async function resolveScannedCard(formData: FormData) {
   const parsed = parseCardQrPayload(String(formData.get("payload") ?? ""));
   if (!parsed.ok) redirect(`/app/scan?error=${encodeURIComponent(parsed.error)}`);
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data, error } = await context.supabase
     .schema("app")
     .rpc("resolve_staff_card_scan", { target_card_token: parsed.cardToken });
@@ -51,7 +51,7 @@ export async function redeemCustomerReward(formData: FormData) {
   const coordinates = readOperationCoordinates(formData);
   if (!coordinates.ok) back({ ...confirmationParams, error: coordinates.error });
 
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data: summaryData } = await context.supabase.schema("app").rpc("get_staff_customer_card_summary", {
     target_customer_card_id: customerCardId,
   });
@@ -90,7 +90,7 @@ export async function previewCustomerPurchase(formData: FormData) {
   const branchId = required(formData, "branchId");
   const amount = required(formData, "amount");
   const returnParams = { customerCardId, loyaltyCardId, flow: "purchase" };
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data: tenant } = await context.supabase
     .from("tenants")
     .select("currency_code")
@@ -127,7 +127,7 @@ export async function confirmCustomerPurchase(formData: FormData) {
   const ticketNumber = required(formData, "ticketNumber");
   const returnParams = { customerCardId, loyaltyCardId };
   const confirmationParams = { ...returnParams, flow: "purchase", step: "confirm", branchId, amount };
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data: tenant } = await context.supabase
     .from("tenants")
     .select("currency_code")
@@ -164,7 +164,7 @@ export async function updateCustomer(formData: FormData) {
     back({ q: returnQuery, error: "Cliente inválido." });
   }
 
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   if (context.access.role !== "MANAGER") {
     back({ q: returnQuery, error: "No tienes permiso para editar clientes." });
   }

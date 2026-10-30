@@ -8,6 +8,8 @@ const middleware = source("../../../middleware.ts");
 const superadmin = source("../../app/superadmin/page.tsx");
 const adminLayout = source("../../app/admin/layout.tsx");
 const startRoute = source("../../app/support/start/route.ts");
+const authServer = source("./server.ts");
+const branchesPage = source("../../app/admin/branches/page.tsx");
 
 describe("Superadmin support mode", () => {
   it("stores only a hashed, expiring token and audits the lifecycle", () => {
@@ -35,5 +37,12 @@ describe("Superadmin support mode", () => {
     expect(middleware).toContain('supportError=read_only');
     expect(startRoute).toContain("createSupportSessionToken");
     expect(startRoute).toContain("hashSupportSessionToken");
+  });
+
+  it("keeps support reads tenant-scoped and rejects server mutations", () => {
+    expect(authServer).toContain("options.writable");
+    expect(authServer).toContain('supportError=read_only');
+    expect(branchesPage).toContain('.eq("tenant_id", context.tenantId)');
+    expect(branchesPage).toContain("readOnlySupport");
   });
 });

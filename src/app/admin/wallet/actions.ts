@@ -16,7 +16,7 @@ function redirectWithError(error: string): never {
 }
 
 export async function saveAppleWalletDesign(formData: FormData) {
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN" || !context.tenantId) {
     redirectWithError("Solo el Admin general puede diseñar la tarjeta de Wallet.");
   }

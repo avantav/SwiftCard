@@ -20,7 +20,7 @@ export async function registerEmployeeCustomer(formData: FormData) {
   }
   if (!validation.ok) redirectWithParams({ error: validation.errors.join(" ") });
 
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("register_employee_customer", {
     target_branch_id: branchId,
     target_loyalty_card_id: loyaltyCardId,

@@ -20,7 +20,7 @@ function importRedirect(params: Record<string, string>): never {
 }
 
 async function requireTenantImportAdmin() {
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
   const { data: tenant } = await context.supabase
     .from("tenants")

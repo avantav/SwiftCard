@@ -94,7 +94,7 @@ describe("Casa Garmendia customer import profile", () => {
 
   it("keeps confirmation atomic, tenant-derived, single-use and Admin-only", () => {
     expect(CASA_GARMENDIA_IMPORT_PROFILE_CODE).toBe("CASA_GARMENDIA_LEGACY_STAMPS_2026");
-    expect(actions).toContain('requireInternalArea("ADMIN")');
+    expect(actions).toContain('requireInternalArea("ADMIN", { writable: true })');
     expect(actions).toContain('context.access.role !== "ADMIN"');
     expect(actions).toContain("prepared_rows: prepared.preparedRows");
     expect(page).toContain("Confirmar importación única");

@@ -10,7 +10,7 @@ function redirectWithError(error: string): never {
 }
 
 export async function saveLoyaltyProgram(formData: FormData) {
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
 
   if (context.access.role !== "ADMIN" || !context.tenantId) {
     redirectWithError("Solo el Administrador puede configurar el programa.");

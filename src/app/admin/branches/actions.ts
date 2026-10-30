@@ -153,7 +153,7 @@ export async function createBranch(
     };
   }
 
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
 
   if (context.access.role !== "ADMIN" || !context.tenantId) {
     return createErrorState(
@@ -262,7 +262,7 @@ export async function updateBranch(
     };
   }
 
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
 
   if (context.access.role !== "ADMIN" || !context.tenantId) {
     return createUpdateErrorState(
@@ -316,7 +316,7 @@ export async function updateBranch(
 export async function configureBranchAccess(formData: FormData) {
   const branchId = String(formData.get("branchId") ?? "").trim();
   const accessMode = String(formData.get("employeeAccessMode") ?? "");
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN" || !branchId) {
     redirectWithError("Solo el Administrador general puede cambiar este acceso.");
   }
@@ -399,7 +399,7 @@ export async function configureTenantGeofencing(formData: FormData) {
   if (targetMode !== "STRICT" && targetMode !== "FLEXIBLE") {
     redirectWithError("El modo de validación de ubicación no es válido.");
   }
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN") {
     redirectWithError("Solo el Administrador general puede cambiar el geofence.");
   }

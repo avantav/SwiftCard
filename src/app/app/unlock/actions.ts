@@ -28,7 +28,7 @@ export async function unlockWithPin(
     };
   }
 
-  const context = await requireInternalArea("APP", { allowLockedShared: true });
+  const context = await requireInternalArea("APP", { allowLockedShared: true, writable: true });
   if (context.accountKind !== "BRANCH_SHARED") {
     return { attempt: previousState.attempt + 1, error: null, status: "SUCCESS" };
   }
@@ -66,7 +66,7 @@ export async function unlockWithPin(
 }
 
 export async function changePinOperator() {
-  const context = await requireInternalArea("APP", { allowLockedShared: true });
+  const context = await requireInternalArea("APP", { allowLockedShared: true, writable: true });
   if (context.accountKind === "BRANCH_SHARED") {
     await context.supabase.schema("app").rpc("revoke_current_pin_session");
   }

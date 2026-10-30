@@ -77,7 +77,7 @@ describe("validateStaffCreateForm", () => {
   });
 
   it("derives tenant and creator from the authenticated Admin context", () => {
-    expect(actionSource).toContain('requireInternalArea("ADMIN")');
+    expect(actionSource).toContain('requireInternalArea("ADMIN", { writable: true })');
     expect(actionSource).toContain('rpc("provision_branch_employee"');
     expect(actionSource).toContain("created_by: context.userId");
     expect(actionSource).not.toContain('formData.get("tenant');

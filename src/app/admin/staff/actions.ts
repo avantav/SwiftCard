@@ -21,7 +21,7 @@ export async function createStaff(formData: FormData) {
     redirectWithError(validation.errors[0] ?? "Datos de personal inválidos.", requestedBranchId);
   }
 
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
 
   if (!context.tenantId || (context.access.role !== "ADMIN" && context.access.role !== "MANAGER")) {
     redirectWithError("No tienes permiso para crear personal.", requestedBranchId);
@@ -102,7 +102,7 @@ export async function setEmployeeStatus(formData: FormData) {
   const staffProfileId = String(formData.get("staffProfileId") ?? "").trim();
   const returnBranch = String(formData.get("returnBranch") ?? "").trim();
   const status = formData.get("status") === "ACTIVE" ? "ACTIVE" : "INACTIVE";
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("set_scoped_employee_status", {
     target_staff_profile_id: staffProfileId,
     target_status: status
@@ -119,7 +119,7 @@ export async function resetEmployeePassword(formData: FormData) {
   if (typeof password !== "string" || password.length < 12 || password.length > 72 || password !== confirmation) {
     redirectWithError("La contraseña temporal no es válida o no coincide.", returnBranch);
   }
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   const { data: allowed } = await context.supabase.schema("app").rpc("current_staff_can_manage_employee_account", {
     target_staff_profile_id: staffProfileId
   });

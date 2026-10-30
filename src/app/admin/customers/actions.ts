@@ -7,7 +7,7 @@ import { requireInternalArea } from "@/lib/auth/server";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 async function requireGeneralAdmin() {
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   if (!canViewTenantCustomers(context.access) || !context.tenantId) redirect("/admin");
   return context;
 }

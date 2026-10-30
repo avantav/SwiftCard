@@ -45,7 +45,7 @@ function isMissingDesignColumn(error: { code?: string; message?: string } | null
 }
 
 async function requireTenantAdmin() {
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
   return context;
 }

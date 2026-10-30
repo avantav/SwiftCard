@@ -17,7 +17,7 @@ export async function createPinOperator(formData: FormData) {
   const fullName = String(formData.get("fullName") ?? "").trim();
   const pin = formData.get("pin");
   if (!branchId || !fullName || !isSixDigitPin(pin)) back("Nombre, sucursal y PIN de seis dígitos son obligatorios.", branchId);
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("create_branch_pin_operator", {
     target_branch_id: branchId,
     target_full_name: fullName,
@@ -34,7 +34,7 @@ export async function resetPinOperator(formData: FormData) {
   const returnBranch = String(formData.get("returnBranch") ?? "").trim();
   const pin = formData.get("pin");
   if (!operatorId || !isSixDigitPin(pin)) back("Ingresa un PIN nuevo de seis dígitos.", returnBranch);
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("reset_branch_pin_operator", {
     target_operator_id: operatorId,
     target_pin: pin
@@ -48,7 +48,7 @@ export async function setPinOperatorStatus(formData: FormData) {
   const operatorId = String(formData.get("operatorId") ?? "").trim();
   const returnBranch = String(formData.get("returnBranch") ?? "").trim();
   const status = formData.get("status") === "ACTIVE" ? "ACTIVE" : "INACTIVE";
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("set_branch_pin_operator_status", {
     target_operator_id: operatorId,
     target_status: status
@@ -59,7 +59,7 @@ export async function setPinOperatorStatus(formData: FormData) {
 
 export async function clearPinLockout(formData: FormData) {
   const branchId = String(formData.get("branchId") ?? "").trim();
-  const context = await requireInternalArea("ADMIN");
+  const context = await requireInternalArea("ADMIN", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("clear_branch_pin_lockout", {
     target_branch_id: branchId
   });

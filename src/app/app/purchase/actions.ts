@@ -22,7 +22,7 @@ export async function previewPurchase(formData: FormData) {
   if (!customerCardId || !branchId || !Number.isSafeInteger(amountMinor) || amountMinor <= 0) {
     back({ loyaltyCardId, error: "Cliente, sucursal y monto válido son obligatorios." });
   }
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("preview_card_purchase", {
     target_customer_card_id: customerCardId,
     target_branch_id: branchId,
@@ -46,7 +46,7 @@ export async function confirmPurchase(formData: FormData) {
   }
   const coordinates = readOperationCoordinates(formData);
   if (!coordinates.ok) back({ customerCardId, loyaltyCardId, branchId, amountMinor: String(amountMinor), error: coordinates.error });
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("confirm_card_purchase", {
     target_customer_card_id: customerCardId,
     target_branch_id: branchId,

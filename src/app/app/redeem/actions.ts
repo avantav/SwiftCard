@@ -11,7 +11,7 @@ export async function redeemReward(formData: FormData) {
   if (!rewardId || !branchId) redirect("/app/redeem?error=Selecciona recompensa y sucursal.");
   const coordinates = readOperationCoordinates(formData);
   if (!coordinates.ok) redirect(`/app/redeem?error=${encodeURIComponent(coordinates.error)}`);
-  const context = await requireInternalArea("APP");
+  const context = await requireInternalArea("APP", { writable: true });
   const { data: reward } = await context.supabase
     .from("rewards")
     .select("customer_id")
