@@ -599,3 +599,29 @@
   RPC and queues installed Apple passes when any stamp-layout value changes.
   Apple still controls whether strip imagery appears on a particular OS version.
 - Status: Accepted.
+
+## DEC-0050 - Read-Only Superadmin Support Sessions
+
+- Date: 2026-10-30
+- Context: Support needs to reproduce a tenant's administrative view without
+  asking for passwords, resetting an Administrator or making audit records look
+  as if a tenant user performed the work.
+- Decision: Add one-hour, reason-required support sessions available only to
+  active Superadmins for active tenants. Store only a SHA-256 hash of a random
+  browser token behind forced RLS, keep the original Auth identity, derive the
+  effective tenant context on the server and render the normal Admin shell with
+  a persistent read-only banner and explicit exit. Audit start and end against
+  the real Superadmin. Block non-read requests under `/admin` while the opaque
+  HttpOnly support cookie exists.
+- Alternatives considered: Reveal tenant credentials, reset an Admin password,
+  exchange the Superadmin session for a tenant user's Auth session, grant
+  unrestricted write impersonation or build a separate partial support UI.
+- Reason: Reusing the real tenant view makes diagnosis faithful while preserving
+  actor attribution and avoiding credential exposure. Read-only access limits
+  the first release's blast radius and avoids inconsistent authorization in
+  tenant mutation RPCs.
+- Consequences: Migration `0067` is required. The Superadmin can inspect but not
+  change tenant data in support mode; direct Storage mutations remain denied by
+  tenant-path RLS. Any future support write must be authorized separately and
+  designed per operation with explicit audit semantics.
+- Status: Accepted.

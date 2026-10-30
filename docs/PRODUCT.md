@@ -57,9 +57,9 @@ El backend será la única fuente de verdad para calcular sellos, remanentes y r
 ## 4. Fuera del MVP
 
 Las siguientes capacidades permanecen fuera de la definición original del MVP.
-La expansión comercial de la sección 30 fue autorizada posteriormente y se
-implementará como una fase independiente, sin reinterpretarlas como requisito
-de salida del piloto original.
+Las expansiones autorizadas de las secciones 30 a 32 se implementan como fases
+independientes, sin reinterpretarlas como requisito de salida del piloto
+original.
 
 - Portal y login del cliente.  
 - OTP o validación SMS.  
@@ -70,7 +70,7 @@ de salida del piloto original.
 - Promociones temporales y reglas por producto.  
 - Cobro automático de planes.  
 - Registro público de tenants.  
-- Acceso de soporte o impersonación.  
+- Impersonación de soporte con permisos de escritura o acceso a credenciales.
 - Campañas de marketing y avisos de expiración.  
 - Apps móviles nativas.
 
@@ -85,6 +85,8 @@ de salida del piloto original.
 - Ver información básica de tenants.  
 - Importar clientes y sellos iniciales.  
 - Consultar importaciones y auditoría global.
+- Iniciar una sesión temporal y auditada de soporte de solo lectura dentro de
+  un tenant activo, con motivo obligatorio y salida visible.
 
 ### Administrador
 
@@ -867,3 +869,21 @@ Un clic a Google no se contabiliza como reseña publicada. Rating, reseñas
 recientes y respuestas requieren Google Business Profile OAuth y quedan para
 una unidad posterior. El alcance completo, sus restricciones de privacidad,
 medición y cumplimiento se define en `docs/reviews_plan.md`.
+
+## 32. Acceso de soporte auditado autorizado
+
+El Superadmin puede abrir el panel administrativo de un tenant activo en modo
+soporte sin conocer, restablecer ni copiar las credenciales de sus usuarios. La
+sesión conserva la identidad real del Superadmin, exige un motivo de 10 a 500
+caracteres, usa un token opaco HttpOnly ligado al actor y expira como máximo en
+una hora.
+
+La interfaz muestra permanentemente el tenant y el estado **Solo lectura**, y
+ofrece una salida explícita al Control center. Inicio y salida se registran en
+la auditoría inmutable con tenant, actor, motivo y tiempos. Los tenants
+suspendidos no admiten sesiones de soporte.
+
+Esta primera versión no permite mutaciones, no expone contraseñas, tokens de
+Auth ni secretos del tenant, y no suplanta la identidad de un Administrador.
+Una futura capacidad de escritura requerirá autorización explícita, permisos
+por operación y atribución separada del actor real y del tenant asistido.

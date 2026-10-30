@@ -1,5 +1,23 @@
 # Work Log
 
+## 2026-10-30 - Audited Superadmin Support Mode
+
+**Objective:** Let support inspect an active tenant's real Admin experience
+without asking for or exposing tenant credentials.
+
+**Implemented:** Added migration `0067` with opaque, hashed, one-hour support
+sessions behind forced RLS and three permission-scoped RPCs. Superadmin now
+enters through a reason-required confirmation page, retains the real Auth/audit
+identity, receives an effective tenant context in the existing Admin shell and
+sees a persistent read-only banner with explicit exit. Middleware blocks
+non-read `/admin` requests while the HttpOnly support cookie is active; logout
+also clears it. Suspended tenants and non-Superadmin actors are rejected.
+
+**Validation:** `npm run lint`, `npm run typecheck`, all 298 Vitest tests across
+79 files, `npm run db:verify-rls`, `npm run build` and the remote migration
+runner passed. `0067` is applied remotely and its immediate rerun was
+idempotent.
+
 ## 2026-09-20 - Simplify the Wallet card-design editor
 
 **Objective:** Replace the dense card-design form with an intuitive hierarchy

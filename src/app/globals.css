@@ -2091,6 +2091,70 @@ textarea {
   margin-left: var(--enterprise-sidebar-width);
 }
 
+.support-session-banner {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #f2cf8c;
+  padding: 10px 32px;
+  background: var(--enterprise-warning-soft);
+  color: #8a3f06;
+}
+
+.support-session-banner > div {
+  display: grid;
+  gap: 2px;
+}
+
+.support-session-banner strong {
+  font-size: 0.88rem;
+}
+
+.support-session-banner span {
+  font-size: 0.78rem;
+}
+
+.support-session-banner button {
+  min-height: 40px;
+  border: 1px solid #d49a36;
+  border-radius: var(--enterprise-radius-md);
+  padding: 8px 12px;
+  background: #fff;
+  color: #8a3f06;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.support-access-list {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0 24px;
+  padding-left: 20px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 639px) {
+  .support-session-banner {
+    position: static;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .support-session-banner button {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
 .enterprise-page {
   display: grid;
   width: 100%;

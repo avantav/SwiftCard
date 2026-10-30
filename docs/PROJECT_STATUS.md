@@ -4,24 +4,36 @@
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.
 - Current task: Add transactional promotion reservation and cap consumption before Checkout.
-- Last completed task: Reorganized `/admin/branches` into a compact operational
-  inventory with focused modal and multi-step journeys.
+- Last completed task: Added audited, one-hour Superadmin support sessions that
+  open an active tenant's Admin shell in read-only mode without tenant
+  credentials.
 - Current branch: `codex/google-wallet`.
-- Last stable feature: Global GPS policy, branch editing,
-  public registration sharing and sensitive staff access are separated into
-  clear task contexts; branch creation is a guided three-step flow.
-- Git status: The branch experience refactor passes lint, typecheck, all 291
-  tests across 78 files and the webpack build. Remote migration history was
+- Last stable feature: Superadmin can enter an active tenant with a required
+  support reason, persistent identity banner, explicit exit and immutable
+  start/end audit events; `/admin` mutations remain blocked.
+- Git status: The support mode passes lint, typecheck, all 298 tests across 79
+  files, the full migration/RLS harness and the webpack build. Remote migration history was
   reconciled against verified schema fingerprints, the missing `0042`, `0055`,
   `0057` and `0065` units were applied, and the canonical runner now reports
-  every migration through `0066` up to date.
+  every migration through `0067` up to date.
 - Remote backup: `main` contains the Wallet image-layout work and hosted
-  migrations are current through `0066`. The Casa Garmendia welcome
+  migrations are current through `0067`. The Casa Garmendia welcome
   configuration intentionally remains disabled until the Admin retries the form
   with the intended gift.
 
 ## Completed Functionality
 
+- Superadmin tenant rows expose an explicit support entry. A dedicated
+  confirmation page requires a 10–500 character reason and refuses suspended
+  tenants before issuing a random one-hour HttpOnly support token.
+- Migration `0067` stores only token hashes behind forced RLS and RPC-only
+  access. The original Superadmin remains authenticated and is recorded as the
+  actor for immutable `SUPPORT_IMPERSONATION_STARTED` and
+  `SUPPORT_IMPERSONATION_ENDED` events.
+- The Admin shell derives the selected tenant only after validating that token,
+  identifies the session as read-only in a persistent banner and offers a
+  visible return to Control center. Middleware blocks non-read `/admin`
+  requests while the support cookie exists; logout clears the cookie.
 - `/admin/branches` no longer renders every form at once. Its compact inventory
   exposes status, location/radius,
   registration availability, proximity and staff access mode; global GPS policy,
@@ -242,8 +254,17 @@
 
 ## Last Validation Commands
 
-- `npm run db:push:remote`: passed idempotently; all 65 tracked migrations from
-  `0001` through `0066` are current remotely (the sequence intentionally has no
+- `npm run lint`: passed for the support-session implementation.
+- `npm run typecheck`: passed.
+- `npm run test:run`: passed; 298 tests across 79 files.
+- `npm run db:verify-rls`: passed through migration/test `0067`, including
+  Superadmin-only start, active-tenant enforcement, forced-RLS storage denial,
+  token-bound resolution, explicit exit and immutable audit evidence.
+- `npm run build`: passed with webpack and the three new dynamic support routes.
+- `npm run db:push:remote`: applied `0067`; the immediate idempotent rerun
+  skipped it and reported remote migrations up to date.
+- `npm run db:push:remote`: passed idempotently; all 66 tracked migrations from
+  `0001` through `0067` are current remotely (the sequence intentionally has no
   `0014` file).
 - Remote schema verification: the `0042` lifetime conversion function/trigger
   are present and the `0065` Wallet title constraint accepts 0–60 characters.
@@ -333,4 +354,4 @@
 
 ## Next Exact Step
 
-Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0066`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.
+Add transactional promotion reservation/cap consumption, then affiliate attribution before Checkout. Remote migrations are current through `0067`; do not begin Stripe live-mode work until package pricing, taxes and payment policies are approved.

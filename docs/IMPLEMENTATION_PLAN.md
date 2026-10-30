@@ -240,6 +240,33 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add a responsive animated product illustration, accessible section navigation, FAQ, purposeful scroll reveals and repeated demo-first CTA without pricing or payment claims.
 - [ ] [Pendiente] Configure the real scheduling/contact destination in `NEXT_PUBLIC_DEMO_REQUEST_URL` before publishing the landing.
 
+## Cross-cutting - Audited support access
+
+**Objective:** Let an active Superadmin inspect an active tenant's Admin area
+for support without obtaining tenant credentials or silently assuming another
+staff identity.
+
+**Tasks**
+
+- [x] [Terminada] Add opaque, hashed, one-hour support sessions bound to the
+  authenticated Superadmin and selected active tenant.
+- [x] [Terminada] Require a support reason and audit session start and exit.
+- [x] [Terminada] Reuse the Admin shell with an effective tenant context, a
+  persistent read-only banner and explicit return to Control center.
+- [x] [Terminada] Block `/admin` mutations while the support cookie is active;
+  keep direct support-session storage behind forced RLS and RPC-only access.
+- [x] [Terminada] Add migration/RLS and application contract coverage.
+- [ ] [Pendiente] Authorize and design operation-scoped support writes if the
+  product later requires more than read-only diagnosis.
+
+**Acceptance Criteria**
+
+- Tenant staff credentials and Auth sessions are never read, reset or copied.
+- Only an active Superadmin can enter an active tenant.
+- The real Superadmin remains the audit actor.
+- The target tenant and read-only state remain visible throughout the session.
+- Sessions expire within one hour and can be ended explicitly.
+
 ## Phase 9 - Piloto
 
 **Objective:** Complete E2E, security, RLS, monitoring, backups, privacy, pilot tenant, and production checklist.
