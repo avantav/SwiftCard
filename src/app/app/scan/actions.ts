@@ -9,6 +9,7 @@ import {
   readOperationCoordinates,
 } from "@/lib/geofencing/operation-location";
 import { parsePurchaseAmount } from "@/lib/loyalty/purchase-amount";
+import { openPublicCardScanToken } from "@/lib/customers/card-scan-server";
 import { parseCardQrPayload } from "@/lib/scanner/qr";
 import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
@@ -25,9 +26,11 @@ export async function resolveScannedCard(formData: FormData) {
   const parsed = parseCardQrPayload(String(formData.get("payload") ?? ""));
   if (!parsed.ok) redirect(`/app/scan?error=${encodeURIComponent(parsed.error)}`);
   const context = await requireInternalArea("APP", { writable: true });
+  const cardToken = parsed.publicScan ? openPublicCardScanToken(parsed.cardToken) : parsed.cardToken;
+  if (!cardToken) back({ error: "Esta tarjeta no pertenece a este negocio." });
   const { data, error } = await context.supabase
     .schema("app")
-    .rpc("resolve_staff_card_scan", { target_card_token: parsed.cardToken });
+    .rpc("resolve_staff_card_scan", { target_card_token: cardToken });
   const result = Array.isArray(data) ? data[0] : null;
   if (error || !result || result.result !== "FOUND") {
     redirect(`/app/scan?error=${encodeURIComponent("Esta tarjeta no pertenece a este negocio.")}`);

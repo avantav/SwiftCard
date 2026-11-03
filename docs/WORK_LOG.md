@@ -1,5 +1,24 @@
 # Work Log
 
+## 2026-11-03 - Public Camera Privacy And Staff-Session Registration Repair
+
+**Implemented:** Added encrypted scan URLs to the Web/Apple/Google QR outputs.
+Anonymous scans return only a no-store registration redirect for the originating
+active branch, tenant and published card. Staff sessions are checked before
+unsealing and existing protected RPCs remain authoritative. No migration.
+
+**Registration repair:** The public registration RPC grants execution only to
+`anon`, but the prior SSR client inherited authenticated staff cookies. A
+stateless anonymous server client now handles enrollment and terms without
+changing database privileges. Tests assert anonymous authorization and absence
+of cookies/PIN headers.
+
+**Validation:** Static validation, focused security tests and the full browser
+PNG decode/scan flow pass with fictitious data. The latter follows the QR in a
+fresh unauthenticated context and checks destination, no PII/private token in
+HTML and no direct browser-to-database requests. Lint, TypeScript, all 329 tests in 83 files and the production build pass. Real installed passes require provider refresh.
+
+
 ## 2026-11-03 - Approved Compact Public Enrollment
 
 **Implemented:** Replaced the two-column composition with the approved centered

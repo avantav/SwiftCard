@@ -26,6 +26,7 @@ const basePass: GoogleWalletPassData = {
   logoUrl: "https://wallet.example.com/logo.png",
   heroImageUrl: "https://wallet.example.com/hero.png",
   cardUrl: "https://wallet.example.com/card/opaque-token",
+  scanUrl: "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   active: true,
   merchantLocations: Array.from({ length: 12 }, (_, index) => ({
     latitude: 23 + index / 100,
@@ -67,7 +68,7 @@ describe("Google Wallet loyalty resources", () => {
       secondaryLoyaltyPoints: { label: "Premios", balance: { int: 1 } },
       barcode: {
         type: "QR_CODE",
-        value: "https://wallet.example.com/card/opaque-token",
+        value: "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       },
     });
     expect(result.loyaltyObject.merchantLocations).toHaveLength(10);
@@ -82,6 +83,7 @@ describe("Google Wallet loyalty resources", () => {
       buildGoogleWalletResources({
         ...basePass,
         cardUrl: "http://localhost:3000/card/token",
+        scanUrl: "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       }),
     ).toThrow("Invalid Google Wallet pass data");
     expect(() => googleWalletResourceIds("issuer", "card", "customer")).toThrow(

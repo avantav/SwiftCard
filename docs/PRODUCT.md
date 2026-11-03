@@ -264,7 +264,12 @@ exista logo usará sus iniciales. Las metas excepcionalmente grandes usarán una
 representación proporcional acotada para conservar rendimiento y legibilidad,
 mientras el valor exacto permanecerá disponible para tecnologías de asistencia.
 
-El QR solo contendrá un token público seguro. No expondrá nombre, teléfono, UUID ni saldo. Podrá regenerarse e invalidarse.
+El QR contendrá una URL opaca cifrada de escaneo público; no expondrá el token
+privado de consulta, nombre, teléfono, UUID de cliente ni saldo. Una cámara normal
+abrirá el registro del tenant y la sucursal de origen con la tarjeta publicada
+seleccionada, sin mostrar datos del cliente. El escáner operativo autenticado
+resolverá la tarjeta solo después de validar sesión y permisos. Los códigos
+antiguos requerirán actualización del pase o reemplazo de la impresión.
 
 La primera incorporación a Wallet exigirá aceptar la versión vigente de los términos. El backend guardará la versión, una copia inmutable del texto y la fecha de aceptación asociadas a la tarjeta emitida; una descarga directa del pase sin esa aceptación será rechazada. Si los términos cambian, la nueva versión deberá aceptarse antes de una nueva incorporación.
 

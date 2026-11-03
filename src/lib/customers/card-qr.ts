@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import { isPublicCardScanUrl } from "./card-scan-url";
 
 const CARD_TOKEN_PATTERN = /^[A-Za-z0-9_-]{40,256}$/;
 
@@ -40,15 +41,10 @@ export async function createCustomerCardClaimQrDataUrl(origin: string, cardToken
   });
 }
 
-export async function createCustomerCardQrDataUrl(cardToken: string) {
-  if (!isCustomerCardToken(cardToken)) {
-    throw new Error("Invalid customer card token.");
-  }
-
-  return QRCode.toDataURL(cardToken, {
+export async function createCustomerCardQrDataUrl(scanUrl: string) {
+  if (!isPublicCardScanUrl(scanUrl)) throw new Error("Invalid public scan URL.");
+  return QRCode.toDataURL(scanUrl, {
     color: { dark: "#111827", light: "#ffffff" },
-    errorCorrectionLevel: "M",
-    margin: 2,
-    width: 512,
+    errorCorrectionLevel: "M", margin: 2, width: 512,
   });
 }

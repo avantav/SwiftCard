@@ -1,5 +1,18 @@
 # Project Status
 
+## Public QR privacy and registration session repair — 2026-11-03
+
+- New Web/Apple/Google barcodes use encrypted `/scan/q1_...` links. Public camera
+  requests return only the registration redirect for the originating branch and
+  selected published card; customer details and private tokens stay server-side.
+- Staff authentication precedes token resolution and existing RPC/RLS authority
+  remains in place. No database migration is required.
+- Public enrollment uses a stateless anonymous server client. It no longer
+  inherits an Administrator's cookies, which caused the anon-only registration
+  RPC to fail with a generic unavailable message.
+- See `docs/PUBLIC_CARD_QR.md` for key stability and existing-pass refresh needs.
+
+
 ## Compact enrollment approved — 2026-11-03
 
 The owner approved the WonCards-inspired compact proposal and explicitly

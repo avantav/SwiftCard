@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { resolvePublicOrigin } from "@/lib/public-origin";
 import type { GoogleWalletPassData } from "./google";
@@ -192,6 +193,7 @@ export async function loadGoogleWalletPassSource(
         backgroundColor: configuration.background_color,
         logoUrl,
         heroImageUrl: configuration.strip_image_url ?? tenant.banner_url,
+        scanUrl: createPublicCardScanUrl(card.public_token, origin),
         cardUrl: `${origin}/card/${encodeURIComponent(card.public_token)}`,
         // A paused program remains visible and its already-earned rewards remain usable.
         active: true,

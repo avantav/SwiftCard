@@ -30,6 +30,7 @@ describe("Apple Wallet store card", () => {
           { stampsRequired: 3, name: "Extra", description: "Un extra" },
         ],
         cardUrl: "https://wallet.example.com/card/public-token",
+        scanUrl: "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         webServiceUrl: "https://wallet.example.com/api/wallet/apple",
         authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
         locations: [{ latitude: 23.2, longitude: -106.4, relevantText: "Café Central" }],
@@ -47,7 +48,7 @@ describe("Apple Wallet store card", () => {
     expect(props.storeCard.auxiliaryFields[0]?.changeMessage).toContain("%@");
     expect(props.storeCard.backFields[1]?.value).toContain("3 sellos");
     expect(props.barcodes[0]?.message).toBe(
-      "https://wallet.example.com/card/public-token",
+      "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     );
     expect(props.barcodes[0]).not.toHaveProperty("altText");
     expect(props.storeCard.backFields[2]).toMatchObject({
@@ -80,7 +81,7 @@ describe("Apple Wallet store card", () => {
     expect(pass.primaryFields).toHaveLength(0);
     expect(pass.auxiliaryFields[0]?.value).toBe("4 de 10 sellos");
     expect(pass.props.barcodes?.[0]?.message).toBe(
-      "https://wallet.example.com/card/public-token",
+      "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     );
     expect(pass.props.locations).toHaveLength(1);
   });
@@ -107,6 +108,7 @@ describe("Apple Wallet store card", () => {
       termsAndConditions: "Términos vigentes.",
       rewardTiers: [],
       cardUrl: "https://example.com/card/token",
+      scanUrl: "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       webServiceUrl: "https://example.com/api/wallet/apple",
       authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
       locations: [],
@@ -158,6 +160,7 @@ describe("Apple Wallet store card", () => {
           { stampsRequired: 200, name: "Desayuno", description: "Un desayuno" },
         ],
         cardUrl: "https://example.com/card/token",
+        scanUrl: "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         webServiceUrl: "https://example.com/api/wallet/apple",
         authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
         locations: [],

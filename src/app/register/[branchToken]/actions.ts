@@ -1,16 +1,18 @@
 "use server";
 
+import { headers } from "next/headers";
+import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 
 import { createCustomerCardQrDataUrl, isCustomerCardToken } from "@/lib/customers/card-qr";
 import { validatePublicCustomerRegistration } from "@/lib/customers/registration";
 import type { RegistrationState } from "@/lib/customers/registration-state";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicServerClient } from "@/lib/supabase/public-server";
 import { isPublicAppleWalletAvailable, isPublicGoogleWalletAvailable } from "@/lib/wallet/public-availability";
 
 export async function loadRegistrationCard(cardToken: string): Promise<RegistrationState> {
   if (!isCustomerCardToken(cardToken)) return { error: "La tarjeta no está disponible." };
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicServerClient();
     const [claim, card, acceptance, appleWalletAvailable, googleWalletAvailable] = await Promise.all([
       supabase.schema("app").rpc("get_public_card_claim", { target_card_token: cardToken }),
       supabase.schema("app").rpc("get_public_web_card", { target_card_token: cardToken }),
@@ -22,7 +24,7 @@ export async function loadRegistrationCard(cardToken: string): Promise<Registrat
       return { cardToken, error: "Tu registro se guardó. Intenta cargar tu tarjeta nuevamente." };
     }
     let qrDataUrl: string | undefined;
-    try { qrDataUrl = await createCustomerCardQrDataUrl(cardToken); } catch { /* Allow retry without repeating registration. */ }
+    try { qrDataUrl = await createCustomerCardQrDataUrl(createPublicCardScanUrl(cardToken, await registrationRequestOrigin())); } catch { /* Allow retry without repeating registration. */ }
     return {
       cardToken, claim: claim.data[0], card: card.data[0], qrDataUrl,
       accepted: !acceptance.error && acceptance.data === true,
@@ -40,7 +42,7 @@ export async function registerCustomer(branchToken: string, previous: Registrati
   const validation = validatePublicCustomerRegistration(formData);
   if (!validation.ok) return { error: validation.errors.join(" ") };
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicServerClient();
     const { data, error } = await supabase.schema("app").rpc("register_public_customer", {
       target_branch_token: branchToken,
       target_loyalty_card_id: loyaltyCardId,
@@ -73,7 +75,7 @@ export async function acceptRegistrationTerms(cardToken: string, programVersion:
     return { ...current, error: "Los términos cambiaron. Revisa la versión vigente y vuelve a aceptarlos." };
   }
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicServerClient();
     const { data, error } = await supabase.schema("app").rpc("accept_public_card_terms", {
       target_card_token: cardToken,
       target_program_version: programVersion,
@@ -86,4 +88,10 @@ export async function acceptRegistrationTerms(cardToken: string, programVersion:
   } catch {
     return { ...current, error: "No se pudo guardar la aceptación. Intenta nuevamente." };
   }
+}
+
+async function registrationRequestOrigin() {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("host") ?? "localhost:3000";
+  return `${host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https"}://${host}`;
 }

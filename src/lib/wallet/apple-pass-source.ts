@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { AppleWalletLocation, AppleWalletPassData } from "./apple";
 import type { AppleWalletImageLayout } from "./apple-image-layout";
@@ -295,6 +296,7 @@ export async function loadAppleWalletPassSource(
           name: tier.name,
           description: tier.description,
         })),
+        scanUrl: createPublicCardScanUrl(card.public_token, publicUrl),
         cardUrl: `${publicUrl}/card/${encodeURIComponent(card.public_token)}`,
         webServiceUrl: `${publicUrl}/api/wallet/apple`,
         authenticationToken: getApplePassAuthenticationToken(serialNumber),

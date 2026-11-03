@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 import { CustomerCardClaim, type CustomerCardClaimData } from "@/components/customer-card-claim";
 import { PublicWalletCard, type PublicCard } from "@/components/public-wallet-card";
 import { MorrowBrand } from "@/components/morrow-brand";
@@ -46,7 +48,7 @@ export default async function CardPage({ params, searchParams }: CardPageProps) 
     googleWalletAvailable = googleAvailability;
     if (card) {
       try {
-        qrDataUrl = await createCustomerCardQrDataUrl(cardToken);
+        qrDataUrl = await createCustomerCardQrDataUrl(createPublicCardScanUrl(cardToken, await registrationRequestOrigin()));
       } catch {
         qrDataUrl = null;
       }
@@ -65,4 +67,10 @@ export default async function CardPage({ params, searchParams }: CardPageProps) 
   }
   if (card) return <PublicWalletCard appleWalletAvailable={appleWalletAvailable} googleWalletAvailable={googleWalletAvailable} card={card} cardToken={cardToken} qrDataUrl={qrDataUrl} />;
   return <main className="public-shell"><div className="public-auth-layout"><MorrowBrand /><section className="public-card public-unavailable-card"><span className="enterprise-empty-icon" aria-hidden="true">!</span><h1>Tarjeta no disponible</h1><p>El enlace es inválido, fue revocado o la tarjeta ya no está activa.</p></section></div></main>;
+}
+
+async function registrationRequestOrigin() {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("host") ?? "localhost:3000";
+  return `${host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https"}://${host}`;
 }

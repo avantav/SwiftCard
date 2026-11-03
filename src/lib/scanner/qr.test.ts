@@ -10,6 +10,12 @@ describe("parseCardQrPayload", () => {
     expect(parseCardQrPayload(token)).toEqual({ ok: true, cardToken: token });
   });
 
+  it("recognizes a sealed public scan URL without exposing its private contents", () => {
+    const sealed = "q1_" + "x".repeat(94);
+    expect(parseCardQrPayload(`https://swiftwallet.test/scan/${sealed}`)).toEqual({ ok: true, cardToken: sealed, publicScan: true });
+    expect(parseCardQrPayload(`javascript://example.com/scan/${sealed}`)).toMatchObject({ ok: false });
+  });
+
   it("rejects unrelated URLs and malformed tokens", () => {
     expect(parseCardQrPayload("https://swiftwallet.test/register/branch")).toMatchObject({ ok: false });
     expect(parseCardQrPayload("short-token")).toMatchObject({ ok: false });

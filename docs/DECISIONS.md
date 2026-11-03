@@ -684,3 +684,21 @@
   supersedes the two-column layout in DEC-0052. Publication to main is explicitly
   authorized by the current user instruction.
 - Status: Accepted.
+
+## DEC-0054 - Separate Public Scan Capability And Anonymous Enrollment Client
+
+- Date: 2026-11-03
+- Context: The owner requires normal-camera scans to open the originating
+  tenant/branch registration without exposing customer information. They also
+  reported registration failures after the compact page release.
+- Decision: Put a purpose-bound AES-256-GCM sealed token in a `/scan` URL instead
+  of the private card capability. Resolve it server-side to a public registration
+  redirect only. Authenticate staff before opening it for the existing scoped
+  scan RPC. Keep private owner links separate. Use a stateless anonymous server
+  client for public enrollment because its existing RPC rejects authenticated
+  staff sessions; do not broaden grants or RLS.
+- Consequences: No migration. QR keys must remain stable; use the optional
+  dedicated server key before initial issuance if independent credential rotation
+  is needed. Existing passes/printed codes need refresh/replacement. Public QR
+  responses contain no customer details. See `docs/PUBLIC_CARD_QR.md`.
+- Status: Accepted.

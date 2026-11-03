@@ -1,3 +1,4 @@
+import { isPublicCardScanUrl } from "@/lib/customers/card-scan-url";
 export type GoogleWalletPassData = {
   issuerId: string;
   loyaltyCardId: string;
@@ -20,6 +21,7 @@ export type GoogleWalletPassData = {
   logoUrl: string;
   heroImageUrl: string | null;
   cardUrl: string;
+  scanUrl: string;
   active: boolean;
   merchantLocations: Array<{ latitude: number; longitude: number }>;
 };
@@ -80,6 +82,8 @@ export function buildGoogleWalletResources(input: GoogleWalletPassData) {
     !Number.isSafeInteger(input.availableRewards) ||
     input.availableRewards < 0 ||
     !/^#[0-9A-Fa-f]{6}$/.test(input.backgroundColor) ||
+    !isPublicCardScanUrl(input.scanUrl) ||
+    !input.scanUrl.startsWith("https://") ||
     !input.cardUrl.startsWith("https://")
   ) {
     throw new Error("Invalid Google Wallet pass data.");
@@ -136,7 +140,7 @@ export function buildGoogleWalletResources(input: GoogleWalletPassData) {
     },
     barcode: {
       type: "QR_CODE",
-      value: input.cardUrl,
+      value: input.scanUrl,
       alternateText: "Presenta este código al personal",
     },
     textModulesData: [

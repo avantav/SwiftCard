@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { createCustomerCardClaimQrDataUrl, createCustomerCardQrDataUrl, customerCardClaimUrl } from "./card-qr";
 
+const scanUrl = "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
 const token = "AbcdefghijKLMNOPqrstuvwxyz0123456789-_ABCDE";
 
 describe("customer card QR", () => {
   it("generates a bounded PNG from the opaque public token", async () => {
-    const dataUrl = await createCustomerCardQrDataUrl(token);
+    const dataUrl = await createCustomerCardQrDataUrl(scanUrl);
     const png = Buffer.from(dataUrl.split(",")[1] ?? "", "base64");
 
     expect(dataUrl).toMatch(/^data:image\/png;base64,/);
@@ -15,7 +17,7 @@ describe("customer card QR", () => {
 
   it("rejects values that are not valid public card tokens", async () => {
     await expect(createCustomerCardQrDataUrl("short-token")).rejects.toThrow(
-      "Invalid customer card token.",
+      "Invalid public scan URL.",
     );
   });
 

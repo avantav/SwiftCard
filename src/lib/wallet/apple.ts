@@ -1,3 +1,4 @@
+import { isPublicCardScanUrl } from "@/lib/customers/card-scan-url";
 import { hexToAppleRgb } from "./design";
 import {
   appleWalletPointProgressText,
@@ -36,6 +37,7 @@ export type AppleWalletPassData = {
     description: string;
   }>;
   cardUrl: string;
+  scanUrl: string;
   webServiceUrl: string;
   authenticationToken: string;
   voided?: boolean;
@@ -48,6 +50,8 @@ export function buildAppleWalletPassProps(
 ) {
   if (
     !input.serialNumber.trim() ||
+    !isPublicCardScanUrl(input.scanUrl) ||
+    !input.scanUrl.startsWith("https://") ||
     !input.cardUrl.startsWith("https://") ||
     !input.webServiceUrl.startsWith("https://") ||
     input.authenticationToken.length < 32
@@ -102,7 +106,7 @@ export function buildAppleWalletPassProps(
     barcodes: [
       {
         format: "PKBarcodeFormatQR" as const,
-        message: input.cardUrl,
+        message: input.scanUrl,
         messageEncoding: "iso-8859-1",
       },
     ],

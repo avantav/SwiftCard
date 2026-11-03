@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("next/headers", () => ({ headers: async () => new Headers({ host: "localhost:3000" }) }));
+vi.mock("@/lib/customers/card-scan-server", () => ({ createPublicCardScanUrl: () => "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }));
+
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), client: vi.fn() }));
-vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: mocks.client }));
+vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: () => { throw new Error("Staff session must not be reused for public enrollment"); } }));
+vi.mock("@/lib/supabase/public-server", () => ({ createSupabasePublicServerClient: mocks.client }));
 vi.mock("@/lib/wallet/public-availability", () => ({
   isPublicAppleWalletAvailable: vi.fn(async () => true),
   isPublicGoogleWalletAvailable: vi.fn(async () => false),
@@ -25,7 +29,7 @@ function form() {
 beforeEach(() => {
   vi.clearAllMocks();
   accepted = false; registrationResult = "CREATED"; failProjection = false; version = 3;
-  mocks.client.mockResolvedValue({ schema: () => ({ rpc: mocks.rpc }) });
+  mocks.client.mockReturnValue({ schema: () => ({ rpc: mocks.rpc }) });
   mocks.rpc.mockImplementation(async (name: string) => {
     if (name === "register_public_customer") return { data: [{ result: registrationResult, card_token: token }], error: null };
     if (name === "get_public_card_claim") return { data: [{ customer_name: "Ana Pérez", program_version: version, terms_and_conditions: "Condiciones vigentes" }], error: failProjection ? {} : null };
