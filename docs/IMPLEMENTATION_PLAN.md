@@ -86,6 +86,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add customer and card schema.
 - [x] [Terminada] Implement phone normalization with tests.
 - [x] [Terminada] Implement self-service registration by branch token.
+- [x] [Terminada] Keep public enrollment, imported recovery, versioned terms and real QR delivery on one tenant-branded page with a live saved-design preview and retained form values.
 - [x] [Terminada] Expose each active branch registration link with copy, PNG QR download, and inactive-link handling in the Admin UI.
 - [x] [Terminada] Implement employee registration.
 - [x] [Terminada] Return employee registration to the real PWA route and show a customer handoff QR that opens one mobile terms-and-card screen.

@@ -14,7 +14,7 @@ describe("public registration context boundary", () => {
     expect(source).toContain('branch.status !== "ACTIVE"');
     expect(source).toContain('tenant.status !== "ACTIVE"');
     expect(source).toContain('.select("id,tenant_id,name,status")');
-    expect(source).toContain('.select("name,status")');
+    expect(source).toContain('.select("name,status,branding_mode,logo_url,banner_url")');
     expect(source).toContain('.from("loyalty_card_branches")');
     expect(source).toContain('.from("loyalty_cards")');
     expect(source).toContain('.eq("status", "PUBLISHED")');

@@ -9812,3 +9812,84 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     transition: none;
   }
 }
+
+/* Compact public enrollment, centered on the tenant's saved identity. */
+.registration-page {
+  min-height: 100svh;
+  padding: 40px 24px;
+  background: var(--enterprise-canvas);
+  color: var(--enterprise-text);
+}
+.registration-layout {
+  width: min(100%, 440px);
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  background: var(--enterprise-surface);
+  box-shadow: var(--enterprise-shadow-card);
+}
+.registration-brand { display: grid; justify-items: center; gap: 20px; margin-bottom: 24px; text-align: center; }
+.registration-brand > img, .registration-monogram {
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  padding: 12px;
+  border-radius: var(--enterprise-radius-lg);
+  background: var(--registration-brand);
+  color: var(--registration-brand-text);
+  object-fit: contain;
+}
+.registration-monogram { font-size: 20px; font-weight: 600; overflow-wrap: anywhere; }
+.registration-brand h1 { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 600; }
+.registration-brand p { margin: 8px 0 0; color: var(--enterprise-text-muted); font-size: 13px; overflow-wrap: anywhere; }
+.registration-content { min-width: 0; }
+.registration-preview { min-width: 0; padding-bottom: 16px; }
+.registration-preview .apple-pass-preview { border-radius: var(--enterprise-radius-lg); box-shadow: none; }
+.registration-preview-note, .registration-fine-print { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--enterprise-text-muted); text-align: center; }
+.registration-result-focus:focus { outline: none; }
+.registration-result-focus:focus-visible { outline: 2px solid var(--enterprise-focus); outline-offset: 4px; }
+.registration-form { gap: 16px; }
+.registration-form .field { gap: 6px; font-weight: 500; }
+.registration-form .field :is(input, select) { min-width: 0; min-height: 48px; width: 100%; }
+.registration-form .field select { border: 1px solid var(--enterprise-border); border-radius: var(--enterprise-radius-md); padding: 0 12px; background: var(--enterprise-surface); color: var(--enterprise-text); }
+.registration-form input::placeholder { color: var(--enterprise-text-muted); }
+.registration-card-peek { border-block: 1px solid var(--enterprise-border); }
+.registration-card-peek summary, .registration-optional summary {
+  display: flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; font-size: 13px; font-weight: 500; list-style: none;
+}
+.registration-card-peek summary::-webkit-details-marker, .registration-optional summary::-webkit-details-marker { display: none; }
+.registration-card-peek summary > span, .registration-optional summary > span { margin-left: auto; color: var(--enterprise-text-muted); font-size: 12px; font-weight: 400; }
+.registration-card-peek summary::after, .registration-optional summary::after { content: "+"; color: var(--enterprise-text-muted); font-size: 20px; font-weight: 400; }
+.registration-card-peek[open] summary::after, .registration-optional[open] summary::after { content: "−"; }
+.registration-optional { color: var(--enterprise-text-muted); }
+.registration-optional > div { display: grid; gap: 16px; padding-top: 12px; color: var(--enterprise-text); }
+.registration-consent { display: flex; align-items: flex-start; gap: 10px; color: var(--enterprise-text-muted); font-size: 12px; line-height: 1.8; }
+.registration-consent > input { flex-shrink: 0; width: 18px; height: 18px; margin: 4px 0 0; accent-color: var(--registration-brand); }
+.registration-consent label { cursor: pointer; }
+.registration-text-button { display: inline; border: 0; padding: 0; background: none; color: var(--enterprise-text); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.registration-disclosure { padding: 16px; border: 1px solid var(--enterprise-border); border-radius: var(--enterprise-radius-md); background: var(--enterprise-canvas); }
+.registration-disclosure h2 { margin: 0 0 8px; font-size: 14px; }
+.registration-disclosure p { max-height: 200px; overflow-y: auto; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.6; }
+.registration-page .public-primary-button { min-height: 48px; border-color: var(--registration-brand); background: var(--registration-brand); color: var(--registration-brand-text); font-weight: 600; }
+.registration-page .public-primary-button:hover:not(:disabled) { filter: brightness(0.94); }
+.registration-fine-print { margin: 0; }
+.registration-completion { display: grid; gap: 16px; }
+.registration-completion > div:empty { display: none; }
+.registration-issued-card { margin-bottom: 24px; }
+.registration-terms { border-block: 1px solid var(--enterprise-border); }
+.registration-terms summary { min-height: 44px; padding: 12px 0; cursor: pointer; font-size: 13px; }
+.registration-terms p { max-height: 200px; overflow-y: auto; margin: 0 0 16px; color: var(--enterprise-text-muted); font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.registration-accepted { margin: 0; color: #087a55; font-size: 14px; text-align: center; }
+.registration-completion .public-wallet-actions { justify-content: center; }
+.registration-intro { margin: 0; color: var(--enterprise-text-muted); font-size: 13px; line-height: 1.6; text-align: center; }
+.registration-save-link { min-height: 44px; border-color: var(--enterprise-border); color: var(--enterprise-text); text-align: center; }
+.registration-footer { margin-top: 24px; color: var(--enterprise-text-muted); text-align: center; font-size: 12px; }
+.registration-footer strong { font-weight: 600; }
+.registration-page :is(input, select, button, a, summary, [tabindex="0"]):focus-visible { outline: 2px solid var(--enterprise-focus); outline-offset: 3px; }
+.registration-page .public-check input { flex-shrink: 0; accent-color: var(--registration-brand); }
+@media (max-width: 639px) {
+  .registration-page { padding: 28px 24px; background: var(--enterprise-surface); }
+  .registration-layout { max-width: 440px; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+}

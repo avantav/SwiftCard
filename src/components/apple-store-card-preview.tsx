@@ -42,6 +42,11 @@ type AppleStoreCardPreviewProps = {
   rewardGoal: number | null;
   unitNameSingular: string;
   unitNamePlural: string;
+  customerName?: string;
+  balance?: number;
+  rewardCount?: number;
+  qrDataUrl?: string | null;
+  showQr?: boolean;
   onStampPositionChange?: (xPercent: number, yPercent: number) => void;
 };
 
@@ -63,11 +68,16 @@ export function AppleStoreCardPreview({
   rewardGoal,
   unitNameSingular,
   unitNamePlural,
+  customerName = "Cliente ejemplo",
+  balance,
+  rewardCount = 1,
+  qrDataUrl,
+  showQr = true,
   onStampPositionChange,
 }: AppleStoreCardPreviewProps) {
-  const exampleBalance = rewardGoal
+  const exampleBalance = balance ?? (rewardGoal
     ? Math.min(rewardGoal, Math.max(1, Math.floor(rewardGoal * 0.4)))
-    : 0;
+    : 0);
   const progress = appleWalletStampSlots(exampleBalance, rewardGoal);
   const layout = appleWalletStampLayout(progress.visible, design.stampRowCounts);
   let stampIndex = 0;
@@ -189,11 +199,11 @@ export function AppleStoreCardPreview({
         <div className={`apple-pass-preview-supporting-fields${lifetimePoints ? " is-lifetime" : ""}`}>
           <p>
             <span>CLIENTE</span>
-            <strong>Cliente ejemplo</strong>
+            <strong>{customerName}</strong>
           </p>
           <p>
             <span>PREMIOS</span>
-            <strong>1</strong>
+            <strong>{rewardCount}</strong>
           </p>
           {lifetimePoints || design.stripStampsEnabled ? (
             <p>
@@ -205,9 +215,9 @@ export function AppleStoreCardPreview({
           ) : null}
           {lifetimePoints ? <p><span>SIGUIENTE</span><strong>Próximo premio</strong></p> : null}
         </div>
-        <figure className="apple-pass-preview-code">
-          <img alt="" src="/icons/wallet-preview-qr.svg" />
-        </figure>
+        {showQr ? <figure className="apple-pass-preview-code">
+          <img alt={qrDataUrl ? "Código QR de tu tarjeta" : ""} src={qrDataUrl ?? "/icons/wallet-preview-qr.svg"} />
+        </figure> : null}
       </div>
     </div>
   );

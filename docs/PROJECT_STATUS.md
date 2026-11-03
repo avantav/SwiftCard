@@ -1,5 +1,26 @@
 # Project Status
 
+## Compact enrollment approved — 2026-11-03
+
+The owner approved the WonCards-inspired compact proposal and explicitly
+requested publication to main. Registration uses one centered column, a large
+tenant logo, a card selector when needed, a collapsed saved-design preview,
+optional contact fields and a contrast-safe brand-colored action. Explicit
+terms consent is submitted with registration; version changes still require
+reacceptance. No database migration is required. The separate public QR privacy
+request is being implemented independently and must not delay this UI release.
+
+
+## Public registration refresh — 2026-11-01
+
+The current user priority is the public registration redesign, ahead of the
+commercial backlog. Enrollment now stays on the same branch URL, with a live
+saved-branding preview, inline versioned terms acceptance, real QR delivery and
+copyable card link. Optional fields are folded and white-label attribution is
+respected. No database migration is required. Local validation uses fictitious
+Supabase responses; production credentials and real Wallet device tests are
+still external release checks. Prior phase status below is historical context.
+
 ## Current State
 
 - Current phase: Phase 10 commercial foundation, with landing and Wallet rollout validation still pending in parallel.

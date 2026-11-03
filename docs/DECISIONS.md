@@ -646,3 +646,41 @@
   tenant-path RLS. Any future support write must be authorized separately and
   designed per operation with explicit audit semantics.
 - Status: Accepted.
+
+## DEC-0052 - Tenant-Branded Single-Page Public Enrollment
+
+- Date: 2026-11-01
+- Context: The product owner prioritized a minimal, tenant-branded registration
+  page with a live card preview and no navigation between enrollment steps.
+- Decision: Use React action state for registration, imported recovery,
+  versioned terms acceptance and inline QR delivery. Reuse the saved Apple
+  preview renderer with zero initial progress and no sample QR; after issuance
+  it receives real public-card values and the real opaque-token QR. Load only
+  published cards assigned to the active branch and explicitly scope artwork
+  and program reads to its tenant. Keep optional fields folded and morrow
+  attribution in the footer, omitted for white-label.
+- Reason: The customer can complete enrollment on the same page while seeing
+  the selected business identity. Existing database RPCs retain issuance,
+  duplicate, recovery and terms authority.
+- Consequences: No migration required. Wallet opens only through explicit
+  provider actions after confirmed acceptance. The customer can copy the card
+  link without navigating. Projection/QR failures retain the issued token for
+  retry; reloads do not issue another card. No PII or card token is put in the
+  registration URL. Production credentials/device delivery remain deployment
+  validation, not part of the local fictitious-data review.
+- Status: Accepted.
+
+## DEC-0053 - Approved Compact Enrollment Layout
+
+- Date: 2026-11-03
+- Context: The owner approved the compact WonCards-inspired preview and asked
+  to push it to main before the independent public QR work is finished.
+- Decision: Center a single 440px column beneath the tenant logo, fold the card
+  preview and optional fields, replace marketing headings with a short page
+  title and use a brand-colored action with computed black/white text contrast.
+  Submit explicit terms consent with the displayed version during registration;
+  a changed version falls back to the existing inline reacceptance flow.
+- Consequences: No migration. Existing Wallet acceptance checks remain. This
+  supersedes the two-column layout in DEC-0052. Publication to main is explicitly
+  authorized by the current user instruction.
+- Status: Accepted.

@@ -495,3 +495,25 @@ Antes de considerar terminada cualquier tarea de interfaz, verificar:
 - Los cambios que contradigan una regla requieren autorización explícita del usuario y una decisión registrada.
 - Una pantalla existente que no cumpla estas reglas debe mejorar de forma incremental cuando sea modificada; no se debe propagar su inconsistencia.
 - Las referencias externas sirven para estudiar principios, nunca para sustituir el criterio, la identidad o los requisitos de morrow.
+
+## 25. Registro público con marca del negocio
+
+- El registro por QR usa un solo lienzo claro y mínimo; el logo del negocio y
+  el diseño publicado de la tarjeta son la identidad principal.
+- Mantener registro, errores, recuperación importada, aceptación de términos y
+  entrega del QR en `/register/[branchToken]` sin redirecciones intermedias.
+- El registro usa una columna de hasta 440px, logo grande centrado y vista
+  previa plegada en “Ver mi tarjeta”. En móvil se retira el marco exterior.
+  Conservar foco, teclado, controles de al menos 44px, inputs de 16px y zoom manual.
+- Elegir otra tarjeta actualiza logo, colores, imágenes y distribución guardada.
+  La vista previa no muestra un QR de ejemplo como si fuera utilizable.
+- Nombre y teléfono son visibles; correo y cumpleaños se agrupan como datos
+  opcionales. Los errores conservan los datos y la selección.
+- Tras emitir, mostrar únicamente el QR y saldo reales de la tarjeta. Wallet
+  solo se ofrece después de aceptar explícitamente los términos vigentes.
+- La atribución morrow queda en el pie y se omite para white-label. La acción
+  principal usa el fondo de la tarjeta con texto negro o blanco calculado para
+  mantener contraste AA; los textos del formulario permanecen neutrales.
+- La aceptación explícita de privacidad y términos se integra al alta; se
+  persiste únicamente si la versión presentada sigue vigente. Si cambia, se
+  muestran las condiciones actuales y se exige una nueva aceptación.

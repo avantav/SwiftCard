@@ -1,5 +1,30 @@
 # Next Session
 
+## Compact enrollment approved — 2026-11-03
+
+The owner approved the WonCards-inspired compact proposal and explicitly
+requested publication to main. Registration uses one centered column, a large
+tenant logo, a card selector when needed, a collapsed saved-design preview,
+optional contact fields and a contrast-safe brand-colored action. Explicit
+terms consent is submitted with registration; version changes still require
+reacceptance. No database migration is required. The separate public QR privacy
+request is being implemented independently and must not delay this UI release.
+
+
+## Public enrollment priority — 2026-11-01
+
+- Public registration now uses `PublicRegistrationFlow` and server action state;
+  do not restore redirect-based success or imported recovery.
+- The server-only context selects published, branch-assigned cards and their
+  tenant-scoped public artwork/program fields. No new migration is needed.
+- Terms acceptance still uses the authoritative versioned RPC. Wallet routes
+  retain their independent acceptance checks; QR delivery uses the real token.
+- Preview artwork comes from the saved card design, and optional renderer
+  properties preserve existing Admin defaults. White-label hides morrow.
+- Local browser review uses a temporary mock Supabase service with fictional
+  data, not production. Verify a real published branch after deployment.
+- Resume commercial/purchase-location backlog only when the user chooses it.
+
 ## Superadmin support context
 
 - Migration `0067_superadmin_support_sessions.sql` is applied remotely and

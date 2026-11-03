@@ -109,8 +109,9 @@ describe("Casa Garmendia customer import profile", () => {
   it("routes imported duplicate registration through terms and permits employee redelivery", () => {
     expect(migration).toContain("'IMPORTED_RECOVERY'");
     expect(migration).toContain("repeat_delivery_allowed boolean");
-    expect(publicRegistration).toContain('result.result === "IMPORTED_RECOVERY"');
-    expect(publicRegistration).toContain("customerCardClaimPath(result.card_token)");
+    expect(publicRegistration).toContain('["CREATED", "IMPORTED_RECOVERY"].includes(result.result)');
+    expect(publicRegistration).toContain("loadRegistrationCard(result.card_token)");
+    expect(publicRegistration).not.toContain("redirect(");
     expect(employeeScan).toContain("delivery.repeat_delivery_allowed");
   });
 });

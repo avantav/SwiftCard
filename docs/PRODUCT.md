@@ -217,6 +217,17 @@ El Admin general tendrá un directorio exclusivo del tenant en `/admin/customers
 
 Cada sucursal activa tendrá su propio enlace y QR público. El cliente ve el tenant y la sucursal y, cuando la ubicación participa en más de una tarjeta publicada, elige cuál desea antes de capturar sus datos. El backend valida que esa tarjeta esté publicada y ligada a la sucursal, valida formato y duplicados, crea el cliente y genera la tarjeta emitida. Se guarda la sucursal de origen y el método SELF_SERVICE. Al completar el registro, una sola pantalla mostrará los términos vigentes, solicitará su aceptación y ofrecerá **Agregar a Apple Wallet** cuando la tarjeta y el servidor estén listos; si Apple no está disponible, abrirá la Web Card. Un enlace inválido, una tarjeta no participante, una sucursal inactiva o un tenant suspendido no mostrará el formulario.
 
+El registro público permanecerá en una sola página: selección de tarjeta,
+formulario, recuperación de importados, aceptación de términos y entrega del
+QR no navegarán a otras rutas. El logo y branding del negocio serán principales;
+una vista previa plegable usará el diseño publicado de la tarjeta elegida y
+actualizará el nombre al capturarlo. El formulario ocupará una sola columna
+compacta con logo centrado y acción “Crear y guardar mi tarjeta”. Correo y cumpleaños estarán plegados como opcionales.
+Tras emitir se mostrará el QR real y las acciones Wallet se habilitarán solo
+tras aceptar la versión vigente de los términos. El cliente podrá copiar el
+enlace de su tarjeta sin abandonar la página. La atribución morrow será discreta
+y se omitirá en white-label.
+
 ### Por empleado
 
 Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Si posteriormente se localiza al cliente por búsqueda o escaneo y Apple todavía no ha registrado la tarjeta en un dispositivo, el mismo modal permitirá volver a generar ese QR; la opción se ocultará después del registro de Wallet. Se guarda sucursal, empleado, fecha y método EMPLOYEE.

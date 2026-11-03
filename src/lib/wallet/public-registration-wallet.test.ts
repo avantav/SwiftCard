@@ -24,10 +24,11 @@ const availability = readFileSync(
 
 describe("mobile wallets after public registration", () => {
   it("offers the configured signed pass after accepting terms", () => {
-    expect(registrationPage).toContain("PublicRegistrationSuccess");
-    expect(registrationPage).toContain("appleWalletAvailable");
-    expect(registrationPage).toContain("googleWalletAvailable");
-    expect(registrationPage).toContain('created === "1"');
+    expect(registrationPage).toContain("PublicRegistrationFlow");
+    expect(success).toContain("appleWalletAvailable");
+    expect(success).toContain("googleWalletAvailable");
+    expect(success).toContain("state.accepted");
+    expect(success).toContain("accepted />");
     expect(registrationPage).not.toContain("/card/");
     expect(success).toContain("AppleWalletAddButton");
     expect(button).toContain("?claim=1");

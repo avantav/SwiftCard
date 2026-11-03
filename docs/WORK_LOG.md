@@ -1,5 +1,42 @@
 # Work Log
 
+## 2026-11-03 - Approved Compact Public Enrollment
+
+**Implemented:** Replaced the two-column composition with the approved centered
+layout: large tenant logo, compact published-card selector, collapsed live
+preview, optional fields and a brand-colored primary action with accessible
+text contrast. Privacy and current terms are explicitly accepted in the initial
+submission; a version mismatch keeps the issued card and requires reacceptance.
+No migration or production-data write is required. The user explicitly
+requested publication to main. Public QR privacy work is separate.
+
+**Validation:** Lint, TypeScript, all 311 tests and the production build pass.
+Chromium verified 375/768/1280/1440px, no overflow, collapsed preview and initial
+terms acceptance with inline success on the same registration URL.
+
+
+## 2026-11-01 - Tenant-Branded Single-Page Public Registration
+
+**Objective:** Keep public customer enrollment on one minimal page centered on
+its business and selected loyalty-card branding.
+
+**Implemented:** Added a responsive registration flow with saved logo/artwork,
+colors and stamp layout, live customer-name preview, published-card selection,
+folded optional fields and retained input after errors. Issuance and imported
+recovery return action state instead of redirects. Current program terms,
+explicit acceptance, real card QR and provider availability stay inline.
+Wallet links only appear after authoritative acceptance; a copy-link control
+preserves the registration page. Projection/QR retries reuse the issued token.
+The context remains server-only with tenant/branch/published-card scoping.
+No migration, production data change or deployment is involved.
+
+**Validation:** Lint, typecheck, the webpack production build and all 309 tests in 80 files pass. Browser
+review with fictitious Supabase responses covers 375/768/1280/1440px, no
+horizontal overflow, changed-card colors, preserved duplicate-error input,
+inline issuance/terms/QR and exactly one registration. Production credentials
+and real Wallet-device validation remain deployment checks.
+
+
 ## 2026-10-30 - Direct Apple Wallet Refresh After Purchase
 
 **Objective:** Make Apple Wallet points refresh with the same immediacy as
