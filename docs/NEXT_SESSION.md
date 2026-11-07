@@ -1,5 +1,14 @@
 # Next Session
 
+## Required email and welcome email planned — 2026-11-07
+
+- New task in `docs/IMPLEMENTATION_PLAN.md` ("Required email and Resend welcome
+  email") and DEC-0055: email becomes mandatory for new public and employee
+  registrations, and each newly issued card triggers one Resend welcome email
+  through a transactional outbox. Not implemented yet.
+- Sending is blocked by EMAIL-001 (Resend key, verified domain, copy, privacy
+  text, private-link decision). Validation, migration and outbox can start.
+
 ## Public QR privacy and registration session repair — 2026-11-03
 
 - New Web/Apple/Google barcodes use encrypted `/scan/q1_...` links. Public camera

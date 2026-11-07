@@ -315,6 +315,51 @@ staff identity.
 - The target tenant and read-only state remain visible throughout the session.
 - Sessions expire within one hour and can be ended explicitly.
 
+## Cross-cutting - Required email and Resend welcome email
+
+**Objective:** Require an email address for every new customer registration and
+send one transactional welcome email through Resend when a customer card is
+issued, without coupling registration success to email delivery.
+
+**Dependencies:** Existing public/employee registration RPCs, server-only
+secrets, immutable audit log. Release requires EMAIL-001 to be resolved.
+
+**Tasks**
+
+- [ ] [Pendiente] Make email required and normalized (trim, lowercase, bounded
+  length, valid format) in `src/lib/customers/{registration,employee-registration}.ts`
+  and both registration forms; move the field out of the optional fold.
+- [ ] [Pendiente] Add an additive migration that makes the public and employee
+  registration RPCs reject an empty email for new customers, without a `NOT
+  NULL` on `customers.email` so imported and existing rows remain valid.
+- [ ] [Pendiente] Add a forced-RLS, service-role-only email outbox written in the
+  same transaction as card issuance, with one welcome job per issued card
+  enforced by a unique constraint.
+- [ ] [Pendiente] Add a server-only Resend adapter (`RESEND_API_KEY`,
+  `RESEND_FROM_EMAIL`), dispatch immediately after a successful registration,
+  use the outbox ID as the Resend idempotency key and record status, attempts,
+  provider message ID and a sanitized error.
+- [ ] [Pendiente] Extend the protected internal retry endpoint pattern for
+  pending email jobs, with bounded attempts and backoff.
+- [ ] [Pendiente] Build the Spanish welcome template (HTML plus text) with tenant
+  name/logo, program summary and white-label handling; include the private card
+  link only if the product owner approves it (see EMAIL-001).
+- [ ] [Pendiente] Add unit, migration/RLS and action tests: required email,
+  no send on recovery/duplicate/import, failure does not revert registration,
+  no duplicate send on retry, no secret or PII in logs.
+- [ ] [Pendiente] Verify the public form at 375, 768, 1280 and 1440 px against
+  `docs/DESIGN_SYSTEM.md` section 25.
+
+**Acceptance Criteria**
+
+- New public and employee registrations without a valid email fail with a
+  field-level error and keep the other values.
+- Each newly issued card produces at most one welcome email.
+- A Resend outage never blocks or rolls back registration; the job remains
+  retryable.
+- The Resend key never reaches the browser, logs or Git.
+- Imported and pre-existing customers without email keep operating.
+
 ## Phase 9 - Piloto
 
 **Objective:** Complete E2E, security, RLS, monitoring, backups, privacy, pilot tenant, and production checklist.

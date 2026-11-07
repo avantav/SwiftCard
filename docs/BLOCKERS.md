@@ -2,6 +2,16 @@
 
 ## Active Blockers
 
+- **EMAIL-001:** The Resend welcome email is planned but external inputs are missing.
+  - **Affected area:** Customer registration welcome email (DEC-0055).
+  - **Consequence:** Required email capture can ship, but no email can be sent.
+  - **Recommendation:** Provide `RESEND_API_KEY`, verify the sending domain in
+    Resend (SPF/DKIM), choose `RESEND_FROM_EMAIL`, approve the welcome copy and
+    the privacy-notice mention of email use, and decide whether the email may
+    include the private card link.
+  - **Work that can continue:** Validation, migration, outbox, adapter with a
+    test key, template and tests.
+
 - **REVIEWS-001:** The Reviews product is authorized and its standalone MVP can
   begin at domain-contract level, but privacy and external-integration inputs
   are not approved.

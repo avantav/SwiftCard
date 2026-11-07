@@ -190,7 +190,7 @@ Datos:
 - UUID interno.  
 - Nombre obligatorio.  
 - Teléfono obligatorio y normalizado.  
-- Correo opcional.  
+- Correo obligatorio en todo registro nuevo, público o por empleado; los clientes existentes e importados sin correo siguen siendo válidos.  
 - Fecha de nacimiento opcional.  
 - Consentimiento de privacidad.  
 - Método y sucursal de registro.  
@@ -222,7 +222,7 @@ formulario, recuperación de importados, aceptación de términos y entrega del
 QR no navegarán a otras rutas. El logo y branding del negocio serán principales;
 una vista previa plegable usará el diseño publicado de la tarjeta elegida y
 actualizará el nombre al capturarlo. El formulario ocupará una sola columna
-compacta con logo centrado y acción “Crear y guardar mi tarjeta”. Correo y cumpleaños estarán plegados como opcionales.
+compacta con logo centrado y acción “Crear y guardar mi tarjeta”. Nombre, teléfono y correo serán visibles y obligatorios; solo el cumpleaños estará plegado como opcional.
 Tras emitir se mostrará el QR real y las acciones Wallet se habilitarán solo
 tras aceptar la versión vigente de los términos. El cliente podrá copiar el
 enlace de su tarjeta sin abandonar la página. La atribución morrow será discreta
@@ -230,7 +230,11 @@ y se omitirá en white-label.
 
 ### Por empleado
 
-Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Si posteriormente se localiza al cliente por búsqueda o escaneo y Apple todavía no ha registrado la tarjeta en un dispositivo, el mismo modal permitirá volver a generar ese QR; la opción se ocultará después del registro de Wallet. Se guarda sucursal, empleado, fecha y método EMPLOYEE.
+Desde la PWA, el empleado elige una tarjeta publicada y una de sus sucursales participantes, captura los datos y el sistema genera la tarjeta. La confirmación muestra un QR de entrega para que el cliente abra en su teléfono una sola pantalla, revise y acepte los términos vigentes y agregue la tarjeta. Si posteriormente se localiza al cliente por búsqueda o escaneo y Apple todavía no ha registrado la tarjeta en un dispositivo, el mismo modal permitirá volver a generar ese QR; la opción se ocultará después del registro de Wallet. Se guarda sucursal, empleado, fecha y método EMPLOYEE. El correo también es obligatorio en este registro.
+
+### Correo de bienvenida
+
+Cuando el backend emite una tarjeta nueva por autoservicio o por empleado, morrow enviará un único correo transaccional de bienvenida mediante Resend al correo capturado. El envío ocurre en el servidor después de confirmar la transacción de registro y nunca bloquea ni revierte el alta: una falla queda pendiente para reintento. No se reenvía al recuperar una tarjeta, repetir el registro, importar clientes ni editar el correo. El mensaje usa la identidad del tenant, omite la atribución morrow en white-label y no es una campaña de marketing; las campañas siguen fuera del MVP.
 
 No habrá OTP, verificación por correo ni contraseña del cliente.
 

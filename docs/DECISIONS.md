@@ -702,3 +702,28 @@
   is needed. Existing passes/printed codes need refresh/replacement. Public QR
   responses contain no customer details. See `docs/PUBLIC_CARD_QR.md`.
 - Status: Accepted.
+
+## DEC-0055 - Required Customer Email And Resend Welcome Email
+
+- Date: 2026-11-07
+- Context: The product owner requested a welcome email on registration sent
+  through Resend and made the email field mandatory at registration.
+- Decision: Require a normalized email for every new public or employee
+  registration, enforced in the application and the registration RPCs, while
+  keeping `customers.email` nullable for existing and imported customers. Queue
+  one welcome job per issued card in the same transaction, dispatch it
+  immediately from the server through Resend with an idempotency key, and keep
+  failures for retry. Do not send on recovery, duplicate registration, import
+  or email edits.
+- Alternatives considered: Keep email optional and send only when present,
+  add `NOT NULL` to the column with a backfill, or send directly from the
+  registration action without an outbox.
+- Reason: Required capture guarantees a destination, the nullable column
+  preserves legacy and imported data, and the outbox mirrors the Apple Wallet
+  pattern (DEC-0015) so delivery never affects loyalty correctness.
+- Consequences: Requires a migration, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, a
+  verified sending domain and approved copy and privacy text. Email is not
+  verified (no OTP), so a mistyped address receives the message; whether the
+  private card link is included needs explicit owner approval. Supersedes the
+  optional-email wording in PRODUCT 9/10 and DESIGN_SYSTEM 25.
+- Status: Accepted; implementation pending.
