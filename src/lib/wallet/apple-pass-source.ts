@@ -3,6 +3,8 @@ import "server-only";
 import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { AppleWalletLocation, AppleWalletPassData } from "./apple";
+import { composeWalletActivityMessage } from "./activity-message";
+import { loadLatestWalletActivity } from "./activity-source";
 import type { AppleWalletImageLayout } from "./apple-image-layout";
 import {
   getApplePassAuthenticationToken,
@@ -254,6 +256,28 @@ export async function loadAppleWalletPassSource(
       ];
     },
   );
+  const stampBalance = program.program_type === "LIFETIME_POINTS"
+    ? Math.floor(Number(balanceResult.data?.lifetime_points_tenths ?? 0) / 10)
+    : Number(balanceResult.data?.stamp_balance ?? 0);
+  const rewardTiers = (tiersResult.data ?? []).map((tier) => ({
+    stampsRequired: tier.stamps_required,
+    name: tier.name,
+    description: tier.description,
+  }));
+  const activity = await loadLatestWalletActivity(supabase, {
+    tenantId: card.tenant_id,
+    customerId: card.customer_id,
+    loyaltyCardId: cardConfiguration.id,
+    lifetimePoints: program.program_type === "LIFETIME_POINTS",
+  });
+  const latestActivity = composeWalletActivityMessage(activity, {
+    balance: stampBalance,
+    availableRewards: rewardsResult.count ?? 0,
+    rewardGoal: program.reward_stamp_goal,
+    rewardTiers,
+    unitNameSingular: program.unit_name_singular,
+    unitNamePlural: program.unit_name_plural,
+  }).body;
   const serialNumber = walletPass?.serial_number ?? card.id;
   const publicUrl = resolvePublicAppUrl(requestUrl);
 
@@ -282,20 +306,14 @@ export async function loadAppleWalletPassSource(
         programType: program.program_type,
         unitNameSingular: program.unit_name_singular,
         unitNamePlural: program.unit_name_plural,
-        stampBalance: program.program_type === "LIFETIME_POINTS"
-          ? Math.floor(Number(balanceResult.data?.lifetime_points_tenths ?? 0) / 10)
-          : Number(balanceResult.data?.stamp_balance ?? 0),
+        stampBalance,
         rewardGoal: program.reward_stamp_goal,
         showStampProgress: design.strip_stamps_enabled,
         availableRewards: rewardsResult.count ?? 0,
         termsAndConditions:
           program.terms_and_conditions ??
           "Consulta los términos y condiciones vigentes con el negocio.",
-        rewardTiers: (tiersResult.data ?? []).map((tier) => ({
-          stampsRequired: tier.stamps_required,
-          name: tier.name,
-          description: tier.description,
-        })),
+        rewardTiers,
         scanUrl: createPublicCardScanUrl(card.public_token, publicUrl),
         cardUrl: `${publicUrl}/card/${encodeURIComponent(card.public_token)}`,
         webServiceUrl: `${publicUrl}/api/wallet/apple`,
@@ -308,6 +326,7 @@ export async function loadAppleWalletPassSource(
             design.status !== "PUBLISHED" ||
             !design.wallet_enabled),
         locations,
+        latestActivity,
       },
       assets: {
         logoUrl: design.logo_image_url ?? tenant.logo_url,

@@ -1,5 +1,16 @@
 # Next Session
 
+## Wallet activity messages — 2026-11-09
+
+- MVP implemented on `worktree-wallet-notifications` (DEC-0055); plan and
+  post-MVP work in `docs/WALLET_ACTIVITY_MESSAGES.md`.
+- After deployment, validate on a real iPhone and Android with installed passes:
+  purchase without reward, purchase that unlocks a reward (one notice only),
+  redemption, and a fourth Google notice within 24 h (stored without alert).
+- Next candidates: per-card editable templates (migration + editor UI), then a
+  provider-neutral outbox worker with Vercel Cron. No migration is pending for
+  the MVP.
+
 ## Public QR privacy and registration session repair — 2026-11-03
 
 - New Web/Apple/Google barcodes use encrypted `/scan/q1_...` links. Public camera

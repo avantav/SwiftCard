@@ -1,6 +1,7 @@
 # Wallet: mensajes de actividad (compra, premio alcanzado, premio canjeado)
 
-Estado: **MVP en implementación** (rama `worktree-wallet-notifications`). Este
+Estado: **MVP implementado**, pendiente de despliegue y validación en
+dispositivos reales (rama `worktree-wallet-notifications`; ver DEC-0055). Este
 documento es la fuente del plan, de las decisiones y del trabajo posterior al MVP.
 
 ## Objetivo
@@ -67,7 +68,8 @@ cliente y tarjeta de fidelidad (`loyalty_card_id`):
 
 - Última compra `CONFIRMED` en `purchases`.
 - Premios con `source_purchase_id` de esa compra → premio alcanzado.
-- Último canje `REDEEMED` en `reward_redemptions` (premio en `rewards`).
+- Último canje `COMPLETED` en `reward_redemptions` (premio en `rewards`); los
+  canjes revertidos (`REVERSED`) se ignoran.
 - Gana el evento más reciente (`created_at` / `redeemed_at`).
 
 No hace falta tabla nueva: el mensaje se recalcula siempre desde el estado

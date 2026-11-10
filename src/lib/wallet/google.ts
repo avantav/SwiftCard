@@ -1,4 +1,5 @@
 import { isPublicCardScanUrl } from "@/lib/customers/card-scan-url";
+import { WALLET_ACTIVITY_EMPTY_MESSAGE } from "./activity-message";
 export type GoogleWalletPassData = {
   issuerId: string;
   loyaltyCardId: string;
@@ -24,6 +25,8 @@ export type GoogleWalletPassData = {
   scanUrl: string;
   active: boolean;
   merchantLocations: Array<{ latitude: number; longitude: number }>;
+  /** Latest activity message, also delivered as a Wallet message after operations. */
+  latestActivity: string;
 };
 
 export type GoogleWalletImage = {
@@ -144,6 +147,11 @@ export function buildGoogleWalletResources(input: GoogleWalletPassData) {
       alternateText: "Presenta este código al personal",
     },
     textModulesData: [
+      {
+        id: "latest-activity",
+        header: "Última actividad",
+        body: input.latestActivity.trim() || WALLET_ACTIVITY_EMPTY_MESSAGE,
+      },
       { id: "progress", header: "Próximo premio", body: progress },
       {
         id: "program-details",

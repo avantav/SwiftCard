@@ -2610,3 +2610,33 @@ page of competing forms or repeated accordions.
 - Representative base, management-modal and creation-step states reviewed at
   375, 768, 1280 and 1440 px; the tablet inventory switches to structured
   blocks to prevent horizontal overflow.
+
+## 2026-11-09 - Wallet activity messages (MVP)
+
+**Objective:** Notify customers through Apple and Google Wallet after a
+purchase, a reached reward and a used reward.
+
+**Changes made**
+
+- Documented the plan, platform limits, post-MVP editable templates and the
+  future worker in `docs/WALLET_ACTIVITY_MESSAGES.md` (DEC-0055).
+- Added fixed activity templates (`activity-message.ts`) and a server-only
+  latest-event loader (`activity-source.ts`) derived from existing tables.
+- Apple: single `latest-activity` back field with `changeMessage: "%@"`; removed
+  every other `changeMessage` to avoid duplicate notices.
+- Google: `latest-activity` text module, `syncGoogleWalletPass` option to skip
+  `notifyPreference`, `addGoogleWalletMessage` with quota fallback to `TEXT` and
+  idempotent message IDs, and direct post-operation refresh
+  (`google-activity.ts`).
+- Purchase and redemption actions (`/app/purchase`, `/app/redeem`, `/app/scan`)
+  now call `dispatchWalletActivityBestEffort`.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run test:run`: passed; 343 tests across 85 files.
+- `npm run build`: passed with webpack.
+- No UI, route, migration or environment change; the design checklist does not
+  apply.
+- Pending: real-device validation on iPhone and Android after deployment.

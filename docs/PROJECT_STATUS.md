@@ -1,5 +1,14 @@
 # Project Status
 
+## Wallet activity messages — 2026-11-09
+
+- Purchases, reached rewards and redemptions now produce one Wallet message:
+  Apple via the single `latest-activity` pass field, Google via a direct object
+  refresh plus `addMessage` (quota-aware). Templates are fixed for the MVP;
+  editable templates and queue workers are documented as post-MVP.
+- Validation: typecheck, lint, 343 tests across 85 files and the webpack build
+  passed. Real-device validation is pending deployment.
+
 ## Public QR privacy and registration session repair — 2026-11-03
 
 - New Web/Apple/Google barcodes use encrypted `/scan/q1_...` links. Public camera

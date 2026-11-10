@@ -4,6 +4,8 @@ import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { resolvePublicOrigin } from "@/lib/public-origin";
 import type { GoogleWalletPassData } from "./google";
+import { composeWalletActivityMessage, type WalletActivityMessage } from "./activity-message";
+import { loadLatestWalletActivity } from "./activity-source";
 
 export type GoogleWalletPassSource = {
   tenantId: string;
@@ -11,6 +13,7 @@ export type GoogleWalletPassSource = {
   customerCardId: string;
   loyaltyCardId: string;
   tenantName: string;
+  activityMessage: WalletActivityMessage;
   passData: Omit<GoogleWalletPassData, "issuerId">;
 };
 
@@ -165,6 +168,26 @@ export async function loadGoogleWalletPassSource(
       : [];
   });
 
+  const rewardTiers = (tiersResult.data ?? []).map((tier) => ({
+    stampsRequired: tier.stamps_required,
+    name: tier.name,
+    description: tier.description,
+  }));
+  const activity = await loadLatestWalletActivity(supabase, {
+    tenantId: card.tenant_id,
+    customerId: card.customer_id,
+    loyaltyCardId: configuration.id,
+    lifetimePoints: program.program_type === "LIFETIME_POINTS",
+  });
+  const activityMessage = composeWalletActivityMessage(activity, {
+    balance,
+    availableRewards: rewardsResult.count ?? 0,
+    rewardGoal: program.reward_stamp_goal,
+    rewardTiers,
+    unitNameSingular: program.unit_name_singular,
+    unitNamePlural: program.unit_name_plural,
+  });
+
   return {
     ok: true,
     source: {
@@ -173,6 +196,7 @@ export async function loadGoogleWalletPassSource(
       customerCardId: card.id,
       loyaltyCardId: configuration.id,
       tenantName: tenant.name,
+      activityMessage,
       passData: {
         loyaltyCardId: configuration.id,
         customerCardId: card.id,
@@ -184,11 +208,7 @@ export async function loadGoogleWalletPassSource(
         balance,
         availableRewards: rewardsResult.count ?? 0,
         rewardGoal: program.reward_stamp_goal,
-        rewardTiers: (tiersResult.data ?? []).map((tier) => ({
-          stampsRequired: tier.stamps_required,
-          name: tier.name,
-          description: tier.description,
-        })),
+        rewardTiers,
         termsAndConditions: program.terms_and_conditions ?? "Consulta los términos y condiciones vigentes con el negocio.",
         backgroundColor: configuration.background_color,
         logoUrl,
@@ -198,6 +218,7 @@ export async function loadGoogleWalletPassSource(
         // A paused program remains visible and its already-earned rewards remain usable.
         active: true,
         merchantLocations,
+        latestActivity: activityMessage.body,
       },
     },
   };

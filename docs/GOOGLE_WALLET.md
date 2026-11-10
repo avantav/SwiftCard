@@ -34,7 +34,7 @@ After adding or rotating an environment value, redeploy the application. Do not 
 - The object contains the current balance, available-reward count, ordered reward catalog, terms, opaque Web Card QR, shared card imagery and at most ten active proximity locations.
 - SwiftWallet records the Google object ID in `wallet_passes`; failures expose only a generic customer message.
 
-The current implementation synchronizes the object whenever the customer uses the Google Wallet add action. Automatic post-purchase Google refresh is separate from this initial issuance path and remains release follow-up work. Google controls exact rendering and whether a proximity suggestion appears.
+The object is synchronized whenever the customer uses the Google Wallet add action and, since DEC-0055, directly after every confirmed purchase or redemption: the staff action PATCHes each `ACTIVE` Google pass of the customer without `notifyPreference` and adds a deterministic activity message (`TEXT_AND_NOTIFY`, degraded to `TEXT` once Google's 3-per-24h quota is exhausted). There is no queue yet; a failed delivery loses only that message. See `docs/WALLET_ACTIVITY_MESSAGES.md`. Google controls exact rendering and whether a proximity suggestion appears.
 
 ## Smoke test
 
