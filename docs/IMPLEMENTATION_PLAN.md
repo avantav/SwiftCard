@@ -137,6 +137,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add an employee-readable, tenant-derived program catalog with earning rules, reward tiers and terms and conditions.
 - [x] [Terminada] Add strict/flexible geolocation handling, Google Maps branch selection, Admin activation control and browser GPS capture for purchases/redemptions.
 - [x] [Terminada] Add double-submit protection.
+- [ ] [Planeada] Detect new deployments in the background (on open, on return from background and every 5 minutes) through a build ID, a no-store `/api/version` endpoint and a versioned service worker; notify and block operations until the PWA updates, never interrupting an in-flight submission. Plan: `docs/PWA_UPDATES.md`.
 
 ## Phase 5 - Operaciones Administrativas
 

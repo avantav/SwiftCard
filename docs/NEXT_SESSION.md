@@ -1,5 +1,15 @@
 # Next Session
 
+## PWA update detection — planned 2026-11-10
+
+- Owner request: the employee PWA must check for a new deployment in the
+  background when opened, notify, and block operations until updated.
+- Plan in `docs/PWA_UPDATES.md` (Phase 4 task in `docs/IMPLEMENTATION_PLAN.md`).
+  Key finding: `public/sw.js` is static, so the existing blocking gate never
+  detects a deployment, and resumed PWAs keep the previous build in memory.
+- Open decisions before implementing: whether `/admin` and `/superadmin` also
+  block, and the check interval (proposed: on resume and every 5 minutes).
+
 ## Wallet activity messages — 2026-11-09
 
 - MVP implemented on `worktree-wallet-notifications` (DEC-0055); plan and
