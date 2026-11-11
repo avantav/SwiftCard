@@ -32,6 +32,7 @@ const basePass: GoogleWalletPassData = {
     latitude: 23 + index / 100,
     longitude: -106 - index / 100,
   })),
+  latestActivity: "¡Gracias por tu compra! Sumaste 1 sello. Ahora tienes 4 sellos.",
 };
 
 describe("Google Wallet loyalty resources", () => {
@@ -72,7 +73,12 @@ describe("Google Wallet loyalty resources", () => {
       },
     });
     expect(result.loyaltyObject.merchantLocations).toHaveLength(10);
-    expect(result.loyaltyObject.textModulesData[1].body).toContain(
+    expect(result.loyaltyObject.textModulesData[0]).toEqual({
+      id: "latest-activity",
+      header: "Última actividad",
+      body: "¡Gracias por tu compra! Sumaste 1 sello. Ahora tienes 4 sellos.",
+    });
+    expect(result.loyaltyObject.textModulesData[2].body).toContain(
       "5 sellos: Extra\n10 sellos: Bebida",
     );
     expect(JSON.stringify(result)).not.toContain("service_account");

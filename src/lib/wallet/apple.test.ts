@@ -34,6 +34,7 @@ describe("Apple Wallet store card", () => {
         webServiceUrl: "https://wallet.example.com/api/wallet/apple",
         authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
         locations: [{ latitude: 23.2, longitude: -106.4, relevantText: "Café Central" }],
+        latestActivity: "¡Gracias por tu compra! Sumaste 1 sello. Ahora tienes 4 sellos.",
       },
       { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
     );
@@ -45,13 +46,25 @@ describe("Apple Wallet store card", () => {
       label: "PREMIOS",
       value: 1,
     });
-    expect(props.storeCard.auxiliaryFields[0]?.changeMessage).toContain("%@");
-    expect(props.storeCard.backFields[1]?.value).toContain("3 sellos");
+    expect(props.storeCard.backFields[0]).toMatchObject({
+      key: "latest-activity",
+      label: "ÚLTIMA ACTIVIDAD",
+      value: "¡Gracias por tu compra! Sumaste 1 sello. Ahora tienes 4 sellos.",
+      changeMessage: "%@",
+    });
+    const fieldsWithChangeMessage = [
+      ...props.storeCard.primaryFields,
+      ...props.storeCard.secondaryFields,
+      ...props.storeCard.auxiliaryFields,
+      ...props.storeCard.backFields,
+    ].filter((field) => "changeMessage" in field);
+    expect(fieldsWithChangeMessage.map((field) => field.key)).toEqual(["latest-activity"]);
+    expect(props.storeCard.backFields[2]?.value).toContain("3 sellos");
     expect(props.barcodes[0]?.message).toBe(
       "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     );
     expect(props.barcodes[0]).not.toHaveProperty("altText");
-    expect(props.storeCard.backFields[2]).toMatchObject({
+    expect(props.storeCard.backFields[3]).toMatchObject({
       key: "available-rewards",
       value: 1,
     });
@@ -112,6 +125,7 @@ describe("Apple Wallet store card", () => {
       webServiceUrl: "https://example.com/api/wallet/apple",
       authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
       locations: [],
+      latestActivity: "",
     };
     const props = buildAppleWalletPassProps(base, {
       passTypeIdentifier: "pass.com.example",
@@ -164,6 +178,7 @@ describe("Apple Wallet store card", () => {
         webServiceUrl: "https://example.com/api/wallet/apple",
         authenticationToken: "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG",
         locations: [],
+        latestActivity: "",
       },
       { passTypeIdentifier: "pass.com.example", teamIdentifier: "TEAM123" },
     );

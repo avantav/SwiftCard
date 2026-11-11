@@ -117,6 +117,10 @@ POST   /v1/log
 
 La descarga actualizada admite `If-Modified-Since`, responde `304` cuando corresponde y devuelve el pase con el mismo `serialNumber`, `passTypeIdentifier` y `authenticationToken`.
 
+## Mensaje de actividad (DEC-0055)
+
+El único campo con `changeMessage` es `latest-activity` («ÚLTIMA ACTIVIDAD», en el reverso), con `changeMessage: "%@"`. Su valor es el mensaje de la última compra, premio alcanzado o canje, derivado del estado confirmado. Así cada operación produce como máximo una notificación con texto completo. El resto de campos (saldo, progreso, premios) se actualiza sin aviso. En los pases instalados antes de este cambio, la primera actualización agrega el campo y puede no notificar. Ver `docs/WALLET_ACTIVITY_MESSAGES.md`.
+
 ## Envío APNs
 
 El servidor usa HTTP/2, TLS 1.2 o posterior y el endpoint de producción `api.push.apple.com:443`. Se reutilizan el certificado firmante, la llave privada y la cadena WWDR del pase. El payload es `{}` y el topic es `APPLE_PASS_TYPE_ID`.

@@ -155,6 +155,7 @@ async function upsertWalletResource(
   id: string,
   resource: Record<string, unknown>,
   accessToken: string,
+  notifyOnUpdate = true,
 ) {
   const encodedId = encodeURIComponent(id);
   const existing = await walletApiRequest(
@@ -162,7 +163,9 @@ async function upsertWalletResource(
     accessToken,
   );
   if (existing.ok) {
-    const updatedResource = resourceName === "loyaltyObject"
+    // Activity syncs send their own message, so they skip Google's generic
+    // field-update notice and preserve the 3-per-24h notification quota.
+    const updatedResource = resourceName === "loyaltyObject" && notifyOnUpdate
       ? { ...resource, notifyPreference: "NOTIFY_ON_UPDATE" }
       : resource;
     const updated = await walletApiRequest(
@@ -199,6 +202,7 @@ async function upsertWalletResource(
 
 export async function syncGoogleWalletPass(
   passData: Omit<GoogleWalletPassData, "issuerId">,
+  options: { notifyOnUpdate?: boolean } = {},
 ) {
   const issuerId = configuredIssuerId();
   const credentials = parseGoogleWalletServiceAccount();
@@ -216,6 +220,7 @@ export async function syncGoogleWalletPass(
     resources.objectId,
     resources.loyaltyObject,
     accessToken,
+    options.notifyOnUpdate ?? true,
   );
 
   const now = Math.floor(Date.now() / 1000);
@@ -236,4 +241,45 @@ export async function syncGoogleWalletPass(
     objectId: resources.objectId,
     saveUrl: `https://pay.google.com/gp/v/save/${saveJwt}`,
   };
+}
+
+export type GoogleWalletMessageResult =
+  | "NOTIFIED"
+  | "SAVED_WITHOUT_NOTIFICATION"
+  | "ALREADY_SENT";
+
+/**
+ * Adds a message to an existing loyalty object. Google allows 3 notifying
+ * messages per pass per 24h; past that quota the message is stored as TEXT so
+ * it still appears in the pass details without a notification.
+ */
+export async function addGoogleWalletMessage(
+  objectId: string,
+  message: { id: string; header: string; body: string },
+): Promise<GoogleWalletMessageResult> {
+  const credentials = parseGoogleWalletServiceAccount();
+  const accessToken = await googleAccessToken(credentials);
+  const send = (messageType: "TEXT_AND_NOTIFY" | "TEXT") =>
+    walletApiRequest(
+      `/loyaltyObject/${encodeURIComponent(objectId)}/addMessage`,
+      accessToken,
+      {
+        method: "POST",
+        body: JSON.stringify({ message: { ...message, messageType } }),
+      },
+    );
+
+  const notified = await send("TEXT_AND_NOTIFY");
+  if (notified.ok) return "NOTIFIED";
+  if (notified.status === 409) return "ALREADY_SENT";
+  const errorBody = await notified.text().catch(() => "");
+  const quotaExceeded = notified.status === 429 || errorBody.includes("QuotaExceeded");
+  if (!quotaExceeded) {
+    throw new Error(`Google Wallet addMessage failed (${notified.status}).`);
+  }
+
+  const stored = await send("TEXT");
+  if (stored.ok) return "SAVED_WITHOUT_NOTIFICATION";
+  if (stored.status === 409) return "ALREADY_SENT";
+  throw new Error(`Google Wallet addMessage failed (${stored.status}).`);
 }

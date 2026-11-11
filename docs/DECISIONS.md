@@ -702,3 +702,34 @@
   is needed. Existing passes/printed codes need refresh/replacement. Public QR
   responses contain no customer details. See `docs/PUBLIC_CARD_QR.md`.
 - Status: Accepted.
+
+## DEC-0055 - Fixed Wallet Activity Messages With Direct Delivery
+
+- Date: 2026-11-09
+- Context: The owner wants each customer notified through their Wallet card on
+  a new purchase (updated stamps/points), a reached reward and a used reward,
+  ideally with editable per-card text. Apple only notifies when a field with
+  `changeMessage` changes, and the existing pass carried several such fields,
+  so one operation could produce duplicate notices. Google objects were not
+  refreshed after purchases at all. No cron or queue worker exists.
+- Decision: Ship system-defined Spanish templates in
+  `src/lib/wallet/activity-message.ts` for the MVP. Derive the latest event from
+  `purchases`, `rewards.source_purchase_id` and completed `reward_redemptions`
+  without a migration. Expose it in a single Apple back field
+  (`latest-activity`, `changeMessage: "%@"`) and remove `changeMessage` from all
+  other fields; a purchase that unlocks a reward sends only the reward notice.
+  After purchases and redemptions, staff actions call
+  `dispatchWalletActivityBestEffort`, which drains the Apple outbox and directly
+  PATCHes active Google objects (without `notifyPreference`) and adds an
+  idempotent `TEXT_AND_NOTIFY` message, degraded to `TEXT` on quota exhaustion.
+  Messages never include customer names or contact data.
+- Reason: Editable templates need a migration, a new design RPC version, editor
+  UI under the design system, variable validation and previews; that is
+  materially more complex than fixed templates, so it is post-MVP. Direct calls
+  match the existing Apple delivery mode until a scheduler exists.
+- Consequences: No migration or environment change. Google delivery adds the
+  provider latency to staff confirmations and a failed Google call loses only
+  that message. Passes installed before deployment may not notify on the first
+  update that adds the field. Editable templates and a provider-neutral worker
+  are documented in `docs/WALLET_ACTIVITY_MESSAGES.md`.
+- Status: Accepted.

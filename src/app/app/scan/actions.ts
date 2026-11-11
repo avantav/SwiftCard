@@ -11,6 +11,7 @@ import {
 import { parsePurchaseAmount } from "@/lib/loyalty/purchase-amount";
 import { openPublicCardScanToken } from "@/lib/customers/card-scan-server";
 import { parseCardQrPayload } from "@/lib/scanner/qr";
+import { dispatchWalletActivityBestEffort } from "@/lib/wallet/activity-dispatch";
 import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
 
 function back(params: Record<string, string>): never {
@@ -82,7 +83,7 @@ export async function redeemCustomerReward(formData: FormData) {
     back({ ...confirmationParams, error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : "El premio ya no está disponible." });
   }
   if (summary.customer_id) {
-    await dispatchAppleWalletUpdatesBestEffort({ limit: 1, customerId: summary.customer_id });
+    await dispatchWalletActivityBestEffort({ customerId: summary.customer_id });
   }
   back({ ...returnParams, redeemed: "1" });
 }
@@ -161,10 +162,7 @@ export async function confirmCustomerPurchase(formData: FormData) {
   if (error || !result || result.result !== "CONFIRMED") {
     back({ ...confirmationParams, error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
   }
-  await dispatchAppleWalletUpdatesBestEffort({
-    limit: 1,
-    customerId: cardOwner?.customer_id ?? undefined,
-  });
+  await dispatchWalletActivityBestEffort({ customerId: cardOwner?.customer_id });
   back({ ...returnParams, purchaseConfirmed: "1", rewards: String(result.rewards_generated), stamps: String(result.stamps_awarded) });
 }
 

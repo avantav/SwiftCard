@@ -5,6 +5,7 @@ import {
   appleWalletProgressText,
   appleWalletRewardTierText,
 } from "./apple-card-content";
+import { WALLET_ACTIVITY_EMPTY_MESSAGE } from "./activity-message";
 
 export type AppleWalletLocation = {
   latitude: number;
@@ -42,6 +43,8 @@ export type AppleWalletPassData = {
   authenticationToken: string;
   voided?: boolean;
   locations: AppleWalletLocation[];
+  /** Latest activity message; the only field that triggers a lock-screen notice. */
+  latestActivity: string;
 };
 
 export function buildAppleWalletPassProps(
@@ -118,7 +121,6 @@ export function buildAppleWalletPassProps(
             key: "points-balance",
             label: input.unitNamePlural.toLocaleUpperCase("es-MX"),
             value: input.stampBalance,
-            changeMessage: `Ahora tienes %@ ${input.unitNamePlural}.`,
           }]
         : [],
       secondaryFields: [
@@ -133,7 +135,6 @@ export function buildAppleWalletPassProps(
           key: "available-rewards-front",
           label: "PREMIOS",
           value: input.availableRewards,
-          changeMessage: "Ahora tienes %@ premios disponibles.",
         },
       ],
       auxiliaryFields: lifetimePoints
@@ -142,7 +143,6 @@ export function buildAppleWalletPassProps(
             key: "point-progress",
             label: "PROGRESO",
             value: pointProgressText,
-            changeMessage: "Tu progreso ahora es %@.",
           },
           {
             key: "next-milestone",
@@ -159,9 +159,14 @@ export function buildAppleWalletPassProps(
             unitNameSingular: input.unitNameSingular,
             unitNamePlural: input.unitNamePlural,
           }),
-          changeMessage: "Tu tarjeta ahora tiene %@.",
         }] : [],
       backFields: [
+        {
+          key: "latest-activity",
+          label: "ÚLTIMA ACTIVIDAD",
+          value: input.latestActivity.trim() || WALLET_ACTIVITY_EMPTY_MESSAGE,
+          changeMessage: "%@",
+        },
         { key: "program", label: "PROGRAMA", value: input.programName },
         {
           key: "reward-tiers",
@@ -172,7 +177,6 @@ export function buildAppleWalletPassProps(
           key: "available-rewards",
           label: "PREMIOS DISPONIBLES",
           value: input.availableRewards,
-          changeMessage: "Ahora tienes %@ premios disponibles.",
         },
         {
           key: "terms",
