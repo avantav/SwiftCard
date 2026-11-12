@@ -82,8 +82,8 @@ Clientazo no publica términos del servicio.
 1. **Identidad del operador:** razón social o nombre del titular, RFC y domicilio
    completo (art. 15, fr. I). Configurar `NEXT_PUBLIC_LEGAL_OPERATOR_NAME` y
    `NEXT_PUBLIC_LEGAL_ADDRESS`.
-2. **Medio ARCO:** confirmar un correo de privacidad (`NEXT_PUBLIC_LEGAL_PRIVACY_EMAIL`);
-   hoy se usa WhatsApp +52 662 171 1274.
+2. **Medio ARCO:** confirmado por el propietario: `support@avantav.dev` (además de
+   WhatsApp +52 662 171 1274). Valorar un buzón dedicado de privacidad.
 3. **Domicilio de cada negocio** como responsable frente a sus clientes: la
    plataforma no lo captura todavía; ¿basta con remitir al negocio o debe mostrarse
    en el aviso simplificado del registro?

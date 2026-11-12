@@ -844,8 +844,8 @@
 - Reason: The owner asked to ship the most complete draft while a lawyer reviews
   it; the drafts follow LFPDPPP 2025 articles 7, 11, 15, 16, 19, 28, 31, 35 and
   36 and describe only data flows that exist in the code.
-- Consequences: Legal name, address and privacy mailbox are still missing;
-  WhatsApp is the interim ARCO channel. Open questions and pending technical
+- Consequences: Legal name and address are still missing; privacy requests go to
+  support@avantav.dev and WhatsApp. Open questions and pending technical
   items (acceptance evidence, business domicile) are listed in
   `docs/legal/README.md`.
 - Status: Accepted (provisional).

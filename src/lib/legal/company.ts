@@ -27,7 +27,7 @@ export function legalOperator(): LegalOperator {
     brand: "morrow",
     operatorName: env("NEXT_PUBLIC_LEGAL_OPERATOR_NAME") ?? "SwiftyCards, operador de la plataforma morrow",
     address: env("NEXT_PUBLIC_LEGAL_ADDRESS") ?? "Hermosillo, Sonora, México",
-    privacyEmail: env("NEXT_PUBLIC_LEGAL_PRIVACY_EMAIL"),
+    privacyEmail: env("NEXT_PUBLIC_LEGAL_PRIVACY_EMAIL") ?? "support@avantav.dev",
     whatsapp: "+52 662 171 1274",
     whatsappUrl: "https://wa.me/526621711274",
     website: env("SWIFTWALLET_PUBLIC_URL") ?? "https://swiftycards.com",
