@@ -2721,3 +2721,27 @@ before self-service signup increases the number of tenants and administrators.
   (`branch-access-action.test.ts`, `csv.test.ts`).
 - `npm run typecheck`, `npm run lint`, `npm run test:run` (389 tests across 93
   files) and `npm run build`: passed.
+
+## 2026-11-12 - Dependency vulnerability remediation
+
+**Objective:** Close the remaining production dependency advisories from the
+security audit (SEC-004, SEC-005, SEC-016).
+
+**Changes made**
+
+- `xlsx` 0.18.5 (npm, unmaintained, prototype pollution/ReDoS) → official SheetJS
+  0.20.3 tarball from `cdn.sheetjs.com` with lockfile integrity. Codepage tables
+  are loaded explicitly so UTF-8 CSV imports keep accents.
+- `passkit-generator` override for `joi` raised from `17.13.4` to `^17.13.9`
+  (same intent as the original August override).
+- `npm audit fix`: node-forge 1.4.3, nanoid 3.3.20, source-map-js 1.2.2,
+  vite 7.3.8, zod 4.6.7, js-yaml 4.3.2; vitest 3.2.7.
+
+**Validation**
+
+- `npm audit --omit=dev`: 0 vulnerabilities.
+- `osv-scanner`: remaining items are dev-only (vitest 4 / tinypool 2 / minimatch
+  11 major upgrades, deferred) and the `xlsx` package-wide OSV range, which is a
+  false positive for the patched 0.20.3 CDN build.
+- Wallet signing, import/export and full suites: 390 tests across 94 files;
+  typecheck, lint and build passed. New encoding test for UTF-8 CSV imports.
