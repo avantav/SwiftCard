@@ -9,6 +9,10 @@
   `npm run stripe:sync-catalog`, `STRIPE_IVA_TAX_RATE_ID`, webhook endpoint +
   `STRIPE_WEBHOOK_SECRET`, enable the Customer Portal, then sign up end to end
   with card 4242 4242 4242 4242 and log in as the new owner.
+- Owner decision 2026-11-12: do NOT run `stripe:sync-catalog` with test keys
+  against the production Supabase catalog (it would store test price IDs).
+  Sync directly with live keys when they are available; test locally against
+  a non-production database if needed.
 - Planned next: «Olvidé mi contraseña» for tenant owners only (Phase 1 task);
   dunning/access policy, refunds/disputes, CFDI invoicing.
 
