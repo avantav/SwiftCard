@@ -1,20 +1,10 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
+import { toCsv as csv } from "@/lib/admin/csv";
 import { requireInternalArea } from "@/lib/auth/server";
 
 const exportTypes = ["customers", "purchases", "rewards", "redemptions", "adjustments", "summary"] as const;
 type ExportType = (typeof exportTypes)[number];
-
-function csvValue(value: unknown) {
-  const text = value === null || value === undefined ? "" : String(value);
-  return `"${text.replaceAll('"', '""')}"`;
-}
-
-function csv(rows: Array<Record<string, unknown>>, columns: string[]) {
-  return [columns, ...rows.map((row) => columns.map((column) => csvValue(row[column])))]
-    .map((row) => row.join(","))
-    .join("\r\n") + "\r\n";
-}
 
 function xlsx(rows: Array<Record<string, unknown>>, columns: string[]) {
   const sheet = XLSX.utils.json_to_sheet(rows, { header: columns });
