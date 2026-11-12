@@ -1,5 +1,16 @@
 # Next Session
 
+## Legal documents — 2026-11-12
+
+- Provisional v1.0 of `/terminos`, `/privacidad` and `/privacidad/clientes`
+  (DEC-0059); lawyer guide in `docs/legal/README.md`.
+- Privacy contact: support@avantav.dev and WhatsApp.
+- PENDING (owner decision): operator identity and full domicile. The app is run
+  by a natural person; options are a virtual office/coworking address for
+  notifications or incorporating an S.A.S. before Stripe goes live. Until then
+  the notices show «Hermosillo, Sonora». Set `NEXT_PUBLIC_LEGAL_OPERATOR_NAME`
+  and `NEXT_PUBLIC_LEGAL_ADDRESS` once decided; lawyer review still pending.
+
 ## Stripe self-service signup — 2026-11-12
 
 - Implemented on `worktree-stripe-self-service` (DEC-0058), stacked on the

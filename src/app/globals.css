@@ -9893,3 +9893,114 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .registration-page { padding: 28px 24px; background: var(--enterprise-surface); }
   .registration-layout { max-width: 440px; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
 }
+
+/* Public legal documents (/terminos, /privacidad). */
+.legal-page {
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+  background: var(--enterprise-canvas);
+  color: var(--enterprise-text);
+}
+
+.legal-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 760px;
+  margin: 0 auto 24px;
+}
+
+.legal-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 14px;
+}
+
+.legal-header nav a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--enterprise-text-muted);
+  text-decoration: none;
+}
+
+.legal-header nav a[aria-current="page"] {
+  color: var(--enterprise-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.legal-header a:focus-visible,
+.legal-article a:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--enterprise-focus);
+  outline-offset: 2px;
+}
+
+.legal-article {
+  max-width: 760px;
+  margin: 0 auto;
+  border: 1px solid var(--enterprise-border);
+  border-radius: 12px;
+  padding: 32px;
+  background: var(--enterprise-surface);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.legal-article h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.legal-article h1 + p {
+  margin-top: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 14px;
+}
+
+.legal-article h2 {
+  margin: 32px 0 8px;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.legal-article h3 {
+  margin: 24px 0 8px;
+  font-size: 16px;
+}
+
+.legal-article p,
+.legal-article ul {
+  margin: 0 0 12px;
+}
+
+.legal-article ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.legal-article li + li {
+  margin-top: 6px;
+}
+
+.legal-article a {
+  color: var(--enterprise-primary-hover);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 639px) {
+  .legal-article {
+    border-radius: 10px;
+    padding: 20px 16px;
+  }
+
+  .legal-article h1 {
+    font-size: 24px;
+  }
+}
