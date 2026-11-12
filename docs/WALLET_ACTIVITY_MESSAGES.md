@@ -1,7 +1,7 @@
 # Wallet: mensajes de actividad (compra, premio alcanzado, premio canjeado)
 
-Estado: **MVP implementado**, pendiente de despliegue y validación en
-dispositivos reales (rama `worktree-wallet-notifications`; ver DEC-0055). Este
+Estado: **MVP en producción** (PR #21, DEC-0055). Validado por el propietario
+en **iPhone** el 2026-11-11 (compra y premios); **Android pendiente**. Este
 documento es la fuente del plan, de las decisiones y del trabajo posterior al MVP.
 
 ## Objetivo
@@ -111,7 +111,9 @@ fidelidad y solo se registra un diagnóstico sin PII.
 `src/app/app/purchase/actions.ts` (`confirmPurchase`),
 `src/app/app/redeem/actions.ts` (`redeemReward`) y
 `src/app/app/scan/actions.ts` (canje y `confirmCustomerPurchase`) llaman a
-`dispatchWalletActivityBestEffort({ customerId })`, que agrupa Apple y Google.
+`dispatchCustomerActivityBestEffort({ customerId })` (antes
+`dispatchWalletActivityBestEffort`), que agrupa Apple, Google y, desde DEC-0056,
+el correo de premio desbloqueado.
 
 ### Fuera de alcance del MVP
 

@@ -86,9 +86,9 @@ describe("Wallet activity delivery boundary", () => {
     const purchase = read("../../app/app/purchase/actions.ts");
     const redeem = read("../../app/app/redeem/actions.ts");
     const scan = read("../../app/app/scan/actions.ts");
-    expect(purchase).toContain("dispatchWalletActivityBestEffort");
-    expect(redeem).toContain("dispatchWalletActivityBestEffort");
-    expect(scan.match(/dispatchWalletActivityBestEffort\(/g)).toHaveLength(2);
+    expect(purchase).toContain("dispatchCustomerActivityBestEffort");
+    expect(redeem).toContain("dispatchCustomerActivityBestEffort");
+    expect(scan.match(/dispatchCustomerActivityBestEffort\(/g)).toHaveLength(2);
   });
 
   it("refreshes Google objects without the generic field-update notice", () => {

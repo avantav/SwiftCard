@@ -1,5 +1,15 @@
 # Project Status
 
+## Customer emails and marketing consent — 2026-11-12
+
+- Welcome email for newly issued cards (including the welcome reward) and a
+  reward-unlocked email after purchases, sent through Resend with per-event
+  idempotency. Optional marketing consent captured at public and employee
+  registration for future campaigns. Migration `0070` and email environment
+  variables pending in production.
+- Validation: typecheck, lint, 359 tests across 87 files and the webpack build
+  passed.
+
 ## Wallet activity messages — 2026-11-09
 
 - Purchases, reached rewards and redemptions now produce one Wallet message:

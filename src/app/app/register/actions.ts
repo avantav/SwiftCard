@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { validateEmployeeCustomerRegistration } from "@/lib/customers/employee-registration";
+import { readMarketingConsent, recordMarketingConsentBestEffort } from "@/lib/customers/marketing-consent";
+import { sendWelcomeEmailBestEffort } from "@/lib/email/customer-emails";
 
 function redirectWithParams(params: Record<string, string>): never {
   redirect(`/app?${new URLSearchParams(params).toString()}`);
@@ -35,5 +37,7 @@ export async function registerEmployeeCustomer(formData: FormData) {
   if (error || !result || typeof result.result !== "string") redirectWithParams({ error: "No se pudo registrar el cliente." });
   if (result.result === "DUPLICATE") redirectWithParams({ duplicate: "1" });
   if (result.result !== "CREATED" || typeof result.card_token !== "string") redirectWithParams({ error: "No tienes acceso a esa sucursal." });
+  await recordMarketingConsentBestEffort(context.supabase, result.card_token, readMarketingConsent(formData));
+  await sendWelcomeEmailBestEffort(result.card_token);
   redirectWithParams({ created: "1", cardToken: result.card_token });
 }
