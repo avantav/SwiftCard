@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("next/headers", () => ({ headers: async () => new Headers({ host: "localhost:3000" }) }));
 vi.mock("@/lib/customers/card-scan-server", () => ({ createPublicCardScanUrl: () => "https://wallet.example.com/scan/q1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }));
 
-const mocks = vi.hoisted(() => ({ rpc: vi.fn(), client: vi.fn() }));
+const mocks = vi.hoisted(() => ({ rpc: vi.fn(), client: vi.fn(), welcome: vi.fn(async () => "SENT") }));
+vi.mock("@/lib/email/customer-emails", () => ({ sendWelcomeEmailBestEffort: mocks.welcome }));
 vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: () => { throw new Error("Staff session must not be reused for public enrollment"); } }));
 vi.mock("@/lib/supabase/public-server", () => ({ createSupabasePublicServerClient: mocks.client }));
 vi.mock("@/lib/wallet/public-availability", () => ({
@@ -36,6 +37,7 @@ beforeEach(() => {
     if (name === "get_public_web_card") return { data: [{ customer_name: "Ana Pérez", stamp_balance: 0, available_rewards: [] }], error: null };
     if (name === "public_card_terms_are_accepted") return { data: accepted, error: null };
     if (name === "accept_public_card_terms") { accepted = true; return { data: "ACCEPTED", error: null }; }
+    if (name === "set_card_marketing_consent") return { data: "UPDATED", error: null };
     throw new Error(`Unexpected RPC: ${name}`);
   });
 });
@@ -72,6 +74,21 @@ describe("single-page customer registration", () => {
     expect(result.cardToken).toBe(token);
     expect(result.claim?.program_version).toBe(3);
     expect(result.accepted).toBe(false);
+    expect(mocks.welcome).not.toHaveBeenCalled();
+  });
+
+  it("sends the welcome email only for a newly issued card", async () => {
+    await registerCustomer("branch-token", {}, form());
+    expect(mocks.welcome).toHaveBeenCalledExactlyOnceWith(token);
+  });
+
+  it("records marketing consent only when the customer opts in", async () => {
+    await registerCustomer("branch-token", {}, form());
+    expect(mocks.rpc.mock.calls.some(([name]) => name === "set_card_marketing_consent")).toBe(false);
+
+    const data = form(); data.set("marketingConsent", "on");
+    await registerCustomer("branch-token", {}, data);
+    expect(mocks.rpc).toHaveBeenCalledWith("set_card_marketing_consent", { target_card_token: token, target_consent: true });
   });
 
   it("never reveals a duplicate customer's token", async () => {

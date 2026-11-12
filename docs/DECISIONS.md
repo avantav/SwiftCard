@@ -733,3 +733,32 @@
   update that adds the field. Editable templates and a provider-neutral worker
   are documented in `docs/WALLET_ACTIVITY_MESSAGES.md`.
 - Status: Accepted.
+
+## DEC-0056 - Transactional Customer Emails And Separate Marketing Consent
+
+- Date: 2026-11-12
+- Context: The owner wants a welcome email (including the welcome reward when
+  granted) and an email whenever a purchase unlocks a reward. Email and WhatsApp
+  campaigns for top-tier customers will follow later. No email provider existed;
+  customer email is optional and unverified.
+- Decision: Send fixed Spanish templates through Resend's REST API from the
+  server, with the tenant as display name on a platform-owned sending domain
+  (recommended: a dedicated subdomain of the morrow domain). Record each logical
+  email in `customer_email_deliveries` (unique per tenant and event, no
+  recipient address stored) and send with the same idempotency key. Deliver
+  directly inside registration and purchase actions, in parallel with Wallet
+  updates; the Wallet dispatcher becomes `dispatchCustomerActivityBestEffort`.
+  Add an optional, unchecked marketing consent to public and employee
+  registration, stored with timestamp and source through
+  `app.set_card_marketing_consent`, separate from the privacy notice.
+- Reason: Transactional emails serve the program the customer joined and need
+  no marketing consent, while future campaigns legally require express opt-in;
+  capturing it now avoids an unreachable existing customer base. Direct delivery
+  matches the current no-cron deployment.
+- Consequences: Migration `0070` and three server-only environment variables are
+  required; without them emails are skipped silently. Imported customers,
+  recoveries, adjustments and redemptions send no email. Failed emails are not
+  retried until a worker exists. Campaigns remain post-MVP and need explicit
+  authorization plus a definition of "highest tier". See
+  `docs/CUSTOMER_EMAILS.md`.
+- Status: Accepted.
