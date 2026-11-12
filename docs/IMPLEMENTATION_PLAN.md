@@ -369,8 +369,18 @@ log. This phase is explicitly authorized post-MVP.
   manual payout reconciliation.
 - [ ] [Pendiente] Decide and implement membership-limit enforcement plus grace
   behavior after observing pilot usage; Phase 10 foundation is measurement-only.
-- [ ] [Pendiente] Replace the fictional pricing reference with approved Spanish
-  packages only after catalog, privacy, tax and payment flows are production-ready.
+- [x] [Terminada] Publish the approved packages (Inicial $399, Crecimiento $699,
+  Empresarial desde $999 MXN + IVA, annual = 10 months, unlimited customers,
+  15-day trial) in the production catalog and render them on the landing from
+  ACTIVE catalog data, with WhatsApp CTAs until online payment exists (DEC-0057).
+- [ ] [Pendiente] WhatsApp win-back for customers who have not returned
+  (Crecimiento and Empresarial): Admin list of inactive customers with marketing
+  consent and a configurable inactivity window, plus a prefilled `wa.me` message
+  sent from the business phone; record each contact attempt. Promised on the
+  landing as «Próximamente». Depends on DEC-0056 consent.
+- [ ] [Pendiente] Promotions and advanced statistics for Empresarial (shown as
+  «Próximamente»), plus package entitlement enforcement from
+  `billing_packages.entitlements`.
 
 **Acceptance Criteria**
 

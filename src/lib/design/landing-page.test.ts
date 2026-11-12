@@ -32,6 +32,15 @@ describe("public landing page", () => {
     expect(page).not.toContain("se habilitará antes de publicar");
   });
 
+  it("shows catalog-driven pricing only when active plans exist", () => {
+    expect(page).toContain("loadPublicPricingPlans()");
+    expect(page).toContain("{plans.length ? <PricingSection plans={plans} /> : null}");
+    expect(page).toContain('id="precios"');
+    expect(page).toContain("más IVA");
+    expect(page).toContain("Próximamente");
+    expect(styles).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.mkt-plan/);
+  });
+
   it("retains staff routing and a secondary login path", () => {
     expect(page).toContain('redirect("/change-password")');
     expect(page).toContain("getDefaultInternalRoute");
