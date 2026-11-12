@@ -33,8 +33,8 @@ export const PLAN_COPY: Record<string, PlanCopy> = {
       { label: "Correos de bienvenida y de premio" },
       ...UPCOMING_FOR_ALL_PLANS.map((label) => ({ label, soon: true })),
     ],
-    ctaLabel: "Empezar prueba de 15 días",
-    ctaMessage: "Hola, quiero empezar la prueba de 15 días del plan Inicial de morrow.",
+    ctaLabel: "Empezar prueba de 30 días",
+    ctaMessage: "Hola, quiero empezar la prueba de 30 días del plan Inicial de morrow.",
   },
   crecimiento: {
     tagline: "Para crecer a más sucursales y recuperar clientes.",
@@ -43,8 +43,8 @@ export const PLAN_COPY: Record<string, PlanCopy> = {
       { label: "Validación de ubicación por sucursal" },
       { label: "WhatsApp para clientes que no han regresado", soon: true },
     ],
-    ctaLabel: "Empezar prueba de 15 días",
-    ctaMessage: "Hola, quiero empezar la prueba de 15 días del plan Crecimiento de morrow.",
+    ctaLabel: "Empezar prueba de 30 días",
+    ctaMessage: "Hola, quiero empezar la prueba de 30 días del plan Crecimiento de morrow.",
     highlighted: true,
   },
   empresarial: {

@@ -762,3 +762,5 @@
   landing; they are negotiated per customer (catalog values 10/3 remain an
   internal reference). Announced as «Próximamente»: automated WhatsApp messages
   for Empresarial, and gift cards plus discount cards for every plan.
+- Update 2026-11-12: the trial is 30 days (was 15) and requires a card at
+  signup; Stripe charges automatically when it ends.

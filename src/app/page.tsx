@@ -86,7 +86,7 @@ const questions = [
   },
   {
     question: "¿Puedo contratar y pagar desde este sitio?",
-    answer: "Por ahora activamos tu cuenta por WhatsApp: eliges tu plan, te acompañamos en la configuración y empiezas con 15 días de prueba, sin pedir pagos en línea. El pago en línea estará disponible pronto."
+    answer: "Por ahora activamos tu cuenta por WhatsApp: eliges tu plan, te acompañamos en la configuración y empiezas con 30 días de prueba, sin pedir pagos en línea. El pago en línea estará disponible pronto."
   }
 ];
 
@@ -121,7 +121,7 @@ function PricingSection({ plans }: { plans: PricingPlan[] }) {
   return (
     <section className="mkt-section mkt-pricing" id="precios" aria-labelledby="pricing-title">
       <div className="mkt-container">
-        <div className="mkt-section-heading is-centered" data-landing-reveal="up"><p className="mkt-eyebrow">PLANES</p><h2 id="pricing-title">Precios claros. <em>Sin sorpresas.</em></h2><p>Clientes ilimitados en todos los planes y 15 días de prueba sin costo. Precios en pesos mexicanos más IVA.</p></div>
+        <div className="mkt-section-heading is-centered" data-landing-reveal="up"><p className="mkt-eyebrow">PLANES</p><h2 id="pricing-title">Precios claros. <em>Sin sorpresas.</em></h2><p>Clientes ilimitados en todos los planes y 30 días de prueba sin costo. Precios en pesos mexicanos más IVA.</p></div>
         <div className="mkt-pricing-grid">
           {plans.map((plan, index) => {
             const cta = salesWhatsAppLink(plan.ctaMessage);

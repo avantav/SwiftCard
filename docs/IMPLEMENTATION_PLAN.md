@@ -371,7 +371,7 @@ log. This phase is explicitly authorized post-MVP.
   behavior after observing pilot usage; Phase 10 foundation is measurement-only.
 - [x] [Terminada] Publish the approved packages (Inicial $399, Crecimiento $699,
   Empresarial desde $999 MXN + IVA, annual = 10 months, unlimited customers,
-  15-day trial) in the production catalog and render them on the landing from
+  30-day trial with card required) in the production catalog and render them on the landing from
   ACTIVE catalog data, with WhatsApp CTAs until online payment exists (DEC-0057).
 - [ ] [Pendiente] WhatsApp win-back for customers who have not returned
   (Crecimiento and Empresarial): Admin list of inactive customers with marketing
