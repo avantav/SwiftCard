@@ -4,6 +4,8 @@ import { headers } from "next/headers";
 import { createPublicCardScanUrl } from "@/lib/customers/card-scan-server";
 
 import { createCustomerCardQrDataUrl, isCustomerCardToken } from "@/lib/customers/card-qr";
+import { readMarketingConsent, recordMarketingConsentBestEffort } from "@/lib/customers/marketing-consent";
+import { sendWelcomeEmailBestEffort } from "@/lib/email/customer-emails";
 import { validatePublicCustomerRegistration } from "@/lib/customers/registration";
 import type { RegistrationState } from "@/lib/customers/registration-state";
 import { createSupabasePublicServerClient } from "@/lib/supabase/public-server";
@@ -58,6 +60,8 @@ export async function registerCustomer(branchToken: string, previous: Registrati
     if (!["CREATED", "IMPORTED_RECOVERY"].includes(result.result) || !isCustomerCardToken(result.card_token)) {
       return { error: "La tarjeta o sucursal ya no está disponible." };
     }
+    await recordMarketingConsentBestEffort(supabase, result.card_token, readMarketingConsent(formData));
+    if (result.result === "CREATED") await sendWelcomeEmailBestEffort(result.card_token);
     if (formData.get("acceptTerms") === "on") {
       return acceptRegistrationTerms(result.card_token, Number(formData.get("programVersion")), {}, formData);
     }

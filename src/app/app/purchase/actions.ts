@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { GEOFENCE_REJECTION_MESSAGE, isGeofenceRejection, readOperationCoordinates } from "@/lib/geofencing/operation-location";
-import { dispatchWalletActivityBestEffort } from "@/lib/wallet/activity-dispatch";
+import { dispatchCustomerActivityBestEffort } from "@/lib/wallet/activity-dispatch";
 
 function back(params: Record<string, string>): never {
   redirect(`/app/purchase?${new URLSearchParams(params).toString()}`);
@@ -64,6 +64,6 @@ export async function confirmPurchase(formData: FormData) {
   if (error || !result || result.result !== "CONFIRMED") {
     back({ customerCardId, loyaltyCardId, branchId, amountMinor: String(amountMinor), error: isGeofenceRejection(error) ? GEOFENCE_REJECTION_MESSAGE : result?.result === "DUPLICATE_TICKET" ? "Ese ticket ya está registrado en la sucursal." : "No se pudo confirmar la compra." });
   }
-  await dispatchWalletActivityBestEffort({ customerId: cardOwner?.customer_id });
+  await dispatchCustomerActivityBestEffort({ customerId: cardOwner?.customer_id });
   back({ customerCardId, loyaltyCardId, confirmed: "1", rewards: String(result.rewards_generated), stamps: String(result.stamps_awarded) });
 }
