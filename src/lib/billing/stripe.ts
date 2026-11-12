@@ -8,27 +8,42 @@ import { SIGNUP_PLAN_CODES } from "./signup-validation";
 export const SELF_SERVICE_PACKAGE_CODES = SIGNUP_PLAN_CODES;
 export const SELF_SERVICE_TRIAL_DAYS = 30;
 
+/**
+ * IVA handling: `automatic` uses Stripe Tax (requires the head office address
+ * and a Mexico registration in Stripe Tax); `fixed` applies the exclusive
+ * IVA 16% tax rate created by the catalog sync.
+ */
+export type StripeTaxConfig =
+  | { mode: "automatic" }
+  | { mode: "fixed"; ivaTaxRateId: string };
+
 export type StripeConfig = {
   secretKey: string;
   webhookSecret: string | null;
-  ivaTaxRateId: string;
+  tax: StripeTaxConfig;
   publicOrigin: string;
 };
+
+function taxConfig(env: Record<string, string | undefined>): StripeTaxConfig | null {
+  const mode = env.STRIPE_TAX_MODE?.trim().toLowerCase();
+  const ivaTaxRateId = env.STRIPE_IVA_TAX_RATE_ID?.trim() ?? "";
+  if (mode === "automatic") return { mode: "automatic" };
+  if (/^txr_[A-Za-z0-9]+$/.test(ivaTaxRateId) && (!mode || mode === "fixed")) {
+    return { mode: "fixed", ivaTaxRateId };
+  }
+  return null;
+}
 
 /** Returns the configuration only when every value needed for checkout is valid. */
 export function stripeCheckoutConfig(env: Record<string, string | undefined> = process.env): StripeConfig | null {
   const secretKey = env.STRIPE_SECRET_KEY?.trim() ?? "";
-  const ivaTaxRateId = env.STRIPE_IVA_TAX_RATE_ID?.trim() ?? "";
   const webhookSecret = env.STRIPE_WEBHOOK_SECRET?.trim() || null;
   const publicOrigin = resolvePublicOrigin(env.SWIFTWALLET_PUBLIC_URL);
-  if (
-    !/^(sk|rk)_(test|live)_[A-Za-z0-9]+$/.test(secretKey)
-    || !/^txr_[A-Za-z0-9]+$/.test(ivaTaxRateId)
-    || !publicOrigin
-  ) {
+  const tax = taxConfig(env);
+  if (!/^(sk|rk)_(test|live)_[A-Za-z0-9]+$/.test(secretKey) || !tax || !publicOrigin) {
     return null;
   }
-  return { secretKey, webhookSecret, ivaTaxRateId, publicOrigin };
+  return { secretKey, webhookSecret, tax, publicOrigin };
 }
 
 let cachedClient: { key: string; client: Stripe } | null = null;

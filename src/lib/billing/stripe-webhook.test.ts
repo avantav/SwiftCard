@@ -13,7 +13,8 @@ function fakeDb(initial: { events?: Row[]; customers?: Row[]; prices?: Row[] } =
   const tables: Record<string, Row[]> = {
     stripe_webhook_events: initial.events ?? [],
     billing_customers: initial.customers ?? [],
-    billing_package_prices: initial.prices ?? [{ id: "local-price", stripe_price_id: "price_123" }],
+    billing_package_prices: initial.prices ?? [{ id: "22222222-2222-4222-8222-222222222222", stripe_price_id: "price_123" }],
+    tenants: [],
   };
   const rpc = vi.fn(async (name: string, args: Row) => {
     if (name === "provision_self_service_tenant") {
@@ -43,6 +44,7 @@ function fakeDb(initial: { events?: Row[]; customers?: Row[]; prices?: Row[] } =
       insert: (row: Row) => { pendingInsert = row; return builder; },
       update: (row: Row) => { pendingUpdate = row; return builder; },
       then: (resolve: (value: unknown) => unknown) => {
+        if (pendingInsert) tables[table]!.push({ ...pendingInsert });
         if (pendingUpdate) for (const row of rows()) Object.assign(row, pendingUpdate);
         return resolve({ data: null, error: null });
       },
@@ -56,7 +58,7 @@ const subscription = {
   id: "sub_123",
   status: "trialing",
   customer: "cus_123",
-  metadata: { morrow_signup_intent_id: "11111111-1111-4111-8111-111111111111", morrow_package_price_id: "local-price" },
+  metadata: { morrow_signup_intent_id: "11111111-1111-4111-8111-111111111111", morrow_package_price_id: "22222222-2222-4222-8222-222222222222" },
   items: { data: [{ price: { id: "price_123" }, current_period_start: 1_760_000_000, current_period_end: 1_762_592_000 }] },
   start_date: 1_760_000_000,
   trial_end: 1_762_592_000,
@@ -88,7 +90,7 @@ describe("processStripeEvent", () => {
     });
     expect(fake.rpc).toHaveBeenCalledWith("sync_stripe_subscription", expect.objectContaining({
       target_tenant_id: "tenant-1",
-      target_package_price_id: "local-price",
+      target_package_price_id: "22222222-2222-4222-8222-222222222222",
       target_stripe_subscription_id: "sub_123",
       target_status: "TRIALING",
       target_trial_ends_at: new Date(1_762_592_000 * 1000).toISOString(),
@@ -118,11 +120,30 @@ describe("processStripeEvent", () => {
     expect(fake.rpc).not.toHaveBeenCalled();
   });
 
-  it("marks the event as failed and rethrows so Stripe retries", async () => {
+  it("ignores subscriptions that cannot be linked to a tenant instead of retrying forever", async () => {
     const unknown = { ...subscription, metadata: {}, customer: "cus_unknown" } as unknown as Stripe.Subscription;
     deps = { db: fake.db, retrieveSubscription: vi.fn(async () => unknown) };
-    await expect(processStripeEvent(event("customer.subscription.updated", unknown, "evt_4"), "{}", deps)).rejects.toThrow("tenant_not_found");
-    expect(fake.tables.stripe_webhook_events.at(-1)).toMatchObject({ processing_status: "FAILED", last_error_code: "tenant_not_found" });
+    await expect(processStripeEvent(event("customer.subscription.updated", unknown, "evt_4"), "{}", deps)).resolves.toBe("IGNORED");
+    expect(fake.tables.stripe_webhook_events.at(-1)).toMatchObject({ processing_status: "IGNORED", last_error_code: "tenant_not_linked" });
+  });
+
+  it("links a sales-led Empresarial subscription through morrow_tenant_id metadata", async () => {
+    const tenantId = "33333333-3333-4333-8333-333333333333";
+    fake = fakeDb({ customers: [] });
+    fake.tables.tenants = [{ id: tenantId }];
+    const sales = { ...subscription, customer: "cus_sales", metadata: { morrow_tenant_id: tenantId, morrow_package_price_id: "22222222-2222-4222-8222-222222222222" } } as unknown as Stripe.Subscription;
+    deps = { db: fake.db, retrieveSubscription: vi.fn(async () => sales) };
+    await expect(processStripeEvent(event("customer.subscription.created", sales, "evt_6"), "{}", deps)).resolves.toBe("PROCESSED");
+    expect(fake.tables.billing_customers).toContainEqual(expect.objectContaining({ tenant_id: tenantId, stripe_customer_id: "cus_sales" }));
+    expect(fake.rpc).toHaveBeenCalledWith("sync_stripe_subscription", expect.objectContaining({ target_tenant_id: tenantId }));
+  });
+
+  it("marks real processing errors as failed and rethrows so Stripe retries", async () => {
+    fake = fakeDb({ customers: [{ tenant_id: "tenant-9", stripe_customer_id: "cus_123" }] });
+    fake.rpc.mockImplementationOnce(async () => ({ data: null, error: { code: "40001" } }) as never);
+    deps = { db: fake.db, retrieveSubscription: vi.fn(async () => subscription) };
+    await expect(processStripeEvent(event("customer.subscription.updated", subscription, "evt_5"), "{}", deps)).rejects.toThrow("sync_failed:40001");
+    expect(fake.tables.stripe_webhook_events.at(-1)).toMatchObject({ processing_status: "FAILED", last_error_code: "sync_failed:40001" });
   });
 
   it("maps every Stripe status to the local subscription status", () => {
@@ -137,8 +158,10 @@ describe("processStripeEvent", () => {
 describe("Stripe configuration and boundaries", () => {
   it("enables checkout only with a valid key, IVA tax rate and public origin", () => {
     const valid = { STRIPE_SECRET_KEY: "sk_test_abc123", STRIPE_IVA_TAX_RATE_ID: "txr_123", SWIFTWALLET_PUBLIC_URL: "https://wallet.example.com", STRIPE_WEBHOOK_SECRET: "whsec_x" };
-    expect(stripeCheckoutConfig(valid)).toMatchObject({ publicOrigin: "https://wallet.example.com", webhookSecret: "whsec_x" });
+    expect(stripeCheckoutConfig(valid)).toMatchObject({ publicOrigin: "https://wallet.example.com", webhookSecret: "whsec_x", tax: { mode: "fixed", ivaTaxRateId: "txr_123" } });
     expect(stripeCheckoutConfig({ ...valid, STRIPE_IVA_TAX_RATE_ID: "" })).toBeNull();
+    expect(stripeCheckoutConfig({ ...valid, STRIPE_IVA_TAX_RATE_ID: "", STRIPE_TAX_MODE: "automatic" })).toMatchObject({ tax: { mode: "automatic" } });
+    expect(stripeCheckoutConfig({ ...valid, STRIPE_TAX_MODE: "bogus" })).toBeNull();
     expect(stripeCheckoutConfig({ ...valid, STRIPE_SECRET_KEY: "pk_test_abc" })).toBeNull();
   });
 
@@ -152,6 +175,9 @@ describe("Stripe configuration and boundaries", () => {
     const checkout = read("./self-service-signup.ts");
     expect(checkout).toContain("trial_period_days: SELF_SERVICE_TRIAL_DAYS");
     expect(checkout).toContain('payment_method_collection: "always"');
-    expect(checkout).toContain("default_tax_rates: [config.ivaTaxRateId]");
+    expect(checkout).toContain("default_tax_rates: [config.tax.ivaTaxRateId]");
+    expect(checkout).toContain("automatic_tax: { enabled: true }");
+    expect(checkout).toContain('billing_mode: { type: "flexible" }');
+    expect(checkout).toContain("tax_id_collection: { enabled: true }");
   });
 });

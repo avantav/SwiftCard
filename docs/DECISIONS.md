@@ -791,3 +791,10 @@
   in Checkout, affiliate commissions, limit enforcement and dunning policy
   remain pending. «Olvidé mi contraseña» for owners is now planned.
 - Status: Accepted.
+- Update 2026-11-12 (Stripe implementation planner review): subscriptions use
+  `billing_mode: flexible`; IVA can use Stripe Tax (`STRIPE_TAX_MODE=automatic`,
+  recommended once the Mexico registration exists) or the fixed rate; Checkout
+  collects the customer RFC (`tax_id_collection`) for future CFDI; Empresarial
+  subscriptions created through Quotes link to existing tenants with
+  `morrow_tenant_id` metadata, and unlinkable Stripe objects are recorded as
+  IGNORED instead of failing forever.

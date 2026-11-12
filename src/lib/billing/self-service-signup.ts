@@ -127,9 +127,13 @@ export async function startSelfServiceSignup(
         line_items: [{ price: price.stripePriceId, quantity: 1 }],
         payment_method_collection: "always",
         billing_address_collection: "auto",
+        // RFC captured now so CFDI invoices can be issued later (outside Stripe).
+        tax_id_collection: { enabled: true },
+        ...(config.tax.mode === "automatic" ? { automatic_tax: { enabled: true } } : {}),
         subscription_data: {
           trial_period_days: SELF_SERVICE_TRIAL_DAYS,
-          default_tax_rates: [config.ivaTaxRateId],
+          billing_mode: { type: "flexible" },
+          ...(config.tax.mode === "fixed" ? { default_tax_rates: [config.tax.ivaTaxRateId] } : {}),
           trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
           metadata: { morrow_signup_intent_id: intent.id, morrow_package_price_id: price.priceId },
         },

@@ -179,7 +179,13 @@ bloquea la operación por falta de pago (política pendiente).
    mensual y anual (`tax_behavior: exclusive`) y la tasa **IVA 16%**; guarda
    `stripe_product_id`/`stripe_price_id` en el catálogo e imprime el
    `STRIPE_IVA_TAX_RATE_ID`. Es seguro repetirlo.
-4. Define `STRIPE_IVA_TAX_RATE_ID` con el valor impreso.
+4. Elige cómo cobrar el IVA:
+   - **Stripe Tax (recomendado por el plan de Stripe):** en Stripe → Tax
+     configura la dirección fiscal (head office) y agrega el registro de
+     **México**; luego define `STRIPE_TAX_MODE=automatic`. Checkout activa
+     `automatic_tax` y Stripe calcula el IVA; tiene costo por transacción.
+   - **Tasa fija:** define `STRIPE_IVA_TAX_RATE_ID` con el valor impreso
+     (`STRIPE_TAX_MODE` vacío o `fixed`).
 5. En Stripe → Developers → Webhooks, crea el endpoint
    `${SWIFTWALLET_PUBLIC_URL}/api/stripe/webhook` con los eventos
    `checkout.session.completed`, `customer.subscription.created`,
@@ -190,11 +196,44 @@ bloquea la operación por falta de pago (política pendiente).
    localhost:3000/api/stripe/webhook`.
 6. En Stripe → Settings → Billing → Customer portal, activa el portal
    (cambiar tarjeta, ver facturas, cancelar al final del periodo).
-7. Redepliega y prueba con la tarjeta `4242 4242 4242 4242`.
+7. Configuración recomendada en el Dashboard (sin código):
+   - **Revenue recovery:** activa Smart Retries, los correos de pago fallido y
+     la actualización automática de tarjetas; define que la suscripción quede
+     `canceled` o `unpaid` tras el último reintento.
+   - **Correos de suscripción:** aviso de prueba por terminar y recibos.
+   - **Branding** de facturas y Checkout: logo, color y pie con datos fiscales.
+8. Redepliega y prueba con la tarjeta `4242 4242 4242 4242`.
 
 Variables (servidor, nunca `NEXT_PUBLIC_`): `STRIPE_SECRET_KEY`,
-`STRIPE_WEBHOOK_SECRET`, `STRIPE_IVA_TAX_RATE_ID`; las URLs de retorno se
-derivan de `SWIFTWALLET_PUBLIC_URL`.
+`STRIPE_WEBHOOK_SECRET`, `STRIPE_TAX_MODE`, `STRIPE_IVA_TAX_RATE_ID`; las URLs
+de retorno se derivan de `SWIFTWALLET_PUBLIC_URL` (debe ser el dominio público
+de producción).
+
+### Revisión contra el plan de Stripe (2026-11-12)
+
+El `stripe_implementation_planner` (cuenta de prueba SwiftyCards) recomendó:
+Checkout alojado, precios planos, prueba con tarjeta, Customer Portal, Smart
+Retries, Quotes para ventas asistidas, Stripe Tax con cobro, facturas de
+suscripción automáticas, CFDI fuera de Stripe y conciliación por webhooks.
+Ajustes aplicados al código:
+
+- `subscription_data.billing_mode: flexible` (predeterminado recomendado).
+- IVA con `automatic_tax` (`STRIPE_TAX_MODE=automatic`) o tasa fija.
+- `tax_id_collection` en Checkout para capturar el **RFC** y poder emitir CFDI.
+- Suscripciones que no se pueden vincular (creadas fuera del alta) quedan como
+  `IGNORED` con su motivo en `stripe_webhook_events`, sin reintentos infinitos.
+
+### Empresarial con Quotes (venta asistida)
+
+1. Un Superadmin crea el tenant y su Administrador como hoy.
+2. En Stripe crea el Customer y una **Quote** con el producto
+   «morrow Empresarial» (precio negociado si aplica).
+3. Al aceptar la Quote, en la suscripción resultante agrega la metadata
+   `morrow_tenant_id=<UUID del tenant>` y, si el precio no es el de catálogo,
+   `morrow_package_price_id=<UUID del precio Empresarial del catálogo>`.
+4. El webhook vincula el cliente de Stripe al tenant y refleja la suscripción.
+   Con precio negociado, `/admin/billing` muestra el snapshot del catálogo como
+   referencia; el monto real está en Stripe.
 
 **Fuera de alcance:** facturas CFDI del SAT (Stripe no las emite; se harán
 manualmente o con un proveedor como Facturapi), promociones y códigos en

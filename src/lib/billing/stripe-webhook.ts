@@ -72,18 +72,48 @@ async function provisionFromIntent(db: AdminClient, intentId: string | null | un
   return typeof data === "string" ? data : null;
 }
 
+/**
+ * A Stripe object that cannot be linked to a morrow tenant or catalog price
+ * (e.g. a subscription created in the Dashboard without metadata). It is
+ * recorded as IGNORED with the reason instead of being retried forever.
+ */
+export class UnlinkedStripeObject extends Error {}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Sales-led subscriptions (Empresarial via Quotes or the Dashboard) link to an
+ * existing tenant through `morrow_tenant_id` metadata. An existing link to a
+ * different Stripe customer is never overwritten.
+ */
+async function linkTenantFromMetadata(db: AdminClient, tenantId: string | undefined, stripeCustomerId: string | null) {
+  if (!tenantId || !UUID.test(tenantId) || !stripeCustomerId) return null;
+  const { data: tenant } = await db.from("tenants").select("id").eq("id", tenantId).maybeSingle();
+  if (!tenant) return null;
+  const { data: existing } = await db.from("billing_customers").select("stripe_customer_id").eq("tenant_id", tenantId).maybeSingle();
+  if (existing?.stripe_customer_id && existing.stripe_customer_id !== stripeCustomerId) {
+    throw new UnlinkedStripeObject("tenant_linked_to_other_customer");
+  }
+  const { error } = existing
+    ? await db.from("billing_customers").update({ stripe_customer_id: stripeCustomerId }).eq("tenant_id", tenantId)
+    : await db.from("billing_customers").insert({ tenant_id: tenantId, stripe_customer_id: stripeCustomerId });
+  if (error) throw new Error(`link_failed:${error.code ?? "unknown"}`);
+  return tenantId;
+}
+
 async function syncSubscription(db: AdminClient, subscription: Stripe.Subscription, latestInvoiceId: string | null = null) {
   const customerId = idOf(subscription.customer);
   let tenantId = await tenantForCustomer(db, customerId);
   if (!tenantId) tenantId = await provisionFromIntent(db, subscription.metadata?.morrow_signup_intent_id, customerId);
-  if (!tenantId) throw new Error("tenant_not_found");
+  if (!tenantId) tenantId = await linkTenantFromMetadata(db, subscription.metadata?.morrow_tenant_id, customerId);
+  if (!tenantId) throw new UnlinkedStripeObject("tenant_not_linked");
 
   const stripePriceId = subscription.items?.data?.[0]?.price?.id ?? null;
   const { data: price } = stripePriceId
     ? await db.from("billing_package_prices").select("id").eq("stripe_price_id", stripePriceId).maybeSingle()
     : { data: null };
   const packagePriceId = price?.id ?? subscription.metadata?.morrow_package_price_id ?? null;
-  if (!packagePriceId) throw new Error("package_price_not_found");
+  if (!packagePriceId || !UUID.test(packagePriceId)) throw new UnlinkedStripeObject("package_price_not_linked");
 
   const period = periodOf(subscription);
   const { error } = await db.schema("app").rpc("sync_stripe_subscription", {
@@ -178,6 +208,11 @@ export async function processStripeEvent(event: Stripe.Event, rawBody: string, d
     return "PROCESSED";
   } catch (error) {
     const code = error instanceof Error ? error.message.slice(0, 80) : "unknown";
+    if (error instanceof UnlinkedStripeObject) {
+      // Not ours (or not linked yet): acknowledge so Stripe stops retrying.
+      await finish("IGNORED", code);
+      return "IGNORED";
+    }
     await finish("FAILED", code);
     throw error;
   }
