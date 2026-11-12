@@ -1,7 +1,10 @@
 # Paquetes, Stripe, promociones y afiliados
 
-**Estado:** Fundamento y gestión inicial de paquetes implementados localmente;
-Stripe, promociones, afiliados y resumen del tenant siguen pendientes.
+**Estado:** Catálogo publicado (Inicial, Crecimiento, Empresarial; DEC-0057) y
+alta pública con Stripe Checkout, prueba de 30 días, IVA 16%, webhooks y
+Customer Portal implementados (DEC-0058, migración `0071`). Pendiente de
+configurar en Stripe test mode y validar de punta a punta. Promociones en
+Checkout, comisiones de afiliados y política de límites siguen pendientes.
 
 **Migración base:** `0059_commercial_billing_foundation.sql`
 
@@ -135,16 +138,68 @@ escribir el catálogo; no existe borrado ni pago automático.
 9. Registra promoción, atribución o comisión cuando corresponde.
 10. Reembolsos y disputas corrigen lo comercial sin tocar fidelidad.
 
-## Variables previstas
+## Alta autoservicio (implementado, DEC-0058)
 
-No deben configurarse ni committearse hasta implementar la unidad Stripe:
+Solo **Inicial** y **Crecimiento** se contratan en línea. **Empresarial** se
+negocia por WhatsApp y su cuenta la crea un Superadmin.
 
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_PUBLISHABLE_KEY`, solo si una futura UI lo requiere
-- `STRIPE_CUSTOMER_PORTAL_RETURN_URL`
-- `STRIPE_CHECKOUT_SUCCESS_URL`
-- `STRIPE_CHECKOUT_CANCEL_URL`
+1. La landing envía a `/signup?plan=<código>` cuando Stripe está configurado y
+   el precio mensual del plan tiene `stripe_price_id`; si no, a WhatsApp.
+2. `/signup` pide plan, periodicidad, negocio, nombre, correo, teléfono
+   opcional, contraseña (12–72) y aceptación de términos. Tiene honeypot y un
+   máximo de 5 intentos por correo por hora. Rechaza correos con cuenta de staff.
+3. El servidor crea o reutiliza el usuario de Auth (sin perfil todavía),
+   registra `billing_signup_intents` y crea una Checkout Session de suscripción
+   con `trial_period_days: 30`, `payment_method_collection: always`
+   (tarjeta obligatoria), `default_tax_rates: [IVA 16%]` y la cancelación de la
+   prueba si falta método de pago.
+4. El retorno `/signup/success` solo informa el estado; **no activa nada**.
+5. `POST /api/stripe/webhook` verifica la firma sobre el cuerpo crudo, registra
+   el evento en `stripe_webhook_events` (idempotente) y:
+   - `checkout.session.completed` → `app.provision_self_service_tenant`
+     (crea tenant, Admin general `ACTIVE` y `billing_customers` en una
+     transacción) y sincroniza la suscripción;
+   - `customer.subscription.*` e `invoice.paid|payment_failed` → relee la
+     suscripción en Stripe y llama a `app.sync_stripe_subscription`
+     (snapshots del catálogo al crear; estado, periodos y prueba al actualizar).
+   Un fallo responde 500 y Stripe reintenta.
+6. `/admin/billing` muestra la prueba y el botón «Administrar pago y facturas»
+   (Stripe Customer Portal) solo al Admin general con cliente de Stripe.
+
+Estados: `trialing→TRIALING`, `active→ACTIVE`, `past_due|unpaid→PAST_DUE`,
+`paused→PAUSED`, `incomplete→INCOMPLETE`, resto `→CANCELED`. Todavía no se
+bloquea la operación por falta de pago (política pendiente).
+
+## Puesta en marcha (test mode)
+
+1. En `.env.local` (y luego en el hosting) define `STRIPE_SECRET_KEY`
+   (`sk_test_...`) junto a las variables de Supabase existentes.
+2. Aplica la migración `0071_stripe_self_service_signup.sql` (después de `0070`).
+3. Ejecuta `npm run stripe:sync-catalog`: crea los productos, los precios MXN
+   mensual y anual (`tax_behavior: exclusive`) y la tasa **IVA 16%**; guarda
+   `stripe_product_id`/`stripe_price_id` en el catálogo e imprime el
+   `STRIPE_IVA_TAX_RATE_ID`. Es seguro repetirlo.
+4. Define `STRIPE_IVA_TAX_RATE_ID` con el valor impreso.
+5. En Stripe → Developers → Webhooks, crea el endpoint
+   `${SWIFTWALLET_PUBLIC_URL}/api/stripe/webhook` con los eventos
+   `checkout.session.completed`, `customer.subscription.created`,
+   `customer.subscription.updated`, `customer.subscription.deleted`,
+   `customer.subscription.paused`, `customer.subscription.resumed`,
+   `invoice.paid` e `invoice.payment_failed`. Copia su signing secret en
+   `STRIPE_WEBHOOK_SECRET`. En local: `stripe listen --forward-to
+   localhost:3000/api/stripe/webhook`.
+6. En Stripe → Settings → Billing → Customer portal, activa el portal
+   (cambiar tarjeta, ver facturas, cancelar al final del periodo).
+7. Redepliega y prueba con la tarjeta `4242 4242 4242 4242`.
+
+Variables (servidor, nunca `NEXT_PUBLIC_`): `STRIPE_SECRET_KEY`,
+`STRIPE_WEBHOOK_SECRET`, `STRIPE_IVA_TAX_RATE_ID`; las URLs de retorno se
+derivan de `SWIFTWALLET_PUBLIC_URL`.
+
+**Fuera de alcance:** facturas CFDI del SAT (Stripe no las emite; se harán
+manualmente o con un proveedor como Facturapi), promociones y códigos en
+Checkout, comisiones de afiliados, cambio de plan con límites y correo de
+verificación del dueño.
 
 ## Secuencia de entrega
 

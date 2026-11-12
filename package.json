@@ -12,7 +12,8 @@
     "test:run": "vitest run",
     "db:verify-rls": "node scripts/verify-rls.mjs",
     "db:push:remote": "node --env-file=.env.local scripts/apply-remote-migrations.mjs",
-    "db:bootstrap:superadmin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs"
+    "db:bootstrap:superadmin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs",
+    "stripe:sync-catalog": "node --env-file=.env.local scripts/stripe-sync-catalog.mjs"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^2.1.1",
@@ -27,6 +28,7 @@
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
     "sharp": "^0.35.3",
+    "stripe": "23.1.0",
     "tailwind-merge": "^3.6.0",
     "xlsx": "^0.18.5"
   },

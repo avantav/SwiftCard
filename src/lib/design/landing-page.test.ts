@@ -25,7 +25,9 @@ describe("public landing page", () => {
     expect(page.match(/Solicitar una demo/g)?.length).toBeGreaterThanOrEqual(3);
     expect(page).toContain("Sin tarjeta de crédito");
     expect(page).toContain("sin pedir pagos en línea");
-    expect(page.toLowerCase()).not.toContain("stripe");
+    // Online signup appears only when Stripe checkout is fully configured.
+    expect(page).toContain("const onlineSignup = Boolean(stripeCheckoutConfig());");
+    expect(page).toContain("`/signup?plan=${encodeURIComponent(plan.code)}`");
     expect(page).not.toContain("Comprar ahora");
     expect(page).toContain("demoRequestLink()");
     expect(page).toContain('rel: "noopener noreferrer"');
@@ -34,7 +36,7 @@ describe("public landing page", () => {
 
   it("shows catalog-driven pricing only when active plans exist", () => {
     expect(page).toContain("loadPublicPricingPlans()");
-    expect(page).toContain("{plans.length ? <PricingSection plans={plans} /> : null}");
+    expect(page).toContain("{plans.length ? <PricingSection plans={plans} onlineSignup={onlineSignup} /> : null}");
     expect(page).toContain('id="precios"');
     expect(page).toContain("más IVA");
     expect(page).toContain("Próximamente");

@@ -63,6 +63,18 @@ describe("buildPricingPlans", () => {
     ]));
   });
 
+  it("offers online signup only for synchronized self-service plans", () => {
+    const synced = (code: string, monthly: number) => pkg(code, monthly, {
+      billing_package_prices: [{ billing_interval: "MONTH", currency_code: "MXN", amount_minor: monthly, status: "ACTIVE", stripe_price_id: "price_1" }],
+    });
+    const plans = buildPricingPlans([synced("inicial", 39900), pkg("crecimiento", 69900), synced("empresarial", 99900)]);
+    expect(Object.fromEntries(plans.map((plan) => [plan.code, plan.selfService]))).toEqual({
+      inicial: true,
+      crecimiento: false,
+      empresarial: false,
+    });
+  });
+
   it("formats whole Mexican pesos", () => {
     expect(formatPesos(39900)).toBe("$399");
     expect(formatPesos(699000)).toBe("$6,990");

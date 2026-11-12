@@ -17,6 +17,8 @@ export type PlanCopy = {
   startingAt?: boolean;
   /** Replaces catalog branch/card limits, e.g. when limits are negotiated per customer. */
   limitsLabel?: string;
+  /** Can be bought online through Stripe Checkout (Empresarial is negotiated). */
+  selfService?: boolean;
 };
 
 /** Upcoming capabilities announced for every plan. */
@@ -35,6 +37,7 @@ export const PLAN_COPY: Record<string, PlanCopy> = {
     ],
     ctaLabel: "Empezar prueba de 30 días",
     ctaMessage: "Hola, quiero empezar la prueba de 30 días del plan Inicial de morrow.",
+    selfService: true,
   },
   crecimiento: {
     tagline: "Para crecer a más sucursales y recuperar clientes.",
@@ -45,6 +48,7 @@ export const PLAN_COPY: Record<string, PlanCopy> = {
     ],
     ctaLabel: "Empezar prueba de 30 días",
     ctaMessage: "Hola, quiero empezar la prueba de 30 días del plan Crecimiento de morrow.",
+    selfService: true,
     highlighted: true,
   },
   empresarial: {
@@ -75,6 +79,7 @@ export type CatalogPackage = {
     currency_code: string;
     amount_minor: number;
     status: string;
+    stripe_price_id?: string | null;
   }>;
 };
 
@@ -84,6 +89,8 @@ export type PricingPlan = PlanCopy & {
   monthlyAmount: number;
   yearlyAmount: number | null;
   limits: string[];
+  /** True when the plan is self-service and its monthly price exists in Stripe. */
+  selfService: boolean;
 };
 
 const pesos = new Intl.NumberFormat("es-MX", {
@@ -118,6 +125,7 @@ export function buildPricingPlans(packages: CatalogPackage[]): PricingPlan[] {
         name: pkg.name,
         monthlyAmount: Number(monthly.amount_minor),
         yearlyAmount: yearly ? Number(yearly.amount_minor) : null,
+        selfService: Boolean(copy.selfService && monthly.stripe_price_id),
         limits: copy.limitsLabel ? [copy.limitsLabel] : [
           limitLabel(pkg.branch_limit, "sucursal", "sucursales", "Sucursales ilimitadas"),
           limitLabel(pkg.loyalty_card_limit, "tarjeta de lealtad", "tarjetas de lealtad", "Tarjetas ilimitadas"),

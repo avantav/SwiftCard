@@ -1,5 +1,17 @@
 # Next Session
 
+## Stripe self-service signup — 2026-11-12
+
+- Implemented on `worktree-stripe-self-service` (DEC-0058), stacked on the
+  landing pricing branch. Setup guide: `docs/BILLING_STRIPE.md` › «Puesta en
+  marcha (test mode)».
+- Owner steps: `STRIPE_SECRET_KEY` (test), migration `0071` (after `0070`),
+  `npm run stripe:sync-catalog`, `STRIPE_IVA_TAX_RATE_ID`, webhook endpoint +
+  `STRIPE_WEBHOOK_SECRET`, enable the Customer Portal, then sign up end to end
+  with card 4242 4242 4242 4242 and log in as the new owner.
+- Planned next: «Olvidé mi contraseña» for tenant owners only (Phase 1 task);
+  dunning/access policy, refunds/disputes, CFDI invoicing.
+
 ## Wallet activity messages — 2026-11-09
 
 - MVP implemented on `worktree-wallet-notifications` (DEC-0055); plan and

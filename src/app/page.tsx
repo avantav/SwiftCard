@@ -8,6 +8,7 @@ import { getDefaultInternalRoute } from "@/lib/auth/routes";
 import { demoRequestLink, salesWhatsAppLink } from "@/lib/marketing/demo-request";
 import { formatPesos, type PricingPlan } from "@/lib/marketing/pricing";
 import { loadPublicPricingPlans } from "@/lib/marketing/pricing-server";
+import { stripeCheckoutConfig } from "@/lib/billing/stripe";
 import "./landing.css";
 
 export const metadata: Metadata = {
@@ -90,6 +91,9 @@ const questions = [
   }
 ];
 
+const ONLINE_SIGNUP_QUESTION = "¿Puedo contratar y pagar desde este sitio?";
+const ONLINE_SIGNUP_ANSWER = "Sí. Elige el plan Inicial o Crecimiento, crea tu cuenta y registra tu tarjeta: empiezas con 30 días de prueba y no se cobra nada hasta que termine. Para el plan Empresarial escríbenos por WhatsApp.";
+
 function WalletCard({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`mkt-wallet-card${compact ? " is-compact" : ""}`}>
@@ -117,14 +121,17 @@ function WalletCard({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function PricingSection({ plans }: { plans: PricingPlan[] }) {
+function PricingSection({ plans, onlineSignup }: { plans: PricingPlan[]; onlineSignup: boolean }) {
   return (
     <section className="mkt-section mkt-pricing" id="precios" aria-labelledby="pricing-title">
       <div className="mkt-container">
         <div className="mkt-section-heading is-centered" data-landing-reveal="up"><p className="mkt-eyebrow">PLANES</p><h2 id="pricing-title">Precios claros. <em>Sin sorpresas.</em></h2><p>Clientes ilimitados en todos los planes y 30 días de prueba sin costo. Precios en pesos mexicanos más IVA.</p></div>
         <div className="mkt-pricing-grid">
           {plans.map((plan, index) => {
-            const cta = salesWhatsAppLink(plan.ctaMessage);
+            const online = onlineSignup && plan.selfService;
+            const cta = online
+              ? { href: `/signup?plan=${encodeURIComponent(plan.code)}`, target: undefined, rel: undefined }
+              : { href: salesWhatsAppLink(plan.ctaMessage).href, target: "_blank", rel: "noopener noreferrer" };
             return (
               <article className={`mkt-plan${plan.highlighted ? " is-highlighted" : ""}`} key={plan.code} data-landing-reveal="up" data-reveal-delay={`${index + 1}`} aria-labelledby={`plan-${plan.code}`}>
                 {plan.highlighted ? <p className="mkt-plan-badge">Recomendado</p> : null}
@@ -132,7 +139,7 @@ function PricingSection({ plans }: { plans: PricingPlan[] }) {
                 <p className="mkt-plan-tagline">{plan.tagline}</p>
                 <p className="mkt-plan-price">{plan.startingAt ? <small>Desde</small> : null}<strong>{formatPesos(plan.monthlyAmount)}</strong><span>/mes + IVA</span></p>
                 {plan.yearlyAmount ? <p className="mkt-plan-yearly">o {formatPesos(plan.yearlyAmount)} al año: 2 meses gratis</p> : null}
-                <a className={`mkt-button ${plan.highlighted ? "mkt-button-light" : "mkt-button-dark"}`} href={cta.href} target="_blank" rel="noopener noreferrer">{plan.ctaLabel} <MarketingIcon name="arrow" size={15} /></a>
+                <a className={`mkt-button ${plan.highlighted ? "mkt-button-light" : "mkt-button-dark"}`} href={cta.href} target={cta.target} rel={cta.rel}>{plan.ctaLabel} <MarketingIcon name="arrow" size={15} /></a>
                 <ul>
                   {[...plan.limits.map((label) => ({ label, soon: false })), ...plan.features].map((feature) => <li key={feature.label}><MarketingIcon name="check" size={14} /><span>{feature.label}{feature.soon ? <em className="mkt-plan-soon">Próximamente</em> : null}</span></li>)}
                 </ul>
@@ -140,7 +147,7 @@ function PricingSection({ plans }: { plans: PricingPlan[] }) {
             );
           })}
         </div>
-        <p className="mkt-pricing-note" data-landing-reveal="up">Próximamente en todos los planes: tarjetas de regalo y tarjetas de descuento. Activamos tu cuenta y te acompañamos en la configuración por WhatsApp. El pago en línea estará disponible pronto.</p>
+        <p className="mkt-pricing-note" data-landing-reveal="up">Próximamente en todos los planes: tarjetas de regalo y tarjetas de descuento. {onlineSignup ? "Crea tu cuenta en minutos: hoy no se cobra nada y puedes cancelar antes de que termine la prueba." : "Activamos tu cuenta y te acompañamos en la configuración por WhatsApp. El pago en línea estará disponible pronto."}</p>
       </div>
     </section>
   );
@@ -206,6 +213,7 @@ function PhonePreview() {
 export default async function HomePage() {
   const demoRequest = demoRequestLink();
   const plans = await loadPublicPricingPlans();
+  const onlineSignup = Boolean(stripeCheckoutConfig());
   const demoLinkProps = { href: demoRequest.href, target: "_blank", rel: "noopener noreferrer" };
   let context = null;
   try {
@@ -320,13 +328,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {plans.length ? <PricingSection plans={plans} /> : null}
+      {plans.length ? <PricingSection plans={plans} onlineSignup={onlineSignup} /> : null}
 
       <section className="mkt-section mkt-faq" id="preguntas" aria-labelledby="questions-title">
         <div className="mkt-container mkt-faq-grid">
           <div data-landing-reveal="left"><p className="mkt-eyebrow">PREGUNTAS FRECUENTES</p><h2 id="questions-title">Las buenas preguntas merecen <em>respuestas claras.</em></h2><p>En la demo también podemos revisar cualquier caso particular de tu operación.</p></div>
           <div className="mkt-faq-list" data-landing-reveal="right">
-            {questions.map((item, index) => <details key={item.question} open={index === 0}><summary>{item.question}<span aria-hidden="true">⌄</span></summary><p>{item.answer}</p></details>)}
+            {questions.map((item, index) => <details key={item.question} open={index === 0}><summary>{item.question}<span aria-hidden="true">⌄</span></summary><p>{onlineSignup && item.question === ONLINE_SIGNUP_QUESTION ? ONLINE_SIGNUP_ANSWER : item.answer}</p></details>)}
           </div>
         </div>
       </section>
