@@ -78,6 +78,10 @@ export function PublicRegistrationFlow({ branchToken, context }: { branchToken: 
           </div>
           <section id="registration-terms" className="registration-disclosure" hidden={!termsOpen} aria-label="Términos del programa"><h2>Términos del programa</h2><p tabIndex={0}>{selected.terms}</p></section>
           <section id="registration-privacy" className="registration-disclosure" hidden={!privacyOpen} aria-label="Aviso de privacidad"><h2>Privacidad</h2><p>Tu información se utiliza para operar el programa de fidelidad de {context.tenantName}. Solicita al negocio su aviso de privacidad completo.</p></section>
+          <label className="registration-consent">
+            <input name="marketingConsent" type="checkbox" disabled={pending} />
+            <span>Quiero recibir promociones y novedades de {context.tenantName} por correo o WhatsApp (opcional).</span>
+          </label>
           <input type="hidden" name="acceptTerms" value={consent ? "on" : ""} />
           <input type="hidden" name="programVersion" value={selected.programVersion} />
           <SubmitButton className="public-primary-button registration-submit">Crear y guardar mi tarjeta</SubmitButton>

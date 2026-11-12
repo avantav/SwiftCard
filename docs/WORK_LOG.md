@@ -2641,6 +2641,38 @@ purchase, a reached reward and a used reward.
   apply.
 - Pending: real-device validation on iPhone and Android after deployment.
 
+## 2026-11-12 - Customer emails and marketing consent
+
+**Objective:** Send welcome and reward-unlocked emails and capture an optional
+marketing consent for future campaigns.
+
+**Changes made**
+
+- Migration `0070`: `customers.marketing_consent` (+ timestamp/source),
+  `customer_email_deliveries` (service-role only, forced RLS) and
+  `app.set_card_marketing_consent`.
+- `src/lib/email/`: Resend REST sender, escaped table-based templates and
+  idempotent orchestration for welcome and reward emails.
+- Public and employee registration send the welcome email for new cards and
+  record the opt-in; purchases send reward emails through
+  `dispatchCustomerActivityBestEffort` (renamed from the Wallet dispatcher).
+- Optional unchecked marketing checkbox in both registration forms, reusing
+  existing consent styles.
+- Documented setup, behavior and post-MVP campaigns in
+  `docs/CUSTOMER_EMAILS.md` (DEC-0056). Recorded the iPhone validation of Wallet
+  activity messages; Android remains pending.
+
+**Validation**
+
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run test:run`: passed; 359 tests across 87 files.
+- `npm run build`: passed with webpack.
+- Migration SQL reviewed statically; `npm run db:verify-rls` not run (no Docker
+  available).
+- UI: two checkboxes added with existing components and copy; no new visual
+  pattern. Browser review at 375/768/1280/1440 px is pending.
+
 ## 2026-11-12 - Stripe self-service signup
 
 **Objective:** Let businesses buy Inicial or Crecimiento online with a 30-day

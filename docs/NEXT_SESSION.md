@@ -16,10 +16,25 @@
 - Planned next: «Olvidé mi contraseña» for tenant owners only (Phase 1 task);
   dunning/access policy, refunds/disputes, CFDI invoicing.
 
+## Customer emails and marketing consent — 2026-11-12
+
+- Implemented on `worktree-email-notifications` (DEC-0056); setup and
+  post-MVP campaigns in `docs/CUSTOMER_EMAILS.md`.
+- Before release: verify the sending domain in Resend (owner leaning to a
+  subdomain of the morrow domain), set `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`
+  and optional `EMAIL_REPLY_TO`, and apply migration `0070`.
+- Then test with a real inbox: welcome with and without welcome reward, and a
+  purchase that unlocks a reward. Review the two registration checkboxes in a
+  browser at 375/768/1280/1440 px.
+- Campaigns (email/WhatsApp, highest-tier customers only) need explicit
+  authorization and a definition of "highest tier".
+- Same day plan also includes the landing and Stripe/packages work.
+
 ## Wallet activity messages — 2026-11-09
 
-- MVP implemented on `worktree-wallet-notifications` (DEC-0055); plan and
-  post-MVP work in `docs/WALLET_ACTIVITY_MESSAGES.md`.
+- In production (PR #21, DEC-0055). Owner validated on iPhone on 2026-11-11;
+  Android/Google Wallet remains to be validated.
+- Plan and post-MVP work in `docs/WALLET_ACTIVITY_MESSAGES.md`.
 - After deployment, validate on a real iPhone and Android with installed passes:
   purchase without reward, purchase that unlocks a reward (one notice only),
   redemption, and a fourth Google notice within 24 h (stored without alert).
