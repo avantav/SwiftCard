@@ -1,5 +1,14 @@
 # Project Status
 
+## Stripe self-service signup — 2026-11-12
+
+- Public `/signup` for Inicial and Crecimiento creates a Stripe Checkout
+  subscription with a 30-day card trial and fixed IVA 16%; the verified webhook
+  provisions tenant, owner and billing customer and mirrors the subscription.
+  `/admin/billing` opens the Customer Portal. Empresarial stays sales-led.
+- Validation: typecheck, lint, 365 tests across 89 files and the webpack build
+  passed. End-to-end Stripe test-mode validation pending owner configuration.
+
 ## Customer emails and marketing consent — 2026-11-12
 
 - Welcome email for newly issued cards (including the welcome reward) and a

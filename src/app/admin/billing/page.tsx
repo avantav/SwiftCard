@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { getCurrencyFractionDigits } from "@/lib/admin/program";
+import { openBillingPortal } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 import { billingSubscriptionBadge, billingSubscriptionLabel, getBillingUsageState } from "@/lib/billing/summary";
 
 type Subscription = {
@@ -35,18 +37,25 @@ function promotionDiscount(item: Redemption) {
   return money(item.amount_off_minor_snapshot ?? 0, item.currency_code_snapshot ?? "MXN");
 }
 
-export default async function AdminBillingPage() {
+export default async function AdminBillingPage({ searchParams }: { searchParams: Promise<{ portal?: string }> }) {
+  const { portal } = await searchParams;
   const context = await requireInternalArea("ADMIN");
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
 
-  const [subscriptionResponse, branchCountResponse, cardCountResponse, referralResponse] = await Promise.all([
+  const [subscriptionResponse, branchCountResponse, cardCountResponse, referralResponse, billingCustomerResponse] = await Promise.all([
     context.supabase.from("tenant_subscriptions")
       .select("id,status,billing_interval,currency_code,amount_minor,package_name_snapshot,membership_limit_snapshot,branch_limit_snapshot,loyalty_card_limit_snapshot,current_period_start,current_period_end,trial_ends_at,cancel_at_period_end")
       .eq("tenant_id", context.tenantId).is("ended_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     context.supabase.from("branches").select("id", { count: "exact", head: true }).eq("tenant_id", context.tenantId).eq("status", "ACTIVE"),
     context.supabase.from("loyalty_cards").select("id", { count: "exact", head: true }).eq("tenant_id", context.tenantId).neq("status", "ARCHIVED"),
-    context.supabase.from("billing_affiliate_referrals").select("attributed_code_snapshot,attributed_at,converted_at").eq("tenant_id", context.tenantId).maybeSingle()
+    context.supabase.from("billing_affiliate_referrals").select("attributed_code_snapshot,attributed_at,converted_at").eq("tenant_id", context.tenantId).maybeSingle(),
+    context.supabase.from("billing_customers").select("stripe_customer_id").eq("tenant_id", context.tenantId).maybeSingle()
   ]);
+  const portalAvailable = Boolean(billingCustomerResponse.data?.stripe_customer_id);
+  const portalAction = portalAvailable ? <form action={openBillingPortal}><SubmitButton className="enterprise-primary-action">Administrar pago y facturas</SubmitButton></form> : null;
+  const portalAlert = portal === "unavailable" || portal === "error"
+    ? <p className="enterprise-alert is-error" role="alert">No se pudo abrir el portal de pagos. Inténtalo de nuevo o contacta a soporte.</p>
+    : null;
   const subscription = subscriptionResponse.data as Subscription | null;
   const [usageResponse, redemptionResponse] = subscription ? await Promise.all([
     context.supabase.from("billing_membership_usage").select("current_memberships,peak_memberships,measured_at").eq("subscription_id", subscription.id).order("period_start", { ascending: false }).limit(1).maybeSingle(),
@@ -72,7 +81,9 @@ export default async function AdminBillingPage() {
         : null;
 
   return <main className="enterprise-page">
-    <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta tu paquete, periodo y consumo de membresías.</p></div></header>
+    <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta tu paquete, periodo y consumo de membresías.</p></div>{portalAction}</header>
+    {portalAlert}
+    {subscription.status === "TRIALING" && subscription.trial_ends_at ? <p className="enterprise-alert is-info" role="status"><strong>Prueba gratuita.</strong> Tu prueba termina el {date(subscription.trial_ends_at)}; después se cobrará automáticamente con la tarjeta registrada. Puedes cancelar antes desde «Administrar pago y facturas».</p> : null}
     {alert ? <p className={`enterprise-alert ${usageState.level === "LIMIT" || usageState.level === "CRITICAL" ? "is-error" : "is-warning"}`} role="status"><strong>Atención de capacidad.</strong> {alert}</p> : null}
 
     <section aria-label="Resumen de suscripción" className="enterprise-metrics billing-summary-metrics">

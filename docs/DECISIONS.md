@@ -792,3 +792,37 @@
   authorization plus a definition of "highest tier". See
   `docs/CUSTOMER_EMAILS.md`.
 - Status: Accepted.
+
+## DEC-0058 - Self-Service Signup With Stripe Checkout And 30-Day Card Trial
+
+- Date: 2026-11-12
+- Context: The owner wants public self-service signup for Inicial and
+  Crecimiento, a 30-day trial that requires a card, a fixed 16% IVA and
+  Empresarial kept as a negotiated, manually opened account.
+- Decision: `/signup` records a `billing_signup_intents` row and an Auth user
+  without staff profile, then redirects to a Stripe Checkout subscription with
+  a 30-day trial, mandatory payment method and a fixed exclusive IVA 16% tax
+  rate. Only the signature-verified webhook provisions the tenant, its general
+  Administrator (ACTIVE, own password) and billing customer through a
+  service-role-only transactional RPC, then mirrors the subscription with
+  catalog snapshots. The browser return never activates access. The Customer
+  Portal is opened for the session's own tenant only. Catalog products, prices
+  and the tax rate are created by an idempotent sync script.
+- Reason: Provisioning after payment authorization avoids empty tenants from
+  abandoned checkouts; the local catalog stays authoritative and Stripe IDs are
+  references. A fixed tax rate works immediately without Stripe Tax onboarding.
+- Consequences: Migration `0071` plus `STRIPE_SECRET_KEY`,
+  `STRIPE_WEBHOOK_SECRET` and `STRIPE_IVA_TAX_RATE_ID` are required; without
+  them the landing keeps WhatsApp CTAs. Owner email ownership is not verified
+  (card and Stripe receipts provide friction). Abandoned checkouts leave an
+  Auth user without profile that is reused on retry. CFDI invoicing, promotions
+  in Checkout, affiliate commissions, limit enforcement and dunning policy
+  remain pending. «Olvidé mi contraseña» for owners is now planned.
+- Status: Accepted.
+- Update 2026-11-12 (Stripe implementation planner review): subscriptions use
+  `billing_mode: flexible`; IVA can use Stripe Tax (`STRIPE_TAX_MODE=automatic`,
+  recommended once the Mexico registration exists) or the fixed rate; Checkout
+  collects the customer RFC (`tax_id_collection`) for future CFDI; Empresarial
+  subscriptions created through Quotes link to existing tenants with
+  `morrow_tenant_id` metadata, and unlinkable Stripe objects are recorded as
+  IGNORED instead of failing forever.

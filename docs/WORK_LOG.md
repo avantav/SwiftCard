@@ -2672,3 +2672,29 @@ marketing consent for future campaigns.
   available).
 - UI: two checkboxes added with existing components and copy; no new visual
   pattern. Browser review at 375/768/1280/1440 px is pending.
+
+## 2026-11-12 - Stripe self-service signup
+
+**Objective:** Let businesses buy Inicial or Crecimiento online with a 30-day
+card trial and IVA 16%, keeping Empresarial sales-led.
+
+**Changes made**
+
+- Migration `0071`: `billing_signup_intents`, `app.provision_self_service_tenant`
+  and `app.sync_stripe_subscription` (service role only).
+- `stripe@23.1.0` (exact); `package-lock.json` regenerated, which also resolves
+  the earlier `next@16.4.1` lockfile drift.
+- `scripts/stripe-sync-catalog.mjs` (`npm run stripe:sync-catalog`).
+- `/signup`, `/signup/success`, `POST /api/stripe/webhook` and the Customer
+  Portal action on `/admin/billing`.
+- Landing plan CTAs and payment FAQ switch to online signup when Stripe is
+  configured. Planned owner-only «Olvidé mi contraseña».
+
+**Validation**
+
+- `npm run typecheck`, `npm run lint`: passed.
+- `npm run test:run`: passed; 365 tests across 89 files.
+- `npm run build`: passed with webpack.
+- Not run: `db:verify-rls` (no Docker) and live Stripe test-mode flows (keys
+  stay with the owner). The signup form was not reviewed in a browser because
+  it only renders once prices are synchronized with Stripe.

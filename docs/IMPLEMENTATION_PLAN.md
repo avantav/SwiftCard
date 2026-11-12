@@ -63,6 +63,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Implement staff branch assignments and primary branch management.
 - [x] [Terminada] Add branch-scoped Administrator semantics, per-branch employee access modes, shared branch accounts, PIN operators, revocable PIN sessions, and individual actor attribution.
 - [x] [Terminada] Replace free-text shared-account PIN entry with an accessible numeric pad and navigate only after the HttpOnly operator cookie is confirmed.
+- [ ] [Pendiente] Add «Olvidé mi contraseña» from `/login` only for the tenant owner (the general Administrator, `role = ADMIN` of an active tenant; needed now that self-service signup creates owner accounts). Request by email with a neutral response that never reveals whether the account exists, rate limiting, single-use expiring Supabase recovery link and a new-password page; audit the reset. Every other staff role (branch Administrators, Managers, employees, shared PIN accounts) keeps the current flow: their Administrator resets the password and the user must change it on next login. Superadmin recovery stays manual. Requires transactional email (DEC-0056) or Supabase Auth SMTP.
 
 **Acceptance Criteria**
 
@@ -357,12 +358,15 @@ log. This phase is explicitly authorized post-MVP.
   rules and RPC-only activation/archival.
 - [x] [Terminada] Add the general Admin read-only billing summary with package,
   subscription, current/peak usage, limits, promotion and affiliate attribution.
-- [ ] [Pendiente] Install the Stripe server SDK and implement test-mode Product
-  and Price synchronization.
-- [ ] [Pendiente] Implement server-created Checkout Sessions and Customer Portal
-  sessions without accepting tenant authority from the browser.
-- [ ] [Pendiente] Implement signature-verified, idempotent Stripe webhooks for
-  checkout, subscriptions, invoices, refunds and disputes.
+- [x] [Terminada] Install the Stripe server SDK and implement test-mode Product
+  and Price synchronization (`npm run stripe:sync-catalog`, IVA 16% tax rate).
+- [x] [Terminada] Implement public self-service signup for Inicial/Crecimiento
+  with server-created Checkout Sessions (30-day trial, card required, IVA 16%)
+  and session-scoped Customer Portal sessions (DEC-0058, migration `0071`).
+- [x] [Terminada] Implement signature-verified, idempotent Stripe webhooks for
+  checkout provisioning, subscriptions and invoices.
+- [ ] [Pendiente] Handle refunds and disputes, dunning/grace and access policy
+  for unpaid subscriptions, and CFDI invoicing outside Stripe.
 - [ ] [Pendiente] Add promotion eligibility/reservation and immutable redemption
   snapshots, including membership coverage and per-tenant/global caps.
 - [ ] [Pendiente] Add affiliate attribution, commission accrual, reversal and

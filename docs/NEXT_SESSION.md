@@ -1,5 +1,21 @@
 # Next Session
 
+## Stripe self-service signup — 2026-11-12
+
+- Implemented on `worktree-stripe-self-service` (DEC-0058), stacked on the
+  landing pricing branch. Setup guide: `docs/BILLING_STRIPE.md` › «Puesta en
+  marcha (test mode)».
+- Owner steps: `STRIPE_SECRET_KEY` (test), migration `0071` (after `0070`),
+  `npm run stripe:sync-catalog`, `STRIPE_IVA_TAX_RATE_ID`, webhook endpoint +
+  `STRIPE_WEBHOOK_SECRET`, enable the Customer Portal, then sign up end to end
+  with card 4242 4242 4242 4242 and log in as the new owner.
+- Owner decision 2026-11-12: do NOT run `stripe:sync-catalog` with test keys
+  against the production Supabase catalog (it would store test price IDs).
+  Sync directly with live keys when they are available; test locally against
+  a non-production database if needed.
+- Planned next: «Olvidé mi contraseña» for tenant owners only (Phase 1 task);
+  dunning/access policy, refunds/disputes, CFDI invoicing.
+
 ## Customer emails and marketing consent — 2026-11-12
 
 - Implemented on `worktree-email-notifications` (DEC-0056); setup and

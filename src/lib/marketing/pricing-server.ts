@@ -12,7 +12,7 @@ export async function loadPublicPricingPlans(): Promise<PricingPlan[]> {
     const db = createSupabaseAdminClient();
     const { data, error } = await db
       .from("billing_packages")
-      .select("code,name,branch_limit,loyalty_card_limit,membership_limit,billing_package_prices(billing_interval,currency_code,amount_minor,status)")
+      .select("code,name,branch_limit,loyalty_card_limit,membership_limit,billing_package_prices(billing_interval,currency_code,amount_minor,status,stripe_price_id)")
       .eq("status", "ACTIVE");
     if (error || !data) return [];
     return buildPricingPlans(data as CatalogPackage[]);
