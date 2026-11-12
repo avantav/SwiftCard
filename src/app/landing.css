@@ -1324,7 +1324,7 @@
   .mkt-product-grid,
   .mkt-phone-grid,
   .mkt-wallet-grid,
-  .mkt-faq-grid { grid-template-columns: 1fr; gap: 56px; }
+  .mkt-faq-grid { grid-template-columns: minmax(0, 1fr); gap: 56px; }
   .mkt-hero-copy { max-width: 720px; }
   .mkt-hero-visual { width: min(100%, 690px); justify-self: center; }
   .mkt-product-copy,

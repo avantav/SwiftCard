@@ -27,7 +27,9 @@ describe("public landing page", () => {
     expect(page).toContain("sin pedir pagos en línea");
     expect(page.toLowerCase()).not.toContain("stripe");
     expect(page).not.toContain("Comprar ahora");
-    expect(page).toContain("NEXT_PUBLIC_DEMO_REQUEST_URL");
+    expect(page).toContain("demoRequestLink()");
+    expect(page).toContain('rel: "noopener noreferrer"');
+    expect(page).not.toContain("se habilitará antes de publicar");
   });
 
   it("retains staff routing and a secondary login path", () => {

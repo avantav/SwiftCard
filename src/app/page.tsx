@@ -5,6 +5,7 @@ import { LandingMotion } from "@/components/landing-motion";
 import { MorrowBrand } from "@/components/morrow-brand";
 import { getStaffSessionContext } from "@/lib/auth/server";
 import { getDefaultInternalRoute } from "@/lib/auth/routes";
+import { demoRequestLink } from "@/lib/marketing/demo-request";
 import "./landing.css";
 
 export const metadata: Metadata = {
@@ -76,6 +77,10 @@ const questions = [
   {
     question: "¿Funciona si tengo varias sucursales?",
     answer: "Sí. Puedes controlar el acceso de tu equipo, elegir sucursales participantes y consultar resultados por ubicación."
+  },
+  {
+    question: "¿Mis clientes reciben avisos?",
+    answer: "Sí. Al registrar una compra o ganar un premio, su tarjeta en Apple Wallet o Google Wallet muestra un aviso con su nuevo saldo. Si dejaron su correo, reciben una bienvenida y un correo cada vez que ganan un premio."
   },
   {
     question: "¿Puedo contratar y pagar desde este sitio?",
@@ -168,7 +173,8 @@ function PhonePreview() {
 }
 
 export default async function HomePage() {
-  const demoRequestHref = process.env.NEXT_PUBLIC_DEMO_REQUEST_URL?.trim() || "#demo-contacto";
+  const demoRequest = demoRequestLink();
+  const demoLinkProps = { href: demoRequest.href, target: "_blank", rel: "noopener noreferrer" };
   let context = null;
   try {
     context = await getStaffSessionContext();
@@ -193,7 +199,7 @@ export default async function HomePage() {
           </nav>
           <div className="mkt-header-actions">
             <Link href="/login">Iniciar sesión</Link>
-            <a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
+            <a className="mkt-button mkt-button-dark" {...demoLinkProps}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
           </div>
         </div>
       </header>
@@ -205,7 +211,7 @@ export default async function HomePage() {
             <h1 id="landing-title">Haz que cada visita se convierta en <em>crecimiento.</em></h1>
             <p>morrow reúne clientes, recompensas y tarjetas digitales en una plataforma clara, para que tu negocio pueda construir relaciones que duran.</p>
             <div className="mkt-hero-actions">
-              <a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
+              <a className="mkt-button mkt-button-dark" {...demoLinkProps}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
               <a className="mkt-text-link" href="#como-funciona">Ver cómo funciona <MarketingIcon name="arrow" size={15} /></a>
             </div>
             <small className="mkt-trust-note"><MarketingIcon name="shield" size={15} /> Sin tarjeta de crédito. Primero entendemos cómo funciona tu negocio.</small>
@@ -244,6 +250,7 @@ export default async function HomePage() {
               <li><MarketingIcon name="users" /><span><strong>Clientes organizados</strong><small>Consulta el historial y el avance de cada persona.</small></span></li>
               <li><MarketingIcon name="chart" /><span><strong>Resultados comprensibles</strong><small>Ve visitas, compras y recompensas sin hojas de cálculo.</small></span></li>
               <li><MarketingIcon name="wallet" /><span><strong>Tarjetas digitales</strong><small>Permanece cerca del cliente en la wallet que ya usa.</small></span></li>
+              <li><MarketingIcon name="gift" /><span><strong>Avisos automáticos</strong><small>Su tarjeta avisa cada compra y cada premio, y le escribimos por correo al ganar.</small></span></li>
             </ul>
           </div>
           <div className="mkt-dashboard-wrap" data-landing-reveal="right"><DashboardPreview compact /></div>
@@ -256,7 +263,7 @@ export default async function HomePage() {
             <p className="mkt-eyebrow">UNA EXPERIENCIA MÁS CERCANA</p>
             <h2 id="phone-title">Lealtad que se siente <em>personal.</em></h2>
             <p>Tu cliente abre su tarjeta, ve cuánto ha avanzado y descubre su próximo premio. Sin buscar una tarjeta de papel ni recordar otra contraseña.</p>
-            <ul><li><MarketingIcon name="check" size={14} /> Siempre en su teléfono</li><li><MarketingIcon name="check" size={14} /> Lista para visitas rápidas</li><li><MarketingIcon name="check" size={14} /> Con la identidad de tu negocio</li></ul>
+            <ul><li><MarketingIcon name="check" size={14} /> Siempre en su teléfono</li><li><MarketingIcon name="check" size={14} /> Lista para visitas rápidas</li><li><MarketingIcon name="check" size={14} /> Con la identidad de tu negocio</li><li><MarketingIcon name="check" size={14} /> Avisos de compra y premios</li></ul>
           </div>
           <div data-landing-reveal="right" data-reveal-delay="1"><PhonePreview /></div>
         </div>
@@ -275,7 +282,7 @@ export default async function HomePage() {
 
       <section className="mkt-wallet-section" aria-labelledby="wallet-title">
         <div className="mkt-container mkt-wallet-grid">
-          <div data-landing-reveal="left"><p className="mkt-eyebrow">SIEMPRE A LA MANO</p><h2 id="wallet-title">Tu programa de lealtad,<br /><em>en su wallet.</em></h2><p>Dales una tarjeta que realmente van a usar. morrow permite emitir, actualizar y personalizar pases sin complicar la experiencia.</p><ul><li><MarketingIcon name="check" size={14} /> Apple Wallet</li><li><MarketingIcon name="check" size={14} /> Google Wallet</li><li><MarketingIcon name="check" size={14} /> Tarjeta web</li></ul><a className="mkt-button mkt-button-light" href={demoRequestHref}>Verlo en una demo <MarketingIcon name="arrow" size={15} /></a></div>
+          <div data-landing-reveal="left"><p className="mkt-eyebrow">SIEMPRE A LA MANO</p><h2 id="wallet-title">Tu programa de lealtad,<br /><em>en su wallet.</em></h2><p>Dales una tarjeta que realmente van a usar. morrow permite emitir, actualizar y personalizar pases sin complicar la experiencia.</p><ul><li><MarketingIcon name="check" size={14} /> Apple Wallet</li><li><MarketingIcon name="check" size={14} /> Google Wallet</li><li><MarketingIcon name="check" size={14} /> Tarjeta web</li></ul><a className="mkt-button mkt-button-light" {...demoLinkProps}>Verlo en una demo <MarketingIcon name="arrow" size={15} /></a></div>
           <div className="mkt-wallet-stage" data-landing-reveal="right"><span aria-hidden="true" /><WalletCard /></div>
         </div>
       </section>
@@ -290,7 +297,7 @@ export default async function HomePage() {
       </section>
 
       <section className="mkt-demo" id="solicitar-demo" aria-labelledby="demo-title">
-        <div className="mkt-container" data-landing-reveal="up"><p className="mkt-eyebrow">CUANDO ESTÉS LISTO</p><h2 id="demo-title">Crea una experiencia de lealtad<br />que tus clientes <em>sí quieran usar.</em></h2><p>Te mostramos el flujo completo con ejemplos cercanos a tu negocio. No necesitas elegir un plan ni realizar un pago.</p><a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a><small id="demo-contacto">El canal para agendar se habilitará antes de publicar esta página.</small></div>
+        <div className="mkt-container" data-landing-reveal="up"><p className="mkt-eyebrow">CUANDO ESTÉS LISTO</p><h2 id="demo-title">Crea una experiencia de lealtad<br />que tus clientes <em>sí quieran usar.</em></h2><p>Te mostramos el flujo completo con ejemplos cercanos a tu negocio. No necesitas elegir un plan ni realizar un pago.</p><a className="mkt-button mkt-button-dark" {...demoLinkProps}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a><small id="demo-contacto">Te respondemos por WhatsApp para agendar tu demo.</small></div>
       </section>
 
       <footer className="mkt-footer">

@@ -285,7 +285,7 @@ operational history foundation.
 - [x] [Terminada] Replace the authenticated-area gateway at `/` with a clear educational landing while preserving staff redirects and login access.
 - [x] [Terminada] Explain the customer journey, business operation, Wallet channels, multi-branch value and common purchasing questions in plain Spanish.
 - [x] [Terminada] Add a responsive animated product illustration, accessible section navigation, FAQ, purposeful scroll reveals and repeated demo-first CTA without pricing or payment claims.
-- [ ] [Pendiente] Configure the real scheduling/contact destination in `NEXT_PUBLIC_DEMO_REQUEST_URL` before publishing the landing.
+- [x] [Terminada] Route every demo CTA to the sales WhatsApp (+52 662 171 1274) with a prefilled message; `NEXT_PUBLIC_DEMO_REQUEST_URL` (HTTPS) or `NEXT_PUBLIC_SALES_WHATSAPP_NUMBER` can override it. Show Wallet and email notices in product, phone and FAQ copy, and fix the 375px hero overflow.
 
 ## Cross-cutting - Audited support access
 
