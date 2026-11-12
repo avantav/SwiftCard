@@ -2698,3 +2698,26 @@ card trial and IVA 16%, keeping Empresarial sales-led.
 - Not run: `db:verify-rls` (no Docker) and live Stripe test-mode flows (keys
   stay with the owner). The signup form was not reviewed in a browser because
   it only renders once prices are synchronized with Stripe.
+
+## 2026-11-12 - Security quick wins (SEC-002, SEC-006)
+
+**Objective:** Close the two cheapest open findings from the security audit
+before self-service signup increases the number of tenants and administrators.
+
+**Changes made**
+
+- SEC-002 (High, cross-tenant BOLA): `configureBranchAccess` now proves with the
+  RLS-scoped session client that the submitted branch belongs to the
+  Administrator's tenant before any service-role read or Auth mutation, and the
+  service-role lookup of `branch_shared_accounts` is also tenant-scoped.
+  Previously an Administrator of tenant A could overwrite the email/password of
+  tenant B's shared branch account by submitting B's branch UUID.
+- SEC-006 (Medium, CSV formula injection): CSV exports neutralize cells starting
+  with `= + - @ TAB CR` (except plain numbers) via `src/lib/admin/csv.ts`.
+
+**Validation**
+
+- New regression tests fail on the previous code and pass with the fix
+  (`branch-access-action.test.ts`, `csv.test.ts`).
+- `npm run typecheck`, `npm run lint`, `npm run test:run` (389 tests across 93
+  files) and `npm run build`: passed.

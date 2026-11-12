@@ -324,8 +324,20 @@ export async function configureBranchAccess(formData: FormData) {
   const branchId = String(formData.get("branchId") ?? "").trim();
   const accessMode = String(formData.get("employeeAccessMode") ?? "");
   const context = await requireInternalArea("ADMIN", { writable: true });
-  if (context.access.role !== "ADMIN" || !branchId) {
+  if (context.access.role !== "ADMIN" || !branchId || !context.tenantId) {
     redirectWithError("Solo el Administrador general puede cambiar este acceso.");
+  }
+
+  // SEC-002: prove tenant ownership with the RLS-scoped session client before
+  // any service-role read or Auth mutation. Never trust the submitted branch.
+  const { data: ownedBranch, error: ownershipError } = await context.supabase
+    .from("branches")
+    .select("id")
+    .eq("id", branchId)
+    .eq("tenant_id", context.tenantId)
+    .maybeSingle();
+  if (ownershipError || !ownedBranch) {
+    redirectWithError("La sucursal no existe o no pertenece a tu negocio.");
   }
 
   let adminClient;
@@ -339,6 +351,7 @@ export async function configureBranchAccess(formData: FormData) {
     .from("branch_shared_accounts")
     .select("staff_profile_id")
     .eq("branch_id", branchId)
+    .eq("tenant_id", context.tenantId)
     .maybeSingle();
 
   if (accessMode === "INDIVIDUAL_CREDENTIALS") {
