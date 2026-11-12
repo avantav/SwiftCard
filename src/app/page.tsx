@@ -140,7 +140,7 @@ function PricingSection({ plans }: { plans: PricingPlan[] }) {
             );
           })}
         </div>
-        <p className="mkt-pricing-note" data-landing-reveal="up">Activamos tu cuenta y te acompañamos en la configuración por WhatsApp. El pago en línea estará disponible pronto.</p>
+        <p className="mkt-pricing-note" data-landing-reveal="up">Próximamente en todos los planes: tarjetas de regalo y tarjetas de descuento. Activamos tu cuenta y te acompañamos en la configuración por WhatsApp. El pago en línea estará disponible pronto.</p>
       </div>
     </section>
   );

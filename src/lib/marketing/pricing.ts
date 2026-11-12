@@ -15,7 +15,12 @@ export type PlanCopy = {
   highlighted?: boolean;
   /** Shows "Desde" before the price: the plan can be extended on request. */
   startingAt?: boolean;
+  /** Replaces catalog branch/card limits, e.g. when limits are negotiated per customer. */
+  limitsLabel?: string;
 };
+
+/** Upcoming capabilities announced for every plan. */
+export const UPCOMING_FOR_ALL_PLANS = ["Tarjetas de regalo", "Tarjetas de descuento"] as const;
 
 export const PLAN_COPY: Record<string, PlanCopy> = {
   inicial: {
@@ -26,6 +31,7 @@ export const PLAN_COPY: Record<string, PlanCopy> = {
       { label: "App para tu equipo con escáner y PIN" },
       { label: "Avisos de compra y premios en la tarjeta" },
       { label: "Correos de bienvenida y de premio" },
+      ...UPCOMING_FOR_ALL_PLANS.map((label) => ({ label, soon: true })),
     ],
     ctaLabel: "Empezar prueba de 15 días",
     ctaMessage: "Hola, quiero empezar la prueba de 15 días del plan Inicial de morrow.",
@@ -49,10 +55,12 @@ export const PLAN_COPY: Record<string, PlanCopy> = {
       { label: "Soporte prioritario" },
       { label: "Promociones", soon: true },
       { label: "Estadísticas avanzadas", soon: true },
+      { label: "Mensajes automáticos por WhatsApp", soon: true },
     ],
     ctaLabel: "Hablar con ventas",
     ctaMessage: "Hola, me interesa el plan Empresarial de morrow para mi empresa.",
     startingAt: true,
+    limitsLabel: "Sucursales y tarjetas a la medida de tu operación",
   },
 };
 
@@ -110,7 +118,7 @@ export function buildPricingPlans(packages: CatalogPackage[]): PricingPlan[] {
         name: pkg.name,
         monthlyAmount: Number(monthly.amount_minor),
         yearlyAmount: yearly ? Number(yearly.amount_minor) : null,
-        limits: [
+        limits: copy.limitsLabel ? [copy.limitsLabel] : [
           limitLabel(pkg.branch_limit, "sucursal", "sucursales", "Sucursales ilimitadas"),
           limitLabel(pkg.loyalty_card_limit, "tarjeta de lealtad", "tarjetas de lealtad", "Tarjetas ilimitadas"),
         ],

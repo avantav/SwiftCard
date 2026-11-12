@@ -758,3 +758,7 @@
   roadmap items. Packages were inserted with the service role and attributed to
   an active Superadmin because the Superadmin RPC creates a single price.
 - Status: Accepted.
+- Update 2026-11-12: Empresarial no longer shows branch or card limits on the
+  landing; they are negotiated per customer (catalog values 10/3 remain an
+  internal reference). Announced as «Próximamente»: automated WhatsApp messages
+  for Empresarial, and gift cards plus discount cards for every plan.

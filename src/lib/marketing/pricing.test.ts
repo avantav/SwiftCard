@@ -25,7 +25,10 @@ describe("buildPricingPlans", () => {
     ]);
     expect(plans.map((plan) => plan.code)).toEqual(["inicial", "crecimiento", "empresarial"]);
     expect(plans[0]?.limits).toEqual(["1 sucursal", "1 tarjeta de lealtad"]);
-    expect(plans[2]?.limits).toEqual(["Hasta 10 sucursales", "Hasta 3 tarjetas de lealtad"]);
+    expect(plans[1]?.limits).toEqual(["Hasta 3 sucursales", "Hasta 2 tarjetas de lealtad"]);
+    // Empresarial limits are negotiated per customer and never shown.
+    expect(plans[2]?.limits).toEqual(["Sucursales y tarjetas a la medida de tu operación"]);
+    expect(plans[2]?.limits.join(" ")).not.toMatch(/10|3 tarjetas/);
     expect(plans[2]?.yearlyAmount).toBe(999000);
     expect(plans[2]?.startingAt).toBe(true);
   });
@@ -49,6 +52,14 @@ describe("buildPricingPlans", () => {
       "WhatsApp para clientes que no han regresado",
       "Promociones",
       "Estadísticas avanzadas",
+      "Mensajes automáticos por WhatsApp",
+      "Tarjetas de regalo",
+      "Tarjetas de descuento",
+    ]));
+    expect(PLAN_COPY.empresarial?.features).toContainEqual({ label: "Mensajes automáticos por WhatsApp", soon: true });
+    expect(PLAN_COPY.inicial?.features).toEqual(expect.arrayContaining([
+      { label: "Tarjetas de regalo", soon: true },
+      { label: "Tarjetas de descuento", soon: true },
     ]));
   });
 

@@ -381,6 +381,12 @@ log. This phase is explicitly authorized post-MVP.
 - [ ] [Pendiente] Promotions and advanced statistics for Empresarial (shown as
   «Próximamente»), plus package entitlement enforcement from
   `billing_packages.entitlements`.
+- [ ] [Pendiente] Automated WhatsApp messages for Empresarial (WhatsApp Business
+  Platform with Meta-approved templates and marketing consent), shown as
+  «Próximamente».
+- [ ] [Pendiente] Gift cards and discount cards for every plan as new loyalty
+  card types (balance/redemption ledger for gift cards, rule-based discounts),
+  shown as «Próximamente».
 
 **Acceptance Criteria**
 
