@@ -79,9 +79,12 @@ Clientazo no publica términos del servicio.
 
 ## 4. Preguntas abiertas para el abogado
 
-1. **Identidad del operador:** razón social o nombre del titular, RFC y domicilio
-   completo (art. 15, fr. I). Configurar `NEXT_PUBLIC_LEGAL_OPERATOR_NAME` y
-   `NEXT_PUBLIC_LEGAL_ADDRESS`.
+1. **Identidad del operador — PENDIENTE (decisión del propietario, 2026-11-12):**
+   la app la opera una persona física. Falta el nombre del titular y un domicilio
+   completo (art. 15, fr. I). Opciones en evaluación: oficina virtual o coworking
+   para oír y recibir notificaciones, o constituir una S.A.S. antes de activar
+   Stripe en live. Mientras tanto se publica «Hermosillo, Sonora». Al decidir,
+   configurar `NEXT_PUBLIC_LEGAL_OPERATOR_NAME` y `NEXT_PUBLIC_LEGAL_ADDRESS`.
 2. **Medio ARCO:** confirmado por el propietario: `support@avantav.dev` (además de
    WhatsApp +52 662 171 1274). Valorar un buzón dedicado de privacidad.
 3. **Domicilio de cada negocio** como responsable frente a sus clientes: la
