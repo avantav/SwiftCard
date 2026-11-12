@@ -826,3 +826,26 @@
   subscriptions created through Quotes link to existing tenants with
   `morrow_tenant_id` metadata, and unlinkable Stripe objects are recorded as
   IGNORED instead of failing forever.
+
+## DEC-0059 - Provisional Legal Documents Pending Lawyer Review
+
+- Date: 2026-11-12
+- Context: Self-service signup and public registration require terms of service
+  and privacy notices. Competitors were reviewed: WonCards publishes generic
+  terms without data roles or a cited statute; Clientazo publishes only a
+  privacy notice aligned with the 2025 LFPDPPP (business as controller,
+  platform as processor).
+- Decision: Publish provisional version 1.0 of `/terminos` (B2B terms with a
+  processor clause), `/privacidad` (morrow's integral notice for business users)
+  and `/privacidad/clientes` (notice for loyalty program customers, where each
+  business is the controller), plus a simplified notice in public registration.
+  Texts live in `src/content/legal/` as Markdown rendered by a minimal safe
+  renderer; operator identity is configurable through `NEXT_PUBLIC_LEGAL_*`.
+- Reason: The owner asked to ship the most complete draft while a lawyer reviews
+  it; the drafts follow LFPDPPP 2025 articles 7, 11, 15, 16, 19, 28, 31, 35 and
+  36 and describe only data flows that exist in the code.
+- Consequences: Legal name, address and privacy mailbox are still missing;
+  WhatsApp is the interim ARCO channel. Open questions and pending technical
+  items (acceptance evidence, business domicile) are listed in
+  `docs/legal/README.md`.
+- Status: Accepted (provisional).

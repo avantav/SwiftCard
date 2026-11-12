@@ -344,7 +344,7 @@ export default async function HomePage() {
       </section>
 
       <footer className="mkt-footer">
-        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a>{plans.length ? <a href="#precios">Precios</a> : null}<a href="#preguntas">Preguntas</a></nav><p>© 2026 morrow</p></div>
+        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a>{plans.length ? <a href="#precios">Precios</a> : null}<a href="#preguntas">Preguntas</a><Link href="/terminos">Términos</Link><Link href="/privacidad">Privacidad</Link></nav><p>© 2026 morrow</p></div>
       </footer>
     </main>
   );

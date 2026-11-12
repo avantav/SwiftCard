@@ -71,7 +71,7 @@ export function SignupForm({
         <label>No llenes este campo<input name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" /></label>
       </div>
 
-      <label className="check-field"><input name="acceptTerms" type="checkbox" required /><span>Acepto los términos del servicio y el aviso de privacidad de morrow.</span></label>
+      <label className="check-field"><input name="acceptTerms" type="checkbox" required /><span>Acepto los <a href="/terminos" target="_blank" rel="noopener noreferrer">términos y condiciones del servicio</a> y el <a href="/privacidad" target="_blank" rel="noopener noreferrer">aviso de privacidad</a> de morrow, incluida la renovación automática al terminar la prueba.</span></label>
 
       <p className="public-card-copy">Hoy no se cobra nada. Tu prueba de 30 días termina el {trialEndsLabel}; después se cobran {priceLabel} + IVA con la tarjeta que registres. Puedes cancelar antes sin costo.</p>
       <SubmitButton className="public-primary-button">Continuar al pago seguro</SubmitButton>
