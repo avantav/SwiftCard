@@ -164,8 +164,9 @@ La secuencia recomendada es:
 6. Experiencia de la tarjeta dentro de un teléfono.
 7. Proceso de tres pasos.
 8. Bloque navy dedicado a Apple Wallet, Google Wallet y tarjeta web.
-9. Preguntas frecuentes.
-10. Cierre con un único CTA de demo y aclaración comercial honesta.
+9. Planes y precios (solo cuando el catálogo tenga paquetes activos).
+10. Preguntas frecuentes.
+11. Cierre con un único CTA de demo y aclaración comercial honesta.
 
 #### Componentes de marketing
 
@@ -176,6 +177,7 @@ La secuencia recomendada es:
 - **Benefit card:** fondo neutral, radio de `24–28px`, icono lineal en círculo blanco, texto centrado y elevación sutil en hover.
 - **Proceso:** tres columnas separadas por divisores en escritorio y una lista vertical en móvil.
 - **CTA:** navy sobre superficie clara o blanco sobre navy. `Solicitar una demo` es la única acción primaria de conversión; iniciar sesión y anclas son secundarias.
+- **Plan card:** superficie blanca con borde `--mkt-border`, radio de `24–28px`, nombre, frase breve, precio mensual con cifras tabulares y `+ IVA`, precio anual secundario, un CTA y lista de límites y funciones. El plan recomendado usa superficie navy con CTA blanco y una sola etiqueta «Recomendado». Las funciones aprobadas pero no construidas llevan la etiqueta neutral «Próximamente».
 
 #### Movimiento
 
@@ -193,7 +195,7 @@ La secuencia recomendada es:
 - A menos de `768px`, se oculta la navegación de anclas, el CTA permanece visible y las acciones del hero ocupan el ancho disponible.
 - Los mockups pueden escalarse o recortarse de forma controlada, pero nunca causar overflow horizontal en el viewport.
 - El texto explica beneficios con lenguaje cotidiano; términos como PWA, tenant, RPC, RLS o pass class no aparecen en adquisición.
-- No mostrar precios, checkout ni lenguaje de compra mientras pagos y planes públicos no estén habilitados.
+- Los precios solo provienen de paquetes `ACTIVE` del catálogo comercial (DEC-0057); si no hay, la sección no se muestra. No mostrar checkout ni botones de pago mientras el pago en línea no esté habilitado: los planes conducen a WhatsApp de ventas.
 - Toda promesa debe corresponder a capacidad existente o alcance aprobado. El CTA de demo no debe fingir un flujo de agenda si la URL aún no está configurada.
 
 ## 5. Sistema de espaciado

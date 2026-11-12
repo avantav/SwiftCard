@@ -285,7 +285,7 @@ operational history foundation.
 - [x] [Terminada] Replace the authenticated-area gateway at `/` with a clear educational landing while preserving staff redirects and login access.
 - [x] [Terminada] Explain the customer journey, business operation, Wallet channels, multi-branch value and common purchasing questions in plain Spanish.
 - [x] [Terminada] Add a responsive animated product illustration, accessible section navigation, FAQ, purposeful scroll reveals and repeated demo-first CTA without pricing or payment claims.
-- [ ] [Pendiente] Configure the real scheduling/contact destination in `NEXT_PUBLIC_DEMO_REQUEST_URL` before publishing the landing.
+- [x] [Terminada] Route every demo CTA to the sales WhatsApp (+52 662 171 1274) with a prefilled message; `NEXT_PUBLIC_DEMO_REQUEST_URL` (HTTPS) or `NEXT_PUBLIC_SALES_WHATSAPP_NUMBER` can override it. Show Wallet and email notices in product, phone and FAQ copy, and fix the 375px hero overflow.
 
 ## Cross-cutting - Audited support access
 
@@ -369,8 +369,24 @@ log. This phase is explicitly authorized post-MVP.
   manual payout reconciliation.
 - [ ] [Pendiente] Decide and implement membership-limit enforcement plus grace
   behavior after observing pilot usage; Phase 10 foundation is measurement-only.
-- [ ] [Pendiente] Replace the fictional pricing reference with approved Spanish
-  packages only after catalog, privacy, tax and payment flows are production-ready.
+- [x] [Terminada] Publish the approved packages (Inicial $399, Crecimiento $699,
+  Empresarial desde $999 MXN + IVA, annual = 10 months, unlimited customers,
+  30-day trial with card required) in the production catalog and render them on the landing from
+  ACTIVE catalog data, with WhatsApp CTAs until online payment exists (DEC-0057).
+- [ ] [Pendiente] WhatsApp win-back for customers who have not returned
+  (Crecimiento and Empresarial): Admin list of inactive customers with marketing
+  consent and a configurable inactivity window, plus a prefilled `wa.me` message
+  sent from the business phone; record each contact attempt. Promised on the
+  landing as «Próximamente». Depends on DEC-0056 consent.
+- [ ] [Pendiente] Promotions and advanced statistics for Empresarial (shown as
+  «Próximamente»), plus package entitlement enforcement from
+  `billing_packages.entitlements`.
+- [ ] [Pendiente] Automated WhatsApp messages for Empresarial (WhatsApp Business
+  Platform with Meta-approved templates and marketing consent), shown as
+  «Próximamente».
+- [ ] [Pendiente] Gift cards and discount cards for every plan as new loyalty
+  card types (balance/redemption ledger for gift cards, rule-based discounts),
+  shown as «Próximamente».
 
 **Acceptance Criteria**
 

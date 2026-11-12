@@ -5,6 +5,9 @@ import { LandingMotion } from "@/components/landing-motion";
 import { MorrowBrand } from "@/components/morrow-brand";
 import { getStaffSessionContext } from "@/lib/auth/server";
 import { getDefaultInternalRoute } from "@/lib/auth/routes";
+import { demoRequestLink, salesWhatsAppLink } from "@/lib/marketing/demo-request";
+import { formatPesos, type PricingPlan } from "@/lib/marketing/pricing";
+import { loadPublicPricingPlans } from "@/lib/marketing/pricing-server";
 import "./landing.css";
 
 export const metadata: Metadata = {
@@ -78,8 +81,12 @@ const questions = [
     answer: "Sí. Puedes controlar el acceso de tu equipo, elegir sucursales participantes y consultar resultados por ubicación."
   },
   {
+    question: "¿Mis clientes reciben avisos?",
+    answer: "Sí. Al registrar una compra o ganar un premio, su tarjeta en Apple Wallet o Google Wallet muestra un aviso con su nuevo saldo. Si dejaron su correo, reciben una bienvenida y un correo cada vez que ganan un premio."
+  },
+  {
     question: "¿Puedo contratar y pagar desde este sitio?",
-    answer: "Todavía no. Primero conocemos tu operación en una demo y definimos contigo la configuración adecuada, sin pedir pagos en línea."
+    answer: "Por ahora activamos tu cuenta por WhatsApp: eliges tu plan, te acompañamos en la configuración y empiezas con 30 días de prueba, sin pedir pagos en línea. El pago en línea estará disponible pronto."
   }
 ];
 
@@ -107,6 +114,35 @@ function WalletCard({ compact = false }: { compact?: boolean }) {
         <MarketingIcon name="gift" size={19} />
       </div>
     </div>
+  );
+}
+
+function PricingSection({ plans }: { plans: PricingPlan[] }) {
+  return (
+    <section className="mkt-section mkt-pricing" id="precios" aria-labelledby="pricing-title">
+      <div className="mkt-container">
+        <div className="mkt-section-heading is-centered" data-landing-reveal="up"><p className="mkt-eyebrow">PLANES</p><h2 id="pricing-title">Precios claros. <em>Sin sorpresas.</em></h2><p>Clientes ilimitados en todos los planes y 30 días de prueba sin costo. Precios en pesos mexicanos más IVA.</p></div>
+        <div className="mkt-pricing-grid">
+          {plans.map((plan, index) => {
+            const cta = salesWhatsAppLink(plan.ctaMessage);
+            return (
+              <article className={`mkt-plan${plan.highlighted ? " is-highlighted" : ""}`} key={plan.code} data-landing-reveal="up" data-reveal-delay={`${index + 1}`} aria-labelledby={`plan-${plan.code}`}>
+                {plan.highlighted ? <p className="mkt-plan-badge">Recomendado</p> : null}
+                <h3 id={`plan-${plan.code}`}>{plan.name}</h3>
+                <p className="mkt-plan-tagline">{plan.tagline}</p>
+                <p className="mkt-plan-price">{plan.startingAt ? <small>Desde</small> : null}<strong>{formatPesos(plan.monthlyAmount)}</strong><span>/mes + IVA</span></p>
+                {plan.yearlyAmount ? <p className="mkt-plan-yearly">o {formatPesos(plan.yearlyAmount)} al año: 2 meses gratis</p> : null}
+                <a className={`mkt-button ${plan.highlighted ? "mkt-button-light" : "mkt-button-dark"}`} href={cta.href} target="_blank" rel="noopener noreferrer">{plan.ctaLabel} <MarketingIcon name="arrow" size={15} /></a>
+                <ul>
+                  {[...plan.limits.map((label) => ({ label, soon: false })), ...plan.features].map((feature) => <li key={feature.label}><MarketingIcon name="check" size={14} /><span>{feature.label}{feature.soon ? <em className="mkt-plan-soon">Próximamente</em> : null}</span></li>)}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
+        <p className="mkt-pricing-note" data-landing-reveal="up">Próximamente en todos los planes: tarjetas de regalo y tarjetas de descuento. Activamos tu cuenta y te acompañamos en la configuración por WhatsApp. El pago en línea estará disponible pronto.</p>
+      </div>
+    </section>
   );
 }
 
@@ -168,7 +204,9 @@ function PhonePreview() {
 }
 
 export default async function HomePage() {
-  const demoRequestHref = process.env.NEXT_PUBLIC_DEMO_REQUEST_URL?.trim() || "#demo-contacto";
+  const demoRequest = demoRequestLink();
+  const plans = await loadPublicPricingPlans();
+  const demoLinkProps = { href: demoRequest.href, target: "_blank", rel: "noopener noreferrer" };
   let context = null;
   try {
     context = await getStaffSessionContext();
@@ -189,11 +227,12 @@ export default async function HomePage() {
             <a href="#producto">Producto</a>
             <a href="#beneficios">Beneficios</a>
             <a href="#como-funciona">Cómo funciona</a>
+            {plans.length ? <a href="#precios">Precios</a> : null}
             <a href="#preguntas">Preguntas</a>
           </nav>
           <div className="mkt-header-actions">
             <Link href="/login">Iniciar sesión</Link>
-            <a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
+            <a className="mkt-button mkt-button-dark" {...demoLinkProps}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
           </div>
         </div>
       </header>
@@ -205,7 +244,7 @@ export default async function HomePage() {
             <h1 id="landing-title">Haz que cada visita se convierta en <em>crecimiento.</em></h1>
             <p>morrow reúne clientes, recompensas y tarjetas digitales en una plataforma clara, para que tu negocio pueda construir relaciones que duran.</p>
             <div className="mkt-hero-actions">
-              <a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
+              <a className="mkt-button mkt-button-dark" {...demoLinkProps}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a>
               <a className="mkt-text-link" href="#como-funciona">Ver cómo funciona <MarketingIcon name="arrow" size={15} /></a>
             </div>
             <small className="mkt-trust-note"><MarketingIcon name="shield" size={15} /> Sin tarjeta de crédito. Primero entendemos cómo funciona tu negocio.</small>
@@ -244,6 +283,7 @@ export default async function HomePage() {
               <li><MarketingIcon name="users" /><span><strong>Clientes organizados</strong><small>Consulta el historial y el avance de cada persona.</small></span></li>
               <li><MarketingIcon name="chart" /><span><strong>Resultados comprensibles</strong><small>Ve visitas, compras y recompensas sin hojas de cálculo.</small></span></li>
               <li><MarketingIcon name="wallet" /><span><strong>Tarjetas digitales</strong><small>Permanece cerca del cliente en la wallet que ya usa.</small></span></li>
+              <li><MarketingIcon name="gift" /><span><strong>Avisos automáticos</strong><small>Su tarjeta avisa cada compra y cada premio, y le escribimos por correo al ganar.</small></span></li>
             </ul>
           </div>
           <div className="mkt-dashboard-wrap" data-landing-reveal="right"><DashboardPreview compact /></div>
@@ -256,7 +296,7 @@ export default async function HomePage() {
             <p className="mkt-eyebrow">UNA EXPERIENCIA MÁS CERCANA</p>
             <h2 id="phone-title">Lealtad que se siente <em>personal.</em></h2>
             <p>Tu cliente abre su tarjeta, ve cuánto ha avanzado y descubre su próximo premio. Sin buscar una tarjeta de papel ni recordar otra contraseña.</p>
-            <ul><li><MarketingIcon name="check" size={14} /> Siempre en su teléfono</li><li><MarketingIcon name="check" size={14} /> Lista para visitas rápidas</li><li><MarketingIcon name="check" size={14} /> Con la identidad de tu negocio</li></ul>
+            <ul><li><MarketingIcon name="check" size={14} /> Siempre en su teléfono</li><li><MarketingIcon name="check" size={14} /> Lista para visitas rápidas</li><li><MarketingIcon name="check" size={14} /> Con la identidad de tu negocio</li><li><MarketingIcon name="check" size={14} /> Avisos de compra y premios</li></ul>
           </div>
           <div data-landing-reveal="right" data-reveal-delay="1"><PhonePreview /></div>
         </div>
@@ -275,10 +315,12 @@ export default async function HomePage() {
 
       <section className="mkt-wallet-section" aria-labelledby="wallet-title">
         <div className="mkt-container mkt-wallet-grid">
-          <div data-landing-reveal="left"><p className="mkt-eyebrow">SIEMPRE A LA MANO</p><h2 id="wallet-title">Tu programa de lealtad,<br /><em>en su wallet.</em></h2><p>Dales una tarjeta que realmente van a usar. morrow permite emitir, actualizar y personalizar pases sin complicar la experiencia.</p><ul><li><MarketingIcon name="check" size={14} /> Apple Wallet</li><li><MarketingIcon name="check" size={14} /> Google Wallet</li><li><MarketingIcon name="check" size={14} /> Tarjeta web</li></ul><a className="mkt-button mkt-button-light" href={demoRequestHref}>Verlo en una demo <MarketingIcon name="arrow" size={15} /></a></div>
+          <div data-landing-reveal="left"><p className="mkt-eyebrow">SIEMPRE A LA MANO</p><h2 id="wallet-title">Tu programa de lealtad,<br /><em>en su wallet.</em></h2><p>Dales una tarjeta que realmente van a usar. morrow permite emitir, actualizar y personalizar pases sin complicar la experiencia.</p><ul><li><MarketingIcon name="check" size={14} /> Apple Wallet</li><li><MarketingIcon name="check" size={14} /> Google Wallet</li><li><MarketingIcon name="check" size={14} /> Tarjeta web</li></ul><a className="mkt-button mkt-button-light" {...demoLinkProps}>Verlo en una demo <MarketingIcon name="arrow" size={15} /></a></div>
           <div className="mkt-wallet-stage" data-landing-reveal="right"><span aria-hidden="true" /><WalletCard /></div>
         </div>
       </section>
+
+      {plans.length ? <PricingSection plans={plans} /> : null}
 
       <section className="mkt-section mkt-faq" id="preguntas" aria-labelledby="questions-title">
         <div className="mkt-container mkt-faq-grid">
@@ -290,11 +332,11 @@ export default async function HomePage() {
       </section>
 
       <section className="mkt-demo" id="solicitar-demo" aria-labelledby="demo-title">
-        <div className="mkt-container" data-landing-reveal="up"><p className="mkt-eyebrow">CUANDO ESTÉS LISTO</p><h2 id="demo-title">Crea una experiencia de lealtad<br />que tus clientes <em>sí quieran usar.</em></h2><p>Te mostramos el flujo completo con ejemplos cercanos a tu negocio. No necesitas elegir un plan ni realizar un pago.</p><a className="mkt-button mkt-button-dark" href={demoRequestHref}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a><small id="demo-contacto">El canal para agendar se habilitará antes de publicar esta página.</small></div>
+        <div className="mkt-container" data-landing-reveal="up"><p className="mkt-eyebrow">CUANDO ESTÉS LISTO</p><h2 id="demo-title">Crea una experiencia de lealtad<br />que tus clientes <em>sí quieran usar.</em></h2><p>Te mostramos el flujo completo con ejemplos cercanos a tu negocio. No necesitas elegir un plan ni realizar un pago.</p><a className="mkt-button mkt-button-dark" {...demoLinkProps}>Solicitar una demo <MarketingIcon name="arrow" size={15} /></a><small id="demo-contacto">Te respondemos por WhatsApp para agendar tu demo.</small></div>
       </section>
 
       <footer className="mkt-footer">
-        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a><a href="#preguntas">Preguntas</a></nav><p>© 2026 morrow</p></div>
+        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a>{plans.length ? <a href="#precios">Precios</a> : null}<a href="#preguntas">Preguntas</a></nav><p>© 2026 morrow</p></div>
       </footer>
     </main>
   );

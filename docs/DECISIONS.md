@@ -734,6 +734,36 @@
   are documented in `docs/WALLET_ACTIVITY_MESSAGES.md`.
 - Status: Accepted.
 
+## DEC-0057 - Public Catalog Pricing With WhatsApp Sales Activation
+
+- Date: 2026-11-12
+- Context: The owner approved public plans after reviewing WonCards
+  (Básico $399, Pro $599, Empresarial $749 MXN/month; unlimited clients, priced
+  by branches) and Clientazo (Básico $399, Pro $799 MXN + IVA; marketing
+  features, $1,500 setup waived annually). The landing previously forbade prices
+  until online payment existed, and the production catalog was empty.
+- Decision: Publish three ACTIVE catalog packages with MXN monthly and yearly
+  prices (yearly = 10 months), unlimited customers and a 15-day trial:
+  Inicial $399 (1 branch, 1 card), Crecimiento $699 (3 branches, 2 cards,
+  location validation, WhatsApp win-back) and Empresarial from $999 (10 branches,
+  3 cards, custom adaptations, priority support, promotions, advanced
+  statistics). Render prices on the landing from ACTIVE catalog data only;
+  per-plan copy lives in code and marks approved-but-unbuilt features as
+  «Próximamente». Plan CTAs open the sales WhatsApp until Stripe checkout exists.
+- Reason: The catalog stays the single source of truth for the landing and the
+  upcoming Stripe synchronization, entry price matches the market and the
+  higher tiers monetize multi-branch and multi-card capability.
+- Consequences: The design-system pricing ban is replaced by the catalog rule.
+  WhatsApp win-back, promotions and advanced statistics are now committed
+  roadmap items. Packages were inserted with the service role and attributed to
+  an active Superadmin because the Superadmin RPC creates a single price.
+- Status: Accepted.
+- Update 2026-11-12: Empresarial no longer shows branch or card limits on the
+  landing; they are negotiated per customer (catalog values 10/3 remain an
+  internal reference). Announced as «Próximamente»: automated WhatsApp messages
+  for Empresarial, and gift cards plus discount cards for every plan.
+- Update 2026-11-12: the trial is 30 days (was 15) and requires a card at
+  signup; Stripe charges automatically when it ends.
 ## DEC-0056 - Transactional Customer Emails And Separate Marketing Consent
 
 - Date: 2026-11-12
