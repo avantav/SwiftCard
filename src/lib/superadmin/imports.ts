@@ -58,4 +58,9 @@ export function validateMappedRows(rows: Array<Record<string, string>>, mapping:
   return errors;
 }
 import * as XLSX from "xlsx";
+import * as cptable from "xlsx/dist/cpexcel.full.mjs";
 import { normalizePhone } from "@/lib/customers/phone";
+
+// SheetJS 0.20+ no longer bundles codepage tables; UTF-8 CSV without BOM
+// (codepage 65001) needs them to keep accents such as «Teléfono».
+XLSX.set_cptable(cptable);
