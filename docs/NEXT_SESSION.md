@@ -48,10 +48,12 @@
 
 - Implemented on `worktree-email-notifications` (DEC-0056); setup and
   post-MVP campaigns in `docs/CUSTOMER_EMAILS.md`.
-- Before release: verify the sending domain in Resend (owner leaning to a
-  subdomain of the morrow domain), set `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`
-  and optional `EMAIL_REPLY_TO`, and apply migration `0070`.
-- Then test with a real inbox: welcome with and without welcome reward, and a
+- Done 2026-11-12: `swiftycards.com` verified in Resend (DKIM, SPF on
+  `send.`, DMARC p=none); owner set `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS` and
+  `EMAIL_REPLY_TO` in Hostinger; migrations `0070` and `0071` confirmed applied
+  in production (project Swiftcards). `info@swiftycards.com` forwards to
+  support@avantav.dev (Hostinger forwarder).
+- Next: test with a real inbox: welcome with and without welcome reward, and a
   purchase that unlocks a reward. Review the two registration checkboxes in a
   browser at 375/768/1280/1440 px.
 - Campaigns (email/WhatsApp, highest-tier customers only) need explicit

@@ -1,8 +1,9 @@
 # Correos a clientes
 
 Estado: **MVP implementado** (rama `worktree-email-notifications`, DEC-0056).
-Pendiente: verificar el dominio en Resend, configurar las variables en el
-hosting, aplicar la migración `0070` y probar con un correo real.
+Configurado el 2026-11-12: dominio `swiftycards.com` verificado en Resend,
+variables en Hostinger y migración `0070` aplicada en producción. Pendiente:
+probar con un correo real.
 
 ## Alcance MVP (transaccional)
 
