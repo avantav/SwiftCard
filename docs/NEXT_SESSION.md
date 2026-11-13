@@ -21,13 +21,10 @@
   (Instagram, Facebook, LinkedIn, Google Business) to fill `sameAs`.
 - Not done on purpose: WebMCP and MCP Server Card (no MCP server exists); an
   about page.
-- FINDING (not fixed, needs authorization): the root `middleware.ts` is never
-  compiled because the app lives in `src/app`; Next.js only detects
-  `src/middleware.ts` / `src/proxy.ts` (`.next/server/middleware-manifest.json`
-  is empty). The Supabase session refresh and protected-route redirect in it
-  have never run in production; pages rely on their own server checks. Moving
-  it to `src/` changes auth behaviour for every route and must be tested on
-  its own branch.
+- AUTH-MW-001 resolved on `fix/activate-auth-proxy` (DEC-0062): the auth
+  proxy now runs from `src/proxy.ts`. After deploy, verify on production:
+  login, staying logged in past one hour, logout, `/change-password`
+  enforcement, support mode start/exit, public registration and Wallet links.
 
 ## Legal documents — 2026-11-12
 
