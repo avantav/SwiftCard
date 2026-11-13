@@ -72,7 +72,8 @@ original.
 - Cobro automático de planes.  
 - Registro público de tenants.  
 - Impersonación de soporte con permisos de escritura o acceso a credenciales.
-- Campañas de marketing y avisos de expiración.  
+- Campañas de marketing y avisos de expiración, salvo las campañas por correo
+  y Wallet del plan Empresarial autorizadas por el propietario (DEC-0068).  
 - Apps móviles nativas.
 
 ## 5. Roles
