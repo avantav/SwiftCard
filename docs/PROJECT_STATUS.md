@@ -1,5 +1,13 @@
 # Project Status
 
+## Tenant modules foundation — 2026-11-13
+
+- Modules per tenant by paid package with Superadmin global (`OFF`/`BETA`/`ON`)
+  and per-tenant (`GRANTED`/`REVOKED`) controls. DEC-0072, migration `0080`
+  (not applied yet), `docs/MODULES.md`.
+- Superadmin: Sistema · Módulos, module detail, tenant modules, package modules.
+- Campaigns and advanced statistics still use their current rule.
+
 ## Stripe self-service signup — 2026-11-12
 
 - Public `/signup` for Inicial and Crecimiento creates a Stripe Checkout

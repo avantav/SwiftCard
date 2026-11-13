@@ -1,6 +1,9 @@
 # Módulos por tenant
 
-Estado: **propuesto** (DEC-0072). Ningún cambio de código ni migración aplicado.
+Estado: **base implementada** (DEC-0072, migración `0080_tenant_modules`, pendiente
+de aplicar en producción). Campañas y estadísticas avanzadas todavía usan su
+regla actual; su paso a módulos es el siguiente PR (ver «Migración de lo
+existente»).
 
 ## Objetivo
 
@@ -82,9 +85,13 @@ otro caso o error al leer                    → inactivo
 ```
 
 Un `SWITCH` está activo solo si su módulo padre está activo **y** su propio
-estado global no es `OFF`. Los `SWITCH` sirven para apagar una parte de un
-módulo sin apagarlo entero (por ejemplo, solo el envío de compras de SwiftPOS)
-y también admiten `REVOKED` por tenant.
+estado global no es `OFF` (sin estado guardado sigue a su módulo). Los `SWITCH`
+sirven para apagar una parte de un módulo sin apagarlo entero (por ejemplo,
+solo el envío de compras de SwiftPOS); admiten `OFF` global y `REVOKED` por
+tenant, nunca `BETA` ni `GRANTED`.
+
+Un otorgamiento con vencimiento termina al final del día elegido, hora del
+centro de México.
 
 ## Almacenamiento (SwiftCard)
 
@@ -96,8 +103,9 @@ y también admiten `REVOKED` por tenant.
   exclusivas de Superadmin.
 - `app.tenant_has_module(key, tenant_id)` para RPCs y
   `app.current_tenant_modules()` para la interfaz del tenant.
-- En Next.js, `tenantHasModule(key, tenantId)` con caché de 30 s; un cambio
-  tarda como máximo 30 s en aplicarse.
+- En Next.js, `currentTenantHasModule(context, key)`
+  (`src/lib/modules/access.ts`) con caché de 30 s y límite de espera de 2 s;
+  los errores no se guardan en caché y cuentan como inactivo.
 - Todo cambio exige motivo y queda en `audit_logs`.
 
 ## Superadmin
@@ -105,8 +113,9 @@ y también admiten `REVOKED` por tenant.
 - **«Módulos»** (`/superadmin/modules`): catálogo con modo global, tenants que
   lo tienen por paquete, otorgados y revocados; botón de apagado inmediato con
   confirmación; historial de cambios.
-- **Paquetes** (`/superadmin/billing/packages`): selección de módulos incluidos
-  en cada paquete, desde el catálogo.
+- **Paquetes** (`/superadmin/billing/packages`): sección «Módulos por paquete»
+  con un formulario por paquete. El formulario de creación y sus casillas de
+  «Capacidades» no cambian todavía.
 - **Detalle del tenant**: sección «Módulos» con estado efectivo, origen
   (paquete, otorgado, revocado, apagado global) y acciones otorgar/revocar.
 
@@ -141,15 +150,17 @@ quitar funciones a tenants actuales.
 
 ## Primeros módulos del catálogo
 
+Implementados en `src/lib/modules/catalog.ts` (todos «En desarrollo»):
+
 | Clave | Tipo | Notas |
 |---|---|---|
-| `campaigns` | MODULE | Migrado de DEC-0068 |
-| `advanced_statistics` | MODULE | Migrado de DEC-0069 |
 | `swiftpos_integration` | MODULE | DEC-0071 |
 | `swiftpos_integration.card_resolve` | SWITCH | Identificar tarjetas desde el POS |
 | `swiftpos_integration.purchases` | SWITCH | Recibir compras del POS |
 | `swiftpos_integration.wallet_refresh` | SWITCH | Refrescar Wallet tras compras del POS |
 | `swiftpos_integration.location_validation` | SWITCH | Validar la ubicación enviada |
+
+Siguiente PR: `campaigns` y `advanced_statistics` (DEC-0068, DEC-0069).
 
 ## Complejidad
 

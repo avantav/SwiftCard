@@ -9,6 +9,11 @@ const groups: EnterpriseNavGroup[] = [{
     { href: "/superadmin/billing/promotions", label: "Promociones", icon: "award" },
     { href: "/superadmin/billing/affiliates", label: "Afiliados", icon: "user-plus" }
   ]
+}, {
+  label: "Sistema",
+  items: [
+    { href: "/superadmin/modules", label: "Módulos", icon: "modules" }
+  ]
 }];
 
 export function SuperadminNavigation({ email }: { email: string | null }) {

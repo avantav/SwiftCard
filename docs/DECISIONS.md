@@ -1121,4 +1121,7 @@
 - Consequences: The package editor lists catalog modules instead of fixed
   capability checkboxes, which must be reviewed before conversion. SwiftPOS
   implements the same design on its own plans.
-- Status: Proposed.
+- Status: Accepted. Foundation implemented in migration `0080` (tables, RPCs,
+  Superadmin pages, package modules, catalog with the SwiftPOS module in
+  development). Campaigns and advanced statistics keep their current rule
+  until a follow-up migrates them.

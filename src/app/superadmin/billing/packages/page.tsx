@@ -2,9 +2,11 @@ import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
 import { formatMinorUnitsForInput } from "@/lib/admin/program";
 import { createBillingPackage, setBillingPackageStatus } from "./actions";
+import { setBillingPackageModules } from "@/app/superadmin/modules/actions";
+import { sellableModules } from "@/lib/modules/catalog";
 
 type PageProps = {
-  searchParams: Promise<{ created?: string; status?: string; error?: string }>;
+  searchParams: Promise<{ created?: string; status?: string; modules?: string; error?: string }>;
 };
 
 type BillingPackage = {
@@ -16,7 +18,13 @@ type BillingPackage = {
   branch_limit: number | null;
   loyalty_card_limit: number | null;
   version: number;
+  entitlements: Record<string, unknown> | null;
 };
+
+function packageModules(item: BillingPackage): string[] {
+  const modules = item.entitlements?.modules;
+  return Array.isArray(modules) ? modules.filter((key): key is string => typeof key === "string") : [];
+}
 
 type BillingPrice = {
   package_id: string;
@@ -41,7 +49,7 @@ export default async function BillingPackagesPage({ searchParams }: PageProps) {
   const context = await requireInternalArea("SUPERADMIN");
   const [packagesResponse, pricesResponse] = await Promise.all([
     context.supabase.from("billing_packages")
-      .select("id,code,name,status,membership_limit,branch_limit,loyalty_card_limit,version")
+      .select("id,code,name,status,membership_limit,branch_limit,loyalty_card_limit,version,entitlements")
       .order("created_at", { ascending: false }),
     context.supabase.from("billing_package_prices")
       .select("package_id,currency_code,billing_interval,amount_minor,status")
@@ -50,6 +58,7 @@ export default async function BillingPackagesPage({ searchParams }: PageProps) {
   const prices = (pricesResponse.data ?? []) as BillingPrice[];
   const failed = Boolean(packagesResponse.error || pricesResponse.error);
   const priceByPackage = new Map(prices.map((price) => [price.package_id, price]));
+  const modules = sellableModules();
 
   return <main className="enterprise-page">
     <header className="enterprise-page-header">
@@ -62,6 +71,7 @@ export default async function BillingPackagesPage({ searchParams }: PageProps) {
 
     {messages.created ? <p className="enterprise-alert is-success" role="status"><strong>Paquete creado.</strong> Está en borrador hasta que lo actives.</p> : null}
     {messages.status ? <p className="enterprise-alert is-success" role="status"><strong>Estado actualizado.</strong> El paquete y su precio quedaron {messages.status === "ACTIVE" ? "activos" : "archivados"}.</p> : null}
+    {messages.modules ? <p className="enterprise-alert is-success" role="status"><strong>Módulos del paquete guardados.</strong> Los módulos agregados también llegan a las suscripciones vigentes; los retirados solo aplican a suscripciones nuevas.</p> : null}
     {messages.error ? <p className="enterprise-alert is-error" role="alert"><strong>No se pudo completar la acción.</strong> {messages.error}</p> : null}
 
     <section className="enterprise-content-card" aria-labelledby="create-package-title">
@@ -89,5 +99,22 @@ export default async function BillingPackagesPage({ searchParams }: PageProps) {
         return <tr key={item.id}><td data-label="Paquete"><strong>{item.name}</strong><br /><small>{item.code} · versión {item.version}</small></td><td data-label="Precio">{formatPrice(price)}</td><td data-label="Membresías" className="enterprise-number">{formatLimit(item.membership_limit)}</td><td data-label="Sucursales / tarjetas">{formatLimit(item.branch_limit)} / {formatLimit(item.loyalty_card_limit)}</td><td data-label="Estado"><span className={`enterprise-badge ${item.status === "ACTIVE" ? "is-active" : item.status === "ARCHIVED" ? "is-suspended" : "is-neutral"}`}>{item.status === "ACTIVE" ? "Activo" : item.status === "ARCHIVED" ? "Archivado" : "Borrador"}</span></td><td><form action={setBillingPackageStatus}><input type="hidden" name="packageId" value={item.id} /><input type="hidden" name="status" value={item.status === "ACTIVE" ? "ARCHIVED" : "ACTIVE"} /><SubmitButton className="enterprise-secondary-action" confirmMessage={item.status === "ACTIVE" ? `Archivar ${item.name}? Las suscripciones existentes conservarán su snapshot.` : undefined}>{item.status === "ACTIVE" ? "Archivar" : "Activar"}</SubmitButton></form></td></tr>;
       })}</tbody></table></div>}
     </section>
+
+    {!failed && packages.length > 0 && modules.length > 0 ? <section className="enterprise-content-card" aria-labelledby="package-modules-title">
+      <h2 id="package-modules-title">Módulos por paquete</h2>
+      <p>Elige qué módulos vende cada paquete. Agregar uno lo activa también en las suscripciones vigentes de ese paquete; retirarlo solo afecta a suscripciones nuevas. El módulo debe estar disponible en Sistema · Módulos.</p>
+      {packages.filter((item) => item.status !== "ARCHIVED").map((item) => {
+        const included = new Set(packageModules(item));
+        return <form action={setBillingPackageModules} className="auth-form" key={item.id}>
+          <input type="hidden" name="packageId" value={item.id} />
+          <fieldset className="billing-entitlements">
+            <legend>{item.name}</legend>
+            {modules.map((option) => <label key={option.key}><input name="modules" type="checkbox" value={option.key} defaultChecked={included.has(option.key)} /> {option.name}{option.availability === "IN_DEVELOPMENT" ? " (en desarrollo)" : ""}</label>)}
+          </fieldset>
+          <label className="field"><span>Motivo del cambio</span><input name="reason" required minLength={3} maxLength={500} /></label>
+          <SubmitButton className="enterprise-secondary-action">Guardar módulos de {item.name}</SubmitButton>
+        </form>;
+      })}
+    </section> : null}
   </main>;
 }

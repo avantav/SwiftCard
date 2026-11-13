@@ -1,5 +1,14 @@
 # Next Session
 
+## Tenant modules foundation — 2026-11-13
+
+- Implemented on `worktree-swiftpos-integration` (DEC-0072, migration `0080`).
+  Apply `0080` before or with the deploy; it only adds objects.
+- Run `npm run db:verify-rls` where Docker exists (validated on PGlite here).
+- Review the pages in a browser at 375/768/1280/1440 px with a Superadmin.
+- Next: migrate `campaigns` and `advanced_statistics` to modules keeping
+  identical access, then the SwiftPOS integration (`docs/SWIFTPOS_INTEGRATION.md`).
+
 ## Owner roadmap 2026-11-13
 
 1. Purchase location security view — merged (PR #36, DEC-0066, migration `0074`).

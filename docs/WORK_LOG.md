@@ -1,5 +1,25 @@
 # Work Log
 
+## 2026-11-13 - Tenant Modules Foundation
+
+**Implemented (DEC-0072):** Migration `0080_tenant_modules` adds global module
+modes (`OFF`/`BETA`/`ON`, missing = `OFF`), per-tenant overrides
+(`GRANTED` with optional expiry, `REVOKED`), switches (`module.part`),
+evaluation from the subscription `entitlements_snapshot.modules`, Superadmin-only
+RPCs with mandatory reason and audit, and package module assignment (additions
+reach current subscriptions, removals only new ones). Superadmin pages:
+Sistema · Módulos, module detail with emergency off and history, tenant
+modules, and «Módulos por paquete». Code catalog in `src/lib/modules` with a
+30 s cache helper that evaluates errors as inactive. No existing function or
+flow changes; the only catalog module (SwiftPOS integration) is in development.
+
+**Validation:** Full migration chain and SQL tests on PGlite 0.5.13 (Docker is
+not available): `0080` passes; the only failure, `0053`, also fails on the
+unchanged base in this environment. 470 Vitest tests in 102 files, lint,
+TypeScript and the production build pass. Pages were not checked in a browser
+(no local Supabase).
+
+
 ## 2026-11-03 - Public Camera Privacy And Staff-Session Registration Repair
 
 **Implemented:** Added encrypted scan URLs to the Web/Apple/Google QR outputs.
