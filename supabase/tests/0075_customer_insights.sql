@@ -1,7 +1,8 @@
 \set ON_ERROR_STOP on
 
-insert into public.tenants (id, name, status) values
-  ('75000000-0000-0000-0000-0000000000a1', 'Tenant Estadísticas', 'ACTIVE');
+-- Advanced statistics require Empresarial (0077).
+insert into public.tenants (id, name, status, campaigns_enabled) values
+  ('75000000-0000-0000-0000-0000000000a1', 'Tenant Estadísticas', 'ACTIVE', true);
 insert into public.branches (id, tenant_id, name) values
   ('75000000-0000-0000-0000-0000000000b1', '75000000-0000-0000-0000-0000000000a1', 'Centro'),
   ('75000000-0000-0000-0000-0000000000b2', '75000000-0000-0000-0000-0000000000a1', 'Norte');
@@ -119,9 +120,14 @@ begin
     null;
   end;
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000011', false);
-  if exists (select 1 from app.get_customer_segment_members('FREQUENT') where full_name like '%Frecuente%') then
-    raise exception 'Segment members leaked across tenants';
-  end if;
+  -- Tenant A is not Empresarial (0077): denied outright, so nothing can leak.
+  begin
+    if exists (select 1 from app.get_customer_segment_members('FREQUENT') where full_name like '%Frecuente%') then
+      raise exception 'Segment members leaked across tenants';
+    end if;
+  exception when insufficient_privilege then
+    null;
+  end;
 end;
 $$;
 

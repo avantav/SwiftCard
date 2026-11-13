@@ -1046,3 +1046,22 @@
   pendientes». Apple pushes left in the outbox are retried by the existing
   retry path. See `docs/CAMPAIGNS.md`.
 - Status: Accepted.
+
+## DEC-0069 - Advanced Statistics Are Empresarial
+
+- Date: 2026-11-13
+- Context: The owner decided that the advanced statistics (DEC-0067) belong
+  to the Empresarial plan, as the public pricing already listed them there.
+- Decision: Migration `0077` renames the full computations to internal
+  functions (`app.customer_insights_full`, `app.customer_segment_members_full`)
+  and wraps them. Without Empresarial (same entitlement as campaigns:
+  ACTIVE/TRIALING `empresarial` subscription or `tenants.campaigns_enabled`),
+  `get_customer_insights` returns only the period summary and rewards
+  (`advanced: false`) and `get_customer_segment_members` is denied. The view
+  shows summary, rewards and an «Estadísticas avanzadas · Plan Empresarial»
+  panel. The Superadmin toggle now reads «Activar plan Empresarial (campañas y
+  estadísticas)». Pricing lists advanced statistics and campaigns as
+  available (no «Próximamente»).
+- Consequences: Enforcement is server-side. Apply `0077` only after the code
+  that understands `advanced: false` is deployed.
+- Status: Accepted.

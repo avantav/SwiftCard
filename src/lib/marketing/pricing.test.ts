@@ -51,12 +51,17 @@ describe("buildPricingPlans", () => {
     expect(soon).toEqual(expect.arrayContaining([
       "WhatsApp para clientes que no han regresado",
       "Promociones",
-      "Estadísticas avanzadas",
       "Mensajes automáticos por WhatsApp",
       "Tarjetas de regalo",
       "Tarjetas de descuento",
     ]));
     expect(PLAN_COPY.empresarial?.features).toContainEqual({ label: "Mensajes automáticos por WhatsApp", soon: true });
+    // Shipped for Empresarial (DEC-0068, DEC-0069): advertised without «Próximamente».
+    expect(PLAN_COPY.empresarial?.features).toEqual(expect.arrayContaining([
+      { label: "Estadísticas avanzadas: segmentos y retorno de clientes" },
+      { label: "Campañas por correo y Wallet" },
+    ]));
+    expect(soon).not.toContain("Estadísticas avanzadas");
     expect(PLAN_COPY.inicial?.features).toEqual(expect.arrayContaining([
       { label: "Tarjetas de regalo", soon: true },
       { label: "Tarjetas de descuento", soon: true },

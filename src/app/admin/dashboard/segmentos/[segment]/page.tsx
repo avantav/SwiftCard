@@ -46,6 +46,20 @@ export default async function SegmentMembersPage({ params, searchParams }: Segme
     </header>
   );
 
+  const { data: empresarial } = await context.supabase.schema("app").rpc("current_tenant_empresarial_available");
+  if (empresarial !== true && !context.supportSession && context.access.role === "ADMIN") {
+    return (
+      <main className="enterprise-page">
+        {header}
+        <div className="enterprise-empty-state" role="status">
+          <span className="enterprise-empty-icon" aria-hidden="true">!</span>
+          <h2>Listas de clientes del plan Empresarial</h2>
+          <p>Los segmentos con su lista de clientes forman parte de las estadísticas avanzadas del plan Empresarial.</p>
+        </div>
+      </main>
+    );
+  }
+
   if (context.access.role !== "ADMIN" || context.supportSession) {
     return (
       <main className="enterprise-page">
