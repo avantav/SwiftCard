@@ -139,61 +139,33 @@ columna `source`.
   envío desde la fila de la venta y lo manda con reintentos.
 - La API key vive cifrada en el backend del POS, nunca en el navegador.
 
-## Feature flags e interruptores
+## Módulos
 
-Cada sistema tiene su lista de flags, administrada por **su** Superadmin. Cada
-lado puede apagar la integración por su cuenta y cada Superadmin ve el estado
-del otro lado (SwiftCard expone `GET /api/integrations/swiftpos/v1/status`
-con sus flags efectivos; SwiftPOS lo muestra junto a los suyos).
+La integración es un **módulo** del sistema de módulos por tenant
+(`MODULES.md`, DEC-0072): el tenant la tiene activa según lo que paga, el
+Superadmin puede otorgarla o revocarla por tenant y apagarla globalmente. Con
+el módulo inactivo, la operación actual funciona igual que hoy. SwiftCard
+expone `GET /api/integrations/swiftpos/v1/status` con el estado efectivo para
+que el Superadmin de SwiftPOS vea el otro lado.
 
-### Reglas
+### SwiftCard
 
-1. **Apagado por defecto.** Todo flag nace apagado; la integración se
-   enciende a propósito, tenant por tenant.
-2. **Dos niveles.** Global (todos los tenants) y por tenant. Estado efectivo =
-   global **y** tenant. Apagar el global detiene la función en todos.
-3. **Apagado = comportamiento de hoy.** Con un flag apagado su ruta de código no
-   se ejecuta; ventas en caja, PWA, Wallet y reportes funcionan igual que antes
-   de la integración.
-4. **Falla cerrada para la integración, nunca para la operación.** Si no se
-   puede leer un flag, se trata como apagado para la integración, sin errores
-   en la venta ni en la PWA.
-5. **Sin llamadas entre sistemas en la ruta de venta.** Leer un flag es una
-   consulta local con caché de 30 s; la venta nunca espera a SwiftCard.
-6. **Auditoría.** Cada cambio exige motivo y queda en `audit_logs`: quién,
-   cuándo, de qué a qué valor y por qué.
-7. **La seguridad no se apaga.** API key, aislamiento entre tenants,
-   comprobante de escaneo y límites no son flags.
+| Clave | Tipo | Al estar inactivo |
+|---|---|---|
+| `swiftpos_integration` | MODULE | Las rutas `/api/integrations/swiftpos/*` responden `403 MODULE_NOT_ACTIVE` (salvo `status`). |
+| `swiftpos_integration.card_resolve` | SWITCH | No se identifican tarjetas; la caja cobra sin tarjeta. |
+| `swiftpos_integration.purchases` | SWITCH | No se aceptan compras; el POS las reintenta al reactivarse. |
+| `swiftpos_integration.wallet_refresh` | SWITCH | Se registran compras sin empujar la actualización a Wallet. |
+| `swiftpos_integration.location_validation` | SWITCH | Se ignora la ubicación enviada. |
 
-### Flags de SwiftCard (Superadmin → «Feature flags»)
+### SwiftPOS
 
-| Flag | Al apagarlo |
-|---|---|
-| `swiftpos.integration` | Interruptor maestro. Todas las rutas `/api/integrations/swiftpos/*` responden `503 FEATURE_DISABLED` (salvo `status`). |
-| `swiftpos.card_resolve` | No se identifican tarjetas desde el POS; la caja cobra sin tarjeta. |
-| `swiftpos.purchases` | No se aceptan compras (`503`). El POS conserva los envíos y los reintenta al reactivarse; no se pierden. |
-| `swiftpos.wallet_refresh` | Las compras se registran, pero no se empuja la actualización a Apple/Google Wallet (se refleja en la siguiente actualización). |
-| `swiftpos.location_validation` | Se ignora la ubicación enviada por el POS (útil si hay rechazos falsos por GPS). |
-
-### Flags de SwiftPOS (Superadmin → «Feature flags»)
-
-| Flag | Al apagarlo |
-|---|---|
-| `loyalty.integration` | Interruptor maestro. Desaparece el botón de tarjeta, no se crean vínculos y no se envía nada. |
-| `loyalty.card_scan` | Se oculta el botón «Tarjeta de lealtad» en caja. |
-| `loyalty.delivery` | Se pausan los envíos; las ventas con tarjeta se acumulan y se envían al reactivarlo. |
-| `loyalty.native_tiers_off` | Encendido: se desactivan los descuentos por nivel de membresía del POS (D3). Apagado: vuelven a operar como hoy. |
-
-### Almacenamiento
-
-- SwiftCard: tabla `public.feature_flags (key, tenant_id null = global,
-  enabled, reason, updated_by, updated_at)`, RPC
-  `app.set_feature_flag(key, tenant_id, enabled, reason)` solo para
-  Superadmin (mismo patrón que `set_tenant_campaigns_enabled`), función
-  `app.feature_enabled(key, tenant_id)`. Lista de claves validada contra un
-  catálogo fijo en código.
-- SwiftPOS: tabla equivalente en el esquema `swiftpos`, endpoint del
-  Superadmin y la misma lógica de evaluación.
+| Clave | Tipo | Al estar inactivo |
+|---|---|---|
+| `loyalty_integration` | MODULE | Sin botón de tarjeta, sin vínculos, sin envíos. |
+| `loyalty_integration.card_scan` | SWITCH | Se oculta el botón «Tarjeta de lealtad». |
+| `loyalty_integration.delivery` | SWITCH | Se pausan los envíos; se acumulan y salen al reactivarse. |
+| `loyalty_integration.native_tiers_off` | SWITCH | Activo: desactiva los descuentos por membresía del POS (D3). Inactivo: operan como hoy. |
 
 ## Complejidad
 
@@ -203,10 +175,12 @@ Estimación orientativa para una persona.
 |---|---|---|
 | PR-1 migración (función propia de integración + prueba de paridad + columnas) | Media | 2–3 días |
 | PR-2 API, API key y límites de peticiones (no existen hoy en SwiftCard) | Media | 2–3 días |
-| PR-3 Superadmin, etiquetas y feature flags de SwiftCard | Media | 2–3 días |
-| Lado SwiftPOS (incluye sus feature flags) | Media | 4–5 días |
+| Sistema de módulos de SwiftCard (`MODULES.md`) | Media | ~5–7 días |
+| PR-3 Superadmin y etiquetas de la integración | Baja | 1–2 días |
+| Lado SwiftPOS | Media | 3–4 días |
+| Sistema de módulos de SwiftPOS | Media | ~5 días |
 | Staging punta a punta (incluye apagar/encender cada flag) | Media | 2 días |
-| **Total** | **Media** | **~2.5–3 semanas** |
+| **Total** | **Media** | **~3.5–4 semanas** |
 
 ## Riesgos
 
@@ -214,7 +188,7 @@ Estimación orientativa para una persona.
 |---|---|---|---|---|
 | R1 | API key filtrada → compras falsas | Alto | Media | H1, H3, H4 |
 | R2 | El cálculo de la integración diverge del de la PWA | Medio | Media | H8 (prueba de paridad); la ruta actual no se modifica |
-| R7 | Falla de la integración afecta la venta o la PWA | Alto | Baja | Feature flags, `SAVEPOINT`, envío asíncrono, falla cerrada |
+| R7 | Falla de la integración afecta la venta o la PWA | Alto | Baja | Módulos, `SAVEPOINT`, envío asíncrono, falla cerrada |
 | R3 | Cruce de tenants (precedente SEC-002) | Crítico | Baja | H2 |
 | R4 | Cajero escanea su tarjeta en ventas ajenas | Medio | Alta | H4, H5 |
 | R5 | Venta cancelada en el POS conserva sus puntos | Bajo | Media | Cancelación manual en SwiftCard (D7) |
@@ -246,15 +220,16 @@ Estimación orientativa para una persona.
   `integration_confirm_purchase` con los mismos escenarios (sellos por compra
   y por monto, remanente, niveles, puntos de por vida, bienvenida); debe pasar
   antes de cada despliegue.
-- **H9 · Interruptores.** Feature flags globales y por tenant en ambos
-  Superadmins, apagados por defecto, auditados y con falla cerrada (ver
-  sección Feature flags).
+- **H9 · Módulos.** Sistema de módulos por tenant (`MODULES.md`) en ambos
+  Superadmins: según lo pagado, con otorgar/revocar por tenant y apagado
+  global, auditado y evaluado como inactivo ante cualquier error.
 
 ## Orden de despliegue
 
-1. SwiftCard PR-1 + PR-2 + flags, todos apagados; verificar que la PWA
+1. Sistema de módulos en ambos lados. Después SwiftCard PR-1 + PR-2, con el
+   módulo en `OFF`; verificar que la PWA
    registra compras igual que antes.
 2. Lado SwiftPOS con sus flags apagados; verificar que la caja cobra igual.
-3. SwiftCard PR-3; vincular el primer tenant, encender sus flags en ambos
-   lados y probar una venta real. Probar también apagar cada flag con ventas
+3. SwiftCard PR-3; vincular el primer tenant, otorgar el módulo en ambos
+   lados y probar una venta real. Probar también apagar cada módulo y switch con ventas
    en curso.

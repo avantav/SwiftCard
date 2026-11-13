@@ -1090,12 +1090,35 @@
   per-tenant API key issued by the Superadmin; no additional user or staff
   profile is created. Integration purchases have `source = 'SWIFTPOS'` and no
   staff profile. `confirm_card_purchase` and the PWA stay untouched; the
-  integration has its own function with a parity test against it. Both
-  Superadmins get global and per-tenant feature flags (off by default,
-  audited, fail closed) that never affect current operations. Sales without a card
+  integration has its own function with a parity test against it. It is
+  a tenant module of DEC-0072. Sales without a card
   are ignored; POS cancellations are handled manually in SwiftCard. Details in
   `docs/SWIFTPOS_INTEGRATION.md`.
 - Consequences: `purchases.staff_profile_id` becomes nullable only for
   integration purchases. SwiftPOS disables its own membership discounts for
   linked tenants. Superadmin MFA should exist before the first key is issued.
+- Status: Proposed.
+
+## DEC-0072 - Tenant Modules By Plan With Superadmin Overrides
+
+- Date: 2026-11-13
+- Context: The owner wants features organized as modules that are not active
+  for every tenant: each tenant gets what it pays for. The Superadmin of each
+  system (SwiftCard and SwiftPOS) must be able to turn specific modules on or
+  off globally and per tenant, for rollouts and for malfunctions, without
+  affecting current operations.
+- Decision: A code catalog of `MODULE`s (sold) and `SWITCH`es (internal parts
+  of a module). Packages list their modules in `billing_packages.entitlements`
+  and tenants get them through the frozen `entitlements_snapshot` of an
+  ACTIVE/TRIALING subscription. Superadmin controls: global mode
+  `OFF` / `BETA` / `ON` and per-tenant `INHERIT` / `GRANTED` (optional expiry)
+  / `REVOKED`. Global `OFF` and tenant `REVOKED` always win. Evaluated on the
+  server with a 30 s cache; read errors evaluate as inactive. Only new code is
+  wrapped; existing behavior is never conditioned on a new module. Every
+  change requires a reason recorded in `audit_logs`. Security controls are
+  never modules. Campaigns and advanced statistics migrate to modules keeping
+  identical access. Details in `docs/MODULES.md`.
+- Consequences: The package editor lists catalog modules instead of fixed
+  capability checkboxes, which must be reviewed before conversion. SwiftPOS
+  implements the same design on its own plans.
 - Status: Proposed.
