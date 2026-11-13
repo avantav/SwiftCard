@@ -9,12 +9,18 @@ import { demoRequestLink, salesWhatsAppLink } from "@/lib/marketing/demo-request
 import { formatPesos, type PricingPlan } from "@/lib/marketing/pricing";
 import { loadPublicPricingPlans } from "@/lib/marketing/pricing-server";
 import { stripeCheckoutConfig } from "@/lib/billing/stripe";
+import { legalOperator } from "@/lib/legal/company";
+import { homeJsonLd, serializeJsonLd, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/marketing/agent-content";
+import { landingFaq } from "@/lib/marketing/faq";
 import "./landing.css";
 
 export const metadata: Metadata = {
-  title: "morrow | Lealtad digital que hace volver a tus clientes",
-  description:
-    "Crea un programa de lealtad fácil de usar, entrega tarjetas para Apple Wallet y Google Wallet y entiende qué hace volver a tus clientes."
+  title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+    types: { "text/markdown": "/index.md" }
+  }
 };
 
 type MarketingIconName =
@@ -67,32 +73,6 @@ const benefits = [
     description: "La tarjeta vive en Apple Wallet, Google Wallet o en la web. No hay otra app que aprender."
   }
 ];
-
-const questions = [
-  {
-    question: "¿Mis clientes tienen que descargar una app?",
-    answer: "No. Guardan su tarjeta en Apple Wallet o Google Wallet y también pueden abrir una versión web desde su teléfono."
-  },
-  {
-    question: "¿Tengo que cambiar mi sistema de cobro?",
-    answer: "No para comenzar. Tu equipo registra la compra desde morrow y tu operación de cobro puede continuar como está."
-  },
-  {
-    question: "¿Funciona si tengo varias sucursales?",
-    answer: "Sí. Puedes controlar el acceso de tu equipo, elegir sucursales participantes y consultar resultados por ubicación."
-  },
-  {
-    question: "¿Mis clientes reciben avisos?",
-    answer: "Sí. Al registrar una compra o ganar un premio, su tarjeta en Apple Wallet o Google Wallet muestra un aviso con su nuevo saldo. Si dejaron su correo, reciben una bienvenida y un correo cada vez que ganan un premio."
-  },
-  {
-    question: "¿Puedo contratar y pagar desde este sitio?",
-    answer: "Por ahora activamos tu cuenta por WhatsApp: eliges tu plan, te acompañamos en la configuración y empiezas con 30 días de prueba, sin pedir pagos en línea. El pago en línea estará disponible pronto."
-  }
-];
-
-const ONLINE_SIGNUP_QUESTION = "¿Puedo contratar y pagar desde este sitio?";
-const ONLINE_SIGNUP_ANSWER = "Sí. Elige el plan Inicial o Crecimiento, crea tu cuenta y registra tu tarjeta: empiezas con 30 días de prueba y no se cobra nada hasta que termine. Para el plan Empresarial escríbenos por WhatsApp.";
 
 function WalletCard({ compact = false }: { compact?: boolean }) {
   return (
@@ -214,6 +194,8 @@ export default async function HomePage() {
   const demoRequest = demoRequestLink();
   const plans = await loadPublicPricingPlans();
   const onlineSignup = Boolean(stripeCheckoutConfig());
+  const questions = landingFaq(onlineSignup);
+  const operator = legalOperator();
   const demoLinkProps = { href: demoRequest.href, target: "_blank", rel: "noopener noreferrer" };
   let context = null;
   try {
@@ -227,6 +209,7 @@ export default async function HomePage() {
 
   return (
     <main className="landing-page mkt-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(homeJsonLd(plans, questions, operator)) }} />
       <LandingMotion />
       <header className="mkt-header">
         <div className="mkt-container mkt-header-inner">
@@ -334,7 +317,7 @@ export default async function HomePage() {
         <div className="mkt-container mkt-faq-grid">
           <div data-landing-reveal="left"><p className="mkt-eyebrow">PREGUNTAS FRECUENTES</p><h2 id="questions-title">Las buenas preguntas merecen <em>respuestas claras.</em></h2><p>En la demo también podemos revisar cualquier caso particular de tu operación.</p></div>
           <div className="mkt-faq-list" data-landing-reveal="right">
-            {questions.map((item, index) => <details key={item.question} open={index === 0}><summary>{item.question}<span aria-hidden="true">⌄</span></summary><p>{onlineSignup && item.question === ONLINE_SIGNUP_QUESTION ? ONLINE_SIGNUP_ANSWER : item.answer}</p></details>)}
+            {questions.map((item, index) => <details key={item.question} open={index === 0}><summary>{item.question}<span aria-hidden="true">⌄</span></summary><p>{item.answer}</p></details>)}
           </div>
         </div>
       </section>
@@ -344,7 +327,7 @@ export default async function HomePage() {
       </section>
 
       <footer className="mkt-footer">
-        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a>{plans.length ? <a href="#precios">Precios</a> : null}<a href="#preguntas">Preguntas</a><Link href="/terminos">Términos</Link><Link href="/privacidad">Privacidad</Link></nav><p>© 2026 morrow</p></div>
+        <div className="mkt-container"><div><MorrowBrand /><p>Lealtad digital para negocios locales.</p></div><nav aria-label="Navegación del pie"><a href="#producto">Producto</a><a href="#beneficios">Beneficios</a><a href="#como-funciona">Cómo funciona</a>{plans.length ? <a href="#precios">Precios</a> : null}<a href="#preguntas">Preguntas</a><Link href="/terminos">Términos</Link><Link href="/privacidad">Privacidad</Link>{operator.privacyEmail ? <a href={`mailto:${operator.privacyEmail}`}>Contacto</a> : <a href={operator.whatsappUrl} target="_blank" rel="noopener noreferrer">Contacto</a>}</nav><p>© 2026 morrow</p></div>
       </footer>
     </main>
   );

@@ -6,6 +6,7 @@ import { legalOperator } from "@/lib/legal/company";
 export const metadata: Metadata = {
   title: "Aviso de privacidad · morrow",
   description: "Aviso de privacidad integral de la plataforma morrow.",
+  alternates: { canonical: "/privacidad", types: { "text/markdown": "/privacidad.md" } },
 };
 
 export default function PrivacyPage() {

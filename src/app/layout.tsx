@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { siteUrl } from "@/lib/marketing/agent-content";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: "morrow",
   description: "SaaS multi-tenant para programas de fidelidad digitales",
   applicationName: "morrow",

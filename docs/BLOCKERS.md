@@ -2,6 +2,19 @@
 
 ## Active Blockers
 
+- **AUTH-MW-001:** The root `middleware.ts` is never compiled: with the app in
+  `src/app`, Next.js only detects `src/middleware.ts` or `src/proxy.ts`
+  (`.next/server/middleware-manifest.json` is empty).
+  - **Affected area:** Supabase session refresh and the redirect to `/login`
+    for `/admin`, `/app`, `/superadmin` and `/change-password`.
+  - **Consequence:** That code has never run in production; protected pages
+    rely on their own server-side checks (verified: `/admin` redirects from the
+    page, not the middleware).
+  - **Recommendation:** Move it to `src/proxy.ts` on a dedicated branch and
+    test login, session expiry, password-change enforcement, support mode and
+    public routes before releasing; it adds a Supabase call to every request.
+  - **Work that can continue:** Everything; DEC-0060 avoids the middleware.
+
 - **REVIEWS-001:** The Reviews product is authorized and its standalone MVP can
   begin at domain-contract level, but privacy and external-integration inputs
   are not approved.
