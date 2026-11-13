@@ -178,7 +178,7 @@ export async function updateCustomer(formData: FormData) {
     back({ q: returnQuery, error: "No tienes permiso para editar clientes." });
   }
 
-  const validation = validateEmployeeCustomerRegistration(formData);
+  const validation = validateEmployeeCustomerRegistration(formData, { requireEmail: false });
   if (!validation.ok) {
     back({ q: returnQuery, error: validation.errors.join(" ") });
   }

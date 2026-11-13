@@ -45,4 +45,10 @@ describe("validatePublicCustomerRegistration", () => {
       ]
     });
   });
+
+  it("requires an email to register", () => {
+    expect(
+      validatePublicCustomerRegistration(form({ fullName: "Ana", phone: "6621234567", privacyConsent: "on" }))
+    ).toMatchObject({ ok: false, errors: ["Correo es obligatorio."] });
+  });
 });

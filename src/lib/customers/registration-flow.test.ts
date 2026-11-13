@@ -23,6 +23,7 @@ function form() {
   data.set("loyaltyCardId", "published-card");
   data.set("fullName", "Ana Pérez");
   data.set("phone", "+526621234567");
+  data.set("email", "ana@example.com");
   data.set("privacyConsent", "on");
   return data;
 }

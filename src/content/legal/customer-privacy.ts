@@ -20,7 +20,7 @@ Este aviso aplica a las personas que se registran en el programa de lealtad de u
 
 ## 2. Datos que se tratan
 
-- **Identificación y contacto:** nombre y teléfono (obligatorios); correo electrónico y fecha de nacimiento (opcionales).
+- **Identificación y contacto:** nombre, teléfono y correo electrónico (obligatorios al registrarte); fecha de nacimiento (opcional). Los clientes importados por el negocio pueden no tener correo.
 - **Programa de lealtad:** sucursal de registro, compras registradas, sellos o puntos, premios obtenidos y canjeados, y la versión de los términos del programa que aceptaste.
 - **Tarjeta digital:** identificadores técnicos necesarios para entregar y actualizar tu Tarjeta en Apple Wallet o Google Wallet. Los identificadores del dispositivo se guardan cifrados o como resúmenes criptográficos.
 - **Consentimientos:** tu aceptación del aviso y de los términos del programa y, si la otorgas, tu autorización para recibir promociones.
