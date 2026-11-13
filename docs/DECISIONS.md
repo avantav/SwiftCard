@@ -1089,8 +1089,10 @@
   purchase: amount paid, ticket and optional location. It authenticates with a
   per-tenant API key issued by the Superadmin; no additional user or staff
   profile is created. Integration purchases have `source = 'SWIFTPOS'` and no
-  staff profile. The calculation block of `confirm_card_purchase` is moved
-  verbatim into an internal core shared by both paths. Sales without a card
+  staff profile. `confirm_card_purchase` and the PWA stay untouched; the
+  integration has its own function with a parity test against it. Both
+  Superadmins get global and per-tenant feature flags (off by default,
+  audited, fail closed) that never affect current operations. Sales without a card
   are ignored; POS cancellations are handled manually in SwiftCard. Details in
   `docs/SWIFTPOS_INTEGRATION.md`.
 - Consequences: `purchases.staff_profile_id` becomes nullable only for
