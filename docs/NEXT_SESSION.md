@@ -1,5 +1,22 @@
 # Next Session
 
+## Agent-readable public site — 2026-11-12
+
+- Implemented on `feat/agent-readiness` (DEC-0060): robots.txt with Content
+  Signals, sitemap, llms.txt, Markdown alternates (also via `Accept:
+  text/markdown`), canonical, `Link` header, JSON-LD and footer contact.
+- Owner: set `NEXT_PUBLIC_ORGANIZATION_SAME_AS` with the public profiles
+  (Instagram, Facebook, LinkedIn, Google Business) to fill `sameAs`.
+- Not done on purpose: WebMCP and MCP Server Card (no MCP server exists); an
+  about page.
+- FINDING (not fixed, needs authorization): the root `middleware.ts` is never
+  compiled because the app lives in `src/app`; Next.js only detects
+  `src/middleware.ts` / `src/proxy.ts` (`.next/server/middleware-manifest.json`
+  is empty). The Supabase session refresh and protected-route redirect in it
+  have never run in production; pages rely on their own server checks. Moving
+  it to `src/` changes auth behaviour for every route and must be tested on
+  its own branch.
+
 ## Legal documents — 2026-11-12
 
 - Provisional v1.0 of `/terminos`, `/privacidad` and `/privacidad/clientes`
@@ -31,10 +48,13 @@
 
 - Implemented on `worktree-email-notifications` (DEC-0056); setup and
   post-MVP campaigns in `docs/CUSTOMER_EMAILS.md`.
-- Before release: verify the sending domain in Resend (owner leaning to a
-  subdomain of the morrow domain), set `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`
-  and optional `EMAIL_REPLY_TO`, and apply migration `0070`.
-- Then test with a real inbox: welcome with and without welcome reward, and a
+- Done 2026-11-12: `swiftycards.com` verified in Resend (DKIM, SPF on
+  `send.`, DMARC p=none); owner set `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS` and
+  `EMAIL_REPLY_TO` in Hostinger; migrations `0070` and `0071` confirmed applied
+  in production (project Swiftcards). `info@swiftycards.com` forwards to
+  support@avantav.dev (Hostinger forwarder).
+- 2026-11-13: first production WELCOME email SENT and received by the owner.
+- Next: finish testing with a real inbox: welcome with and without welcome reward, and a
   purchase that unlocks a reward. Review the two registration checkboxes in a
   browser at 375/768/1280/1440 px.
 - Campaigns (email/WhatsApp, highest-tier customers only) need explicit

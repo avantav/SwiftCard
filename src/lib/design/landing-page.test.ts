@@ -6,6 +6,7 @@ function source(path: string) {
 }
 
 const page = source("../../app/page.tsx");
+const faq = source("../marketing/faq.ts");
 const styles = source("../../app/landing.css");
 const motion = source("../../components/landing-motion.tsx");
 
@@ -24,7 +25,8 @@ describe("public landing page", () => {
   it("uses demo requests as the primary conversion without implying checkout", () => {
     expect(page.match(/Solicitar una demo/g)?.length).toBeGreaterThanOrEqual(3);
     expect(page).toContain("Sin tarjeta de crédito");
-    expect(page).toContain("sin pedir pagos en línea");
+    expect(page).toContain("landingFaq(onlineSignup)");
+    expect(faq).toContain("sin pedir pagos en línea");
     // Online signup appears only when Stripe checkout is fully configured.
     expect(page).toContain("const onlineSignup = Boolean(stripeCheckoutConfig());");
     expect(page).toContain("`/signup?plan=${encodeURIComponent(plan.code)}`");
