@@ -41,8 +41,12 @@
   against the production Supabase catalog (it would store test price IDs).
   Sync directly with live keys when they are available; test locally against
   a non-production database if needed.
-- Planned next: «Olvidé mi contraseña» for tenant owners only (Phase 1 task);
-  dunning/access policy, refunds/disputes, CFDI invoicing.
+- «Olvidé mi contraseña» for owners: PR #33 (migration `0072` already applied
+  in production on 2026-11-13).
+- Owner decisions 2026-11-13 (DEC-0064): 15 days of grace after a failed
+  payment, no refunds. Stripe stays «in process»: do not implement live
+  billing, dunning or CFDI until the owner resumes it (pending: what is blocked
+  after the grace period, disputes, CFDI provider and fiscal data).
 
 ## Customer emails and marketing consent — 2026-11-12
 

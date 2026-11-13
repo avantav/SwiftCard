@@ -95,6 +95,17 @@ reduce el pico. La migración no bloquea altas al alcanzar un límite: primero s
 observará uso real y se definirá una política explícita de gracia, upgrade y
 fallas de pago.
 
+## Política comercial aprobada (DEC-0064, 2026-11-13)
+
+- **Pago fallido:** 15 días naturales de gracia desde el primer cobro fallido
+  (suscripción `past_due`). Durante la gracia el negocio opera con normalidad.
+  Qué se bloquea al terminar la gracia queda por definir cuando se implemente.
+- **Reembolsos:** no hay reembolsos. Cancelar detiene la renovación y el acceso
+  continúa hasta el fin del periodo ya pagado.
+- **Estado:** el cobro con Stripe sigue en proceso; esta política se aplica
+  cuando se implemente el cobro en vivo (webhooks de `invoice.payment_failed`,
+  Smart Retries y avisos al dueño). Disputas y CFDI siguen pendientes.
+
 ## Promociones
 
 La base admite porcentaje en puntos base (`10000 = 100%`), monto fijo en
