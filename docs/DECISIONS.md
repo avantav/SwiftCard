@@ -849,3 +849,21 @@
   items (acceptance evidence, business domicile) are listed in
   `docs/legal/README.md`.
 - Status: Accepted (provisional).
+
+## DEC-0061 - Email Required For New Customers
+
+- Date: 2026-11-13
+- Context: Welcome and reward emails (DEC-0056) only reach customers who left
+  an email; in production a purchase unlocked five rewards for a customer
+  without one, so no email was sent.
+- Decision: The owner asked to make email mandatory at registration. Public
+  registration (`/register/[branchToken]`) and staff registration (`/app`)
+  now require a valid email, validated in the server actions; the field moves
+  out of the optional group, which keeps only the birthday. Editing an existing
+  customer (`/app/scan`) keeps email optional because imported or older
+  customers may have none. The customer privacy notice and the simplified
+  notice in registration list email as required.
+- Not changed: the `register_public_customer` / `register_employee_customer`
+  RPCs still accept an empty email (no migration); enforcement lives in the
+  server actions, which are the only application callers.
+- Status: Accepted.

@@ -509,8 +509,9 @@ Antes de considerar terminada cualquier tarea de interfaz, verificar:
   Conservar foco, teclado, controles de al menos 44px, inputs de 16px y zoom manual.
 - Elegir otra tarjeta actualiza logo, colores, imágenes y distribución guardada.
   La vista previa no muestra un QR de ejemplo como si fuera utilizable.
-- Nombre y teléfono son visibles; correo y cumpleaños se agrupan como datos
-  opcionales. Los errores conservan los datos y la selección.
+- Nombre, teléfono y correo son visibles y obligatorios (DEC-0061); solo el
+  cumpleaños se agrupa como dato opcional. Los errores conservan los datos y la
+  selección.
 - Tras emitir, mostrar únicamente el QR y saldo reales de la tarjeta. Wallet
   solo se ofrece después de aceptar explícitamente los términos vigentes.
 - La atribución morrow queda en el pie y se omite para white-label. La acción

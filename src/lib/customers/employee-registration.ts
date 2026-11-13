@@ -12,9 +12,15 @@ export type EmployeeCustomerRegistrationResult =
   | { ok: true; data: EmployeeCustomerRegistrationInput }
   | { ok: false; errors: string[] };
 
+/**
+ * New customers must leave an email (welcome and reward emails). Editing an
+ * existing profile keeps it optional: imported or older customers may have none.
+ */
 export function validateEmployeeCustomerRegistration(
-  formData: FormData
+  formData: FormData,
+  options: { requireEmail?: boolean } = {}
 ): EmployeeCustomerRegistrationResult {
+  const requireEmail = options.requireEmail ?? true;
   const fullName = String(formData.get("fullName") ?? "").trim();
   const rawPhone = String(formData.get("phone") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -24,7 +30,8 @@ export function validateEmployeeCustomerRegistration(
   if (!fullName) errors.push("Nombre es obligatorio.");
   const phone = normalizePhone(rawPhone);
   if (!phone.ok) errors.push(phone.error);
-  if (email && !/^\S+@\S+\.\S+$/.test(email)) errors.push("El correo no es válido.");
+  if (!email && requireEmail) errors.push("Correo es obligatorio.");
+  else if (email && !/^\S+@\S+\.\S+$/.test(email)) errors.push("El correo no es válido.");
   if (!formData.has("privacyConsent")) errors.push("Debes aceptar el aviso de privacidad.");
   if (birthDate && !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) errors.push("La fecha de nacimiento no es válida.");
 

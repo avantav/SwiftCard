@@ -3,7 +3,7 @@ import { normalizePhone } from "./phone";
 export type PublicCustomerRegistrationInput = {
   fullName: string;
   phone: string;
-  email: string | null;
+  email: string;
   birthDate: string | null;
   privacyConsent: boolean;
 };
@@ -31,7 +31,9 @@ export function validatePublicCustomerRegistration(
   const phone = normalizePhone(rawPhone);
   if (!phone.ok) errors.push(phone.error);
 
-  if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+  if (!email) {
+    errors.push("Correo es obligatorio.");
+  } else if (!/^\S+@\S+\.\S+$/.test(email)) {
     errors.push("El correo no es válido.");
   }
 
@@ -50,7 +52,7 @@ export function validatePublicCustomerRegistration(
     data: {
       fullName,
       phone: phone.value,
-      email: email || null,
+      email,
       birthDate: birthDate || null,
       privacyConsent: true
     }
