@@ -137,6 +137,7 @@ function layout(input: {
   ctaUrl: string;
   finePrint: string;
   footerText: string;
+  unsubscribeUrl?: string | null;
 }) {
   const color = safeColor(input.brand.backgroundColor);
   const textColor = readableTextColor(color);
@@ -147,6 +148,10 @@ function layout(input: {
     : "";
   const note = input.note
     ? `<p style="margin:16px 0 0;font-size:14px;line-height:1.6;color:${TOKENS.muted};text-align:center;">${escapeHtml(input.note)}</p>`
+    : "";
+  const unsubscribeUrl = safeHttpsUrl(input.unsubscribeUrl ?? null);
+  const unsubscribe = unsubscribeUrl
+    ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.5;color:${TOKENS.muted};"><a href="${escapeHtml(unsubscribeUrl)}" style="color:${TOKENS.muted};text-decoration:underline;">Dejar de recibir promociones</a></p>`
     : "";
   const attribution = input.brand.showMorrowAttribution
     ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.5;color:${TOKENS.muted};">Powered by <strong>morrow</strong></p>`
@@ -170,7 +175,7 @@ function layout(input: {
 ${brandTile(input.brand, color, textColor)}
 <p style="margin:20px 0 0;font-size:13px;line-height:1.5;color:${TOKENS.muted};text-align:center;">${tenant}</p>
 <h1 style="margin:4px 0 0;font-size:24px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:${TOKENS.text};text-align:center;">${escapeHtml(input.title)}</h1>
-<p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:${TOKENS.muted};text-align:center;">${escapeHtml(input.lead)}</p>
+<p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:${TOKENS.muted};text-align:center;white-space:pre-line;">${escapeHtml(input.lead)}</p>
 ${input.highlight ? highlightBlock(input.highlight) : ""}
 ${note}
 ${button}
@@ -178,6 +183,7 @@ ${button}
 </td></tr>
 <tr><td align="center" style="padding:24px 16px 0;font-family:${TOKENS.font};font-size:12px;line-height:1.5;color:${TOKENS.muted};text-align:center;">
 <p style="margin:0;">${escapeHtml(input.footerText)}</p>
+${unsubscribe}
 ${attribution}
 </td></tr>
 </table>
@@ -291,5 +297,42 @@ export function renderRewardEmail(input: RewardEmailInput): RenderedEmail {
       footerText: footer(tenantName),
     }),
     text: [greeting, "", congrats, howTo, "", `Ver mi tarjeta: ${input.cardUrl}`, "", footer(tenantName)].join("\n"),
+  };
+}
+
+export type CampaignEmailInput = {
+  brand: EmailBrand;
+  customerName: string;
+  subject: string;
+  body: string;
+  cardUrl: string;
+  unsubscribeUrl: string;
+};
+
+/** Empresarial campaign email (DEC-0068): business message, always with an opt-out link. */
+export function renderCampaignEmail(input: CampaignEmailInput): RenderedEmail {
+  const tenantName = clean(input.brand.tenantName);
+  const name = firstName(input.customerName);
+  const greeting = name ? `Hola ${name},` : "Hola,";
+  const subject = clean(input.subject).slice(0, 120);
+  const body = input.body.replace(/\r\n/g, "\n").trim().slice(0, 1500);
+  const footerText = `Recibes este correo porque aceptaste recibir promociones de ${tenantName}.`;
+
+  return {
+    subject,
+    html: layout({
+      brand: input.brand,
+      preheader: body.slice(0, 120),
+      title: subject,
+      lead: `${greeting}\n${body}`,
+      highlight: null,
+      note: null,
+      ctaLabel: "Ver mi tarjeta",
+      ctaUrl: input.cardUrl,
+      finePrint: `Mensaje de ${tenantName}.`,
+      footerText,
+      unsubscribeUrl: input.unsubscribeUrl,
+    }),
+    text: [greeting, "", body, "", `Ver mi tarjeta: ${input.cardUrl}`, "", footerText, `Dejar de recibir promociones: ${input.unsubscribeUrl}`].join("\n"),
   };
 }

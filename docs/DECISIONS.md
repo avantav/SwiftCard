@@ -1018,3 +1018,31 @@
 - Consequences: Segment thresholds are fixed for now (configurable later).
   The old `get_dashboard_metrics` RPCs stay for exports.
 - Status: Accepted.
+
+## DEC-0068 - Email And Wallet Campaigns For Empresarial
+
+- Date: 2026-11-13
+- Context: The owner explicitly authorized a campaigns panel, a post-MVP
+  exception, only for Empresarial tenants, by email and Wallet notification
+  with the same anti-abuse limit for both channels.
+- Decision: `/admin/campaigns` (Admin general only, hidden in support mode).
+  Access when the tenant has an ACTIVE/TRIALING `empresarial` subscription or
+  `tenants.campaigns_enabled`, which Superadmin toggles (no tenant has a
+  subscription record yet). Migration `0076`: `marketing_campaigns` and
+  per-channel `marketing_campaign_recipients` (EMAIL, APPLE, GOOGLE) with
+  RLS; `preview_marketing_campaign` and `create_marketing_campaign` select
+  segment members (DEC-0067) with marketing consent, exclude anyone who got a
+  campaign in the last 7 days on any channel, cap audiences at 5,000, allow
+  one campaign per tenant per minute, queue Apple pass updates and audit.
+  Delivery runs after the response (`after()`): email with the card branding,
+  greeting, card button and mandatory opt-out link (`/card/[token]/promociones`,
+  POST only) and an idempotency key per recipient; Google `addMessage`
+  (`campaign-<id>`, falls back to stored text when the 3/day quota is used);
+  Apple shows the campaign as the pass's latest activity until a newer
+  purchase or redemption. Wallet text ≤120 characters, no links. No coupons
+  or discounts. Consent copy and the customer privacy notice now mention
+  Wallet notices.
+- Consequences: No scheduler: a stuck delivery is resumed with «Reintentar
+  pendientes». Apple pushes left in the outbox are retried by the existing
+  retry path. See `docs/CAMPAIGNS.md`.
+- Status: Accepted.

@@ -35,7 +35,7 @@ export default async function EmployeeAppPage({ searchParams }: EmployeeAppPageP
         <label className="field"><span>Correo electrónico</span><input name="email" required type="email" inputMode="email" autoComplete="email" maxLength={254} /></label>
         <label className="field"><span>Fecha de nacimiento <small>(opcional)</small></span><input name="birthDate" type="date" /></label>
         <label className="check-field operations-check"><input name="privacyConsent" type="checkbox" required /><span>Confirmo que el cliente aceptó el aviso de privacidad.</span></label>
-        <label className="check-field operations-check"><input name="marketingConsent" type="checkbox" /><span>El cliente acepta recibir promociones por correo o WhatsApp (opcional).</span></label>
+        <label className="check-field operations-check"><input name="marketingConsent" type="checkbox" /><span>El cliente acepta recibir promociones por correo, WhatsApp o avisos en su tarjeta (opcional).</span></label>
         <SubmitButton className="operations-primary-button" disabled={!scopes.length}>Registrar cliente</SubmitButton>
       </form>
     </section>

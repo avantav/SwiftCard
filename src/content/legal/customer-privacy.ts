@@ -38,7 +38,7 @@ Este aviso aplica a las personas que se registran en el programa de lealtad de u
 
 **Finalidad secundaria**, que solo ocurre si la autorizas marcando la casilla correspondiente:
 
-- Enviarte promociones, novedades y beneficios del negocio por correo electrónico o WhatsApp.
+- Enviarte promociones, novedades y beneficios del negocio por correo electrónico, WhatsApp o avisos en tu tarjeta de Apple Wallet o Google Wallet. Puedes dejar de recibirlos en cualquier momento con el enlace incluido en cada correo.
 
 Puedes negarte o retirar esta autorización en cualquier momento sin afectar tu participación en el programa.
 
