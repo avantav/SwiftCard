@@ -53,7 +53,8 @@
   `EMAIL_REPLY_TO` in Hostinger; migrations `0070` and `0071` confirmed applied
   in production (project Swiftcards). `info@swiftycards.com` forwards to
   support@avantav.dev (Hostinger forwarder).
-- Next: test with a real inbox: welcome with and without welcome reward, and a
+- 2026-11-13: first production WELCOME email SENT and received by the owner.
+- Next: finish testing with a real inbox: welcome with and without welcome reward, and a
   purchase that unlocks a reward. Review the two registration checkboxes in a
   browser at 375/768/1280/1440 px.
 - Campaigns (email/WhatsApp, highest-tier customers only) need explicit
