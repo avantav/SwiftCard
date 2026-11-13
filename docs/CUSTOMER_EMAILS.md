@@ -48,6 +48,12 @@ y las compras funcionan igual.
   tablas con estilos inline, versión de texto plano, todo valor dinámico
   escapado y enlaces o imágenes solo HTTPS. El color del botón usa el fondo de la
   tarjeta con texto negro o blanco calculado para contraste AA.
+- Diseño (2026-11-13) alineado con el registro público: una tarjeta blanca de
+  480px sobre el lienzo neutro, logo en un recuadro del color de la tarjeta (o
+  iniciales del negocio si no hay logo), nombre del negocio, título centrado
+  («Tu tarjeta está lista» / «Ganaste un premio»), un único bloque destacado
+  con el regalo o los premios, botón a todo el ancho y pie con la atribución
+  morrow fuera de la tarjeta. Tokens `--enterprise-*` del sistema de diseño.
 - Orquestación en `src/lib/email/customer-emails.ts` con la clave de servicio:
   1. Carga cliente, negocio, diseño, programa y saldo.
   2. Reserva el evento en `customer_email_deliveries` (`welcome:<tarjeta>` o
