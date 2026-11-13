@@ -948,6 +948,25 @@
   Supabase Auth round trip.
 - Status: Accepted.
 
+## DEC-0066 - Purchase Location Security View
+
+- Date: 2026-11-13
+- Context: The owner asked to build the planned «Security - Purchase Location
+  Visibility» phase. The `purchases` RLS policy also lets assigned employees
+  read purchases, so the view cannot rely on it.
+- Decision: `/admin/security` reads only through
+  `app.get_purchase_location_review(from date, to date, branch, operator,
+  result)` (migration `0074`): ADMIN sees the tenant, MANAGER only assigned
+  branches, everyone else gets `42501`. Calendar days use the tenant time
+  zone, periods are capped at 93 days and 1,000 rows, no customer data is
+  returned, and every call writes `PURCHASE_LOCATION_REVIEW_VIEWED` to
+  `audit_logs`. The view shows four state metrics, review signals (operator
+  with 3+ outside purchases, branch with frequent missing coordinates, branch
+  without point), a Google Maps view with branch radii and a table with a
+  detail disclosure as the accessible alternative. Nothing is changed or
+  cancelled automatically. Hidden in support mode.
+- Consequences: No CSV export yet (avoids extra copies of location data);
+  pilot validation pending. See `docs/PURCHASE_LOCATION_SECURITY.md`.
 ## DEC-0065 - Card-Scoped Generic Customer Import
 
 - Date: 2026-11-13

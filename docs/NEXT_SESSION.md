@@ -1,5 +1,13 @@
 # Next Session
 
+## Owner roadmap 2026-11-13
+
+1. Purchase location security view — implemented on
+   `feat/purchase-location-security` (DEC-0066, migration `0074`, apply with
+   the deploy). Pending: CSV export decision and pilot validation.
+2. Redesign the statistics dashboard — next.
+3. Campaigns panel only for Empresarial tenants — explicitly authorized by the
+   owner as a post-MVP exception; record the decision when starting.
 ## Card-scoped customer import — 2026-11-13
 
 - Implemented on `feat/card-scoped-import` (DEC-0065, migration `0073`):

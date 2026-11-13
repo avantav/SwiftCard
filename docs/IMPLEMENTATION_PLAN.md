@@ -167,24 +167,26 @@ already recorded by the purchase transaction.
 
 **Tasks**
 
-- [ ] [Pendiente] Define the permission boundary: tenant Admins can review all
+- [x] [Terminada 2026-11-13, DEC-0066] Define the permission boundary: tenant Admins can review all
   tenant purchases; Managers can review only assigned branches; Employees have
   no location-monitoring view.
-- [ ] [Pendiente] Add a tenant-scoped purchase-location projection that exposes
+- [x] [Terminada 2026-11-13, DEC-0066] Add a tenant-scoped purchase-location projection that exposes
   purchase date/time, branch, operator, ticket reference, recorded latitude and
   longitude, geofence result and distance from the configured branch point,
   without exposing unnecessary customer PII.
-- [ ] [Pendiente] Build a security view with map markers and a table fallback,
+- [x] [Terminada 2026-11-13, DEC-0066] Build a security view with map markers and a table fallback,
   filters for date range, branch, operator and geofence result, plus a detail
   panel that links each observation to its immutable purchase/audit record.
-- [ ] [Pendiente] Highlight purchases outside the configured radius, missing
+- [x] [Terminada 2026-11-13, DEC-0066] Highlight purchases outside the configured radius, missing
   coordinates and clusters that warrant review without automatically changing
   or cancelling a purchase.
-- [ ] [Pendiente] Record access to the location-monitoring view in the audit
+- [x] [Terminada 2026-11-13, DEC-0066] Record access to the location-monitoring view in the audit
   log, apply a documented retention/privacy policy and cover tenant/branch
   isolation with positive and negative RLS tests.
 - [ ] [Pendiente] Add focused security, accessibility, responsive and export
-  validation before enabling the view for a pilot tenant.
+  validation before enabling the view for a pilot tenant. Security (SQL test),
+  accessibility and responsive checks (375/768/1280/1440) are done; CSV export
+  and the pilot validation remain (see `docs/PURCHASE_LOCATION_SECURITY.md`).
 
 **Dependencies:** Existing purchase geolocation capture, server-side geofence
 authority, immutable audit logs, tenant/branch permissions and the Phase 5
