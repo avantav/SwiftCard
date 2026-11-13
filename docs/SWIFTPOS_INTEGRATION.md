@@ -62,11 +62,16 @@ Respuesta `200`:
   "ticketNumber": "A-001234",
   "amountMinor": 18550,
   "occurredAt": "2026-11-13T18:20:00Z",
+  "cashier": { "id": "<id del empleado en el POS>", "name": "Luis P." },
   "location": { "latitude": 29.07, "longitude": -110.95 }
 }
 ```
 
-`location` es opcional. Respuesta `200`:
+`cashier` es obligatorio: en SwiftPOS toda venta lleva al empleado que la
+cobró y cualquier empleado puede registrar ventas. SwiftCard lo guarda solo
+como dato de trazabilidad (`external_operator_id`, `external_operator_name`);
+no valida permisos de ese empleado ni lo crea como usuario. `location` es
+opcional. Respuesta `200`:
 `{ "result": "CONFIRMED" | "ALREADY_RECORDED", "stampsAwarded": 1, "rewardsGenerated": 0, "balance": 8 }`.
 
 Errores estables: `UNAUTHORIZED`, `BRANCH_NOT_LINKED`, `CARD_NOT_FOUND`,
@@ -84,7 +89,8 @@ Errores estables: `UNAUTHORIZED`, `BRANCH_NOT_LINKED`, `CARD_NOT_FOUND`,
 2. `public.integration_branch_links`: `(integration_id, external_store_id) →
    branch_id`, con verificación de que la sucursal es del mismo tenant.
 3. `public.purchases`: columnas `source` (`STAFF` por defecto | `SWIFTPOS`),
-   `integration_id`, `external_sale_id`; `staff_profile_id` nullable con
+   `integration_id`, `external_sale_id`, `external_operator_id`,
+   `external_operator_name` (cajero del POS); `staff_profile_id` nullable con
    `check ((source = 'STAFF') = (staff_profile_id is not null))`;
    `unique (integration_id, external_sale_id)`.
 4. **Separar el cálculo sin reescribirlo.** Las ~100 líneas de cálculo de
@@ -164,8 +170,9 @@ Estimación orientativa para una persona.
   se acumula en tarjetas arbitrarias: hace falta el QR real de cada una.
 - **H4 · Límites.** Monto máximo por venta, compras por tarjeta por hora y día,
   peticiones por vínculo, `occurredAt` no futuro ni de hace más de 72 h.
-- **H5 · Trazabilidad.** Guardar el identificador y nombre del cajero del POS
-  en la compra para la revisión en `/admin/security`.
+- **H5 · Trazabilidad.** Cada compra guarda el cajero del POS que la cobró;
+  `/admin/security` y las exportaciones lo muestran como «Cajero SwiftPOS» en
+  lugar del empleado de SwiftCard.
 - **H6 · Datos mínimos.** `resolve` devuelve nombre de pila, tarjeta, saldo y
   recompensas; nunca teléfono, correo, token ni UUID de cliente.
 - **H7 · Prerrequisitos.** MFA para Superadmin (SEC-003) y
