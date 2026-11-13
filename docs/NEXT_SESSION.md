@@ -5,9 +5,10 @@
 1. Purchase location security view — PR #36 (DEC-0066, migration `0074`).
 2. Customer statistics redesign — `feat/statistics-dashboard` (DEC-0067,
    migration `0075`; apply with the deploy). Segment thresholds are fixed.
-3. Campaigns panel only for Empresarial tenants — next; explicitly authorized
-   by the owner as a post-MVP exception. Reuse
-   `app.customer_segment_snapshot` / `get_customer_segment_members`.
+3. Email + Wallet campaigns for Empresarial — `feat/empresarial-campaigns`
+   (stacked on the statistics branch; DEC-0068, migration `0076` after
+   `0075`). To use it, Superadmin enables «Campañas (Empresarial)» per tenant.
+   See `docs/CAMPAIGNS.md`.
 
 ## Owner password recovery — 2026-11-13
 

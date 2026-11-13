@@ -24,6 +24,13 @@ export type WalletActivity =
       id: string;
       occurredAt: string;
       rewardName: string;
+    }
+  | {
+      /** Business message from an Empresarial campaign (DEC-0068). */
+      kind: "CAMPAIGN";
+      id: string;
+      occurredAt: string;
+      message: string;
     };
 
 export type WalletActivityContext = {
@@ -39,7 +46,8 @@ export type WalletActivityMessageKind =
   | "NONE"
   | "PURCHASE"
   | "REWARD_UNLOCKED"
-  | "REWARD_REDEEMED";
+  | "REWARD_REDEEMED"
+  | "CAMPAIGN";
 
 export type WalletActivityMessage = {
   kind: WalletActivityMessageKind;
@@ -121,6 +129,10 @@ export function composeWalletActivityMessage(
 ): WalletActivityMessage {
   if (activity.kind === "NONE") {
     return finalize("NONE", null, "Tu tarjeta", [WALLET_ACTIVITY_EMPTY_MESSAGE]);
+  }
+
+  if (activity.kind === "CAMPAIGN") {
+    return finalize("CAMPAIGN", `campaign-${activity.id}`, "Mensaje para ti", [activity.message]);
   }
 
   if (activity.kind === "PURCHASE") {

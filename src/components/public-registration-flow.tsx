@@ -80,7 +80,7 @@ export function PublicRegistrationFlow({ branchToken, context }: { branchToken: 
           <section id="registration-privacy" className="registration-disclosure" hidden={!privacyOpen} aria-label="Aviso de privacidad"><h2>Privacidad</h2><p><strong>{context.tenantName}</strong> es responsable de tus datos: nombre, teléfono y correo y, si la compartes, fecha de nacimiento. Los usa para operar tu tarjeta de lealtad, registrar tus compras y premios y enviarte avisos sobre tu tarjeta. Solo te enviará promociones si marcas la casilla correspondiente, y puedes retirar ese permiso cuando quieras. La plataforma morrow los trata por cuenta del negocio. Consulta el <a href="/privacidad/clientes" target="_blank" rel="noopener noreferrer">aviso de privacidad integral</a> para conocer tus derechos y cómo ejercerlos.</p></section>
           <label className="registration-consent">
             <input name="marketingConsent" type="checkbox" disabled={pending} />
-            <span>Quiero recibir promociones y novedades de {context.tenantName} por correo o WhatsApp (opcional).</span>
+            <span>Quiero recibir promociones y novedades de {context.tenantName} por correo, WhatsApp o avisos en mi tarjeta (opcional).</span>
           </label>
           <input type="hidden" name="acceptTerms" value={consent ? "on" : ""} />
           <input type="hidden" name="programVersion" value={selected.programVersion} />

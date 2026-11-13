@@ -10413,3 +10413,115 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     visibility: hidden;
   }
 }
+
+/* Empresarial campaigns (/admin/campaigns, DEC-0068). */
+.campaign-audience-form,
+.campaign-content-form {
+  display: grid;
+  gap: 20px;
+  padding: 4px 20px 20px;
+}
+
+.campaign-audience-form > .enterprise-secondary-action {
+  justify-self: start;
+  min-height: 44px;
+}
+
+.campaign-segments,
+.campaign-channel {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+}
+
+.campaign-segments {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.campaign-segments legend,
+.campaign-channel legend {
+  padding: 0 4px;
+  color: var(--enterprise-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.campaign-segments .check-field span {
+  display: grid;
+  gap: 2px;
+}
+
+.campaign-segments .check-field small,
+.campaign-preview small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+}
+
+.campaign-content-form .field-hint,
+.campaign-segments .check-field small {
+  font-weight: 400;
+}
+
+.campaign-content-form .field-hint {
+  margin: 4px 0 0;
+}
+
+.campaign-content-form textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.campaign-content-form .primary-button {
+  justify-self: start;
+  min-height: 44px;
+}
+
+.campaign-inset {
+  margin: 0 20px 20px;
+}
+
+.campaign-message {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 4px 20px 20px;
+}
+
+.campaign-message div {
+  display: grid;
+  gap: 4px;
+}
+
+.campaign-message dt {
+  color: var(--enterprise-text-muted);
+  font-size: 0.8125rem;
+}
+
+.campaign-message dd {
+  margin: 0;
+}
+
+.campaign-body {
+  white-space: pre-line;
+}
+
+@media (max-width: 767px) {
+  .campaign-segments {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-audience-form,
+  .campaign-content-form,
+  .campaign-message {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .campaign-audience-form > .enterprise-secondary-action,
+  .campaign-content-form .primary-button {
+    justify-self: stretch;
+  }
+}

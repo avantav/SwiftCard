@@ -12,6 +12,12 @@ export type WalletActivityLookup = {
   lifetimePoints: boolean;
 };
 
+type CampaignRow = {
+  campaign_id: string;
+  created_at: string;
+  marketing_campaigns: { wallet_message: string | null } | Array<{ wallet_message: string | null }> | null;
+};
+
 type RedemptionRow = {
   id: string;
   redeemed_at: string;
@@ -28,7 +34,7 @@ export async function loadLatestWalletActivity(
   lookup: WalletActivityLookup,
 ): Promise<WalletActivity> {
   try {
-    const [purchaseResult, redemptionResult] = await Promise.all([
+    const [purchaseResult, redemptionResult, campaignResult] = await Promise.all([
       supabase
         .from("purchases")
         .select("id,created_at,stamps_awarded,units_awarded_tenths")
@@ -49,6 +55,17 @@ export async function loadLatestWalletActivity(
         .order("redeemed_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
+      supabase
+        .from("marketing_campaign_recipients")
+        .select("campaign_id,created_at,marketing_campaigns!inner(wallet_message),customer_cards!inner(loyalty_card_id)")
+        .eq("tenant_id", lookup.tenantId)
+        .eq("customer_id", lookup.customerId)
+        .eq("customer_cards.loyalty_card_id", lookup.loyaltyCardId)
+        .in("channel", ["APPLE", "GOOGLE"])
+        .in("status", ["PENDING", "SENT"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
     if (purchaseResult.error || redemptionResult.error) return { kind: "NONE" };
 
@@ -56,6 +73,15 @@ export async function loadLatestWalletActivity(
     const redemption = redemptionResult.data as RedemptionRow | null;
     const purchaseTime = purchase ? Date.parse(purchase.created_at) : Number.NEGATIVE_INFINITY;
     const redemptionTime = redemption ? Date.parse(redemption.redeemed_at) : Number.NEGATIVE_INFINITY;
+
+    // A campaign wins only while it is newer than any purchase or redemption.
+    const campaign = campaignResult.error ? null : (campaignResult.data as CampaignRow | null);
+    const campaignMessage = campaign
+      ? (Array.isArray(campaign.marketing_campaigns) ? campaign.marketing_campaigns[0] : campaign.marketing_campaigns)?.wallet_message?.trim()
+      : null;
+    if (campaign && campaignMessage && Date.parse(campaign.created_at) > Math.max(purchaseTime, redemptionTime)) {
+      return { kind: "CAMPAIGN", id: campaign.campaign_id, occurredAt: campaign.created_at, message: campaignMessage };
+    }
 
     if (redemption && redemptionTime >= purchaseTime) {
       const reward = Array.isArray(redemption.rewards) ? redemption.rewards[0] : redemption.rewards;

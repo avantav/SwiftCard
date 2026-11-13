@@ -10,7 +10,8 @@ export function AdminNavigation({ email, role, supportMode = false }: { email: s
   const groups: EnterpriseNavGroup[] = [
     { label: "Operación", items: [
       { href: "/admin", label: "Vista general", icon: "home", exact: true },
-      { href: "/admin/dashboard", label: "Estadísticas", icon: "chart" }
+      { href: "/admin/dashboard", label: "Estadísticas", icon: "chart" },
+      ...(role === "ADMIN" && !supportMode ? [{ href: "/admin/campaigns", label: "Campañas", icon: "award" as const }] : [])
     ] },
     ...(configuration.length ? [{ label: "Configuración", items: configuration }] : []),
     { label: "Datos", items: [

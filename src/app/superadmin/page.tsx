@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { requireInternalArea } from "@/lib/auth/server";
 import { TenantStatusForm } from "@/components/tenant-status-form";
+import { setTenantCampaigns } from "@/app/superadmin/tenants/actions";
 
 type SuperadminPageProps = {
   searchParams: Promise<{
     tenantCreated?: string;
     tenantStatus?: string;
+    tenantCampaigns?: string;
     error?: string;
   }>;
 };
@@ -14,6 +16,7 @@ type Tenant = {
   id: string;
   name: string;
   status: "ACTIVE" | "SUSPENDED";
+  campaigns_enabled: boolean;
   branding_mode: "STANDARD" | "WHITE_LABEL";
   created_at: string;
 };
@@ -36,12 +39,12 @@ function formattedDate(value: string) {
 }
 
 export default async function SuperadminPage({ searchParams }: SuperadminPageProps) {
-  const { tenantCreated, tenantStatus, error } = await searchParams;
+  const { tenantCreated, tenantStatus, tenantCampaigns, error } = await searchParams;
   const context = await requireInternalArea("SUPERADMIN");
   const [tenantResponse, administratorResponse] = await Promise.all([
     context.supabase
       .from("tenants")
-      .select("id,name,status,branding_mode,created_at")
+      .select("id,name,status,branding_mode,created_at,campaigns_enabled")
       .order("created_at", { ascending: false }),
     context.supabase
       .from("staff_profiles")
@@ -79,6 +82,7 @@ export default async function SuperadminPage({ searchParams }: SuperadminPagePro
       </header>
 
       {tenantCreated ? <p className="enterprise-alert is-success" role="status"><strong>Tenant creado.</strong> Ahora configura su Administrador y operación inicial.</p> : null}
+      {tenantCampaigns ? <p className="enterprise-alert is-success" role="status"><strong>Campañas {tenantCampaigns === "on" ? "activadas" : "desactivadas"}.</strong> {tenantCampaigns === "on" ? "El Admin general ya puede enviar campañas." : "El tenant ya no puede crear campañas, salvo que tenga plan Empresarial activo."}</p> : null}
       {tenantStatus ? <p className="enterprise-alert is-success" role="status"><strong>Estado actualizado.</strong> El tenant ahora está {tenantStatus === "ACTIVE" ? "activo" : "suspendido"}.</p> : null}
       {error ? <p className="enterprise-alert is-error" role="alert"><strong>No se pudo completar la acción.</strong> {error}</p> : null}
 
@@ -159,6 +163,11 @@ export default async function SuperadminPage({ searchParams }: SuperadminPagePro
                           <Link href={`/superadmin/tenants/${tenant.id}/administrator/new`}>Administrador</Link>
                           <Link href={`/superadmin/tenants/${tenant.id}/branding`}>Branding</Link>
                           {tenant.status === "ACTIVE" ? <Link href={`/superadmin/tenants/${tenant.id}/support`}>Entrar en modo soporte</Link> : null}
+                          <form action={setTenantCampaigns}>
+                            <input type="hidden" name="tenantId" value={tenant.id} />
+                            <input type="hidden" name="enabled" value={tenant.campaigns_enabled ? "false" : "true"} />
+                            <button className="enterprise-menu-action" type="submit">{tenant.campaigns_enabled ? "Desactivar campañas" : "Activar campañas (Empresarial)"}</button>
+                          </form>
                           <TenantStatusForm tenantId={tenant.id} status={tenant.status} tenantName={tenant.name} />
                         </div>
                       </details>

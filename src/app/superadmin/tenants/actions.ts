@@ -14,3 +14,17 @@ export async function setTenantStatus(formData: FormData) {
   await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId });
   redirect(`/superadmin?tenantStatus=${status}`);
 }
+
+/** Campaigns for tenants without an Empresarial subscription record (DEC-0068). */
+export async function setTenantCampaigns(formData: FormData) {
+  const context = await getActiveSuperadminContext();
+  const tenantId = String(formData.get("tenantId") ?? "");
+  const enabled = formData.get("enabled") === "true";
+  if (!context || !/^[0-9a-f-]{36}$/i.test(tenantId)) redirect("/superadmin?error=Datos+de+tenant+inválidos");
+  const { data, error } = await context.supabase.schema("app").rpc("set_tenant_campaigns_enabled", {
+    target_tenant_id: tenantId,
+    target_enabled: enabled
+  });
+  if (error || data !== true) redirect(`/superadmin?error=${encodeURIComponent("No se pudieron actualizar las campañas del tenant.")}`);
+  redirect(`/superadmin?tenantCampaigns=${enabled ? "on" : "off"}`);
+}
