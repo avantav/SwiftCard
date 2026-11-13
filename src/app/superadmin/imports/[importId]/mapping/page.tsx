@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
+import { importCardLabel } from "@/lib/superadmin/import-cards";
 import { confirmCustomerImport, previewCustomerImport } from "../../actions";
 
 type MappingPageProps = { params: Promise<{ importId: string }>; searchParams: Promise<{ preview?: string; confirmed?: string; imported?: string; duplicates?: string; errors?: string }> };
@@ -20,6 +21,16 @@ export default async function ImportMappingPage({ params, searchParams }: Mappin
   const rows = Array.isArray(importRecord.raw_rows) ? importRecord.raw_rows as Array<Record<string, string>> : [];
   const headers = Object.keys(rows[0] ?? {});
   const { data: branches } = await context.supabase.from("branches").select("id,name").eq("tenant_id", importRecord.tenant_id).eq("status", "ACTIVE").order("name");
+  const { data: cards } = await context.supabase
+    .from("loyalty_cards")
+    .select("id,name,loyalty_programs!inner(program_type,import_stamp_to_point_multiplier)")
+    .eq("tenant_id", importRecord.tenant_id)
+    .eq("status", "PUBLISHED")
+    .order("name");
+  const cardOptions = (cards ?? []).map((card) => {
+    const program = Array.isArray(card.loyalty_programs) ? card.loyalty_programs[0] : card.loyalty_programs;
+    return { id: card.id, label: importCardLabel(card.name, program?.program_type, program?.import_stamp_to_point_multiplier) };
+  });
 
   return (
     <main className="enterprise-page">
@@ -43,7 +54,7 @@ export default async function ImportMappingPage({ params, searchParams }: Mappin
         </form>
         {query.preview ? <section id="preview" className="notice-panel" aria-labelledby="preview-title"><h2 id="preview-title" className="section-title">Resultado de validación</h2><p>{Array.isArray(importRecord.preview_errors) ? importRecord.preview_errors.length : 0} filas con errores. Ningún cliente fue creado.</p></section> : null}
         {query.confirmed ? <p className="success-alert" role="status">Importados: {query.imported ?? "0"}. Duplicados: {query.duplicates ?? "0"}. Errores: {query.errors ?? "0"}.</p> : null}
-        {query.preview && importRecord.status === "PREVIEWED" ? <form className="auth-form" action={confirmCustomerImport}><input type="hidden" name="importId" value={importId} /><label className="field"><span>Sucursal de origen</span><select name="branchId" required defaultValue=""><option value="" disabled>Selecciona una sucursal</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label><SubmitButton>Confirmar importación</SubmitButton></form> : null}
+        {query.preview && importRecord.status === "PREVIEWED" ? <form className="auth-form" action={confirmCustomerImport}><input type="hidden" name="importId" value={importId} /><label className="field"><span>Sucursal de origen</span><select name="branchId" required defaultValue=""><option value="" disabled>Selecciona una sucursal</option>{branches?.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</select></label><label className="field"><span>Tarjeta de lealtad</span><select name="loyaltyCardId" required defaultValue=""><option value="" disabled>Selecciona una tarjeta publicada</option>{cardOptions.map((card) => <option key={card.id} value={card.id}>{card.label}</option>)}</select></label><p className="field-hint">Los sellos iniciales generan los premios alcanzados. En tarjetas de puntos acumulados se multiplican por el factor configurado y se otorgan todos los hitos alcanzados. La sucursal debe participar en la tarjeta.</p><SubmitButton>Confirmar importación</SubmitButton></form> : null}
         <dl className="summary-list">
           <div><dt>Estado</dt><dd>{importRecord.status}</dd></div>
           <div><dt>Tipo</dt><dd>{importRecord.file_type}</dd></div>

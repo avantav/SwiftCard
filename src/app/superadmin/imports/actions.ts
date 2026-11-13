@@ -71,8 +71,9 @@ export async function confirmCustomerImport(formData: FormData) {
   if (!superadmin) redirectWithError("No tienes permisos para confirmar importaciones.");
   const importId = String(formData.get("importId") ?? "");
   const branchId = String(formData.get("branchId") ?? "");
+  const loyaltyCardId = String(formData.get("loyaltyCardId") ?? "");
   const { data: record } = await superadmin.supabase.from("customer_imports").select("raw_rows,mapped_columns,preview_errors").eq("id", importId).maybeSingle();
-  if (!record || !branchId) redirectWithError("La importación y sucursal son obligatorias.");
+  if (!record || !branchId || !loyaltyCardId) redirectWithError("La importación, la sucursal y la tarjeta son obligatorias.");
   const mapping = record.mapped_columns as ImportColumnMapping;
   const rows = Array.isArray(record.raw_rows) ? record.raw_rows as Array<Record<string, string>> : [];
   const errors = Array.isArray(record.preview_errors) ? record.preview_errors as Array<{ row: number }> : [];
@@ -83,7 +84,7 @@ export async function confirmCustomerImport(formData: FormData) {
     if (!phone.ok) return [];
     return [{ full_name: row[mapping.fullName]?.trim(), normalized_phone: phone.value, email: mapping.email ? row[mapping.email]?.trim() : "", birth_date: mapping.birthDate ? row[mapping.birthDate]?.trim() : "", initial_stamps: mapping.initialStamps ? row[mapping.initialStamps]?.trim() || "0" : "0" }];
   });
-  const { data, error } = await superadmin.supabase.rpc("confirm_customer_import", { target_import_id: importId, target_branch_id: branchId, valid_rows: validRows });
-  if (error || !data) redirectWithError("No se pudo confirmar la importación.");
+  const { data, error } = await superadmin.supabase.rpc("confirm_customer_import", { target_import_id: importId, target_branch_id: branchId, target_loyalty_card_id: loyaltyCardId, valid_rows: validRows });
+  if (error || !data) redirectWithError("No se pudo confirmar la importación. Verifica que la tarjeta esté publicada y que la sucursal participe en ella.");
   redirect(`/superadmin/imports/${importId}/mapping?confirmed=1&imported=${data.imported}&duplicates=${data.duplicates}&errors=${data.errors}`);
 }
