@@ -2,13 +2,23 @@
 
 ## Owner roadmap 2026-11-13
 
-1. Purchase location security view — PR #36 (DEC-0066, migration `0074`).
+1. Purchase location security view — merged (PR #36, DEC-0066, migration `0074`).
 2. Customer statistics redesign — `feat/statistics-dashboard` (DEC-0067,
    migration `0075`; apply with the deploy). Segment thresholds are fixed.
 3. Email + Wallet campaigns for Empresarial — `feat/empresarial-campaigns`
    (stacked on the statistics branch; DEC-0068, migration `0076` after
    `0075`). To use it, Superadmin enables «Campañas (Empresarial)» per tenant.
    See `docs/CAMPAIGNS.md`.
+
+## Card-scoped customer import — 2026-11-13
+
+- Implemented on `feat/card-scoped-import` (DEC-0065, migration `0073`):
+  Superadmin import chooses a published card; stamps generate reward cycles,
+  lifetime points use the import multiplier and award milestones atomically.
+- Apply `0073` together with the deploy (the RPC signature changes). SQL test
+  validated on PGlite; also run `npm run db:verify-rls` where Docker exists.
+- Next plan task: Phase 3 «Enforce the remaining configurable cancellation and
+  redemption-reversal options in authorized interfaces», then Phase 5 controls.
 
 ## Owner password recovery — 2026-11-13
 

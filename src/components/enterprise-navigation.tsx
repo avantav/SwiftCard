@@ -18,6 +18,7 @@ export type EnterpriseIconName =
   | "menu"
   | "scan"
   | "search"
+  | "shield"
   | "cart"
   | "user-plus"
   | "users"
@@ -49,6 +50,7 @@ export function EnterpriseIcon({ name }: { name: EnterpriseIconName }) {
     menu: <path d="M4 7h16M4 12h16M4 17h16" />,
     scan: <><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><path d="M7 12h10" /></>,
     search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>,
+    shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></>,
     cart: <><path d="M3 3h2l2.4 11.3a2 2 0 0 0 2 1.7h7.7a2 2 0 0 0 2-1.6L21 7H6" /><circle cx="10" cy="21" r="1" /><circle cx="18" cy="21" r="1" /></>,
     "user-plus": <><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8" cy="7" r="4" /><path d="M19 8v6M22 11h-6" /></>,
     users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
