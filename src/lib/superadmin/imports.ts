@@ -52,7 +52,7 @@ export function validateMappedRows(rows: Array<Record<string, string>>, mapping:
     if (!phone.ok) messages.push(phone.error);
     if (mapping.email && row[mapping.email]?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row[mapping.email].trim())) messages.push("El correo no es válido.");
     if (mapping.birthDate && row[mapping.birthDate]?.trim() && !/^\d{4}-\d{2}-\d{2}$/.test(row[mapping.birthDate].trim())) messages.push("La fecha debe usar formato AAAA-MM-DD.");
-    if (mapping.initialStamps && row[mapping.initialStamps]?.trim() && !/^\d+$/.test(row[mapping.initialStamps].trim())) messages.push("Los sellos iniciales deben ser un entero no negativo.");
+    if (mapping.initialStamps && row[mapping.initialStamps]?.trim() && !/^\d{1,6}$/.test(row[mapping.initialStamps].trim())) messages.push("Los sellos iniciales deben ser un entero entre 0 y 999999.");
     if (messages.length) errors.push({ row: index + 2, messages });
   });
   return errors;

@@ -10005,6 +10005,164 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   }
 }
 
+/* Purchase location security view (/admin/security, DEC-0066). */
+.location-review-filters {
+  grid-template-columns: repeat(2, minmax(156px, 1fr)) repeat(3, minmax(0, 1fr)) auto auto;
+}
+
+.location-review-filters :is(input, select) {
+  width: 100%;
+  min-width: 0;
+}
+
+.location-review-filters .primary-button,
+.location-review-filters .enterprise-secondary-action {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.location-review-filters + .field-hint {
+  margin: 12px 0 0;
+}
+
+.location-review-signals,
+.location-review-map-panel > .enterprise-alert,
+.location-review-map-panel > .branch-map-shell {
+  margin: 0 20px 20px;
+}
+
+.location-review-map-shell,
+.location-review-map {
+  min-height: 420px;
+}
+
+.location-review-signals {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.location-review-signals li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--enterprise-border);
+}
+
+.location-review-signals li:first-child {
+  border-top: 0;
+}
+
+.location-review-signals div {
+  display: grid;
+  gap: 4px;
+}
+
+.location-review-signals small,
+.location-review-cancelled {
+  color: var(--enterprise-text-muted);
+  font-size: 0.8125rem;
+}
+
+.location-review-detail summary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--enterprise-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.location-review-detail summary:focus-visible {
+  outline: 2px solid var(--enterprise-focus);
+  outline-offset: 2px;
+}
+
+.location-review-detail dl {
+  display: grid;
+  gap: 8px;
+  min-width: 260px;
+  margin: 8px 0 0;
+  padding: 12px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+  background: var(--enterprise-surface-subtle);
+}
+
+.location-review-detail dl div {
+  display: grid;
+  gap: 2px;
+}
+
+.location-review-detail dt {
+  color: var(--enterprise-text-muted);
+  font-size: 0.75rem;
+}
+
+.location-review-detail dd {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.location-map-info {
+  margin: 0;
+  max-width: 240px;
+  color: var(--enterprise-text);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 1279px) {
+  .location-review-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .location-review-filters .primary-button,
+  .location-review-filters .enterprise-secondary-action {
+    grid-column: auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1023px) {
+  .location-review-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .location-review-filters .primary-button,
+  .location-review-filters .enterprise-secondary-action {
+    grid-column: auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .location-review-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .location-review-signals,
+  .location-review-map-panel > .enterprise-alert,
+  .location-review-map-panel > .branch-map-shell {
+    margin: 0 16px 16px;
+  }
+
+  .location-review-map-shell,
+  .location-review-map {
+    min-height: 320px;
+  }
+
+  .location-review-detail dl {
+    min-width: 0;
+  }
+}
+
 /* Customer statistics (/admin/dashboard, DEC-0067). Series colors validated
    with the dataviz palette checker: teal (returning) and orange (first visit). */
 .insights-presets {
