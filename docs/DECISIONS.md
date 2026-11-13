@@ -1084,14 +1084,16 @@
 - Context: The owner also operates SwiftPOS and wants its sales to accrue
   loyalty directly on SwiftCard cards, without re-entering tickets in the
   employee PWA.
-- Decision: SwiftCard is the final loyalty system. A Superadmin-created link
-  per tenant with its own service key; SwiftPOS resolves the sealed card QR
-  through SwiftCard and reports completed sales through an outbox. The amount
-  paid by the customer generates points. Sales without a scanned card are
-  ignored. Integration purchases have `source = 'SWIFTPOS'`, no staff profile
-  and no device geofence; they share the existing calculation core. Details in
+- Decision: SwiftCard is the final loyalty system. In this phase the POS only
+  identifies the customer (scanning the sealed card QR) and sends the
+  purchase: amount paid, ticket and optional location. It authenticates with a
+  per-tenant API key issued by the Superadmin; no additional user or staff
+  profile is created. Integration purchases have `source = 'SWIFTPOS'` and no
+  staff profile. The calculation block of `confirm_card_purchase` is moved
+  verbatim into an internal core shared by both paths. Sales without a card
+  are ignored; POS cancellations are handled manually in SwiftCard. Details in
   `docs/SWIFTPOS_INTEGRATION.md`.
 - Consequences: `purchases.staff_profile_id` becomes nullable only for
   integration purchases. SwiftPOS disables its own membership discounts for
-  linked tenants. Cancellation after later activity still needs confirmation.
+  linked tenants. Superadmin MFA should exist before the first key is issued.
 - Status: Proposed.
