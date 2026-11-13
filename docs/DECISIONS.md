@@ -947,3 +947,30 @@
   proxy is an extra layer, not the authority. Logged-in requests add one
   Supabase Auth round trip.
 - Status: Accepted.
+
+## DEC-0065 - Card-Scoped Generic Customer Import
+
+- Date: 2026-11-13
+- Context: IMPLEMENTATION_PLAN Phase 3 required converting imported stamps
+  with the configured integer multiplier and awarding every reached milestone
+  atomically. The generic Superadmin importer (`confirm_customer_import`,
+  migration `0026`) predated multiple loyalty cards: it issued customer cards
+  without a loyalty card and stored initial stamps as a raw stamp balance for
+  any program type.
+- Decision: Migration `0073` replaces it with
+  `confirm_customer_import(import, branch, loyalty_card, rows)`. The
+  Superadmin chooses a published card that participates in the source branch.
+  Stamp programs run initial stamps through `app.apply_reward_tiers`
+  (completed cycles become rewards, the remainder stays); lifetime-points
+  programs convert `stamps x import_stamp_to_point_multiplier` and call
+  `app.apply_lifetime_point_milestones` in the same transaction. Rows are
+  re-validated in SQL (initial stamps up to 999999), emails are lowercased,
+  ledger entries carry the card and `CUSTOMERS_IMPORTED` is audited with the
+  card, branch, multiplier and reward count. Welcome rewards keep following
+  the card's imported-customer option through the existing trigger.
+- Consequences: `customer_imports.loyalty_card_id/source_branch_id` stay null
+  for generic imports (reserved for profile imports by
+  `customer_imports_profile_scope_complete`); the audit log keeps them. The
+  Casa Garmendia profile import is unchanged. The new RPC signature and the
+  Superadmin form must ship together: apply `0073` right when deploying.
+- Status: Accepted.
