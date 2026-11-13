@@ -3,12 +3,12 @@
 ## Owner roadmap 2026-11-13
 
 1. Purchase location security view — merged (PR #36, DEC-0066, migration `0074`).
-2. Customer statistics redesign — `feat/statistics-dashboard` (DEC-0067,
-   migration `0075`; apply with the deploy). Segment thresholds are fixed.
-3. Email + Wallet campaigns for Empresarial — `feat/empresarial-campaigns`
-   (stacked on the statistics branch; DEC-0068, migration `0076` after
-   `0075`). To use it, Superadmin enables «Campañas (Empresarial)» per tenant.
-   See `docs/CAMPAIGNS.md`.
+2. Customer statistics redesign — merged (DEC-0067, migration `0075` applied).
+3. Email + Wallet campaigns for Empresarial — merged (PR #39, DEC-0068,
+   migration `0076` applied). See `docs/CAMPAIGNS.md`.
+4. Advanced statistics only for Empresarial — `feat/empresarial-statistics`
+   (DEC-0069, migration `0077`: apply AFTER deploying the code). Superadmin
+   toggle «Activar plan Empresarial (campañas y estadísticas)».
 
 ## Card-scoped customer import — 2026-11-13
 

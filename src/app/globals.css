@@ -10683,3 +10683,44 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
     justify-self: stretch;
   }
 }
+
+/* Basic plans: what Empresarial adds to statistics (DEC-0069). */
+.insights-upsell {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 4px 20px 0;
+  list-style: none;
+}
+
+.insights-upsell li {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-md);
+}
+
+.insights-upsell small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.8125rem;
+}
+
+.insights-upsell-note {
+  margin: 0;
+  padding: 16px 20px 20px;
+  color: var(--enterprise-text-muted);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 767px) {
+  .insights-upsell {
+    grid-template-columns: 1fr;
+    padding: 4px 16px 0;
+  }
+
+  .insights-upsell-note {
+    padding: 16px;
+  }
+}

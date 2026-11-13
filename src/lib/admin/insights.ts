@@ -67,20 +67,29 @@ export type PeriodTotals = {
   new_customers: number;
 };
 
-export type CustomerInsights = {
+type InsightsBase = {
   role: "ADMIN" | "MANAGER";
   timezone: string;
   period: { from: string; to: string; days: number };
   summary: PeriodTotals;
   previous: PeriodTotals;
+  rewards: { generated: number; redeemed: number; pending: number };
+};
+
+/** Without the Empresarial plan only the summary and rewards are returned (DEC-0069). */
+export type BasicCustomerInsights = InsightsBase & { advanced: false };
+
+export type AdvancedCustomerInsights = InsightsBase & {
+  advanced: true;
   segments: Array<{ segment: Segment; customers: number; spend_minor: number }>;
   funnel: { registered: number; purchased_1: number; purchased_2: number; purchased_3: number };
   weekly: Array<{ week_start: string; new_visits: number; returning_visits: number }>;
   heatmap: Array<{ dow: number; hour: number; visits: number }>;
-  rewards: { generated: number; redeemed: number; pending: number };
   top_customers: Array<{ customer_id: string; full_name: string; visits: number; spend_minor: number }>;
   branches: Array<{ branch_id: string; branch_name: string; active_customers: number; returning_customers: number; purchases: number; revenue_minor: number }>;
 };
+
+export type CustomerInsights = BasicCustomerInsights | AdvancedCustomerInsights;
 
 export function ratio(part: number, total: number) {
   return total > 0 ? part / total : null;
@@ -117,7 +126,7 @@ export function describeChange(current: number | null, previous: number | null, 
 export const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"] as const;
 
 /** Rows Monday..Sunday, columns only for the hours that had visits (contiguous). */
-export function heatmapGrid(cells: CustomerInsights["heatmap"]) {
+export function heatmapGrid(cells: AdvancedCustomerInsights["heatmap"]) {
   if (!cells.length) return { hours: [] as number[], rows: [] as Array<{ day: string; values: number[] }>, max: 0 };
   const minHour = Math.min(...cells.map((cell) => cell.hour));
   const maxHour = Math.max(...cells.map((cell) => cell.hour));
@@ -130,7 +139,7 @@ export function heatmapGrid(cells: CustomerInsights["heatmap"]) {
   return { hours, rows, max: Math.max(...cells.map((cell) => Number(cell.visits))) };
 }
 
-export function busiestSlot(cells: CustomerInsights["heatmap"]) {
+export function busiestSlot(cells: AdvancedCustomerInsights["heatmap"]) {
   const top = [...cells].sort((a, b) => Number(b.visits) - Number(a.visits))[0];
   return top ? `${WEEKDAYS[top.dow - 1]} de ${top.hour}:00 a ${top.hour + 1}:00` : null;
 }

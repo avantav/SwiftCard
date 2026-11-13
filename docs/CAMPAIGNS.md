@@ -6,7 +6,7 @@ Estado: implementado (DEC-0068, migración `0076`). Ruta: `/admin/campaigns`.
 
 - Solo el **Admin general** del negocio, fuera del modo soporte.
 - El negocio necesita una suscripción `empresarial` activa o en prueba, **o**
-  que el Superadmin active «Campañas (Empresarial)» en el menú del tenant
+  que el Superadmin active «Activar plan Empresarial (campañas y estadísticas)» en el menú del tenant
   (`/superadmin`). Ningún negocio tiene hoy suscripción registrada, así que
   la activación manual es el camino actual.
 

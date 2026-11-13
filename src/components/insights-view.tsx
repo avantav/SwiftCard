@@ -10,6 +10,7 @@ import {
   ratio,
   returnRate,
   SEGMENT_COPY,
+  type AdvancedCustomerInsights,
   type CustomerInsights,
   type InsightsFilters
 } from "@/lib/admin/insights";
@@ -55,7 +56,7 @@ export function InsightsView({ insights, filters, branches, currency, failed }: 
         <div>
           <p className="enterprise-breadcrumb">Operación</p>
           <h1>Estadísticas de clientes</h1>
-          <p>Descubre cuántos clientes vuelven, quiénes se están yendo y cómo rinde tu programa.</p>
+          <p>Consulta cuántos clientes vuelven y cómo rinde tu programa en el periodo.</p>
         </div>
       </header>
 
@@ -92,32 +93,19 @@ export function InsightsView({ insights, filters, branches, currency, failed }: 
           <h2>No se pudieron cargar las estadísticas</h2>
           <p>Revisa el periodo y la sucursal seleccionados y vuelve a intentarlo.</p>
         </div>
-      ) : <InsightsBody filters={filters} formatMoney={formatMoney} insights={insights} />}
+      ) : insights.advanced
+        ? <InsightsBody filters={filters} formatMoney={formatMoney} insights={insights} />
+        : <BasicInsightsBody filters={filters} formatMoney={formatMoney} insights={insights} />}
     </>
   );
 }
 
-function InsightsBody({ insights, filters, formatMoney }: {
+function SummarySection({ insights, filters, formatMoney }: {
   insights: CustomerInsights;
   filters: InsightsFilters;
   formatMoney: (minor: number | null) => string;
 }) {
   const { summary, previous } = insights;
-  const totalCustomers = insights.segments.reduce((sum, item) => sum + Number(item.customers), 0);
-  const maxSegment = Math.max(1, ...insights.segments.map((item) => Number(item.customers)));
-  const funnelSteps = [
-    { label: "Registrados", value: insights.funnel.registered },
-    { label: "1 compra o más", value: insights.funnel.purchased_1 },
-    { label: "Volvieron (2 o más)", value: insights.funnel.purchased_2 },
-    { label: "Habituales (3 o más)", value: insights.funnel.purchased_3 }
-  ];
-  const weeklyMax = Math.max(1, ...insights.weekly.map((week) => Number(week.new_visits) + Number(week.returning_visits)));
-  const weeklyTotal = insights.weekly.reduce((sum, week) => sum + Number(week.new_visits) + Number(week.returning_visits), 0);
-  const grid = heatmapGrid(insights.heatmap);
-  const busiest = busiestSlot(insights.heatmap);
-  const redemptionRate = ratio(insights.rewards.redeemed, insights.rewards.generated);
-  const isAdmin = insights.role === "ADMIN";
-
   return (
     <>
       <section aria-label="Resumen del periodo" className="enterprise-metrics">
@@ -145,6 +133,82 @@ function InsightsBody({ insights, filters, formatMoney }: {
       <p className="field-hint insights-definition">
         <strong>Tasa de retorno:</strong> de los {summary.active_customers} clientes que compraron en el periodo, {summary.returning_customers} ya habían venido antes o vinieron más de una vez. Periodo del {longDate.format(new Date(`${filters.from}T00:00:00Z`))} al {longDate.format(new Date(`${filters.to}T00:00:00Z`))}.
       </p>
+    </>
+  );
+}
+
+function RewardsStats({ insights }: { insights: CustomerInsights }) {
+  const redemptionRate = ratio(insights.rewards.redeemed, insights.rewards.generated);
+  return (
+    <dl className="insights-stats">
+      <div><dt>Ganados</dt><dd>{insights.rewards.generated}</dd></div>
+      <div><dt>Canjeados</dt><dd>{insights.rewards.redeemed}</dd></div>
+      <div><dt>Tasa de canje</dt><dd>{formatPercent(redemptionRate)}</dd></div>
+      <div><dt>Pendientes de canjear hoy</dt><dd>{insights.rewards.pending}</dd></div>
+    </dl>
+  );
+}
+
+/** Basic plans: period summary, rewards and what Empresarial adds (DEC-0069). */
+function BasicInsightsBody({ insights, filters, formatMoney }: {
+  insights: CustomerInsights;
+  filters: InsightsFilters;
+  formatMoney: (minor: number | null) => string;
+}) {
+  return (
+    <>
+      <SummarySection filters={filters} formatMoney={formatMoney} insights={insights} />
+      <section className="enterprise-data-panel" aria-labelledby="rewards-title">
+        <div className="enterprise-panel-header">
+          <div>
+            <h2 id="rewards-title">Premios</h2>
+            <p>Premios del programa en el periodo.</p>
+          </div>
+        </div>
+        <RewardsStats insights={insights} />
+      </section>
+      <section className="enterprise-data-panel" aria-labelledby="advanced-title">
+        <div className="enterprise-panel-header">
+          <div>
+            <h2 id="advanced-title">Estadísticas avanzadas</h2>
+            <p>Disponibles en el plan Empresarial.</p>
+          </div>
+          <span className="enterprise-badge is-neutral">Plan Empresarial</span>
+        </div>
+        <ul className="insights-upsell">
+          <li><strong>Segmentos de clientes</strong><small>Quiénes son frecuentes, quiénes están en riesgo y quiénes ya no vuelven, con su lista de clientes.</small></li>
+          <li><strong>Embudo de retorno</strong><small>Cuántos clientes llegan a su segunda y tercera compra.</small></li>
+          <li><strong>Visitas por semana y horarios</strong><small>Clientes que regresan frente a primeras compras, y los días y horas con más visitas.</small></li>
+          <li><strong>Mejores clientes y comparación por sucursal</strong><small>Top 10 por visitas y gasto, y retorno por sucursal.</small></li>
+        </ul>
+        <p className="insights-upsell-note">Escríbenos por WhatsApp para activar el plan Empresarial, que también incluye campañas por correo y Wallet.</p>
+      </section>
+    </>
+  );
+}
+
+function InsightsBody({ insights, filters, formatMoney }: {
+  insights: AdvancedCustomerInsights;
+  filters: InsightsFilters;
+  formatMoney: (minor: number | null) => string;
+}) {
+  const totalCustomers = insights.segments.reduce((sum, item) => sum + Number(item.customers), 0);
+  const maxSegment = Math.max(1, ...insights.segments.map((item) => Number(item.customers)));
+  const funnelSteps = [
+    { label: "Registrados", value: insights.funnel.registered },
+    { label: "1 compra o más", value: insights.funnel.purchased_1 },
+    { label: "Volvieron (2 o más)", value: insights.funnel.purchased_2 },
+    { label: "Habituales (3 o más)", value: insights.funnel.purchased_3 }
+  ];
+  const weeklyMax = Math.max(1, ...insights.weekly.map((week) => Number(week.new_visits) + Number(week.returning_visits)));
+  const weeklyTotal = insights.weekly.reduce((sum, week) => sum + Number(week.new_visits) + Number(week.returning_visits), 0);
+  const grid = heatmapGrid(insights.heatmap);
+  const busiest = busiestSlot(insights.heatmap);
+  const isAdmin = insights.role === "ADMIN";
+
+  return (
+    <>
+      <SummarySection filters={filters} formatMoney={formatMoney} insights={insights} />
 
       <section className="enterprise-data-panel" aria-labelledby="segments-title">
         <div className="enterprise-panel-header">
@@ -217,12 +281,7 @@ function InsightsBody({ insights, filters, formatMoney }: {
               <p>Premios del programa en el periodo.</p>
             </div>
           </div>
-          <dl className="insights-stats">
-            <div><dt>Ganados</dt><dd>{insights.rewards.generated}</dd></div>
-            <div><dt>Canjeados</dt><dd>{insights.rewards.redeemed}</dd></div>
-            <div><dt>Tasa de canje</dt><dd>{formatPercent(redemptionRate)}</dd></div>
-            <div><dt>Pendientes de canjear hoy</dt><dd>{insights.rewards.pending}</dd></div>
-          </dl>
+          <RewardsStats insights={insights} />
         </section>
       </div>
 

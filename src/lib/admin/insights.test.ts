@@ -85,5 +85,16 @@ describe("segments", () => {
     const page = readFileSync(new URL("../../app/admin/dashboard/segmentos/[segment]/page.tsx", import.meta.url), "utf8");
     expect(page).toContain('context.access.role !== "ADMIN" || context.supportSession');
     expect(page).toContain('rpc("get_customer_segment_members"');
+    expect(page).toContain('rpc("current_tenant_empresarial_available")');
+  });
+});
+
+describe("Empresarial gating (DEC-0069)", () => {
+  it("renders only summary, rewards and the plan notice without Empresarial", () => {
+    const view = readFileSync(new URL("../../components/insights-view.tsx", import.meta.url), "utf8");
+    expect(view).toContain("insights.advanced");
+    expect(view).toContain("BasicInsightsBody");
+    const migration = readFileSync(new URL("../../../supabase/migrations/0077_empresarial_advanced_statistics.sql", import.meta.url), "utf8");
+    expect(migration).toContain("- 'segments' - 'funnel' - 'weekly' - 'heatmap' - 'top_customers' - 'branches'");
   });
 });

@@ -82,7 +82,7 @@ export default async function SuperadminPage({ searchParams }: SuperadminPagePro
       </header>
 
       {tenantCreated ? <p className="enterprise-alert is-success" role="status"><strong>Tenant creado.</strong> Ahora configura su Administrador y operación inicial.</p> : null}
-      {tenantCampaigns ? <p className="enterprise-alert is-success" role="status"><strong>Campañas {tenantCampaigns === "on" ? "activadas" : "desactivadas"}.</strong> {tenantCampaigns === "on" ? "El Admin general ya puede enviar campañas." : "El tenant ya no puede crear campañas, salvo que tenga plan Empresarial activo."}</p> : null}
+      {tenantCampaigns ? <p className="enterprise-alert is-success" role="status"><strong>Plan Empresarial {tenantCampaigns === "on" ? "activado" : "desactivado"}.</strong> {tenantCampaigns === "on" ? "El Admin general ya tiene campañas y estadísticas avanzadas." : "El tenant vuelve a las funciones de su plan, salvo que tenga una suscripción Empresarial activa."}</p> : null}
       {tenantStatus ? <p className="enterprise-alert is-success" role="status"><strong>Estado actualizado.</strong> El tenant ahora está {tenantStatus === "ACTIVE" ? "activo" : "suspendido"}.</p> : null}
       {error ? <p className="enterprise-alert is-error" role="alert"><strong>No se pudo completar la acción.</strong> {error}</p> : null}
 
@@ -166,7 +166,7 @@ export default async function SuperadminPage({ searchParams }: SuperadminPagePro
                           <form action={setTenantCampaigns}>
                             <input type="hidden" name="tenantId" value={tenant.id} />
                             <input type="hidden" name="enabled" value={tenant.campaigns_enabled ? "false" : "true"} />
-                            <button className="enterprise-menu-action" type="submit">{tenant.campaigns_enabled ? "Desactivar campañas" : "Activar campañas (Empresarial)"}</button>
+                            <button className="enterprise-menu-action" type="submit">{tenant.campaigns_enabled ? "Desactivar plan Empresarial" : "Activar plan Empresarial (campañas y estadísticas)"}</button>
                           </form>
                           <TenantStatusForm tenantId={tenant.id} status={tenant.status} tenantName={tenant.name} />
                         </div>
