@@ -1065,3 +1065,15 @@
 - Consequences: Enforcement is server-side. Apply `0077` only after the code
   that understands `advanced: false` is deployed.
 - Status: Accepted.
+
+## DEC-0070 - Superadmin Can Complete A Required Password Change
+
+- Date: 2026-11-13
+- Context: A Superadmin marked `PASSWORD_RESET_REQUIRED` could not read its
+  own profile (`app.current_staff_can_view_self_profile` only allowed ACTIVE
+  Superadmins), so `/login` answered «account unavailable» instead of routing
+  to `/change-password`. Found when resetting the owner's Superadmin password.
+- Decision: Migration `0078` lets a Superadmin read only its own profile while
+  the change is pending, like tenant staff. `app.is_superadmin()` still
+  requires ACTIVE, so no Superadmin powers until the change completes.
+- Status: Accepted.
