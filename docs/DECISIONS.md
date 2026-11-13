@@ -892,6 +892,29 @@
   cache never serves them to browsers at the HTML URL.
 - Status: Accepted.
 
+## DEC-0063 - Owner Password Recovery By Email
+
+- Date: 2026-11-13
+- Context: Self-service signup creates owner accounts with no one to reset
+  their password; IMPLEMENTATION_PLAN Phase 1 lists «Olvidé mi contraseña» for
+  the tenant owner only, and transactional email (Resend) is live.
+- Decision: `/login` links to `/recuperar-contrasena`. The request always
+  answers the same neutral message; the lookup, `auth.admin.generateLink`
+  (type `recovery`) and the Resend email run in `after()` so timing does not
+  reveal accounts. `app.request_owner_password_recovery` (service role) rate
+  limits by SHA-256 of the email and of the client address (3 per email, 10
+  per client per hour, rows kept one day) and resolves only an `ADMIN` of an
+  `ACTIVE` tenant with status `ACTIVE` or `PASSWORD_RESET_REQUIRED`. The email
+  links to `/recuperar-contrasena/nueva?token=<hashed_token>`; the token is
+  consumed only on POST (`verifyOtp`) together with the new password, so link
+  scanners cannot burn it. The action re-checks eligibility, updates the
+  password, calls `app.complete_owner_password_recovery` (activates the
+  profile, clears the temporary password, writes `OWNER_PASSWORD_RECOVERED` to
+  `audit_logs`) and signs out other sessions. Branch administrators, employees,
+  PIN accounts and Superadmin keep the manual flow.
+- Consequences: Migration `0072` is required. The link lifetime follows the
+  Supabase Auth email OTP expiry (default 1 hour, stated in the email). Without
+  Resend configuration nothing is sent and the page still answers neutrally.
 ## DEC-0062 - Auth Proxy Activated In src/proxy.ts
 
 - Date: 2026-11-13

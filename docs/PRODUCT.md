@@ -63,7 +63,8 @@ original.
 
 - Portal y login del cliente.  
 - OTP o validación SMS.  
-- Recuperación automática de contraseña.  
+- Recuperación automática de contraseña, salvo para el Admin general del tenant
+  (dueño), que puede recuperarla por correo desde `/login` (DEC-0063).  
 - Modo offline.  
 - Integración directa con POS.  
 - Foto u OCR del ticket.  
@@ -181,7 +182,7 @@ Solo el Admin general configura o rota la credencial compartida. El Admin genera
 
 El Administrador podrá asignar una o varias sucursales y una sucursal principal a cada Administrador de sucursal o Empleado.
 
-Las contraseñas se restablecerán manualmente mediante contraseña temporal y cambio obligatorio en el siguiente acceso.
+Las contraseñas se restablecerán manualmente mediante contraseña temporal y cambio obligatorio en el siguiente acceso. Única excepción: el Admin general de un tenant activo puede solicitar desde `/login` un enlace de recuperación por correo, de un solo uso y con caducidad de una hora, con respuesta neutra, límite de solicitudes y auditoría (DEC-0063).
 
 ## 9. Clientes
 
@@ -190,7 +191,7 @@ Datos:
 - UUID interno.  
 - Nombre obligatorio.  
 - Teléfono obligatorio y normalizado.  
-- Correo opcional.  
+- Correo obligatorio al registrarse (DEC-0061); puede faltar en clientes importados o anteriores.  
 - Fecha de nacimiento opcional.  
 - Consentimiento de privacidad.  
 - Método y sucursal de registro.  

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getSafeRedirectPath } from "@/lib/auth/redirects";
 import { SubmitButton } from "@/components/submit-button";
 import { MorrowBrand } from "@/components/morrow-brand";
@@ -53,6 +54,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </label>
           <SubmitButton className="public-primary-button">Iniciar sesión</SubmitButton>
         </form>
+        <p className="public-card-copy">
+          <Link href="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
+        </p>
       </section>
       <p className="public-security-note">Acceso protegido para personal autorizado.</p>
       </div>

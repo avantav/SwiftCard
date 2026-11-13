@@ -62,3 +62,20 @@ export function validatePasswordChangeForm(
     }
   };
 }
+
+export type NewPasswordValidationResult =
+  | { ok: true; data: { newPassword: string } }
+  | { ok: false; errors: string[] };
+
+/** Same rules as the required change, without a current password (recovery). */
+export function validateNewPasswordForm(formData: FormData): NewPasswordValidationResult {
+  const errors: string[] = [];
+  const newPassword = passwordValue(formData.get("newPassword"));
+  const passwordConfirmation = passwordValue(formData.get("passwordConfirmation"));
+
+  if (newPassword.length < 12) errors.push("La nueva contraseña debe tener al menos 12 caracteres.");
+  if (newPassword.length > 72) errors.push("La nueva contraseña no puede exceder 72 caracteres.");
+  if (newPassword !== passwordConfirmation) errors.push("La confirmación de contraseña no coincide.");
+
+  return errors.length ? { ok: false, errors } : { ok: true, data: { newPassword } };
+}

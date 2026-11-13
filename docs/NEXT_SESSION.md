@@ -1,5 +1,17 @@
 # Next Session
 
+## Owner password recovery — 2026-11-13
+
+- Implemented on `feat/owner-password-recovery` (DEC-0063): «¿Olvidaste tu
+  contraseña?» in `/login` for tenant owners only.
+- Before release: apply migration `0072` (validated on PGlite with a pgcrypto
+  shim; run `npm run db:verify-rls` where Docker is available) and confirm
+  in Supabase Auth that the email OTP expiry is 3600 s (the email says 1 hour).
+- After deploy, test with an owner account: request, email received, link
+  opens the form, new password works, other sessions closed, audit row
+  `OWNER_PASSWORD_RECOVERED`; a manager email and an unknown email get the same
+  answer and no email; the 4th request within an hour sends nothing.
+
 ## Agent-readable public site — 2026-11-12
 
 - Implemented on `feat/agent-readiness` (DEC-0060): robots.txt with Content
