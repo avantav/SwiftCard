@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 const source = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 const migration = source("../../../supabase/migrations/0067_superadmin_support_sessions.sql");
 const server = source("./server.ts");
-const middleware = source("../../../middleware.ts");
+const middleware = source("../../proxy.ts");
 const superadmin = source("../../app/superadmin/page.tsx");
 const adminLayout = source("../../app/admin/layout.tsx");
 const startRoute = source("../../app/support/start/route.ts");

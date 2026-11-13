@@ -11,7 +11,7 @@ const loginAction = readFileSync(
   "utf8"
 );
 const middlewareSource = readFileSync(
-  join(process.cwd(), "middleware.ts"),
+  join(process.cwd(), "src/lib/auth/proxy-rules.ts"),
   "utf8"
 );
 
@@ -40,7 +40,7 @@ describe("password change server boundary", () => {
     expect(loginAction).toContain('redirect("/change-password")');
   });
 
-  it("protects password change in middleware", () => {
+  it("protects password change in the auth proxy", () => {
     expect(middlewareSource).toContain('"/change-password"');
   });
 

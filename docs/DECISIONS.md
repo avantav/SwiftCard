@@ -891,3 +891,22 @@
   (see BLOCKERS/NEXT_SESSION); Markdown responses are `no-store` so a shared
   cache never serves them to browsers at the HTML URL.
 - Status: Accepted.
+
+## DEC-0062 - Auth Proxy Activated In src/proxy.ts
+
+- Date: 2026-11-13
+- Context: AUTH-MW-001. The root `middleware.ts` was never compiled because the
+  app lives in `src/app`; Next.js 16 also deprecates `middleware` in favour of
+  `proxy`. Server components cannot write cookies, so Supabase session
+  refreshes were never persisted outside server actions.
+- Decision: Move it to `src/proxy.ts` (`export function proxy`, Node runtime).
+  Requests without a `swiftwallet-auth` cookie skip the Supabase Auth call;
+  anonymous requests to `/admin`, `/app`, `/superadmin` and `/change-password`
+  redirect to `/login?next=...`. Static files, files with an extension and
+  `/api/*` except `/api/admin/*` are outside the matcher (webhooks and Wallet
+  device endpoints authenticate on their own). Rules live in
+  `src/lib/auth/proxy-rules.ts`; a test fails if the file moves back to root.
+- Consequences: Pages and actions keep their role/status/tenant checks; the
+  proxy is an extra layer, not the authority. Logged-in requests add one
+  Supabase Auth round trip.
+- Status: Accepted.
