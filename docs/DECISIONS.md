@@ -906,3 +906,44 @@
   webhook handling must cover the 15 days. What is restricted after the grace
   period, disputes and CFDI remain open.
 - Status: Accepted (policy only).
+## DEC-0063 - Owner Password Recovery By Email
+
+- Date: 2026-11-13
+- Context: Self-service signup creates owner accounts with no one to reset
+  their password; IMPLEMENTATION_PLAN Phase 1 lists «Olvidé mi contraseña» for
+  the tenant owner only, and transactional email (Resend) is live.
+- Decision: `/login` links to `/recuperar-contrasena`. The request always
+  answers the same neutral message; the lookup, `auth.admin.generateLink`
+  (type `recovery`) and the Resend email run in `after()` so timing does not
+  reveal accounts. `app.request_owner_password_recovery` (service role) rate
+  limits by SHA-256 of the email and of the client address (3 per email, 10
+  per client per hour, rows kept one day) and resolves only an `ADMIN` of an
+  `ACTIVE` tenant with status `ACTIVE` or `PASSWORD_RESET_REQUIRED`. The email
+  links to `/recuperar-contrasena/nueva?token=<hashed_token>`; the token is
+  consumed only on POST (`verifyOtp`) together with the new password, so link
+  scanners cannot burn it. The action re-checks eligibility, updates the
+  password, calls `app.complete_owner_password_recovery` (activates the
+  profile, clears the temporary password, writes `OWNER_PASSWORD_RECOVERED` to
+  `audit_logs`) and signs out other sessions. Branch administrators, employees,
+  PIN accounts and Superadmin keep the manual flow.
+- Consequences: Migration `0072` is required. The link lifetime follows the
+  Supabase Auth email OTP expiry (default 1 hour, stated in the email). Without
+  Resend configuration nothing is sent and the page still answers neutrally.
+## DEC-0062 - Auth Proxy Activated In src/proxy.ts
+
+- Date: 2026-11-13
+- Context: AUTH-MW-001. The root `middleware.ts` was never compiled because the
+  app lives in `src/app`; Next.js 16 also deprecates `middleware` in favour of
+  `proxy`. Server components cannot write cookies, so Supabase session
+  refreshes were never persisted outside server actions.
+- Decision: Move it to `src/proxy.ts` (`export function proxy`, Node runtime).
+  Requests without a `swiftwallet-auth` cookie skip the Supabase Auth call;
+  anonymous requests to `/admin`, `/app`, `/superadmin` and `/change-password`
+  redirect to `/login?next=...`. Static files, files with an extension and
+  `/api/*` except `/api/admin/*` are outside the matcher (webhooks and Wallet
+  device endpoints authenticate on their own). Rules live in
+  `src/lib/auth/proxy-rules.ts`; a test fails if the file moves back to root.
+- Consequences: Pages and actions keep their role/status/tenant checks; the
+  proxy is an extra layer, not the authority. Logged-in requests add one
+  Supabase Auth round trip.
+- Status: Accepted.

@@ -1,5 +1,17 @@
 # Next Session
 
+## Owner password recovery — 2026-11-13
+
+- Implemented on `feat/owner-password-recovery` (DEC-0063): «¿Olvidaste tu
+  contraseña?» in `/login` for tenant owners only.
+- Before release: apply migration `0072` (validated on PGlite with a pgcrypto
+  shim; run `npm run db:verify-rls` where Docker is available) and confirm
+  in Supabase Auth that the email OTP expiry is 3600 s (the email says 1 hour).
+- After deploy, test with an owner account: request, email received, link
+  opens the form, new password works, other sessions closed, audit row
+  `OWNER_PASSWORD_RECOVERED`; a manager email and an unknown email get the same
+  answer and no email; the 4th request within an hour sends nothing.
+
 ## Agent-readable public site — 2026-11-12
 
 - Implemented on `feat/agent-readiness` (DEC-0060): robots.txt with Content
@@ -9,13 +21,10 @@
   (Instagram, Facebook, LinkedIn, Google Business) to fill `sameAs`.
 - Not done on purpose: WebMCP and MCP Server Card (no MCP server exists); an
   about page.
-- FINDING (not fixed, needs authorization): the root `middleware.ts` is never
-  compiled because the app lives in `src/app`; Next.js only detects
-  `src/middleware.ts` / `src/proxy.ts` (`.next/server/middleware-manifest.json`
-  is empty). The Supabase session refresh and protected-route redirect in it
-  have never run in production; pages rely on their own server checks. Moving
-  it to `src/` changes auth behaviour for every route and must be tested on
-  its own branch.
+- AUTH-MW-001 resolved on `fix/activate-auth-proxy` (DEC-0062): the auth
+  proxy now runs from `src/proxy.ts`. After deploy, verify on production:
+  login, staying logged in past one hour, logout, `/change-password`
+  enforcement, support mode start/exit, public registration and Wallet links.
 
 ## Legal documents — 2026-11-12
 

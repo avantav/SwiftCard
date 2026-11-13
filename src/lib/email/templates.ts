@@ -228,6 +228,39 @@ export function renderWelcomeEmail(input: WelcomeEmailInput): RenderedEmail {
   };
 }
 
+/** morrow-branded account email (no tenant branding, no attribution line). */
+const MORROW_BRAND: EmailBrand = {
+  tenantName: "morrow",
+  logoUrl: null,
+  backgroundColor: "#149C91",
+  showMorrowAttribution: false,
+};
+
+export function renderPasswordRecoveryEmail(input: { fullName: string; resetUrl: string }): RenderedEmail {
+  const name = firstName(input.fullName);
+  const greeting = name ? `Hola ${name},` : "Hola,";
+  const lead = `${greeting} recibimos una solicitud para restablecer la contraseña de tu cuenta de administrador en morrow.`;
+  const expiry = "El enlace caduca en 1 hora y solo funciona una vez.";
+  const ignore = "Si no lo solicitaste, ignora este correo: tu contraseña actual seguirá funcionando.";
+
+  return {
+    subject: "Restablece tu contraseña de morrow",
+    html: layout({
+      brand: MORROW_BRAND,
+      preheader: "Crea una nueva contraseña para tu cuenta de administrador.",
+      title: "Restablece tu contraseña",
+      lead,
+      highlight: null,
+      note: null,
+      ctaLabel: "Crear nueva contraseña",
+      ctaUrl: input.resetUrl,
+      finePrint: expiry,
+      footerText: ignore,
+    }),
+    text: [greeting, "", "Recibimos una solicitud para restablecer la contraseña de tu cuenta de administrador en morrow.", "", `Crear nueva contraseña: ${input.resetUrl}`, "", expiry, ignore].join("\n"),
+  };
+}
+
 export function renderRewardEmail(input: RewardEmailInput): RenderedEmail {
   const tenantName = clean(input.brand.tenantName);
   const name = firstName(input.customerName);
