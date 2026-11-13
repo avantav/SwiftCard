@@ -1,5 +1,13 @@
 # Project Status
 
+## SwiftPOS integration, SwiftCard side — 2026-11-13
+
+- API for SwiftPOS to identify customers by card QR and send purchases with a
+  per-tenant API key, behind the `swiftpos_integration` module. DEC-0071,
+  migration `0081` (not applied yet), `docs/SWIFTPOS_INTEGRATION.md`.
+- Superadmin: Tenants → Integración SwiftPOS (keys, store links, limits).
+- Pending: SwiftPOS side; SwiftPOS labels in exports and location review.
+
 ## Tenant modules foundation — 2026-11-13
 
 - Modules per tenant by paid package with Superadmin global (`OFF`/`BETA`/`ON`)

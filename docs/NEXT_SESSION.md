@@ -1,13 +1,25 @@
 # Next Session
 
+## SwiftPOS integration, SwiftCard side — 2026-11-13
+
+- Implemented on `worktree-swiftpos-integration` (DEC-0071, migration `0081`,
+  after `0080`). Owner priority: finish the integration before migrating
+  campaigns/statistics to modules (that stays in the plan).
+- Before production: apply `0080` and `0081`, set
+  `SWIFTPOS_SCAN_TICKET_SECRET`, Superadmin MFA (SEC-003) and dedicated
+  `CARD_SCAN_SECRET_BASE64` (SEC-012).
+- Next: SwiftPOS side (avantav/SwiftPosUi) per `docs/SWIFTPOS_INTEGRATION.md`;
+  then label SwiftPOS purchases in exports and `/admin/security`.
+
 ## Tenant modules foundation — 2026-11-13
 
 - Implemented on `worktree-swiftpos-integration` (DEC-0072, migration `0080`).
   Apply `0080` before or with the deploy; it only adds objects.
 - Run `npm run db:verify-rls` where Docker exists (validated on PGlite here).
 - Review the pages in a browser at 375/768/1280/1440 px with a Superadmin.
-- Next: migrate `campaigns` and `advanced_statistics` to modules keeping
-  identical access, then the SwiftPOS integration (`docs/SWIFTPOS_INTEGRATION.md`).
+- Later (owner decision 2026-11-13): migrate `campaigns` and
+  `advanced_statistics` to modules keeping identical access, after the
+  SwiftPOS integration.
 
 ## Owner roadmap 2026-11-13
 

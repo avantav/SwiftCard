@@ -1,5 +1,24 @@
 # Work Log
 
+## 2026-11-13 - SwiftPOS Integration, SwiftCard Side
+
+**Implemented (DEC-0071):** Migration `0081_swiftpos_integration`: tenant
+integration, hashed API keys (two active for rotation), store-to-branch links,
+per-key rate limit, purchases `source`/external sale/cashier columns with
+`staff_profile_id` empty only for SWIFTPOS, and service-role-only RPCs gated by
+the `swiftpos_integration` module and its switches. The employee purchase
+function is untouched; the integration copies its calculation block and a SQL
+parity test compares both paths for the three program types. Routes
+`/api/integrations/swiftpos/v1/{cards/resolve,purchases,status}` with a signed
+72 h scan ticket, idempotent retries, limits and no personal data in responses
+or logs. Superadmin page per tenant to issue/revoke keys, link stores and set
+limits. New env `SWIFTPOS_SCAN_TICKET_SECRET`.
+
+**Validation:** Migration chain and SQL tests on PGlite (0053 fails on the
+unchanged base too). 496 Vitest tests in 104 files, lint, TypeScript and the
+production build pass. Not tested against real Supabase or in a browser.
+
+
 ## 2026-11-13 - Tenant Modules Foundation
 
 **Implemented (DEC-0072):** Migration `0080_tenant_modules` adds global module

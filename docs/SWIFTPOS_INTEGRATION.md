@@ -1,6 +1,7 @@
 # Integración SwiftPOS → SwiftCard
 
-Estado: **propuesto** (DEC-0071). Ningún cambio de código ni migración aplicado.
+Estado: **lado SwiftCard implementado** (DEC-0071, migración `0081`, pendiente de
+aplicar en producción). Falta el lado SwiftPOS.
 
 ## Objetivo y alcance
 
@@ -33,8 +34,10 @@ automáticas, ventas online y ventas sin tarjeta.
 
 ## Contrato de la API
 
-Base: `/api/integrations/swiftpos/v1`. Solo `POST`, JSON, HTTPS, `no-store`.
-Cabecera: `Authorization: Bearer <api key>`.
+Base: `/api/integrations/swiftpos/v1`. JSON (máximo 8 KB), HTTPS, `no-store`.
+Cabecera: `Authorization: Bearer sc_live_<prefijo>_<secreto>`. Límite: 120
+peticiones por minuto por llave. Requiere `SWIFTPOS_SCAN_TICKET_SECRET` en el
+servidor (32 bytes en base64); sin ella responde `503 NOT_CONFIGURED`.
 
 ### `POST /cards/resolve` — identificar al cliente
 
@@ -42,15 +45,24 @@ Cabecera: `Authorization: Bearer <api key>`.
 { "storeId": "<id de sucursal en el POS>", "scan": "<texto leído del QR>" }
 ```
 
-Respuesta `200`:
+`scan` acepta la URL `/scan/q1_…` del QR o el token directo. Respuesta `200`:
 
 ```json
 {
-  "scanTicket": "<comprobante firmado, vigencia 24 h>",
+  "scanTicket": "v1.<…>.<firma>",
   "customer": { "firstName": "Ana" },
-  "card": { "name": "Café frecuente", "balance": 7, "unit": "STAMPS", "availableRewards": 1 }
+  "card": {
+    "name": "Café frecuente",
+    "programType": "STAMPS_PER_PURCHASE",
+    "balance": 7,
+    "unit": { "singular": "sello", "plural": "sellos" },
+    "availableRewards": 1
+  }
 }
 ```
+
+El `scanTicket` dura 72 h y une tarjeta, vínculo y sucursal. No se devuelve
+teléfono, correo, token ni identificador del cliente.
 
 ### `POST /purchases` — enviar la compra
 
@@ -58,7 +70,7 @@ Respuesta `200`:
 {
   "storeId": "<id de sucursal en el POS>",
   "scanTicket": "<de /cards/resolve>",
-  "externalSaleId": "<UUID de la venta en el POS>",
+  "externalSaleId": "<id único de la venta en el POS>",
   "ticketNumber": "A-001234",
   "amountMinor": 18550,
   "occurredAt": "2026-11-13T18:20:00Z",
@@ -67,65 +79,99 @@ Respuesta `200`:
 }
 ```
 
-`cashier` es obligatorio: en SwiftPOS toda venta lleva al empleado que la
-cobró y cualquier empleado puede registrar ventas. SwiftCard lo guarda solo
-como dato de trazabilidad (`external_operator_id`, `external_operator_name`);
-no valida permisos de ese empleado ni lo crea como usuario. `location` es
-opcional. Respuesta `200`:
+- `cashier` es obligatorio: en SwiftPOS toda venta lleva al empleado que la
+  cobró y cualquier empleado puede registrar ventas. SwiftCard lo guarda solo
+  como trazabilidad (`external_operator_id`, `external_operator_name`); no
+  valida permisos ni lo crea como usuario.
+- `location` es opcional (ver «Ubicación»).
+- El ticket se guarda tal cual, sin prefijo: si el mismo ticket se captura
+  también en la PWA de la sucursal, el segundo intento responde
+  `DUPLICATE_TICKET` y no se acumula dos veces.
+- Reintentar con el mismo `externalSaleId` es seguro: responde
+  `ALREADY_RECORDED` con el resultado original. Con otro monto o tarjeta
+  responde `IDEMPOTENCY_CONFLICT`.
+
+Respuesta `200`:
 `{ "result": "CONFIRMED" | "ALREADY_RECORDED", "stampsAwarded": 1, "rewardsGenerated": 0, "balance": 8 }`.
 
-Errores estables: `UNAUTHORIZED`, `BRANCH_NOT_LINKED`, `CARD_NOT_FOUND`,
-`SCAN_TICKET_EXPIRED`, `PROGRAM_PAUSED`, `DUPLICATE_TICKET`,
-`OUTSIDE_GEOFENCE`, `LIMIT_EXCEEDED`.
+### `GET /status`
 
-## Cambios en SwiftCard
+`{ "modules": { "swiftpos_integration": true, "swiftpos_integration.card_resolve": true, … } }`.
+Funciona aunque el módulo esté apagado, para que SwiftPOS muestre el estado.
 
-### PR-1 · Migración `0080_swiftpos_integration`
+### Errores
 
-1. `public.tenant_integrations`: `tenant_id`, `provider` (`SWIFTPOS`),
-   `key_prefix`, `key_hash` (SHA-256 de 32 bytes aleatorios; la llave se
-   muestra una sola vez), `status`, `last_used_at`, `revoked_at`,
-   `created_by`. Un vínculo activo por tenant y proveedor.
-2. `public.integration_branch_links`: `(integration_id, external_store_id) →
-   branch_id`, con verificación de que la sucursal es del mismo tenant.
-3. `public.purchases`: columnas `source` (`STAFF` por defecto | `SWIFTPOS`),
-   `integration_id`, `external_sale_id`, `external_operator_id`,
-   `external_operator_name` (cajero del POS); `staff_profile_id` nullable con
-   `check ((source = 'STAFF') = (staff_profile_id is not null))`;
-   `unique (integration_id, external_sale_id)`.
-4. **No tocar la ruta actual.** `app.confirm_card_purchase` (`0049`) y la PWA
-   quedan **sin cambios**. La integración usa su propia función,
-   `app.integration_confirm_purchase`, con el bloque de cálculo copiado de
-   `0049`. Una **prueba de paridad** ejecuta ambas funciones con los mismos
-   escenarios (sellos por compra y por monto, remanente, niveles, puntos de
-   por vida, recompensa de bienvenida) y falla si difieren; cualquier cambio
-   futuro al motor debe aplicarse en ambas. Unificarlas queda como mejora
-   posterior, cuando la integración esté estable.
-5. Geocerca: si la compra de integración trae ubicación, se valida igual que
-   hoy; si no la trae, se acepta, porque la sucursal la fija el vínculo.
-6. RPCs solo para `service_role`: `app.integration_resolve_card` y
-   `app.integration_confirm_purchase`. Validan vínculo y tenant activos,
-   sucursal mapeada, tarjeta del mismo tenant y participante en la sucursal.
+Cuerpo `{ "error": "<código>" }`.
 
-Impacto de compras sin empleado (revisado): la revisión de ubicación
-(`0074`) y la vista de soporte (`0079`) ya usan `left join` con
-`staff_profiles`; `stamp_ledger.created_by_staff_id` ya admite nulo; el
-trigger de operador PIN no actúa sin sesión. Las exportaciones agregan la
-columna `source`.
+| Código | HTTP | Qué hacer en SwiftPOS |
+|---|---|---|
+| `UNAUTHORIZED` | 401 | Llave inválida, revocada o tenant suspendido. No reintentar. |
+| `RATE_LIMITED` | 429 | Reintentar después. |
+| `MODULE_NOT_ACTIVE` | 403 | Módulo o interruptor apagado. Conservar envíos y reintentar más tarde. |
+| `BRANCH_NOT_LINKED` | 422 | Falta vincular la sucursal en el Superadmin. |
+| `CARD_NOT_FOUND` | 404 | Tarjeta inexistente, de otro negocio o no válida en esa sucursal. |
+| `PROGRAM_PAUSED` | 409 | Programa en pausa; cobrar sin acumular. |
+| `SCAN_TICKET_INVALID` / `SCAN_TICKET_EXPIRED` / `SCAN_TICKET_MISMATCH` | 422 | Volver a escanear la tarjeta. |
+| `INVALID_REQUEST` | 400 | Corregir el envío. No reintentar igual. |
+| `LIMIT_EXCEEDED` | 422 | Monto, frecuencia o fecha fuera de límites. No reintentar. |
+| `OUTSIDE_GEOFENCE` | 422 | Ubicación fuera de la sucursal. |
+| `DUPLICATE_TICKET` | 409 | Ese ticket ya está registrado en la sucursal. No reintentar. |
+| `IDEMPOTENCY_CONFLICT` | 409 | Misma venta con otros datos. Revisar. |
+| `UNAVAILABLE` | 409 | El saldo llegó a su máximo técnico. |
+| `NOT_CONFIGURED` / `SERVICE_UNAVAILABLE` | 503 | Reintentar con espera creciente. |
 
-### PR-2 · Rutas de la API
+## Implementado en SwiftCard (2026-11-13)
 
-- Rutas en `src/app/api/integrations/swiftpos/v1/…`.
-- API key: búsqueda por prefijo y comparación en tiempo constante del hash.
-- El tenant sale de la API key, **nunca** del cuerpo.
-- `resolve` reutiliza el descifrado del QR del escáner de empleados.
-- Tras confirmar: `dispatchCustomerActivityBestEffort` refresca Apple/Google Wallet.
+### Migración `0081_swiftpos_integration`
 
-### PR-3 · Superadmin y etiquetas
+- Tablas `tenant_integrations` (una por tenant, con límites),
+  `integration_keys` (prefijo + SHA-256; hasta dos activas para rotar),
+  `integration_branch_links` (ID de sucursal del POS → sucursal, mismo tenant)
+  e `integration_request_windows` (límite de peticiones). RLS forzado; solo el
+  Superadmin lee, nunca el hash.
+- `purchases`: `source` (`STAFF` | `SWIFTPOS`), `integration_id`,
+  `external_sale_id`, `external_operator_id`, `external_operator_name`;
+  `staff_profile_id` vacío solo para `SWIFTPOS` (restricción
+  `purchases_source_actor`); `unique (integration_id, external_sale_id)`.
+- `app.confirm_card_purchase` y la PWA **no cambian**.
+  `app.integration_confirm_purchase` copia el bloque de cálculo de `0049`
+  (marcado `BEGIN/END calculation block`); `supabase/tests/0081` compara ambas
+  rutas en los tres tipos de programa (sellos, recompensas, saldo, remanente,
+  puntos). Cualquier cambio futuro al motor debe hacerse en las dos.
+- Único cambio a una función existente: `app.enforce_purchase_location` deja
+  pasar las compras `SWIFTPOS`; las compras `STAFF` se validan igual que antes.
+- RPCs solo para `service_role`: `integration_status`,
+  `integration_resolve_card`, `integration_confirm_purchase`. RPCs del
+  Superadmin con motivo y auditoría: `issue_integration_key`,
+  `revoke_integration_key`, `set_integration_branch_link`,
+  `set_integration_limits`.
 
-- Detalle del tenant → «Integración SwiftPOS»: crear vínculo (muestra la API
-  key una vez), mapear sucursales, rotar y revocar.
-- Compras y exportaciones muestran el origen «SwiftPOS».
+### Ubicación
+
+Si SwiftPOS envía ubicación y el interruptor `location_validation` está
+activo, se valida con la geocerca de la sucursal (`OUTSIDE_GEOFENCE`). Si el
+interruptor está detenido, la ubicación se ignora y no se guarda. Sin
+ubicación, la compra se acepta aun en tenants con geolocalización estricta,
+porque la sucursal la fija el vínculo de la llave.
+
+### API y Superadmin
+
+- Rutas en `src/app/api/integrations/swiftpos/v1/`, librería en
+  `src/lib/integrations/swiftpos/`.
+- Tras `CONFIRMED`, si `wallet_refresh` está activo, se actualiza Wallet y se
+  envían los correos de recompensa, igual que en la PWA. Un fallo ahí no
+  afecta la compra.
+- Superadmin → Tenants → «Integración SwiftPOS»: emitir API key (se muestra una
+  vez), revocar, vincular sucursales y ajustar límites (iniciales: $20,000.00
+  por venta, 5 compras por tarjeta por hora, 20 por día).
+
+### Pendiente en SwiftCard
+
+- Mostrar el origen «SwiftPOS» y el cajero en exportaciones y en
+  `/admin/security` (hoy esas compras aparecen sin empleado). Se dejó fuera
+  porque cambia salidas que hoy se usan.
+- MFA para Superadmin (SEC-003) y `CARD_SCAN_SECRET_BASE64` dedicada (SEC-012)
+  antes de emitir la primera llave en producción.
 
 ## Lado SwiftPOS (resumen)
 
@@ -155,7 +201,7 @@ que el Superadmin de SwiftPOS vea el otro lado.
 | `swiftpos_integration` | MODULE | Las rutas `/api/integrations/swiftpos/*` responden `403 MODULE_NOT_ACTIVE` (salvo `status`). |
 | `swiftpos_integration.card_resolve` | SWITCH | No se identifican tarjetas; la caja cobra sin tarjeta. |
 | `swiftpos_integration.purchases` | SWITCH | No se aceptan compras; el POS las reintenta al reactivarse. |
-| `swiftpos_integration.wallet_refresh` | SWITCH | Se registran compras sin empujar la actualización a Wallet. |
+| `swiftpos_integration.wallet_refresh` | SWITCH | Se registran compras sin actualizar Wallet ni enviar correos de recompensa por esa compra. |
 | `swiftpos_integration.location_validation` | SWITCH | Se ignora la ubicación enviada. |
 
 ### SwiftPOS
@@ -197,20 +243,20 @@ Estimación orientativa para una persona.
 ## Hardening
 
 - **H1 · API key.** 32 bytes aleatorios, mostrada una vez, guardada solo como
-  hash, comparación en tiempo constante, solo HTTPS, rotación con
-  solapamiento, revocación inmediata, `last_used_at` visible y auditoría de
-  creación, rotación y revocación. Los logs nunca registran la cabecera
-  `Authorization` ni el QR. Mejora futura si se desea: firma HMAC por petición.
+  SHA-256 (búsqueda exacta por hash), solo HTTPS, rotación con dos llaves
+  activas, revocación inmediata, último uso visible, 120 peticiones por minuto
+  y auditoría de emisión y revocación. Los logs nunca registran la cabecera
+  `Authorization`, el QR ni datos del cliente. Mejora futura si se desea: firma
+  HMAC por petición.
 - **H2 · Aislamiento.** Tenant derivado de la API key; RPCs con `revoke` de
   `public`, `anon` y `authenticated`; pruebas negativas entre dos tenants.
 - **H3 · Comprobante de escaneo.** `/purchases` exige el `scanTicket` firmado
-  por SwiftCard (tarjeta + vínculo + sucursal, 24 h). Con una API key robada no
+  por SwiftCard (tarjeta + vínculo + sucursal, 72 h). Con una API key robada no
   se acumula en tarjetas arbitrarias: hace falta el QR real de cada una.
 - **H4 · Límites.** Monto máximo por venta, compras por tarjeta por hora y día,
   peticiones por vínculo, `occurredAt` no futuro ni de hace más de 72 h.
-- **H5 · Trazabilidad.** Cada compra guarda el cajero del POS que la cobró;
-  `/admin/security` y las exportaciones lo muestran como «Cajero SwiftPOS» en
-  lugar del empleado de SwiftCard.
+- **H5 · Trazabilidad.** Cada compra guarda el cajero del POS que la cobró.
+  Pendiente: mostrarlo en `/admin/security` y en las exportaciones.
 - **H6 · Datos mínimos.** `resolve` devuelve nombre de pila, tarjeta, saldo y
   recompensas; nunca teléfono, correo, token ni UUID de cliente.
 - **H7 · Prerrequisitos.** MFA para Superadmin (SEC-003) y

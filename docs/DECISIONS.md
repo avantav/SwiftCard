@@ -1097,7 +1097,9 @@
 - Consequences: `purchases.staff_profile_id` becomes nullable only for
   integration purchases. SwiftPOS disables its own membership discounts for
   linked tenants. Superadmin MFA should exist before the first key is issued.
-- Status: Proposed.
+- Status: Accepted. SwiftCard side implemented in migration `0081`
+  (`app.confirm_card_purchase` untouched; the integration copies its
+  calculation with a parity test). SwiftPOS side pending.
 
 ## DEC-0072 - Tenant Modules By Plan With Superadmin Overrides
 

@@ -30,7 +30,7 @@ export const MODULE_CATALOG: readonly ModuleCatalogEntry[] = [
     name: "Integración SwiftPOS",
     description: "Las ventas de SwiftPOS acumulan sellos y puntos en la tarjeta del cliente.",
     inactiveEffect: "SwiftPOS no puede identificar tarjetas ni enviar compras; todo lo demás funciona igual.",
-    availability: "IN_DEVELOPMENT",
+    availability: "AVAILABLE",
     addedIn: "DEC-0071"
   },
   {
@@ -40,7 +40,7 @@ export const MODULE_CATALOG: readonly ModuleCatalogEntry[] = [
     name: "Identificar tarjetas desde SwiftPOS",
     description: "La caja escanea el QR de la tarjeta para identificar al cliente.",
     inactiveEffect: "La caja cobra sin tarjeta.",
-    availability: "IN_DEVELOPMENT",
+    availability: "AVAILABLE",
     addedIn: "DEC-0071"
   },
   {
@@ -50,17 +50,17 @@ export const MODULE_CATALOG: readonly ModuleCatalogEntry[] = [
     name: "Recibir compras de SwiftPOS",
     description: "Registra las compras que envía SwiftPOS.",
     inactiveEffect: "Las compras no se registran; SwiftPOS las reintenta al reactivarse.",
-    availability: "IN_DEVELOPMENT",
+    availability: "AVAILABLE",
     addedIn: "DEC-0071"
   },
   {
     key: "swiftpos_integration.wallet_refresh",
     kind: "SWITCH",
     parent: "swiftpos_integration",
-    name: "Actualizar Wallet tras compras de SwiftPOS",
-    description: "Envía la actualización a Apple y Google Wallet al registrar la compra.",
-    inactiveEffect: "La tarjeta en Wallet se actualiza en la siguiente actualización.",
-    availability: "IN_DEVELOPMENT",
+    name: "Avisar al cliente tras compras de SwiftPOS",
+    description: "Actualiza Apple y Google Wallet y envía los correos de recompensa al registrar la compra.",
+    inactiveEffect: "La compra se registra; Wallet se actualiza en la siguiente actualización y no se envían correos por esa compra.",
+    availability: "AVAILABLE",
     addedIn: "DEC-0071"
   },
   {
@@ -70,7 +70,7 @@ export const MODULE_CATALOG: readonly ModuleCatalogEntry[] = [
     name: "Validar ubicación de SwiftPOS",
     description: "Comprueba con la geocerca la ubicación que envía SwiftPOS.",
     inactiveEffect: "Se ignora la ubicación enviada por SwiftPOS.",
-    availability: "IN_DEVELOPMENT",
+    availability: "AVAILABLE",
     addedIn: "DEC-0071"
   }
 ];
