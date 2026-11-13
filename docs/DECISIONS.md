@@ -892,6 +892,20 @@
   cache never serves them to browsers at the HTML URL.
 - Status: Accepted.
 
+## DEC-0064 - Billing Grace Period And No Refunds
+
+- Date: 2026-11-13
+- Context: Self-service billing (DEC-0058) needs a policy for failed payments
+  and cancellations before charging live.
+- Decision: The owner set 15 calendar days of grace after the first failed
+  charge, during which the tenant operates normally, and no refunds:
+  cancelling stops renewal and access continues until the end of the paid
+  period. Stripe stays "in process": nothing is implemented now.
+- Consequences: The provisional terms (DEC-0059, sections 6 and 7) already
+  state both rules. When live billing is implemented, Stripe retries and
+  webhook handling must cover the 15 days. What is restricted after the grace
+  period, disputes and CFDI remain open.
+- Status: Accepted (policy only).
 ## DEC-0063 - Owner Password Recovery By Email
 
 - Date: 2026-11-13
