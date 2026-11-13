@@ -947,3 +947,29 @@
   proxy is an extra layer, not the authority. Logged-in requests add one
   Supabase Auth round trip.
 - Status: Accepted.
+
+## DEC-0067 - Retention-Focused Customer Statistics
+
+- Date: 2026-11-13
+- Context: The owner asked to redesign the statistics panel after reviewing
+  competitors (Boomerangme RFM segments, return and churn rates; Square visit
+  frequency and top customers; Thanx lifecycle and second/third-visit
+  conversion; Loopy Loyalty stamps vs redemptions). The previous dashboard
+  only showed totals and could not tell who returns or who is leaving.
+- Decision: `/admin/dashboard` («Estadísticas») reads one RPC,
+  `app.get_customer_insights(from, to, branch)` (migration `0075`, tenant time
+  zone, same Admin/Manager scope as the old dashboard). It shows active
+  customers, return rate, new customers and average ticket with real
+  comparisons against the previous period; seven segments from the shared
+  `app.customer_segment_snapshot` (Nuevos <30 days registered, Frecuentes 4+
+  purchases and active ≤30 days, Ocasionales 2-3 and ≤30 days, Una sola visita,
+  En riesgo 2+ purchases and 31-60 days, Perdidos >60 days, Nunca compraron);
+  a return funnel; 12-week visits split into returning vs first purchase; a
+  day/hour heatmap; rewards earned/redeemed/pending; top 10 customers (Admin
+  only) and branch comparison. `app.get_customer_segment_members` lists a
+  segment's customers for the Admin general only, as the basis for
+  Empresarial campaigns. Charts are HTML/CSS with validated colors and table
+  alternatives (DESIGN_SYSTEM §14).
+- Consequences: Segment thresholds are fixed for now (configurable later).
+  The old `get_dashboard_metrics` RPCs stay for exports.
+- Status: Accepted.

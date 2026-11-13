@@ -211,6 +211,7 @@ operational history foundation.
 
 - [x] [Terminada] Implement metrics queries and permission filters.
 - [x] [Terminada] Implement dashboard views.
+- [x] [Terminada 2026-11-13, DEC-0067, migration `0075`] Redesign statistics around retention: return rate, seven customer segments with Admin-only member lists, return funnel, weekly returning vs first visits, day/hour heatmap, rewards, top customers and branch comparison.
 - [x] [Terminada] Implement CSV exports.
 - [x] [Terminada] Implement XLSX exports with the same permission scope, filters, and allowlisted data as CSV.
 

@@ -367,6 +367,11 @@ Todos los botones deben incluir estados hover, focus, active, disabled y pending
 - Usar máximo cuatro métricas principales por fila.
 - Los gráficos deben tener título, unidad, rango temporal, leyenda y alternativa textual.
 - Evitar gráficas 3D, gauges decorativos y colores excesivos.
+- Series categóricas validadas (DEC-0067): teal `#149C91` y naranja `#EB6834`
+  (pasan separación para daltonismo). Magnitudes de una sola serie usan solo
+  teal; mapas de calor usan teal de claro a intenso con el valor escrito en
+  cada celda. Cada gráfica incluye una tabla o resumen textual equivalente y
+  detalle al pasar el cursor o enfocar con teclado.
 
 ## 15. Estados del sistema
 
