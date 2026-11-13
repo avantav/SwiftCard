@@ -2,12 +2,13 @@
 
 ## Owner roadmap 2026-11-13
 
-1. Purchase location security view — implemented on
-   `feat/purchase-location-security` (DEC-0066, migration `0074`, apply with
-   the deploy). Pending: CSV export decision and pilot validation.
-2. Redesign the statistics dashboard — next.
-3. Campaigns panel only for Empresarial tenants — explicitly authorized by the
-   owner as a post-MVP exception; record the decision when starting.
+1. Purchase location security view — merged (PR #36, DEC-0066, migration `0074`).
+2. Customer statistics redesign — `feat/statistics-dashboard` (DEC-0067,
+   migration `0075`; apply with the deploy). Segment thresholds are fixed.
+3. Campaigns panel only for Empresarial tenants — next; explicitly authorized
+   by the owner as a post-MVP exception. Reuse
+   `app.customer_segment_snapshot` / `get_customer_segment_members`.
+
 ## Card-scoped customer import — 2026-11-13
 
 - Implemented on `feat/card-scoped-import` (DEC-0065, migration `0073`):
