@@ -849,3 +849,29 @@
   items (acceptance evidence, business domicile) are listed in
   `docs/legal/README.md`.
 - Status: Accepted (provisional).
+
+## DEC-0060 - Agent-Readable Public Site
+
+- Date: 2026-11-12
+- Context: An agent-readiness audit of swiftycards.com reported no robots.txt,
+  sitemap, canonical, JSON-LD, machine-readable contact, llms.txt or Markdown
+  alternates.
+- Decision: Serve `/robots.txt` (with `Content-Signal: search=yes,
+  ai-input=yes, ai-train=no` and private areas disallowed), `/sitemap.xml`,
+  `/llms.txt`, Markdown versions of the four public pages (`/index.md`,
+  `/terminos.md`, `/privacidad.md`, `/privacidad/clientes.md`), canonical and
+  `text/markdown` alternate links, an RFC 8288 `Link` header, `Accept:
+  text/markdown` rewrites in `next.config.mjs`, Organization/WebSite/
+  SoftwareApplication/FAQPage JSON-LD on the homepage and a footer `mailto:`
+  contact. Everything is generated from the legal operator, pricing catalog
+  and landing FAQ (`src/lib/marketing/agent-content.ts`, `faq.ts`), so agents
+  never read claims the site does not make. `sameAs` comes from
+  `NEXT_PUBLIC_ORGANIZATION_SAME_AS` and is omitted while empty.
+- Not done: WebMCP tools and an MCP Server Card. morrow has no public MCP
+  server and no agent-facing actions in the MVP; publishing a card without a
+  server would be false. An about page was not created (no approved content).
+- Reason: Negotiation lives in `next.config.mjs` because the root
+  `middleware.ts` is not picked up by Next.js when the app lives in `src/`
+  (see BLOCKERS/NEXT_SESSION); Markdown responses are `no-store` so a shared
+  cache never serves them to browsers at the HTML URL.
+- Status: Accepted.

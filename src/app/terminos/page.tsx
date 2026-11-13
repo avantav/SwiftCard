@@ -6,6 +6,7 @@ import { legalOperator } from "@/lib/legal/company";
 export const metadata: Metadata = {
   title: "Términos y condiciones · morrow",
   description: "Términos y condiciones del servicio de la plataforma de lealtad digital morrow.",
+  alternates: { canonical: "/terminos", types: { "text/markdown": "/terminos.md" } },
 };
 
 export default function TermsPage() {
