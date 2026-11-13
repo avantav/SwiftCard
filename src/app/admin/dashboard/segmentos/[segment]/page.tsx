@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isSegment, SEGMENT_COPY } from "@/lib/admin/insights";
 import { requireInternalArea } from "@/lib/auth/server";
+import { supportReadParams } from "@/lib/auth/support-read";
 
 export const dynamic = "force-dynamic";
 
@@ -46,8 +47,8 @@ export default async function SegmentMembersPage({ params, searchParams }: Segme
     </header>
   );
 
-  const { data: empresarial } = await context.supabase.schema("app").rpc("current_tenant_empresarial_available");
-  if (empresarial !== true && !context.supportSession && context.access.role === "ADMIN") {
+  const { data: empresarial } = await context.supabase.schema("app").rpc("current_tenant_empresarial_available", supportReadParams(context));
+  if (empresarial !== true && context.access.role === "ADMIN") {
     return (
       <main className="enterprise-page">
         {header}
@@ -60,7 +61,7 @@ export default async function SegmentMembersPage({ params, searchParams }: Segme
     );
   }
 
-  if (context.access.role !== "ADMIN" || context.supportSession) {
+  if (context.access.role !== "ADMIN") {
     return (
       <main className="enterprise-page">
         {header}
@@ -76,7 +77,8 @@ export default async function SegmentMembersPage({ params, searchParams }: Segme
   const [membersResult, tenantResult] = await Promise.all([
     context.supabase.schema("app").rpc("get_customer_segment_members", {
       target_segment: segment,
-      target_branch_id: branch && UUID.test(branch) ? branch : null
+      target_branch_id: branch && UUID.test(branch) ? branch : null,
+      ...supportReadParams(context)
     }),
     context.tenantId
       ? context.supabase.from("tenants").select("timezone,currency_code").eq("id", context.tenantId).maybeSingle()

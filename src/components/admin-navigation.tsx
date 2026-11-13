@@ -11,14 +11,14 @@ export function AdminNavigation({ email, role, supportMode = false }: { email: s
     { label: "Operación", items: [
       { href: "/admin", label: "Vista general", icon: "home", exact: true },
       { href: "/admin/dashboard", label: "Estadísticas", icon: "chart" },
-      ...(role === "ADMIN" && !supportMode ? [{ href: "/admin/campaigns", label: "Campañas", icon: "award" as const }] : [])
+      ...(role === "ADMIN" ? [{ href: "/admin/campaigns", label: "Campañas", icon: "award" as const }] : [])
     ] },
     ...(configuration.length ? [{ label: "Configuración", items: configuration }] : []),
     { label: "Datos", items: [
       ...(role === "ADMIN" ? [{ href: "/admin/customers", label: "Clientes", icon: "users" as const }] : []),
       ...(role === "ADMIN" ? [{ href: "/admin/imports", label: "Importar clientes", icon: "import" as const }] : []),
       { href: "/admin/exports", label: "Exportaciones", icon: "download" },
-      ...(supportMode ? [] : [{ href: "/admin/security", label: "Seguridad de ubicación", icon: "shield" as const }])
+      { href: "/admin/security", label: "Seguridad de ubicación", icon: "shield" as const }
     ] }
   ];
   return <EnterpriseNavigation areaLabel={supportMode ? "Soporte de tenant" : "Administración"} email={email} groups={groups} roleLabel={supportMode ? "Superadmin en soporte" : role === "ADMIN" ? "Admin general" : "Administrador de sucursal"} />;

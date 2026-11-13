@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SEGMENT_COPY, isSegment } from "@/lib/admin/insights";
 import { requireInternalArea } from "@/lib/auth/server";
-import { ACCESS_COPY, campaignAccess } from "@/lib/campaigns/access";
+import { ACCESS_COPY, campaignAccess, canReadCampaigns } from "@/lib/campaigns/access";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,7 @@ export default async function CampaignsPage() {
     </header>
   );
 
-  if (access !== "ALLOWED") {
+  if (!canReadCampaigns(access)) {
     const copy = ACCESS_COPY[access];
     return (
       <main className="enterprise-page">
@@ -52,6 +52,7 @@ export default async function CampaignsPage() {
     context.supabase
       .from("marketing_campaigns")
       .select("id,name,segments,send_email,send_wallet,status,recipient_count,created_at")
+      .eq("tenant_id", context.tenantId ?? "")
       .order("created_at", { ascending: false })
       .limit(50),
     context.tenantId ? context.supabase.from("tenants").select("timezone").eq("id", context.tenantId).maybeSingle() : Promise.resolve({ data: null, error: null })
@@ -61,7 +62,8 @@ export default async function CampaignsPage() {
 
   return (
     <main className="enterprise-page">
-      {header(true)}
+      {header(access === "ALLOWED")}
+      {access === "SUPPORT_READ" ? <p className="enterprise-alert is-info" role="status">{ACCESS_COPY.SUPPORT_READ.body}</p> : null}
       <section className="enterprise-data-panel" aria-labelledby="campaigns-title">
         <div className="enterprise-panel-header">
           <div>
@@ -108,7 +110,7 @@ export default async function CampaignsPage() {
             <span className="enterprise-empty-icon" aria-hidden="true">○</span>
             <h3>Aún no has enviado campañas</h3>
             <p>Empieza por los clientes en riesgo o los perdidos: son los que más rápido puedes recuperar.</p>
-            <Link className="enterprise-secondary-action" href="/admin/campaigns/nueva?segments=AT_RISK&segments=LOST">Empezar con clientes en riesgo y perdidos</Link>
+            {access === "ALLOWED" ? <Link className="enterprise-secondary-action" href="/admin/campaigns/nueva?segments=AT_RISK&segments=LOST">Empezar con clientes en riesgo y perdidos</Link> : null}
           </div>
         )}
       </section>

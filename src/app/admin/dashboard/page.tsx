@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { InsightsView } from "@/components/insights-view";
 import { dayInTimeZone, parseInsightsFilters, type CustomerInsights } from "@/lib/admin/insights";
 import { requireInternalArea } from "@/lib/auth/server";
+import { supportReadParams } from "@/lib/auth/support-read";
 
 export const dynamic = "force-dynamic";
 
@@ -23,11 +24,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const filters = parseInsightsFilters(params, dayInTimeZone(new Date(), timeZone));
 
   const [branchesResult, insightsResult] = await Promise.all([
-    context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name"),
+    context.supabase.from("branches").select("id,name").eq("tenant_id", context.tenantId ?? "").eq("status", "ACTIVE").order("name"),
     context.supabase.schema("app").rpc("get_customer_insights", {
       target_from: filters.from,
       target_to: filters.to,
-      target_branch_id: filters.branchId
+      target_branch_id: filters.branchId,
+      ...supportReadParams(context)
     })
   ]);
 

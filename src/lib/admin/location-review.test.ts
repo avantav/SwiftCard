@@ -104,8 +104,8 @@ describe("security view boundaries", () => {
     expect(page).toContain('requireInternalArea("ADMIN")');
   });
 
-  it("is listed for administrators outside support mode", () => {
+  it("is listed for administrators, also in support mode (DEC-0071)", () => {
     expect(navigation).toContain('href: "/admin/security"');
-    expect(navigation).toContain("supportMode ? []");
+    expect(page).toContain("supportReadParams(context)");
   });
 });

@@ -29,14 +29,13 @@ function coordinate(value: number | null) {
 }
 
 /** Presentational security view; data and authority come from the page loader. */
-export function LocationReviewView({ filters, rows, branches, timeZone, failed, hasFilters, supportMode }: {
+export function LocationReviewView({ filters, rows, branches, timeZone, failed, hasFilters }: {
   filters: LocationReviewFilters;
   rows: LocationReviewRow[];
   branches: LocationReviewBranch[];
   timeZone: string;
   failed: boolean;
   hasFilters: boolean;
-  supportMode: boolean;
 }) {
   const header = (
     <header className="enterprise-page-header">
@@ -47,19 +46,6 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
       </div>
     </header>
   );
-
-  if (supportMode) {
-    return (
-      <main className="enterprise-page">
-        {header}
-        <div className="enterprise-empty-state" role="status">
-          <span className="enterprise-empty-icon" aria-hidden="true">!</span>
-          <h2>Vista no disponible en modo soporte</h2>
-          <p>Solo el Admin general y los administradores de sucursal del negocio pueden consultar ubicaciones.</p>
-        </div>
-      </main>
-    );
-  }
 
   const dateTime = new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short", timeZone });
   const summary = summarizeLocationReview(rows);
