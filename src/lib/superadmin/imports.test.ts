@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { importFileType, parseImportFile, validateImportFile, validateMappedRows } from "./imports";
+import { importCardLabel } from "./import-cards";
 
 const migration = readFileSync(new URL("../../../supabase/migrations/0024_customer_imports.sql", import.meta.url), "utf8");
 const confirmationMigration = readFileSync(new URL("../../../supabase/migrations/0026_customer_import_confirmation.sql", import.meta.url), "utf8");
@@ -41,5 +42,26 @@ describe("customer imports", () => {
     expect(confirmationMigration).toContain("customer_cards");
     expect(confirmationMigration).toContain("stamp_ledger");
     expect(confirmationMigration).toContain("revoke all on function");
+  });
+
+  it("imports into a card and converts stamps by program type (DEC-0065)", () => {
+    const cardScoped = readFileSync(new URL("../../../supabase/migrations/0073_card_scoped_customer_import.sql", import.meta.url), "utf8");
+    expect(cardScoped).toContain("drop function if exists public.confirm_customer_import(uuid, uuid, jsonb)");
+    expect(cardScoped).toContain("target_loyalty_card_id uuid");
+    expect(cardScoped).toContain("import_stamp_to_point_multiplier * 10");
+    expect(cardScoped).toContain("app.apply_lifetime_point_milestones(");
+    expect(cardScoped).toContain("app.apply_reward_tiers(");
+    expect(cardScoped).toContain("'CUSTOMERS_IMPORTED'");
+  });
+
+  it("limits initial stamps to six digits", () => {
+    const errors = validateMappedRows([{ name: "Ana", phone: "+5215512345678", stamps: "1000000" }], { fullName: "name", phone: "phone", initialStamps: "stamps" });
+    expect(errors).toEqual([{ row: 2, messages: ["Los sellos iniciales deben ser un entero entre 0 y 999999."] }]);
+  });
+
+  it("explains the conversion of each card", () => {
+    expect(importCardLabel("Club", "STAMPS_PER_PURCHASE", 1)).toBe("Club · sellos");
+    expect(importCardLabel("Club", "LIFETIME_POINTS", 50)).toBe("Club · puntos acumulados (1 sello = 50 puntos)");
+    expect(importCardLabel("Club", "LIFETIME_POINTS", null)).toBe("Club · puntos acumulados (1 sello = 1 punto)");
   });
 });

@@ -115,7 +115,7 @@ This backlog translates `docs/PRODUCT.md` into executable phases. A task is only
 - [x] [Terminada] Add a backward-compatible configuration foundation for stamps per purchase, stamps per amount, and paused lifetime-points programs, including unit labels, welcome/import options, operational policies, confirmed paused type transitions, existing stamp-balance conversion and unbounded reward catalogs.
 - [x] [Terminada] Implement tenths-based lifetime point calculation with per-purchase truncation, non-resetting balances and one-time milestone generation.
 - [x] [Terminada] Generate the configurable welcome reward once when a customer card is issued through public or employee registration, with optional expiration and imported-customer eligibility.
-- [ ] [Pendiente] Convert imported stamps with the configured integer multiplier and award every reached milestone atomically.
+- [x] [Terminada 2026-11-13, DEC-0065, migration `0073`] Convert imported stamps with the configured integer multiplier and award every reached milestone atomically (generic Superadmin import is now card-scoped; stamp programs generate completed cycles).
 - [ ] [Pendiente] Enforce the remaining configurable cancellation and redemption-reversal options in authorized interfaces; lifetime purchase/reward cancellations and manual point adjustments are already disabled in the backend.
 - [x] [Terminada] Show integer customer/employee progress, one-decimal Admin/export values, next milestones and completion state in the operational UI, Web Card and Apple Wallet.
 

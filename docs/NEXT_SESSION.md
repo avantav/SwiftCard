@@ -8,6 +8,15 @@
 2. Redesign the statistics dashboard — next.
 3. Campaigns panel only for Empresarial tenants — explicitly authorized by the
    owner as a post-MVP exception; record the decision when starting.
+## Card-scoped customer import — 2026-11-13
+
+- Implemented on `feat/card-scoped-import` (DEC-0065, migration `0073`):
+  Superadmin import chooses a published card; stamps generate reward cycles,
+  lifetime points use the import multiplier and award milestones atomically.
+- Apply `0073` together with the deploy (the RPC signature changes). SQL test
+  validated on PGlite; also run `npm run db:verify-rls` where Docker exists.
+- Next plan task: Phase 3 «Enforce the remaining configurable cancellation and
+  redemption-reversal options in authorized interfaces», then Phase 5 controls.
 
 ## Owner password recovery — 2026-11-13
 
