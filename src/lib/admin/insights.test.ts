@@ -83,9 +83,9 @@ describe("segments", () => {
 
   it("keeps customer lists for the general administrator", () => {
     const page = readFileSync(new URL("../../app/admin/dashboard/segmentos/[segment]/page.tsx", import.meta.url), "utf8");
-    expect(page).toContain('context.access.role !== "ADMIN" || context.supportSession');
+    expect(page).toContain('context.access.role !== "ADMIN"');
     expect(page).toContain('rpc("get_customer_segment_members"');
-    expect(page).toContain('rpc("current_tenant_empresarial_available")');
+    expect(page).toContain('rpc("current_tenant_empresarial_available", supportReadParams(context))');
   });
 });
 

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { SubmitButton } from "@/components/submit-button";
 import { isSegment, SEGMENT_COPY } from "@/lib/admin/insights";
 import { requireInternalArea } from "@/lib/auth/server";
-import { ACCESS_COPY, campaignAccess } from "@/lib/campaigns/access";
+import { ACCESS_COPY, campaignAccess, canReadCampaigns } from "@/lib/campaigns/access";
 import { retryCampaign } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ export default async function CampaignDetailPage({ params, searchParams }: Detai
   const query = await searchParams;
   if (!UUID.test(campaignId)) notFound();
   const access = await campaignAccess(context);
-  if (access !== "ALLOWED") {
+  if (!canReadCampaigns(access)) {
     const copy = ACCESS_COPY[access];
     return (
       <main className="enterprise-page">
@@ -50,8 +50,9 @@ export default async function CampaignDetailPage({ params, searchParams }: Detai
       .from("marketing_campaigns")
       .select("id,name,segments,send_email,email_subject,email_body,send_wallet,wallet_message,status,recipient_count,created_at,completed_at")
       .eq("id", campaignId)
+      .eq("tenant_id", context.tenantId ?? "")
       .maybeSingle(),
-    context.supabase.from("marketing_campaign_recipients").select("channel,status").eq("campaign_id", campaignId).limit(20000)
+    context.supabase.from("marketing_campaign_recipients").select("channel,status").eq("campaign_id", campaignId).eq("tenant_id", context.tenantId ?? "").limit(20000)
   ]);
   const campaign = campaignResult.data;
   if (!campaign) notFound();
@@ -68,7 +69,7 @@ export default async function CampaignDetailPage({ params, searchParams }: Detai
           <h1>{campaign.name}</h1>
           <p>{campaign.segments.filter(isSegment).map((segment: string) => SEGMENT_COPY[segment as keyof typeof SEGMENT_COPY].label).join(", ")} · {campaign.recipient_count} envíos</p>
         </div>
-        {retryable ? (
+        {retryable && access === "ALLOWED" ? (
           <form action={retry}>
             <SubmitButton className="enterprise-secondary-action">Reintentar pendientes</SubmitButton>
           </form>

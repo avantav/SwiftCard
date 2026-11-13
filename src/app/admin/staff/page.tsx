@@ -43,7 +43,7 @@ export default async function StaffPage({ searchParams }: StaffPageProps) {
 
   const [staffResult, branchesResult, assignmentsResult] = await Promise.all([
     staffQuery,
-    context.supabase.from("branches").select("id,name,status,employee_access_mode").eq("status", "ACTIVE").order("name"),
+    context.supabase.from("branches").select("id,name,status,employee_access_mode").eq("tenant_id", context.tenantId ?? "").eq("status", "ACTIVE").order("name"),
     context.supabase.from("staff_branch_assignments").select("staff_profile_id,branch_id,is_primary").eq("tenant_id", context.tenantId),
   ]);
 

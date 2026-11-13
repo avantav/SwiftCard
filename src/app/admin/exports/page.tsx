@@ -11,7 +11,7 @@ const exportsList = [
 
 export default async function ExportsPage() {
   const context = await requireInternalArea("ADMIN");
-  const { data: branches } = await context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name");
+  const { data: branches } = await context.supabase.from("branches").select("id,name").eq("tenant_id", context.tenantId ?? "").eq("status", "ACTIVE").order("name");
   return (
     <main className="enterprise-page">
       <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Datos</p><h1 id="exports-title">Exportaciones</h1><p>Descarga únicamente la información autorizada para tu alcance.</p></div></header>

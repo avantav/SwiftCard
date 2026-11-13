@@ -95,7 +95,7 @@ describe("campaign boundaries", () => {
     for (const path of ["../../app/admin/campaigns/page.tsx", "../../app/admin/campaigns/nueva/page.tsx", "../../app/admin/campaigns/[campaignId]/page.tsx"]) {
       expect(source(path)).toContain("campaignAccess(context)");
     }
-    expect(source("./access.ts")).toContain('rpc("current_tenant_campaigns_available")');
+    expect(source("./access.ts")).toContain('rpc("current_tenant_campaigns_available", supportReadParams(context))');
   });
 
   it("only opts out on POST", () => {

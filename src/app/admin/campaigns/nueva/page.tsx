@@ -49,7 +49,7 @@ export default async function NewCampaignPage({ searchParams }: NewCampaignProps
   }
 
   const [branchesResult, previewResult] = await Promise.all([
-    context.supabase.from("branches").select("id,name").eq("status", "ACTIVE").order("name"),
+    context.supabase.from("branches").select("id,name").eq("tenant_id", context.tenantId ?? "").eq("status", "ACTIVE").order("name"),
     segments.length
       ? context.supabase.schema("app").rpc("preview_marketing_campaign", { target_segments: segments, target_branch_id: branchId })
       : Promise.resolve({ data: null, error: null })
