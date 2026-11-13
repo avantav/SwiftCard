@@ -1077,3 +1077,21 @@
   the change is pending, like tenant staff. `app.is_superadmin()` still
   requires ACTIVE, so no Superadmin powers until the change completes.
 - Status: Accepted.
+
+## DEC-0071 - SwiftPOS Sales Feed SwiftCard Loyalty
+
+- Date: 2026-11-13
+- Context: The owner also operates SwiftPOS and wants its sales to accrue
+  loyalty directly on SwiftCard cards, without re-entering tickets in the
+  employee PWA.
+- Decision: SwiftCard is the final loyalty system. A Superadmin-created link
+  per tenant with its own service key; SwiftPOS resolves the sealed card QR
+  through SwiftCard and reports completed sales through an outbox. The amount
+  paid by the customer generates points. Sales without a scanned card are
+  ignored. Integration purchases have `source = 'SWIFTPOS'`, no staff profile
+  and no device geofence; they share the existing calculation core. Details in
+  `docs/SWIFTPOS_INTEGRATION.md`.
+- Consequences: `purchases.staff_profile_id` becomes nullable only for
+  integration purchases. SwiftPOS disables its own membership discounts for
+  linked tenants. Cancellation after later activity still needs confirmation.
+- Status: Proposed.
