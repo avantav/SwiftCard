@@ -10,19 +10,7 @@ import {
 import { BranchAccessFields } from "@/components/branch-access-fields";
 import { BranchLocationPicker } from "@/components/branch-location-picker";
 import { SubmitButton } from "@/components/submit-button";
-
-function FieldError({ id, messages }: { id: string; messages?: string[] }) {
-  if (!messages?.length) return null;
-  return (
-    <span className="field-error-message" id={id}>
-      {messages.join(" ")}
-    </span>
-  );
-}
-
-function describedBy(hintId: string | null, errorId: string, hasError: boolean) {
-  return [hintId, hasError ? errorId : null].filter(Boolean).join(" ") || undefined;
-}
+import { FieldError, describedBy } from "@/components/admin/form-field";
 
 export function BranchCreateForm({ supportMode = false }: { supportMode?: boolean }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
