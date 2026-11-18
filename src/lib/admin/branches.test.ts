@@ -31,6 +31,14 @@ const workspaceDialog = readFileSync(
   join(process.cwd(), "src/components/admin/workspace-dialog.tsx"),
   "utf8",
 );
+const sharedWizard = readFileSync(
+  join(process.cwd(), "src/components/admin/wizard-form.tsx"),
+  "utf8",
+);
+const branchSettingsForms = readFileSync(
+  join(process.cwd(), "src/components/branch-settings-forms.tsx"),
+  "utf8",
+);
 const sharedFormField = readFileSync(
   join(process.cwd(), "src/components/admin/form-field.tsx"),
   "utf8",
@@ -215,12 +223,14 @@ describe("validateBranchCreateForm", () => {
   });
 
   it("renders an accessible error summary and field-level validation", () => {
-    expect(branchForm).toContain("useActionState");
-    expect(branchForm).toContain('role="alert"');
+    expect(branchForm).toContain("<WizardForm");
+    expect(sharedWizard).toContain("useActionState");
+    expect(sharedWizard).toContain("<FormErrorSummary");
+    expect(sharedFormField).toContain('role="alert"');
     expect(branchForm).toContain("aria-invalid");
     expect(branchForm).toContain('from "@/components/admin/form-field"');
     expect(sharedFormField).toContain("field-error-message");
-    expect(branchForm).toContain("summaryRef.current?.focus()");
+    expect(sharedFormField).toContain("ref.current?.focus()");
   });
 
   it("selects branch coordinates through Google Places and exposes the strict-mode control", () => {
@@ -231,7 +241,8 @@ describe("validateBranchCreateForm", () => {
     expect(branchLocationPicker).toContain('name="latitude"');
     expect(branchLocationPicker).toContain('name="longitude"');
     expect(branchLocationPicker).toContain("geofenceRadiusMeters");
-    expect(branchesPage).toContain("configureTenantGeofencing");
+    expect(branchesPage).toContain("GeofencePolicyForm");
+    expect(branchSettingsForms).toContain("useActionState<GeofencePolicyActionState, FormData>(configureTenantGeofencing");
     expect(branchesPage).toContain("Validación estricta");
   });
 
@@ -254,11 +265,15 @@ describe("validateBranchCreateForm", () => {
 
   it("guides branch creation through three bounded steps", () => {
     expect(branchForm).toContain("branch-create-wizard");
-    expect(branchForm).toContain("branch-wizard-progress");
+    expect(sharedWizard).toContain("branch-wizard-progress");
     expect(branchForm).toContain("Identidad");
     expect(branchForm).toContain("Ubicación");
     expect(branchForm).toContain("Acceso");
-    expect(branchForm).toContain("setStep");
+    expect(sharedWizard).toContain("setStep");
+    // Each step is validated before continuing (DEC-0073).
+    expect(branchForm).toContain("branchCreateStepErrors(formData, 0)");
+    expect(branchForm).toContain("branchCreateStepErrors(formData, 1)");
+    expect(sharedWizard).toContain("if (!validateCurrent()) return;");
   });
 
   it("reports route, form, map, place and geolocation loading states", () => {

@@ -1,94 +1,60 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef, useState } from "react";
+import { useId } from "react";
 import { createBranch } from "@/app/admin/branches/actions";
-import {
-  INITIAL_BRANCH_CREATE_STATE,
-  type BranchCreateActionState,
-  type BranchCreateFieldErrors,
-} from "@/lib/admin/branches";
+import { describedBy, FieldError } from "@/components/admin/form-field";
+import { WizardForm, type WizardStep } from "@/components/admin/wizard-form";
 import { BranchAccessFields } from "@/components/branch-access-fields";
 import { BranchLocationPicker } from "@/components/branch-location-picker";
-import { SubmitButton } from "@/components/submit-button";
-import { FieldError, describedBy } from "@/components/admin/form-field";
+import {
+  BRANCH_CREATE_STEP_FIELDS,
+  INITIAL_BRANCH_CREATE_STATE,
+  branchCreateStepErrors,
+  type BranchCreateFieldErrors,
+} from "@/lib/admin/branches";
 
+/** Guided branch creation (DEC-0073): identity, location and access, each validated before continuing. */
 export function BranchCreateForm({ supportMode = false }: { supportMode?: boolean }) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  async function submit(previousState: BranchCreateActionState, formData: FormData) {
-    const nextState = await createBranch(previousState, formData);
-    if (nextState.status === "error") {
-      const locationFields = ["address", "latitude", "longitude", "geofenceRadiusMeters", "proximityEnabled"] as const;
-      setStep(nextState.fieldErrors.name?.length ? 1 : locationFields.some((field) => nextState.fieldErrors[field]?.length) ? 2 : 3);
-    }
-    return nextState;
-  }
-  const [state, action] = useActionState(submit, INITIAL_BRANCH_CREATE_STATE);
-  const summaryRef = useRef<HTMLDivElement>(null);
   const id = useId();
-  const errors: BranchCreateFieldErrors = state.fieldErrors;
-  const fieldMessages = Object.values(errors).flatMap((messages) => messages ?? []);
   const nameErrorId = `${id}-name-error`;
   const proximityHintId = `${id}-proximity-hint`;
   const proximityErrorId = `${id}-proximity-error`;
+  const steps: WizardStep[] = [
+    { id: "identity", title: "Identidad", description: "Usa el nombre con el que tu equipo reconoce esta sucursal.", fields: BRANCH_CREATE_STEP_FIELDS[0], validate: (formData) => branchCreateStepErrors(formData, 0) },
+    { id: "location", title: "Ubicación", description: "El punto y el radio se reutilizan para GPS y avisos cercanos.", fields: BRANCH_CREATE_STEP_FIELDS[1], validate: (formData) => branchCreateStepErrors(formData, 1) },
+    supportMode
+      ? { id: "access", title: "Confirmación", description: "El acceso del personal se configura después por un Administrador del tenant.", fields: BRANCH_CREATE_STEP_FIELDS[2] }
+      : { id: "access", title: "Acceso", description: "Elige cómo entra el personal. Puedes cambiarlo después desde la administración de la sucursal.", fields: BRANCH_CREATE_STEP_FIELDS[2], validate: (formData) => branchCreateStepErrors(formData, 2) },
+  ];
 
-  useEffect(() => {
-    if (state.status === "error") summaryRef.current?.focus();
-  }, [state.status]);
-
-  return (
-    <form action={action} className="auth-form branch-create-wizard" noValidate>
-      {state.status === "error" ? (
-        <div
-          className="enterprise-alert is-error branch-validation-summary"
-          ref={summaryRef}
-          role="alert"
-          tabIndex={-1}
-        >
-          <strong>No se pudo crear la sucursal</strong>
-          {state.formError ? <p>{state.formError}</p> : null}
-          {fieldMessages.length ? (
-            <ul>
-              {[...new Set(fieldMessages)].map((message) => (
-                <li key={message}>{message}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      ) : null}
-
-      <ol className="branch-wizard-progress" aria-label="Progreso del alta">
-        <li className={step === 1 ? "is-current" : step > 1 ? "is-complete" : undefined}><span>1</span><strong>Identidad</strong></li>
-        <li className={step === 2 ? "is-current" : step > 2 ? "is-complete" : undefined}><span>2</span><strong>Ubicación</strong></li>
-        <li className={step === 3 ? "is-current" : undefined}><span>3</span><strong>{supportMode ? "Confirmación" : "Acceso"}</strong></li>
-      </ol>
-
-      <section className="branch-wizard-step" hidden={step !== 1} aria-labelledby={`${id}-identity-title`}>
-        <div className="branch-wizard-step-heading"><h3 id={`${id}-identity-title`}>Identifica la ubicación</h3><p>Usa el nombre con el que tu equipo reconoce esta sucursal.</p></div>
-        <label className="field">
+  return <WizardForm
+    action={createBranch}
+    cancelHref="/admin/branches"
+    className="branch-create-wizard"
+    errorTitle="No se pudo crear la sucursal"
+    initialState={INITIAL_BRANCH_CREATE_STATE}
+    steps={steps}
+    submitLabel="Crear sucursal"
+  >
+    {({ state, errors: rawErrors }) => {
+      const errors = rawErrors as BranchCreateFieldErrors;
+      return [
+        <label className="field" key="name">
           <span>Nombre</span>
           <input aria-describedby={errors.name?.length ? nameErrorId : undefined} aria-invalid={Boolean(errors.name?.length)} autoComplete="organization" defaultValue={state.values.name} maxLength={120} minLength={2} name="name" required />
           <FieldError id={nameErrorId} messages={errors.name} />
-        </label>
-      </section>
-
-      <section className="branch-wizard-step" hidden={step !== 2} aria-labelledby={`${id}-location-title`}>
-        <div className="branch-wizard-step-heading"><h3 id={`${id}-location-title`}>Define dónde puede operar</h3><p>El punto y el radio se reutilizan para GPS y avisos cercanos.</p></div>
-        <BranchLocationPicker defaultAddress={state.values.address} defaultLatitude={state.values.latitude} defaultLongitude={state.values.longitude} defaultRadius={state.values.geofenceRadiusMeters} errors={errors} />
-        <label className="check-field branch-proximity-field">
-          <input aria-describedby={describedBy(proximityHintId, proximityErrorId, Boolean(errors.proximityEnabled?.length))} aria-invalid={Boolean(errors.proximityEnabled?.length)} defaultChecked={state.values.proximityEnabled} name="proximityEnabled" type="checkbox" />
-          <span>Activar avisos de proximidad<small id={proximityHintId}>Wallet podrá sugerir la tarjeta cerca de esta ubicación.</small><FieldError id={proximityErrorId} messages={errors.proximityEnabled} /></span>
-        </label>
-      </section>
-
-      <section className="branch-wizard-step" hidden={step !== 3} aria-labelledby={`${id}-access-title`}>
-        <div className="branch-wizard-step-heading"><h3 id={`${id}-access-title`}>{supportMode ? "Confirma la ubicación" : "Elige cómo entra el personal"}</h3><p>{supportMode ? "El acceso del personal se configura después por un Administrador del tenant." : "Puedes cambiar este modo después desde la administración de la sucursal."}</p></div>
-        {supportMode ? <input name="employeeAccessMode" type="hidden" value="INDIVIDUAL_CREDENTIALS" /> : <BranchAccessFields defaultMode={state.values.employeeAccessMode} errors={errors} sharedEmailDefaultValue={state.values.sharedEmail} />}
-      </section>
-
-      <div className="branch-wizard-actions">
-        {step > 1 ? <button className="secondary-button" onClick={() => setStep(step === 3 ? 2 : 1)} type="button">Anterior</button> : <span />}
-        {step < 3 ? <button className="primary-button" onClick={() => setStep(step === 1 ? 2 : 3)} type="button">Continuar</button> : <SubmitButton>Crear sucursal</SubmitButton>}
-      </div>
-    </form>
-  );
+        </label>,
+        <div className="branch-wizard-location" key="location">
+          <BranchLocationPicker defaultAddress={state.values.address} defaultLatitude={state.values.latitude} defaultLongitude={state.values.longitude} defaultRadius={state.values.geofenceRadiusMeters} errors={errors} />
+          <label className="check-field branch-proximity-field">
+            <input aria-describedby={describedBy(proximityHintId, proximityErrorId, Boolean(errors.proximityEnabled?.length))} aria-invalid={Boolean(errors.proximityEnabled?.length)} defaultChecked={state.values.proximityEnabled} name="proximityEnabled" type="checkbox" />
+            <span>Activar avisos de proximidad<small id={proximityHintId}>Wallet podrá sugerir la tarjeta cerca de esta ubicación.</small><FieldError id={proximityErrorId} messages={errors.proximityEnabled} /></span>
+          </label>
+        </div>,
+        supportMode
+          ? <input key="access" name="employeeAccessMode" type="hidden" value="INDIVIDUAL_CREDENTIALS" />
+          : <BranchAccessFields defaultMode={state.values.employeeAccessMode} errors={errors} key="access" sharedEmailDefaultValue={state.values.sharedEmail} />,
+      ];
+    }}
+  </WizardForm>;
 }

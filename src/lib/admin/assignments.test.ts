@@ -13,7 +13,8 @@ const migrationSource = readFileSync(
 
 describe("staff branch assignment boundary", () => {
   it("uses the authenticated Admin context and the atomic RPC", () => {
-    expect(actionSource).toContain('requireInternalArea("ADMIN")');
+    // Writable: read-only in support mode and gated by legal acceptance.
+    expect(actionSource).toContain('requireInternalArea("ADMIN", { writable: true })');
     expect(actionSource).toContain('"set_staff_branch_assignment"');
     expect(actionSource).not.toContain('formData.get("tenant');
   });

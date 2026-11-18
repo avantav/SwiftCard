@@ -6,8 +6,17 @@
   1. Shared foundation — `feat/admin-workspace-foundation` (stacked on
      `feat/tenant-legal-consent`, PR #43). Components in
      `src/components/admin/`, contract in `src/lib/forms/`.
-  2. Branches, Staff, Cards: adopt `AdminWorkspace`, `WizardForm` with step
-     validation, state actions (fix modals closing on `?error=`).
+  2. Branches, Staff, Cards — `feat/admin-workspace-branches-staff-cards`
+     (stacked on phase 1). Done:
+     - All three pages use `AdminWorkspace` with one scroll region.
+     - Branch and staff/PIN creation use `WizardForm` with step validation.
+     - `configureBranchAccess`, `configureTenantGeofencing`, `createStaff`,
+       `createPinOperator` and `createCardDraft` return state.
+     - The other staff actions return to the same dialog and section.
+     - Success messages are toasts.
+     - Fix: `assignStaffBranch` now requires a writable context, so support
+       mode is read-only there and pending legal acceptance blocks it.
+     - Verify on production that the dialogs keep input after a server error.
   3. Card editor and Campaigns.
   4. Home setup checklist, Dashboard tabs, Customers, Security, Imports,
      Billing, missing `loading.tsx`.

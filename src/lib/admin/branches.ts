@@ -1,3 +1,5 @@
+import type { FieldErrors, FormState } from "@/lib/forms/state";
+
 export type BranchCreateInput = {
   name: string;
   address: string | null;
@@ -40,12 +42,8 @@ export type BranchCreateFormValues = {
   sharedEmail: string;
 };
 
-export type BranchCreateActionState = {
-  status: "idle" | "error";
-  formError: string | null;
-  fieldErrors: BranchCreateFieldErrors;
-  values: BranchCreateFormValues;
-};
+/** Shared admin form contract (DEC-0073). */
+export type BranchCreateActionState = FormState<BranchCreateFormValues, BranchCreateField>;
 
 export const BRANCH_STATUSES = ["ACTIVE", "INACTIVE"] as const;
 
@@ -74,12 +72,31 @@ export type BranchUpdateFormValues = {
   status: BranchStatus;
 };
 
-export type BranchUpdateActionState = {
-  status: "idle" | "error";
-  formError: string | null;
-  fieldErrors: BranchCreateFieldErrors;
-  values: BranchUpdateFormValues;
-};
+export type BranchUpdateActionState = FormState<BranchUpdateFormValues, BranchCreateField>;
+
+export type BranchAccessActionState = FormState<{ employeeAccessMode: string; sharedEmail: string }, BranchCreateField>;
+
+export type GeofencePolicyActionState = FormState<{ locationValidationMode: string }>;
+
+/** Fields owned by each step of the guided branch creation (DEC-0073). */
+export const BRANCH_CREATE_STEP_FIELDS = [
+  ["name"],
+  ["address", "latitude", "longitude", "geofenceRadiusMeters", "proximityEnabled"],
+  ["employeeAccessMode", "sharedEmail", "sharedPassword", "sharedPasswordConfirmation"],
+] as const satisfies readonly (readonly BranchCreateField[])[];
+
+/** Client check for one wizard step: the full validator filtered to its fields. */
+export function branchCreateStepErrors(formData: FormData, step: number): FieldErrors {
+  const fields = BRANCH_CREATE_STEP_FIELDS[step] ?? [];
+  const result = validateBranchCreateForm(formData);
+  if (result.ok) return {};
+  const errors: FieldErrors = {};
+  for (const field of fields) {
+    const messages = result.fieldErrors[field];
+    if (messages?.length) errors[field] = messages;
+  }
+  return errors;
+}
 
 export type BranchUpdateValidationResult =
   | { ok: true; data: BranchUpdateInput }
@@ -541,5 +558,10 @@ export function validateSharedAccessCredentials(formData: FormData) {
     errors.push("La confirmación de la contraseña compartida no coincide.");
   }
 
-  return errors.length ? { ok: false as const, errors } : { ok: true as const, data: { email, password } };
+  const fieldErrors: BranchCreateFieldErrors = {};
+  if (errors.includes("El correo compartido no es válido.")) fieldErrors.sharedEmail = ["El correo compartido no es válido."];
+  if (password.length < 12 || password.length > 72) fieldErrors.sharedPassword = ["La contraseña compartida debe tener entre 12 y 72 caracteres."];
+  if (password !== confirmation) fieldErrors.sharedPasswordConfirmation = ["La confirmación de la contraseña compartida no coincide."];
+
+  return errors.length ? { ok: false as const, errors, fieldErrors } : { ok: true as const, data: { email, password } };
 }

@@ -1,29 +1,24 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import QRCode from "qrcode";
-import { BranchAccessFields } from "@/components/branch-access-fields";
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import { BranchCreateForm } from "@/components/branch-create-form";
 import { BranchEditForm } from "@/components/branch-edit-form";
+import { BranchAccessForm, GeofencePolicyForm } from "@/components/branch-settings-forms";
 import { BranchWorkspaceDialog } from "@/components/branch-workspace-dialog";
 import { PendingLinkContent } from "@/components/pending-link-content";
 import { PublicRegistrationShare } from "@/components/public-registration-share";
-import { SubmitButton } from "@/components/submit-button";
 import { requireInternalArea } from "@/lib/auth/server";
 import {
   publicRegistrationUrl,
   resolvePublicOrigin,
 } from "@/lib/public-origin";
-import { configureBranchAccess, configureTenantGeofencing } from "./actions";
 
 type BranchesPageProps = {
   searchParams: Promise<{
-    accessUpdated?: string;
     branch?: string;
-    created?: string;
     error?: string;
-    geofenceUpdated?: string;
     section?: string;
-    updated?: string;
     view?: string;
   }>;
 };
@@ -94,31 +89,28 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
     }
   }
 
+  const notices = readOnlySupport || params.error ? <>
+    {readOnlySupport ? <p className="enterprise-alert is-warning" role="status">Modo soporte activo: puedes cambiar sucursales y ubicación/GPS. Las demás configuraciones permanecen protegidas.</p> : null}
+    {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
+  </> : undefined;
+
   return (
-    <main className="enterprise-page branches-control-page">
-      <header className="enterprise-page-header">
-        <div>
-          <p className="enterprise-breadcrumb">Configuración</p>
-          <h1 id="branches-title">Sucursales</h1>
-          <p>Prepara cada ubicación para operar, registrar clientes y asignar personal.</p>
-        </div>
-        <div className="branch-header-actions">
-          {tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
-            <Link aria-label={`Política GPS: ${policyLabel}. ${policyTooltip}`} className="branch-policy-trigger" data-tooltip={policyTooltip} href="/admin/branches?view=policy">
-              <PendingLinkContent label="Abriendo política GPS"><span className="branch-policy-info-icon" aria-hidden="true">i</span><span>GPS</span><span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span></PendingLinkContent>
-            </Link>
-          )}
-          <Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link>
-        </div>
-      </header>
-
-      {params.created ? <p className="enterprise-alert is-success" role="status">Sucursal creada. Ya puedes revisar su configuración.</p> : null}
-      {params.updated ? <p className="enterprise-alert is-success" role="status">Datos de la sucursal actualizados.</p> : null}
-      {params.accessUpdated ? <p className="enterprise-alert is-success" role="status">Modo de acceso actualizado y sesiones incompatibles revocadas.</p> : null}
-      {params.geofenceUpdated ? <p className="enterprise-alert is-success" role="status">Política de ubicación actualizada.</p> : null}
-      {readOnlySupport ? <p className="enterprise-alert is-warning" role="status">Modo soporte activo: puedes cambiar sucursales y ubicación/GPS. Las demás configuraciones permanecen protegidas.</p> : null}
-      {params.error ? <p className="enterprise-alert is-error" role="alert">{params.error}</p> : null}
-
+    <AdminWorkspace
+      breadcrumb="Configuración"
+      className="branches-control-page"
+      description="Prepara cada ubicación para operar, registrar clientes y asignar personal."
+      primaryAction={<div className="branch-header-actions">
+        {tenantError ? <span className="branch-policy-trigger is-disabled" role="alert">GPS no disponible</span> : (
+          <Link aria-label={`Política GPS: ${policyLabel}. ${policyTooltip}`} className="branch-policy-trigger" data-tooltip={policyTooltip} href="/admin/branches?view=policy" scroll={false}>
+            <PendingLinkContent label="Abriendo política GPS"><span className="branch-policy-info-icon" aria-hidden="true">i</span><span>GPS</span><span className={`enterprise-badge ${strictGeofencing ? "is-active" : "is-neutral"}`}>{policyLabel}</span></PendingLinkContent>
+          </Link>
+        )}
+        <Link className="enterprise-primary-action" href="/admin/branches?view=create" scroll={false}><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link>
+      </div>}
+      title="Sucursales"
+      titleId="branches-title"
+      toolbar={notices}
+    >
       <section className="enterprise-data-panel branches-inventory-panel" aria-labelledby="branch-list-title">
         <div className="enterprise-panel-header">
           <div><h2 id="branch-list-title">Inventario de sucursales</h2><p>{branchRows.length} {branchRows.length === 1 ? "ubicación configurada" : "ubicaciones configuradas"}</p></div>
@@ -126,7 +118,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
         {branchesError ? (
           <div className="enterprise-empty-state is-error admin-compact-empty" role="alert"><span className="enterprise-empty-icon" aria-hidden="true">!</span><h3>No se pudieron cargar las sucursales</h3><p>Actualiza la página para volver a intentarlo.</p></div>
         ) : branchRows.length ? (
-          <div className="enterprise-table-wrap branch-inventory-scroll">
+          <AdminScrollRegion className="enterprise-table-wrap" label="Inventario de sucursales">
             <table className="enterprise-table branch-inventory-table">
               <caption className="sr-only">Estado operativo y configuración de cada sucursal</caption>
               <thead><tr><th scope="col">Sucursal</th><th scope="col">Estado</th><th scope="col">Ubicación</th><th scope="col">Registro público</th><th scope="col">Acceso</th><th scope="col"><span className="sr-only">Acción</span></th></tr></thead>
@@ -147,7 +139,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
                 })}
               </tbody>
             </table>
-          </div>
+          </AdminScrollRegion>
         ) : (
           <div className="enterprise-empty-state admin-compact-empty"><span className="enterprise-empty-icon" aria-hidden="true">+</span><h3>Crea tu primera sucursal</h3><p>Una sucursal conecta clientes, personal, ubicación y operación.</p><Link className="enterprise-primary-action" href="/admin/branches?view=create"><PendingLinkContent label="Abriendo formulario">Crear sucursal</PendingLinkContent></Link></div>
         )}
@@ -164,10 +156,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
               </div>
               {!strictGeofencing && branchesMissingCoordinates.length ? <p className="enterprise-alert is-warning" role="status">Completa la ubicación de {branchesMissingCoordinates.length} {branchesMissingCoordinates.length === 1 ? "sucursal activa" : "sucursales activas"} antes de usar la política estricta.</p> : null}
               <p className="branch-policy-note">Los avisos de proximidad de Wallet son independientes y nunca autorizan una operación.</p>
-              <form className="branch-policy-action" action={configureTenantGeofencing}>
-                <input name="locationValidationMode" type="hidden" value={strictGeofencing ? "FLEXIBLE" : "STRICT"} />
-                <SubmitButton className="primary-button" confirmMessage={strictGeofencing ? "Las operaciones dejarán de validar la distancia. ¿Deseas usar la política flexible?" : "Las compras y canjes fuera del radio serán bloqueados. ¿Deseas activar la validación estricta?"} disabled={!strictGeofencing && branchesMissingCoordinates.length > 0}>{strictGeofencing ? "Cambiar a política flexible" : "Activar política estricta"}</SubmitButton>
-              </form>
+              <GeofencePolicyForm disabled={!strictGeofencing && branchesMissingCoordinates.length > 0} strict={strictGeofencing} />
             </div>
           ) : showCreate ? (
           <div className="enterprise-content-card branch-workspace-card">
@@ -196,7 +185,7 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
               {activeSection === "access" && !readOnlySupport ? (
                 <div className="branch-workspace-section">
                   <div><h3>Entrada de usuarios operativos</h3><p>Elige credenciales personales o una cuenta común con PIN individual. Cambiar el modo revoca las sesiones incompatibles.</p></div>
-                  <form className="auth-form branch-access-form" action={configureBranchAccess}><input type="hidden" name="branchId" value={selectedBranch.id} /><BranchAccessFields compact defaultMode={selectedBranch.employee_access_mode} /><SubmitButton className="secondary-button" confirmMessage="Cambiar el modo revocará las sesiones incompatibles de esta sucursal. ¿Deseas continuar?">Guardar modo de acceso</SubmitButton></form>
+                  <BranchAccessForm branchId={selectedBranch.id} defaultMode={selectedBranch.employee_access_mode} />
                 </div>
               ) : null}
             </div>
@@ -206,6 +195,6 @@ export default async function BranchesPage({ searchParams }: BranchesPageProps) 
           ) : null}
         </BranchWorkspaceDialog>
       ) : null}
-    </main>
+    </AdminWorkspace>
   );
 }
