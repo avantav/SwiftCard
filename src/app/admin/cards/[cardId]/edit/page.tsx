@@ -1,17 +1,20 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
+import { PreservingForm, PreservingSubmit } from "@/components/admin/preserving-form";
 import { CardDesignEditor } from "@/components/card-design-editor";
 import { CardProgramFields } from "@/components/card-program-fields";
 import { RewardTiersEditor } from "@/components/reward-tiers-editor";
 import { SubmitButton } from "@/components/submit-button";
 import { WelcomeRewardFields } from "@/components/welcome-reward-fields";
 import { formatMinorUnitsForInput } from "@/lib/admin/program";
+import { initialFormState } from "@/lib/forms/state";
 import { requireInternalArea } from "@/lib/auth/server";
 import { publishCard, saveCardDesign, saveCardLocations, saveCardProgram } from "../../actions";
 
 type EditPageProps = {
   params: Promise<{ cardId: string }>;
-  searchParams: Promise<{ step?: string; error?: string; saved?: string; created?: string; resumed?: string }>;
+  searchParams: Promise<{ step?: string; error?: string; created?: string; resumed?: string }>;
 };
 type CardRow = {
   id: string; name: string; status: "DRAFT" | "PUBLISHED"; program_id: string;
@@ -128,9 +131,16 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
   const saveDesign = saveCardDesign.bind(null, card.id);
   const saveLocations = saveCardLocations.bind(null, card.id);
   const doPublish = publishCard.bind(null, card.id);
+  const idle = initialFormState({});
 
-  return <main className="enterprise-page card-wizard-page">
-    <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb"><Link href="/admin/cards">Tarjetas</Link> · {card.status === "DRAFT" ? "Borrador" : "Publicada"}</p><h1 id="card-wizard-title">{card.name}</h1><p>Configura una sola tarjeta para Apple y Android. Cada etapa se guarda por separado.</p></div><Link className="secondary-button" href="/admin/cards">Salir al listado</Link></header>
+  return <AdminWorkspace
+    breadcrumb={<><Link href="/admin/cards">Tarjetas</Link> · {card.status === "DRAFT" ? "Borrador" : "Publicada"}</>}
+    className="card-wizard-page"
+    description="Configura una sola tarjeta para Apple y Android. Cada etapa se guarda por separado."
+    primaryAction={<Link className="enterprise-secondary-action" href="/admin/cards">Salir al listado</Link>}
+    title={card.name}
+    titleId="card-wizard-title"
+    toolbar={<>
     <nav className="card-wizard-steps" aria-label="Etapas de configuración"><ol>{steps.map((label, index) => {
       const number = index + 1; const available = number <= maxStep;
       const complete = [card.program_completed, card.design_completed, card.locations_completed, card.status === "PUBLISHED"][index];
@@ -138,12 +148,15 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
     })}</ol></nav>
     {query.created ? <p className="enterprise-alert is-info" role="status">Borrador creado. Puedes salir y retomarlo desde Tarjetas.</p> : null}
     {query.resumed ? <p className="enterprise-alert is-info" role="status">Ya existía un borrador con este nombre. Continuarás desde la etapa guardada.</p> : null}
-    {query.saved ? <p className="enterprise-alert is-success" role="status">Etapa guardada en el borrador.</p> : null}
     {query.error ? <p className="enterprise-alert is-error" role="alert">{query.error}</p> : null}
+    </>}
+  >
+    <AdminScrollRegion className="card-wizard-scroll" label={`Etapa ${requestedStep} de 4`}>
 
-    {requestedStep === 1 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="program-step-title"><div className="card-stage-heading"><p>Etapa 1 de 4</p><h2 id="program-step-title">Programa de recompensas</h2><span>Define cómo se llena esta tarjeta y qué obtiene el cliente.</span></div><form action={saveProgram} className="auth-form">
+    {requestedStep === 1 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="program-step-title"><div className="card-stage-heading"><p>Etapa 1 de 4</p><h2 id="program-step-title">Programa de recompensas</h2><span>Define cómo se llena esta tarjeta y qué obtiene el cliente.</span></div><PreservingForm action={saveProgram} errorTitle="No se pudo guardar el programa" initialState={idle}>
+      <nav aria-label="Partes del programa" className="card-stage-jump"><a href="#card-program">Programa</a><a href="#card-rewards">Recompensas</a><a href="#card-welcome">Bienvenida</a><a href="#card-terms">Términos</a></nav>
       <input name="status" type="hidden" value="PAUSED" />
-      <label className="field"><span>Nombre de la tarjeta y programa</span><input defaultValue={program.name} maxLength={80} name="name" required /></label>
+      <label className="field" id="card-program"><span>Nombre de la tarjeta y programa</span><input defaultValue={program.name} maxLength={80} name="name" required /></label>
       <CardProgramFields
         amountPerStamp={formatMinorUnitsForInput(program.amount_per_stamp_minor ?? 100, currency)}
         initialType={program.program_type}
@@ -151,16 +164,19 @@ export default async function EditCardPage({ params, searchParams }: EditPagePro
         stampsPerPurchase={program.stamps_per_purchase}
       />
       <div className="form-grid"><label className="field"><span>Unidad singular</span><input defaultValue={program.unit_name_singular} maxLength={24} name="unitNameSingular" required /></label><label className="field"><span>Unidad plural</span><input defaultValue={program.unit_name_plural} maxLength={24} name="unitNamePlural" required /></label></div>
+      <div className="card-stage-anchor" id="card-rewards" />
       <RewardTiersEditor initialTiers={(rawTiers ?? []).map((tier) => ({ id: tier.id, stampsRequired: tier.stamps_required, name: tier.name, description: tier.description, expirationDays: tier.expiration_days }))} />
+      <div className="card-stage-anchor" id="card-welcome" />
       <WelcomeRewardFields initialDescription={program.welcome_reward_description ?? ""} initialEnabled={program.welcome_reward_enabled} initialExpirationDays={program.welcome_reward_expiration_days} initialName={program.welcome_reward_name ?? ""} />
-      <label className="field"><span>Términos y condiciones</span><textarea defaultValue={program.terms_and_conditions} maxLength={4000} minLength={10} name="termsAndConditions" rows={5} required /></label>
-      <div className="card-stage-actions"><SubmitButton className="secondary-button" name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton>Guardar y continuar</SubmitButton></div>
-    </form></section> : null}
+      <label className="field" id="card-terms"><span>Términos y condiciones</span><textarea defaultValue={program.terms_and_conditions} maxLength={4000} minLength={10} name="termsAndConditions" rows={5} required /></label>
+      <div className="card-stage-actions"><PreservingSubmit className="enterprise-secondary-action" name="intent" value="exit">Guardar y salir</PreservingSubmit><PreservingSubmit>Guardar y continuar</PreservingSubmit></div>
+    </PreservingForm></section> : null}
 
-    {requestedStep === 2 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="design-step-title"><div className="card-stage-heading"><p>Etapa 2 de 4</p><h2 id="design-step-title">Diseño de la tarjeta</h2><span>Configura una identidad única y comprueba cómo se adapta en ambos dispositivos.</span></div><form action={saveDesign} className="auth-form"><CardDesignEditor initial={{ appleEnabled: card.wallet_enabled, logoText: card.logo_text, description: card.description, backgroundColor: card.background_color, foregroundColor: card.foreground_color, labelColor: card.label_color, logoImageUrl: card.logo_image_url ?? "", stripImageUrl: card.strip_image_url ?? "", notificationIconUrl: card.notification_icon_url ?? "", stampIconUrl: card.stamp_icon_url ?? "", logoScalePercent: card.logo_scale_percent, logoMarginXPercent: card.logo_margin_x_percent, logoMarginYPercent: card.logo_margin_y_percent, stripScalePercent: card.strip_scale_percent, stripMarginXPercent: card.strip_margin_x_percent, stripMarginYPercent: card.strip_margin_y_percent, stripDimmingEnabled: card.strip_dimming_enabled ?? true, stripStampsEnabled: card.strip_stamps_enabled ?? true, stampEmptySlotsEnabled: card.stamp_empty_slots_enabled ?? true, stampRowCounts: card.stamp_row_counts ?? [], stampPositionXPercent: card.stamp_position_x_percent ?? 50, stampPositionYPercent: card.stamp_position_y_percent ?? 50 }} preview={{ tenantName: tenant?.name ?? "Tu negocio", programName: program.name, programType: program.program_type, rewardGoal, unitNameSingular: program.unit_name_singular, unitNamePlural: program.unit_name_plural, fallbackLogoImageUrl: tenant?.logo_url ?? "", fallbackStripImageUrl: tenant?.banner_url ?? "" }} stampLayoutSupported={stampLayoutSupported} stripDimmingSupported={stripDimmingSupported} stripStampsSupported={stripStampsSupported} tenantId={context.tenantId} /><div className="card-stage-actions"><Link className="secondary-button" href={`/admin/cards/${card.id}/edit?step=1`}>Anterior</Link><div className="card-stage-save-actions"><SubmitButton className="secondary-button" name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton>Guardar y continuar</SubmitButton></div></div></form></section> : null}
+    {requestedStep === 2 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="design-step-title"><div className="card-stage-heading"><p>Etapa 2 de 4</p><h2 id="design-step-title">Diseño de la tarjeta</h2><span>Configura una identidad única y comprueba cómo se adapta en ambos dispositivos.</span></div><PreservingForm action={saveDesign} errorTitle="No se pudo guardar el diseño" initialState={idle}><CardDesignEditor initial={{ appleEnabled: card.wallet_enabled, logoText: card.logo_text, description: card.description, backgroundColor: card.background_color, foregroundColor: card.foreground_color, labelColor: card.label_color, logoImageUrl: card.logo_image_url ?? "", stripImageUrl: card.strip_image_url ?? "", notificationIconUrl: card.notification_icon_url ?? "", stampIconUrl: card.stamp_icon_url ?? "", logoScalePercent: card.logo_scale_percent, logoMarginXPercent: card.logo_margin_x_percent, logoMarginYPercent: card.logo_margin_y_percent, stripScalePercent: card.strip_scale_percent, stripMarginXPercent: card.strip_margin_x_percent, stripMarginYPercent: card.strip_margin_y_percent, stripDimmingEnabled: card.strip_dimming_enabled ?? true, stripStampsEnabled: card.strip_stamps_enabled ?? true, stampEmptySlotsEnabled: card.stamp_empty_slots_enabled ?? true, stampRowCounts: card.stamp_row_counts ?? [], stampPositionXPercent: card.stamp_position_x_percent ?? 50, stampPositionYPercent: card.stamp_position_y_percent ?? 50 }} preview={{ tenantName: tenant?.name ?? "Tu negocio", programName: program.name, programType: program.program_type, rewardGoal, unitNameSingular: program.unit_name_singular, unitNamePlural: program.unit_name_plural, fallbackLogoImageUrl: tenant?.logo_url ?? "", fallbackStripImageUrl: tenant?.banner_url ?? "" }} stampLayoutSupported={stampLayoutSupported} stripDimmingSupported={stripDimmingSupported} stripStampsSupported={stripStampsSupported} tenantId={context.tenantId} /><div className="card-stage-actions"><Link className="enterprise-secondary-action" href={`/admin/cards/${card.id}/edit?step=1`}>Anterior</Link><div className="card-stage-save-actions"><PreservingSubmit className="enterprise-secondary-action" name="intent" value="exit">Guardar y salir</PreservingSubmit><PreservingSubmit>Guardar y continuar</PreservingSubmit></div></div></PreservingForm></section> : null}
 
-    {requestedStep === 3 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="locations-step-title"><div className="card-stage-heading"><p>Etapa 3 de 4</p><h2 id="locations-step-title">Sucursales participantes</h2><span>Elige una o varias. La tarjeta solo podrá registrarse y usarse en estas ubicaciones.</span></div><form action={saveLocations} className="auth-form"><fieldset className="card-location-list"><legend>Ubicaciones disponibles</legend>{branches?.length ? branches.map((branch) => <label className="card-location-option" key={branch.id}><input defaultChecked={assigned.has(branch.id)} name="branchId" type="checkbox" value={branch.id} /><span><strong>{branch.name}</strong><small>{branch.address || "Dirección no registrada"}</small></span></label>) : <p className="enterprise-alert is-warning">Crea una sucursal activa antes de publicar esta tarjeta.</p>}</fieldset><div className="card-stage-actions"><Link className="secondary-button" href={`/admin/cards/${card.id}/edit?step=2`}>Anterior</Link><div className="card-stage-save-actions"><SubmitButton className="secondary-button" disabled={!branches?.length} name="intent" value="exit">Guardar y salir</SubmitButton><SubmitButton disabled={!branches?.length}>Guardar y continuar</SubmitButton></div></div></form></section> : null}
+    {requestedStep === 3 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="locations-step-title"><div className="card-stage-heading"><p>Etapa 3 de 4</p><h2 id="locations-step-title">Sucursales participantes</h2><span>Elige una o varias. La tarjeta solo podrá registrarse y usarse en estas ubicaciones.</span></div><PreservingForm action={saveLocations} errorTitle="No se pudieron guardar las sucursales" initialState={idle}><fieldset className="card-location-list"><legend>Ubicaciones disponibles</legend>{branches?.length ? branches.map((branch) => <label className="card-location-option" key={branch.id}><input defaultChecked={assigned.has(branch.id)} name="branchId" type="checkbox" value={branch.id} /><span><strong>{branch.name}</strong><small>{branch.address || "Dirección no registrada"}</small></span></label>) : <p className="enterprise-alert is-warning">Crea una sucursal activa antes de publicar esta tarjeta.</p>}</fieldset><div className="card-stage-actions"><Link className="enterprise-secondary-action" href={`/admin/cards/${card.id}/edit?step=2`}>Anterior</Link><div className="card-stage-save-actions"><PreservingSubmit className="enterprise-secondary-action" disabled={!branches?.length} name="intent" value="exit">Guardar y salir</PreservingSubmit><PreservingSubmit disabled={!branches?.length}>Guardar y continuar</PreservingSubmit></div></div></PreservingForm></section> : null}
 
     {requestedStep === 4 ? <section className="enterprise-content-card card-wizard-stage" aria-labelledby="publish-step-title"><div className="card-stage-heading"><p>Etapa 4 de 4</p><h2 id="publish-step-title">Revisar y publicar</h2><span>Al publicar, el programa se activa únicamente en las sucursales elegidas.</span></div><dl className="card-review-grid"><div><dt>Tarjeta</dt><dd>{card.name}</dd></div><div><dt>Programa</dt><dd>{program.program_type === "LIFETIME_POINTS" ? "Puntos acumulativos sin reinicio" : program.program_type === "STAMPS_PER_AMOUNT" ? "Sellos por monto" : "Sellos por compra"}</dd></div><div><dt>Recompensas</dt><dd>{rawTiers?.length ?? 0} niveles</dd></div><div><dt>Sucursales</dt><dd>{assigned.size} seleccionadas</dd></div><div><dt>Wallets</dt><dd>Diseño unificado Apple / Android</dd></div><div><dt>Estado</dt><dd>{card.status === "PUBLISHED" ? "Publicada" : "Lista para publicar"}</dd></div></dl><div className="card-stage-actions"><Link className="secondary-button" href={`/admin/cards/${card.id}/edit?step=3`}>Anterior</Link>{card.status === "DRAFT" ? <form action={doPublish}><SubmitButton>Publicar tarjeta</SubmitButton></form> : <Link className="primary-button" href="/admin/cards">Volver a tarjetas</Link>}</div></section> : null}
-  </main>;
+    </AdminScrollRegion>
+  </AdminWorkspace>;
 }

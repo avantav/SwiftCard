@@ -26,8 +26,18 @@ function redirectCardError(cardId: string, step: number, message: string): never
 }
 
 function redirectAfterSave(cardId: string, nextStep: number, formData: FormData): never {
-  if (formData.get("intent") === "exit") redirect("/admin/cards");
-  redirect(cardPath(cardId, nextStep, { saved: "1" }));
+  if (formData.get("intent") === "exit") redirect(withNotice("/admin/cards", "card_saved"));
+  redirect(withNotice(cardPath(cardId, nextStep), "card_saved"));
+}
+
+/**
+ * Editor steps return this on error: the client keeps every typed value
+ * (the form is not reset) and shows the message in place (DEC-0073).
+ */
+export type CardStepState = FormState<Record<string, never>>;
+
+function cardStepError(message: string): CardStepState {
+  return errorState({}, {}, message);
 }
 
 function isMissingDesignRpc(error: { code?: string; message?: string } | null, version: "v4" | "v5" | "v6") {
@@ -124,7 +134,7 @@ export async function deleteCard(cardId: string) {
   redirect(withNotice("/admin/cards?view=archived", "card_deleted"));
 }
 
-export async function saveCardProgram(cardId: string, formData: FormData) {
+export async function saveCardProgram(cardId: string, _previousState: CardStepState, formData: FormData): Promise<CardStepState> {
   const context = await requireTenantAdmin();
   if (!UUID.test(cardId)) redirect("/admin/cards");
   const [{ data: tenant, error: tenantError }, { data: card, error: cardError }] = await Promise.all([
@@ -132,7 +142,7 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
     context.supabase.from("loyalty_cards").select("program_id").eq("id", cardId).eq("tenant_id", context.tenantId).maybeSingle(),
   ]);
   if (tenantError || !tenant?.currency_code || cardError || !card?.program_id) {
-    redirectCardError(cardId, 1, "No se pudo determinar la moneda del negocio.");
+    return cardStepError("No se pudo determinar la moneda del negocio.");
   }
 
   formData.set("status", "PAUSED");
@@ -144,13 +154,13 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
     .eq("tenant_id", context.tenantId)
     .maybeSingle();
   if (programError || !currentProgram?.program_type) {
-    redirectCardError(cardId, 1, "No se pudo comprobar el programa actual.");
+    return cardStepError("No se pudo comprobar el programa actual.");
   }
   if (
     currentProgram.program_type !== programType
     && formData.get("confirmProgramTypeChange") !== "on"
   ) {
-    redirectCardError(cardId, 1, "Confirma el cambio de tipo de programa antes de guardar.");
+    return cardStepError("Confirma el cambio de tipo de programa antes de guardar.");
   }
   const singular = String(formData.get("unitNameSingular") ?? "").trim().toLowerCase();
   const plural = String(formData.get("unitNamePlural") ?? "").trim().toLowerCase();
@@ -163,7 +173,7 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
   }
   const validation = validateLoyaltyProgramForm(formData, tenant.currency_code);
   if (!validation.ok) {
-    redirectCardError(cardId, 1, validation.errors[0] ?? "Revisa el programa.");
+    return cardStepError(validation.errors[0] ?? "Revisa el programa.");
   }
   const input = validation.data;
   const { data, error } = await context.supabase.schema("app").rpc(
@@ -193,7 +203,7 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
     },
   );
   if (error || data !== "SAVED") {
-    redirectCardError(cardId, 1, "No se pudo guardar el programa de esta tarjeta.");
+    return cardStepError("No se pudo guardar el programa de esta tarjeta.");
   }
   await dispatchAppleWalletUpdatesBestEffort({
     limit: 25,
@@ -202,7 +212,7 @@ export async function saveCardProgram(cardId: string, formData: FormData) {
   redirectAfterSave(cardId, 2, formData);
 }
 
-export async function saveCardDesign(cardId: string, formData: FormData) {
+export async function saveCardDesign(cardId: string, _previousState: CardStepState, formData: FormData): Promise<CardStepState> {
   const context = await requireTenantAdmin();
   if (!UUID.test(cardId)) redirect("/admin/cards");
   const { url: supabaseUrl } = getRequiredPublicSupabaseConfig();
@@ -225,7 +235,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
     currentDesignError = fallback.error;
   }
   if (currentDesignError || !currentDesign) {
-    redirectCardError(cardId, 2, "No se pudo verificar la configuración actual de imágenes.");
+    return cardStepError("No se pudo verificar la configuración actual de imágenes.");
   }
 
   const submittedAssets: Array<{
@@ -254,7 +264,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
   const validation = validateAppleWalletDesignForm(formData);
   if (!validation.ok) {
     await removeNewAssets();
-    redirectCardError(cardId, 2, validation.errors[0] ?? "Revisa el diseño.");
+    return cardStepError(validation.errors[0] ?? "Revisa el diseño.");
   }
   const input = validation.data;
   const hasInvalidNewAsset = submittedAssets.some(({ kind, value, currentValue }) => (
@@ -264,10 +274,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
   ));
   if (hasInvalidNewAsset) {
     await removeNewAssets();
-    redirectCardError(
-      cardId,
-      2,
-      "Las imágenes nuevas deben cargarse desde el almacenamiento de morrow.",
+    return cardStepError("Las imágenes nuevas deben cargarse desde el almacenamiento de morrow.",
     );
   }
   let { data, error } = await context.supabase.schema("app").rpc(
@@ -385,7 +392,7 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
   }
   if (error || data !== "SAVED") {
     await removeNewAssets();
-    redirectCardError(cardId, 2, "No se pudo guardar el diseño de la tarjeta.");
+    return cardStepError("No se pudo guardar el diseño de la tarjeta.");
   }
   const previousAssetPaths = submittedAssets.flatMap(({ kind, value, currentValue }) => {
     if (!currentValue || currentValue === value) return [];
@@ -406,21 +413,21 @@ export async function saveCardDesign(cardId: string, formData: FormData) {
   redirectAfterSave(cardId, 3, formData);
 }
 
-export async function saveCardLocations(cardId: string, formData: FormData) {
+export async function saveCardLocations(cardId: string, _previousState: CardStepState, formData: FormData): Promise<CardStepState> {
   const context = await requireTenantAdmin();
   if (!UUID.test(cardId)) redirect("/admin/cards");
   const branchIds = formData.getAll("branchId").filter(
     (value): value is string => typeof value === "string" && UUID.test(value),
   );
   if (!branchIds.length) {
-    redirectCardError(cardId, 3, "Selecciona al menos una sucursal.");
+    return cardStepError("Selecciona al menos una sucursal.");
   }
   const { data, error } = await context.supabase.schema("app").rpc(
     "save_loyalty_card_locations",
     { target_card_id: cardId, target_branch_ids: branchIds },
   );
   if (error || data !== "SAVED") {
-    redirectCardError(cardId, 3, "No se pudieron guardar las sucursales.");
+    return cardStepError("No se pudieron guardar las sucursales.");
   }
   await dispatchAppleWalletUpdatesBestEffort({
     limit: 25,
