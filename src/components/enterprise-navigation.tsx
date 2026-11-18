@@ -12,6 +12,7 @@ export type EnterpriseIconName =
   | "chart"
   | "close"
   | "download"
+  | "file"
   | "home"
   | "import"
   | "logout"
@@ -44,6 +45,7 @@ export function EnterpriseIcon({ name }: { name: EnterpriseIconName }) {
     chart: <><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></>,
     close: <path d="m6 6 12 12M18 6 6 18" />,
     download: <><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" /></>,
+    file: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></>,
     home: <><path d="m3 11 9-8 9 8" /><path d="M5 10v10h14V10M9 20v-6h6v6" /></>,
     import: <><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" /></>,
     logout: <><path d="M10 17l5-5-5-5" /><path d="M15 12H3" /><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" /></>,

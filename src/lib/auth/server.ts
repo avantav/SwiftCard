@@ -21,6 +21,8 @@ import {
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { SUPPORT_SESSION_COOKIE } from "@/lib/auth/support-cookie";
 import { hashSupportSessionToken } from "@/lib/auth/support-session";
+import { legalConsentPending } from "@/lib/legal/consent";
+import { getLegalConsentStatus } from "@/lib/legal/consent-server";
 
 function isStaffRole(value: unknown): value is StaffRole {
   return typeof value === "string" && STAFF_ROLES.includes(value as StaffRole);
@@ -194,7 +196,7 @@ export async function getActiveSuperadminContext() {
 
 export async function requireInternalArea(
   area: InternalArea,
-  options: { allowLockedShared?: boolean; writable?: boolean; allowSupportWrites?: boolean } = {}
+  options: { allowLockedShared?: boolean; writable?: boolean; allowSupportWrites?: boolean; allowPendingLegal?: boolean } = {}
 ) {
   const context = await getStaffSessionContext();
 
@@ -232,6 +234,18 @@ export async function requireInternalArea(
     !options.allowLockedShared
   ) {
     redirect("/app/unlock");
+  }
+
+  // Writes wait until the current platform terms are accepted (DEC-0072);
+  // the area layout shows the acceptance modal.
+  if (
+    options.writable &&
+    !options.allowPendingLegal &&
+    !context.supportSession &&
+    context.access.role !== "SUPERADMIN" &&
+    legalConsentPending(await getLegalConsentStatus(context.supabase))
+  ) {
+    redirect(area === "APP" ? "/app" : "/admin");
   }
 
   return context;
