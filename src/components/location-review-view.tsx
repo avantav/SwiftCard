@@ -1,3 +1,6 @@
+import Form from "next/form";
+import { AdminTabs } from "@/components/admin/admin-tabs";
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import Link from "next/link";
 import { PurchaseLocationMap, type MapBranchArea, type MapPurchasePoint } from "@/components/purchase-location-map";
 import {
@@ -28,25 +31,25 @@ function coordinate(value: number | null) {
   return value === null ? "—" : Number(value).toFixed(6);
 }
 
+/** Security view sections (DEC-0073): one tab at a time. */
+export const LOCATION_REVIEW_TABS = [
+  { id: "resumen", label: "Resumen" },
+  { id: "mapa", label: "Mapa" },
+  { id: "compras", label: "Compras" },
+] as const;
+export type LocationReviewTab = (typeof LOCATION_REVIEW_TABS)[number]["id"];
+
 /** Presentational security view; data and authority come from the page loader. */
-export function LocationReviewView({ filters, rows, branches, timeZone, failed, hasFilters }: {
+export function LocationReviewView({ filters, rows, branches, timeZone, failed, hasFilters, view = "resumen", keep = {} }: {
   filters: LocationReviewFilters;
   rows: LocationReviewRow[];
   branches: LocationReviewBranch[];
   timeZone: string;
   failed: boolean;
   hasFilters: boolean;
+  view?: LocationReviewTab;
+  keep?: Record<string, string | undefined>;
 }) {
-  const header = (
-    <header className="enterprise-page-header">
-      <div>
-        <p className="enterprise-breadcrumb">Datos</p>
-        <h1>Seguridad de ubicación</h1>
-        <p>Revisa dónde se registró cada compra frente al radio configurado de su sucursal.</p>
-      </div>
-    </header>
-  );
-
   const dateTime = new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short", timeZone });
   const summary = summarizeLocationReview(rows);
   const signals = reviewSignals(rows);
@@ -75,11 +78,15 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
   const mapSummary = `Mapa con ${points.length} compras con coordenadas: ${summary.INSIDE} dentro y ${summary.OUTSIDE} fuera del radio de su sucursal.`;
 
   return (
-    <main className="enterprise-page">
-      {header}
-
+    <AdminWorkspace
+      breadcrumb="Datos"
+      className="location-review-workspace"
+      description="Revisa dónde se registró cada compra frente al radio configurado de su sucursal."
+      title="Seguridad de ubicación"
+      toolbar={<>
       <section className="enterprise-filter-panel" aria-label="Filtros de ubicación">
-        <form className="enterprise-filter-form location-review-filters" method="get">
+        <Form action="/admin/security" className="enterprise-filter-form location-review-filters" scroll={false}>
+          {view !== "resumen" ? <input name="view" type="hidden" value={view} /> : null}
           <label className="field">
             <span>Desde</span>
             <input defaultValue={filters.from} name="from" required type="date" />
@@ -109,11 +116,15 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
               {LOCATION_RESULTS.map((result) => <option key={result} value={result}>{RESULT_LABELS[result]}</option>)}
             </select>
           </label>
-          <button className="primary-button" type="submit">Aplicar filtros</button>
-          {hasFilters ? <Link className="enterprise-secondary-action" href="/admin/security">Limpiar</Link> : null}
-        </form>
+          <button className="enterprise-primary-action" type="submit">Aplicar filtros</button>
+          {hasFilters ? <Link className="enterprise-secondary-action" href="/admin/security" scroll={false}>Limpiar</Link> : null}
+        </Form>
         <p className="field-hint">Periodo máximo de {MAX_REVIEW_DAYS} días, en la zona horaria del negocio. Cada consulta queda registrada en la auditoría.</p>
       </section>
+      {!failed ? <AdminTabs active={view} baseHref="/admin/security" keep={keep} label="Secciones de seguridad" param="view" tabs={LOCATION_REVIEW_TABS} /> : null}
+      </>}
+    >
+      <AdminScrollRegion className="is-plain" label="Seguridad de ubicación">
 
       {failed ? (
         <div className="enterprise-empty-state is-error" role="alert">
@@ -123,7 +134,7 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
         </div>
       ) : (
         <>
-          <section aria-label="Resumen de ubicaciones" className="enterprise-metrics">
+          {view === "resumen" ? <section aria-label="Resumen de ubicaciones" className="enterprise-metrics">
             <article className="enterprise-metric">
               <span>Compras revisadas</span>
               <strong>{summary.total}</strong>
@@ -144,9 +155,9 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
               <strong>{summary.NO_BRANCH_POINT}</strong>
               <small>No se puede medir la distancia</small>
             </article>
-          </section>
+          </section> : null}
 
-          {signals.length ? (
+          {view === "resumen" && signals.length ? (
             <section className="enterprise-data-panel" aria-labelledby="location-signals-title">
               <div className="enterprise-panel-header">
                 <div>
@@ -165,7 +176,7 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
             </section>
           ) : null}
 
-          {rows.length ? (
+          {view === "mapa" && rows.length ? (
             <section className="enterprise-data-panel location-review-map-panel" aria-labelledby="location-map-title">
               <div className="enterprise-panel-header">
                 <div>
@@ -177,7 +188,7 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
             </section>
           ) : null}
 
-          <section className="enterprise-data-panel" aria-labelledby="location-table-title">
+          {view === "compras" ? <section className="enterprise-data-panel" aria-labelledby="location-table-title">
             <div className="enterprise-panel-header">
               <div>
                 <h2 id="location-table-title">Compras del periodo</h2>
@@ -234,9 +245,10 @@ export function LocationReviewView({ filters, rows, branches, timeZone, failed, 
                 {hasFilters ? <Link className="enterprise-secondary-action" href="/admin/security">Limpiar filtros</Link> : null}
               </div>
             )}
-          </section>
+          </section> : null}
         </>
       )}
-    </main>
+      </AdminScrollRegion>
+    </AdminWorkspace>
   );
 }

@@ -11365,3 +11365,121 @@ html.has-open-navigation {
   border-radius: 0;
   background: transparent;
 }
+
+/* First-run setup guide on /admin (DEC-0073). */
+.admin-setup-progress {
+  width: 160px;
+  height: 8px;
+  flex: none;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: var(--enterprise-surface-subtle);
+  accent-color: var(--enterprise-primary);
+}
+
+.admin-setup-progress::-webkit-progress-bar {
+  background: var(--enterprise-surface-subtle);
+}
+
+.admin-setup-progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: var(--enterprise-primary);
+}
+
+.admin-setup-progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--enterprise-primary);
+}
+
+.admin-setup-steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-setup-steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  border-top: 1px solid var(--enterprise-border);
+  padding: 10px 16px;
+}
+
+.admin-setup-steps li.is-next {
+  background: var(--enterprise-primary-soft);
+}
+
+.admin-setup-marker {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--enterprise-surface-subtle);
+  color: var(--enterprise-text-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.admin-setup-marker svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-setup-steps li.is-done .admin-setup-marker {
+  background: var(--enterprise-success-soft);
+  color: var(--enterprise-success);
+}
+
+.admin-setup-steps li.is-next .admin-setup-marker {
+  background: var(--enterprise-primary);
+  color: #fff;
+}
+
+.admin-setup-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-setup-copy small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 639px) {
+  .admin-setup-steps li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .admin-setup-state {
+    grid-column: 2;
+  }
+}
+
+/* A data panel with a footer (pagination) under its scroll region. */
+@media (min-width: 640px) {
+  .admin-workspace-body > .enterprise-data-panel.has-footer {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+}
+
+/* Dashboard tabs show one panel of a two-column grid at a time. */
+.insights-grid.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Route loading skeleton for admin workspaces. */
+.workspace-skeleton-rows {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.workspace-skeleton-rows .enterprise-skeleton {
+  display: block;
+  height: 40px;
+}

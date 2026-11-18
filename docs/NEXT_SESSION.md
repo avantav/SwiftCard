@@ -30,8 +30,19 @@
      - Pending: try `PreservingForm` in a real browser — a server error on
        step 1 must keep tiers and the welcome reward, and an upload in progress
        must block saving.
-  4. Home setup checklist, Dashboard tabs, Customers, Security, Imports,
-     Billing, missing `loading.tsx`.
+  4. Home and data pages — `feat/admin-workspace-home-data` (stacked on
+     phase 3). Done:
+     - A five-step setup guide on `/admin` for the Admin general (RLS
+       counts, single "Siguiente paso" action).
+     - Statistics tabs (Resumen, Clientes, Visitas, Sucursales) and security
+       tabs (Resumen, Mapa, Compras), both keeping the filters.
+     - Customers: the table in one scroll region with fixed pagination, and
+       toasts.
+     - Exports, legal, imports and billing are contained in one scroll region.
+     - New `loading.tsx` for dashboard, campaigns, security, imports and
+       billing.
+     - Not done from the plan: an imports wizard (the upload/preview flow is
+       unchanged, only contained) and billing tabs (its content is short).
   5. Customer correction (Admin general only, read RPC migration `0081`;
      manager access is a separate task, DEC-0074).
 

@@ -1,4 +1,7 @@
+import Form from "next/form";
 import Link from "next/link";
+import { AdminTabs } from "@/components/admin/admin-tabs";
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import type { CSSProperties } from "react";
 import {
   averageTicket,
@@ -16,6 +19,15 @@ import {
 } from "@/lib/admin/insights";
 
 type Branch = { id: string; name: string };
+
+/** Dashboard sections (DEC-0073): one tab at a time instead of ten stacked panels. */
+export const INSIGHTS_TABS = [
+  { id: "resumen", label: "Resumen" },
+  { id: "clientes", label: "Clientes" },
+  { id: "visitas", label: "Visitas" },
+  { id: "sucursales", label: "Sucursales" },
+] as const;
+export type InsightsTab = (typeof INSIGHTS_TABS)[number]["id"];
 
 const shortDate = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", timeZone: "UTC" });
 const longDate = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
@@ -40,40 +52,48 @@ function query(filters: InsightsFilters, overrides: Record<string, string | null
   return text ? `?${text}` : "";
 }
 
-export function InsightsView({ insights, filters, branches, currency, failed }: {
+export function InsightsView({ insights, filters, branches, currency, failed, view = "resumen" }: {
   insights: CustomerInsights | null;
   filters: InsightsFilters;
   branches: Branch[];
   currency: string;
   failed: boolean;
+  view?: InsightsTab;
 }) {
   const money = new Intl.NumberFormat("es-MX", { style: "currency", currency, maximumFractionDigits: 0 });
   const formatMoney = (minor: number | null) => (minor === null ? "—" : money.format(minor / 100));
 
-  return (
-    <>
-      <header className="enterprise-page-header">
-        <div>
-          <p className="enterprise-breadcrumb">Operación</p>
-          <h1>Estadísticas de clientes</h1>
-          <p>Consulta cuántos clientes vuelven y cómo rinde tu programa en el periodo.</p>
-        </div>
-      </header>
+  const advanced = Boolean(insights?.advanced) && !failed;
+  const keep = {
+    period: filters.preset ? String(filters.preset) : undefined,
+    from: filters.preset ? undefined : filters.from,
+    to: filters.preset ? undefined : filters.to,
+    branch: filters.branchId ?? undefined,
+  };
 
+  return (
+    <AdminWorkspace
+      breadcrumb="Operación"
+      className="insights-workspace"
+      description="Consulta cuántos clientes vuelven y cómo rinde tu programa en el periodo."
+      title="Estadísticas de clientes"
+      toolbar={<>
       <section className="enterprise-filter-panel" aria-label="Filtros de estadísticas">
         <nav className="insights-presets" aria-label="Periodo">
           {PERIOD_PRESETS.map((days) => (
             <Link
               aria-current={filters.preset === days ? "page" : undefined}
               className={`insights-preset${filters.preset === days ? " is-active" : ""}`}
-              href={`/admin/dashboard${query(filters, { period: String(days), from: null, to: null })}`}
+              href={`/admin/dashboard${query(filters, { period: String(days), from: null, to: null, view: view === "resumen" ? null : view })}`}
               key={days}
+              scroll={false}
             >
               Últimos {days} días
             </Link>
           ))}
         </nav>
-        <form className="enterprise-filter-form insights-filters" method="get">
+        <Form action="/admin/dashboard" className="enterprise-filter-form insights-filters" scroll={false}>
+          {view !== "resumen" ? <input name="view" type="hidden" value={view} /> : null}
           <label className="field"><span>Desde</span><input defaultValue={filters.from} name="from" required type="date" /></label>
           <label className="field"><span>Hasta</span><input defaultValue={filters.to} name="to" required type="date" /></label>
           <label className="field">
@@ -83,10 +103,13 @@ export function InsightsView({ insights, filters, branches, currency, failed }: 
               {branches.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}
             </select>
           </label>
-          <button className="primary-button" type="submit">Aplicar filtros</button>
-        </form>
+          <button className="enterprise-primary-action" type="submit">Aplicar filtros</button>
+        </Form>
       </section>
-
+      {advanced ? <AdminTabs active={view} baseHref="/admin/dashboard" keep={keep} label="Secciones de estadísticas" param="view" tabs={INSIGHTS_TABS} /> : null}
+      </>}
+    >
+      <AdminScrollRegion className="is-plain" label="Estadísticas">
       {failed || !insights ? (
         <div className="enterprise-empty-state is-error" role="alert">
           <span className="enterprise-empty-icon" aria-hidden="true">!</span>
@@ -94,9 +117,10 @@ export function InsightsView({ insights, filters, branches, currency, failed }: 
           <p>Revisa el periodo y la sucursal seleccionados y vuelve a intentarlo.</p>
         </div>
       ) : insights.advanced
-        ? <InsightsBody filters={filters} formatMoney={formatMoney} insights={insights} />
+        ? <InsightsBody filters={filters} formatMoney={formatMoney} insights={insights} view={view} />
         : <BasicInsightsBody filters={filters} formatMoney={formatMoney} insights={insights} />}
-    </>
+      </AdminScrollRegion>
+    </AdminWorkspace>
   );
 }
 
@@ -187,10 +211,11 @@ function BasicInsightsBody({ insights, filters, formatMoney }: {
   );
 }
 
-function InsightsBody({ insights, filters, formatMoney }: {
+function InsightsBody({ insights, filters, formatMoney, view }: {
   insights: AdvancedCustomerInsights;
   filters: InsightsFilters;
   formatMoney: (minor: number | null) => string;
+  view: InsightsTab;
 }) {
   const totalCustomers = insights.segments.reduce((sum, item) => sum + Number(item.customers), 0);
   const maxSegment = Math.max(1, ...insights.segments.map((item) => Number(item.customers)));
@@ -208,9 +233,9 @@ function InsightsBody({ insights, filters, formatMoney }: {
 
   return (
     <>
-      <SummarySection filters={filters} formatMoney={formatMoney} insights={insights} />
+      {view === "resumen" ? <SummarySection filters={filters} formatMoney={formatMoney} insights={insights} /> : null}
 
-      <section className="enterprise-data-panel" aria-labelledby="segments-title">
+      {view === "clientes" ? <section className="enterprise-data-panel" aria-labelledby="segments-title">
         <div className="enterprise-panel-header">
           <div>
             <h2 id="segments-title">Segmentos de clientes</h2>
@@ -245,9 +270,9 @@ function InsightsBody({ insights, filters, formatMoney }: {
             );
           })}
         </ul>
-      </section>
+      </section> : null}
 
-      <div className="insights-grid">
+      {view === "resumen" ? <div className="insights-grid">
         <section className="enterprise-data-panel" aria-labelledby="funnel-title">
           <div className="enterprise-panel-header">
             <div>
@@ -283,8 +308,9 @@ function InsightsBody({ insights, filters, formatMoney }: {
           </div>
           <RewardsStats insights={insights} />
         </section>
-      </div>
+      </div> : null}
 
+      {view === "visitas" ? <>
       <section className="enterprise-data-panel" aria-labelledby="weekly-title">
         <div className="enterprise-panel-header">
           <div>
@@ -374,8 +400,10 @@ function InsightsBody({ insights, filters, formatMoney }: {
         ) : <p className="insights-empty">Sin compras en el periodo.</p>}
       </section>
 
-      <div className="insights-grid">
-        {isAdmin ? (
+      </> : null}
+
+      <div className="insights-grid is-single">
+        {view === "clientes" && isAdmin ? (
           <section className="enterprise-data-panel" aria-labelledby="top-title">
             <div className="enterprise-panel-header">
               <div>
@@ -399,7 +427,7 @@ function InsightsBody({ insights, filters, formatMoney }: {
           </section>
         ) : null}
 
-        <section className="enterprise-data-panel" aria-labelledby="branches-title">
+        {view === "sucursales" ? <section className="enterprise-data-panel" aria-labelledby="branches-title">
           <div className="enterprise-panel-header">
             <div>
               <h2 id="branches-title">Por sucursal</h2>
@@ -424,7 +452,7 @@ function InsightsBody({ insights, filters, formatMoney }: {
               </table>
             </div>
           ) : <p className="insights-empty">Sin sucursales activas en tu alcance.</p>}
-        </section>
+        </section> : null}
       </div>
     </>
   );

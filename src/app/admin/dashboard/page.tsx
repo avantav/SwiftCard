@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { InsightsView } from "@/components/insights-view";
+import { activeTab } from "@/components/admin/admin-tabs";
+import { INSIGHTS_TABS, InsightsView } from "@/components/insights-view";
 import { dayInTimeZone, parseInsightsFilters, type CustomerInsights } from "@/lib/admin/insights";
 import { requireInternalArea } from "@/lib/auth/server";
 import { supportReadParams } from "@/lib/auth/support-read";
@@ -33,15 +34,15 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     })
   ]);
 
+  // AdminWorkspace (inside InsightsView) renders the page's <main> (DEC-0073).
   return (
-    <main className="enterprise-page">
-      <InsightsView
-        branches={branchesResult.data ?? []}
-        currency={tenantResult.data?.currency_code ?? "MXN"}
-        failed={Boolean(insightsResult.error)}
-        filters={filters}
-        insights={(insightsResult.data as CustomerInsights | null) ?? null}
-      />
-    </main>
+    <InsightsView
+      branches={branchesResult.data ?? []}
+      currency={tenantResult.data?.currency_code ?? "MXN"}
+      failed={Boolean(insightsResult.error)}
+      filters={filters}
+      insights={(insightsResult.data as CustomerInsights | null) ?? null}
+      view={activeTab(params.view, INSIGHTS_TABS.map((tab) => tab.id))}
+    />
   );
 }
