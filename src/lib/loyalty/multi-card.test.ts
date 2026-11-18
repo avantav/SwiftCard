@@ -138,7 +138,8 @@ describe("multi-card loyalty boundary", () => {
     expect(cardsPage).toContain("card-readiness-list");
     expect(cardsPage).toContain("BranchWorkspaceDialog");
     expect(cardsPage).toContain("closeHref=");
-    expect(cardsPage).toContain("Crear y configurar");
+    expect(cardsPage).toContain("<CardDraftForm />");
+    expect(readFileSync(new URL("../../components/card-draft-form.tsx", import.meta.url), "utf8")).toContain("Crear y configurar");
     expect(cardsPage).toContain("selectedCard");
     expect(cardsPage).not.toContain("card-config-stats");
     expect(cardsPage).not.toContain("Promise.all(cards.map");

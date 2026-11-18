@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
+import { withNotice } from "@/lib/forms/notices";
+import { errorState, type FormState } from "@/lib/forms/state";
 import { validateLoyaltyProgramForm } from "@/lib/admin/program";
 import { getRequiredPublicSupabaseConfig } from "@/lib/supabase/config";
 import { validateAppleWalletDesignForm } from "@/lib/wallet/design";
@@ -50,12 +52,15 @@ async function requireTenantAdmin() {
   return context;
 }
 
-export async function createCardDraft(formData: FormData) {
-  const context = await requireTenantAdmin();
+export type CardDraftActionState = FormState<{ name: string }>;
+
+/** Names a new draft; errors stay in the dialog with the typed name (DEC-0073). */
+export async function createCardDraft(_previousState: CardDraftActionState, formData: FormData): Promise<CardDraftActionState> {
   const name = String(formData.get("name") ?? "").trim();
   if (!name || name.length > 80) {
-    redirect(`/admin/cards?error=${encodeURIComponent("Escribe un nombre de hasta 80 caracteres.")}`);
+    return errorState({ name }, { name: ["Escribe un nombre de hasta 80 caracteres."] }, "Revisa el nombre de la tarjeta.");
   }
+  const context = await requireTenantAdmin();
   const { data, error } = await context.supabase.schema("app").rpc(
     "create_loyalty_card_draft",
     { target_name: name },
@@ -65,7 +70,7 @@ export async function createCardDraft(formData: FormData) {
     const message = row?.result === "LIMIT_REACHED"
       ? "Ya tienes tres tarjetas. Archiva una antes de crear otra."
       : "No se pudo crear el borrador.";
-    redirect(`/admin/cards?error=${encodeURIComponent(message)}`);
+    return errorState({ name }, {}, message);
   }
   redirect(cardPath(row.loyalty_card_id, 1, { [row.result === "EXISTS" ? "resumed" : "created"]: "1" }));
 }
@@ -81,7 +86,7 @@ export async function archiveCard(cardId: string) {
     redirect(`/admin/cards?error=${encodeURIComponent("No se pudo desactivar la tarjeta.")}`);
   }
   await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId: context.tenantId! });
-  redirect(`/admin/cards?${data === "DISCARDED" ? "discarded" : "deactivated"}=1`);
+  redirect(withNotice("/admin/cards", data === "DISCARDED" ? "card_discarded" : "card_deactivated"));
 }
 
 export async function restoreCard(cardId: string) {
@@ -100,7 +105,7 @@ export async function restoreCard(cardId: string) {
     redirect(`/admin/cards?error=${encodeURIComponent(message)}`);
   }
   await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId: context.tenantId! });
-  redirect("/admin/cards?restored=1");
+  redirect(withNotice("/admin/cards", "card_restored"));
 }
 
 export async function deleteCard(cardId: string) {
@@ -116,7 +121,7 @@ export async function deleteCard(cardId: string) {
       : "No se pudo eliminar la tarjeta.";
     redirect(`/admin/cards?error=${encodeURIComponent(message)}`);
   }
-  redirect("/admin/cards?deleted=1");
+  redirect(withNotice("/admin/cards?view=archived", "card_deleted"));
 }
 
 export async function saveCardProgram(cardId: string, formData: FormData) {
@@ -439,5 +444,5 @@ export async function publishCard(cardId: string) {
     );
   }
   await dispatchAppleWalletUpdatesBestEffort({ limit: 25, tenantId: context.tenantId! });
-  redirect("/admin/cards?published=1");
+  redirect(withNotice("/admin/cards", "card_published"));
 }
