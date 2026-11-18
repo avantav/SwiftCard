@@ -27,6 +27,14 @@ const branchWorkspaceDialog = readFileSync(
   join(process.cwd(), "src/components/branch-workspace-dialog.tsx"),
   "utf8",
 );
+const workspaceDialog = readFileSync(
+  join(process.cwd(), "src/components/admin/workspace-dialog.tsx"),
+  "utf8",
+);
+const sharedFormField = readFileSync(
+  join(process.cwd(), "src/components/admin/form-field.tsx"),
+  "utf8",
+);
 const branchesPage = readFileSync(
   join(process.cwd(), "src/app/admin/branches/page.tsx"),
   "utf8",
@@ -210,7 +218,8 @@ describe("validateBranchCreateForm", () => {
     expect(branchForm).toContain("useActionState");
     expect(branchForm).toContain('role="alert"');
     expect(branchForm).toContain("aria-invalid");
-    expect(branchForm).toContain("field-error-message");
+    expect(branchForm).toContain('from "@/components/admin/form-field"');
+    expect(sharedFormField).toContain("field-error-message");
     expect(branchForm).toContain("summaryRef.current?.focus()");
   });
 
@@ -237,8 +246,9 @@ describe("validateBranchCreateForm", () => {
     expect(branchesPage).toContain("Acceso del personal");
     expect(branchesPage).toContain("workspaceHref(branch.id, \"details\")");
     expect(branchesPage).toContain("BranchWorkspaceDialog");
-    expect(branchWorkspaceDialog).toContain("showModal()");
-    expect(branchWorkspaceDialog).toContain('onCancel=');
+    expect(branchWorkspaceDialog).toContain("WorkspaceDialog");
+    expect(workspaceDialog).toContain("showModal()");
+    expect(workspaceDialog).toContain('onCancel=');
     expect(branchesPage).not.toContain("admin-inline-details");
   });
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { signOut } from "@/app/logout/actions";
 
@@ -77,15 +77,57 @@ function isCurrentRoute(pathname: string, item: EnterpriseNavItem) {
 export function EnterpriseNavigation({ areaLabel, email, groups, roleLabel }: { areaLabel: string; email: string | null; groups: EnterpriseNavGroup[]; roleLabel: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const wasOpenRef = useRef(false);
+
+  // Mobile drawer: Escape closes, focus stays inside, the page behind does
+  // not scroll and focus returns to the menu button (DEC-0073).
+  useEffect(() => {
+    if (!open) {
+      if (wasOpenRef.current) menuButtonRef.current?.focus();
+      wasOpenRef.current = false;
+      return;
+    }
+    wasOpenRef.current = true;
+    const sidebar = sidebarRef.current;
+    document.documentElement.classList.add("has-open-navigation");
+    sidebar?.querySelector<HTMLElement>("a, button")?.focus();
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !sidebar) return;
+      const focusable = [...sidebar.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.documentElement.classList.remove("has-open-navigation");
+    };
+  }, [open]);
+
   const initials = roleLabel.split(/\s+/).map((word) => word[0]).join("").slice(0, 2).toUpperCase();
 
   return <>
     <header className="enterprise-mobile-header">
       <Link className="enterprise-mobile-brand" href={groups[0]?.items[0]?.href ?? "/"}><span className="enterprise-brand-mark" aria-hidden="true"><span>m</span></span><span>morrow</span></Link>
-      <button aria-controls="enterprise-navigation" aria-expanded={open} aria-label={open ? "Cerrar navegación" : "Abrir navegación"} className="enterprise-mobile-menu" onClick={() => setOpen((current) => !current)} type="button"><EnterpriseIcon name={open ? "close" : "menu"} /></button>
+      <button aria-controls="enterprise-navigation" aria-expanded={open} aria-label={open ? "Cerrar navegación" : "Abrir navegación"} className="enterprise-mobile-menu" ref={menuButtonRef} onClick={() => setOpen((current) => !current)} type="button"><EnterpriseIcon name={open ? "close" : "menu"} /></button>
     </header>
     {open ? <button aria-label="Cerrar navegación" className="enterprise-nav-backdrop" onClick={() => setOpen(false)} type="button" /> : null}
-    <aside className={`enterprise-sidebar${open ? " is-open" : ""}`} id="enterprise-navigation">
+    <aside className={`enterprise-sidebar${open ? " is-open" : ""}`} id="enterprise-navigation" ref={sidebarRef}>
       <Link className="enterprise-brand" href={groups[0]?.items[0]?.href ?? "/"} onClick={() => setOpen(false)}><span className="enterprise-brand-mark" aria-hidden="true"><span>m</span></span><span className="enterprise-brand-copy"><strong>morrow</strong><small>{areaLabel}</small></span></Link>
       <div className="enterprise-nav-groups">
         {groups.map((group) => <nav aria-label={group.label} className="enterprise-nav" key={group.label}>

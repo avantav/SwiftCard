@@ -2,6 +2,7 @@
 
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
 import { useEffect, useId, useRef, useState } from "react";
+import { FieldError } from "@/components/admin/form-field";
 
 type LocationErrors = {
   address?: string[];
@@ -25,11 +26,6 @@ function configureMaps() {
   if (mapsConfigured) return;
   setOptions({ key: mapsApiKey, v: "weekly", language: "es", region: "MX" });
   mapsConfigured = true;
-}
-
-function FieldError({ id, messages }: { id: string; messages?: string[] }) {
-  if (!messages?.length) return null;
-  return <span className="field-error-message" id={id}>{messages.join(" ")}</span>;
 }
 
 function coordinate(value: string) {

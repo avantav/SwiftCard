@@ -1,5 +1,19 @@
 # Next Session
 
+## Admin workspace (DEC-0073) — 2026-11-18
+
+- Plan in five phases, one PR each (plan approved by the owner):
+  1. Shared foundation — `feat/admin-workspace-foundation` (stacked on
+     `feat/tenant-legal-consent`, PR #43). Components in
+     `src/components/admin/`, contract in `src/lib/forms/`.
+  2. Branches, Staff, Cards: adopt `AdminWorkspace`, `WizardForm` with step
+     validation, state actions (fix modals closing on `?error=`).
+  3. Card editor and Campaigns.
+  4. Home setup checklist, Dashboard tabs, Customers, Security, Imports,
+     Billing, missing `loading.tsx`.
+  5. Customer correction (Admin general only, read RPC migration `0081`;
+     manager access is a separate task, DEC-0074).
+
 ## Tenant legal identity and terms acceptance — 2026-11-18
 
 - Implemented on `feat/tenant-legal-consent` (DEC-0072, migration `0080`).
