@@ -20,6 +20,9 @@ export type RegistrationCard = {
 export type PublicRegistrationContext = {
   branchName: string;
   tenantName: string;
+  /** Legal identity for the simplified privacy notice (DEC-0072). */
+  legalName: string | null;
+  legalAddress: string | null;
   brandingMode: string;
   cards: RegistrationCard[];
 };
@@ -37,7 +40,7 @@ export async function getPublicRegistrationContext(branchToken: string) {
 
     const { data: tenant, error: tenantError } = await supabase
       .from("tenants")
-      .select("name,status,branding_mode,logo_url,banner_url")
+      .select("name,status,branding_mode,logo_url,banner_url,legal_name,legal_address")
       .eq("id", branch.tenant_id)
       .maybeSingle();
     if (tenantError || !tenant || tenant.status !== "ACTIVE") return null;
@@ -101,6 +104,8 @@ export async function getPublicRegistrationContext(branchToken: string) {
     return {
       branchName: branch.name,
       tenantName: tenant.name,
+      legalName: tenant.legal_name ?? null,
+      legalAddress: tenant.legal_address ?? null,
       brandingMode: tenant.branding_mode,
       cards: publicCards,
     } satisfies PublicRegistrationContext;

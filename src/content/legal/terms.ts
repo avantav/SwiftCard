@@ -32,6 +32,7 @@ El programa de lealtad, sus reglas, premios y promociones son ofrecidos por el N
 - El Negocio debe proporcionar información veraz, completa y actualizada, y mantener vigentes sus datos de contacto y facturación.
 - El Negocio es responsable de las credenciales, contraseñas y PIN de sus Personas usuarias, de los permisos que les otorga y de toda actividad realizada con su cuenta.
 - El Negocio debe avisar de inmediato a ${op.brand} sobre cualquier uso no autorizado o vulneración de su cuenta.
+- Antes de usar la Plataforma por primera vez, y cada vez que cambie la versión de estos Términos o del [Aviso de Privacidad](/privacidad), el administrador general los acepta en nombre del Negocio y cada Persona usuaria los acepta en lo que se refiere a su acceso y uso. En las cuentas compartidas de sucursal, la aceptación corresponde a cada operador con PIN. La Plataforma conserva la versión y la fecha de cada aceptación.
 - El administrador general del Negocio puede crear, restablecer y desactivar las cuentas de su personal. ${op.brand} puede solicitar pruebas de identidad o de representación antes de atender solicitudes sobre una cuenta.
 
 ## 4. Planes, precios e impuestos
@@ -75,7 +76,7 @@ El Negocio y sus Personas usuarias no deben:
 
 **Obligaciones del Negocio.** El Negocio se obliga a:
 
-- Poner a disposición de sus Clientes finales su aviso de privacidad. La Plataforma muestra un [aviso para clientes de programas de lealtad](/privacidad/clientes) que el Negocio puede adoptar; el Negocio es responsable de que su contenido corresponda a su operación.
+- Registrar en la Plataforma su nombre o razón social y su domicilio completo, y mantenerlos actualizados. Con esos datos la Plataforma genera y muestra a sus Clientes finales los términos y condiciones de su programa de lealtad y su aviso de privacidad, basados en el [aviso para clientes de programas de lealtad](/privacidad/clientes); el Negocio los adopta como propios y es responsable de que su contenido corresponda a su operación.
 - Recabar los consentimientos necesarios, en particular el **consentimiento expreso para enviar promociones**, y respetar su revocación.
 - Atender las solicitudes de acceso, rectificación, cancelación y oposición (ARCO) de sus Clientes finales, con el apoyo de ${op.brand} cuando lo requiera.
 - No instruir a ${op.brand} tratamientos contrarios a la ley.

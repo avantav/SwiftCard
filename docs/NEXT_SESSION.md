@@ -1,5 +1,23 @@
 # Next Session
 
+## Tenant legal identity and terms acceptance — 2026-11-18
+
+- Implemented on `feat/tenant-legal-consent` (DEC-0072, migration `0080`).
+  Deploy the code and apply `0080` together: every tenant user sees the
+  acceptance modal on the next visit; the Admin general must enter the legal
+  name and domicile first.
+- Customer documents: `/register/[branchToken]/terminos|privacidad` and
+  `/card/[cardToken]/terminos|privacidad`; Admin edits at `/admin/legal`.
+- `LEGAL_VERSION` is now `1.1` (18 Nov 2026). Bump it only when a change needs
+  new acceptance.
+- After deploy, verify on production: Admin general modal (data + accept),
+  manager and employee modal, PIN operator «Cambiar de operador», a
+  registration showing the business legal name, and the four public pages.
+- SQL validated on PGlite (migrations through `0080` + `0080` test); run
+  `npm run db:verify-rls` where Docker exists.
+- `npm run build` compiles but exits 1 on Next.js's own security advisory
+  check for the pinned `next@16.4.1`; upgrading Next.js is separate work.
+
 ## Owner roadmap 2026-11-13
 
 1. Purchase location security view — merged (PR #36, DEC-0066, migration `0074`).

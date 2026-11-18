@@ -9,6 +9,8 @@ la revisa un abogado. No constituye asesoría legal.
 | Aviso de Privacidad Integral (personas usuarias de negocios) | `/privacidad` | `src/content/legal/privacy.ts` |
 | Aviso de Privacidad para Clientes de Programas de Lealtad | `/privacidad/clientes` | `src/content/legal/customer-privacy.ts` |
 | Aviso simplificado en el registro de clientes | Formulario `/register/...` | `src/components/public-registration-flow.tsx` |
+| Términos y Condiciones del programa de cada negocio | `/register/[token]/terminos`, `/card/[token]/terminos` | `src/content/legal/tenant-customer-terms.ts` |
+| Aviso de privacidad de cada negocio para sus clientes | `/register/[token]/privacidad`, `/card/[token]/privacidad` | `src/content/legal/customer-privacy.ts` (con identidad del negocio) |
 
 Los textos están en Markdown dentro de esos archivos. Para cambiarlos se edita el
 texto y se sube la versión/fecha en `src/lib/legal/company.ts`.
@@ -108,5 +110,12 @@ Clientazo no publica términos del servicio.
 ## 5. Pendientes técnicos derivados
 
 - Guardar versión y fecha de aceptación de los Términos en el alta (`/signup`).
-- Capturar domicilio/razón social del negocio si el abogado lo requiere.
+  Desde la versión 1.1 (DEC-0072) cada administrador general y cada persona
+  usuaria acepta en un modal al entrar; se guardan versión y fecha (sin IP).
+- ~~Capturar domicilio/razón social del negocio~~ Hecho (DEC-0072): el
+  administrador general los registra antes de usar el panel y aparecen como
+  responsable en los términos y el aviso de cada negocio.
+- Revisar con el abogado los nuevos **Términos del programa de lealtad** de cada
+  negocio (premios no canjeables por efectivo, baja, PROFECO, jurisdicción del
+  domicilio del negocio).
 - Mostrar el aviso de cambios sustanciales dentro de la plataforma.

@@ -525,3 +525,16 @@ Antes de considerar terminada cualquier tarea de interfaz, verificar:
 - La aceptación explícita de privacidad y términos se integra al alta; se
   persiste únicamente si la versión presentada sigue vigente. Si cambia, se
   muestran las condiciones actuales y se exige una nueva aceptación.
+
+## 26. Aceptación obligatoria de documentos legales
+
+- Cuando una persona usuaria debe aceptar los términos vigentes (DEC-0072), el
+  layout de su área muestra la navegación y un `<dialog>` modal en lugar de la
+  página; no se cierra con Escape ni con clic fuera.
+- Ancho máximo `560px`, radio `12px`, sombra elevada de overlay y una sola
+  columna. Una acción primaria (`Guardar y continuar` o `Aceptar y continuar`)
+  y una secundaria para salir (`Cerrar sesión`, o `Cambiar de operador` en
+  dispositivos compartidos). En móvil las acciones ocupan el ancho completo,
+  con la primaria arriba.
+- Los enlaces a los documentos abren en una pestaña nueva; los errores aparecen
+  junto al campo y en un resumen con `role="alert"`, conservando lo escrito.

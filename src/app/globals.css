@@ -7257,7 +7257,7 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
 .wallet-no-rewards,
 .wallet-help,
 .wallet-powered,
-.wallet-terms > p:last-child {
+.wallet-terms-text {
   color: var(--enterprise-text-muted);
   font-size: 0.72rem;
   line-height: 1.5;
@@ -7275,9 +7275,28 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   font-size: 1rem;
 }
 
-.wallet-terms > p:last-child {
+.wallet-terms-text {
   margin: 12px 0 0;
   white-space: pre-wrap;
+}
+
+.wallet-legal-links {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+}
+
+.wallet-legal-links a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--enterprise-primary-hover);
+  text-underline-offset: 3px;
+}
+
+.wallet-legal-links a:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--enterprise-focus);
+  outline-offset: 2px;
 }
 
 .wallet-rewards li p,
@@ -9994,6 +10013,43 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   text-underline-offset: 3px;
 }
 
+/* Business documents for loyalty customers (DEC-0072). */
+.legal-tenant-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.legal-tenant-brand img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.legal-card-conditions {
+  margin-top: 16px;
+  border-top: 1px solid var(--enterprise-border);
+  padding-top: 16px;
+}
+
+.legal-card-conditions h3 {
+  margin-top: 0;
+}
+
+.legal-card-conditions-program {
+  color: var(--enterprise-text-muted);
+  font-size: 14px;
+}
+
+.legal-card-conditions-text {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 639px) {
   .legal-article {
     border-radius: 10px;
@@ -10723,4 +10779,141 @@ html[data-connection="offline"] .operations-app form button[type="submit"] {
   .insights-upsell-note {
     padding: 16px;
   }
+}
+
+/* Platform legal acceptance modal (DEC-0072). */
+.legal-consent-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius-lg);
+  padding: 0;
+  background: var(--enterprise-surface);
+  box-shadow: var(--enterprise-shadow-menu);
+  color: var(--enterprise-text);
+}
+
+.legal-consent-dialog::backdrop {
+  background: rgb(12 22 24 / 55%);
+}
+
+.legal-consent-form {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.legal-consent-form header {
+  display: grid;
+  gap: 8px;
+}
+
+.legal-consent-form h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.legal-consent-form header > p:last-child {
+  margin: 0;
+  color: var(--enterprise-text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.legal-consent-form .enterprise-alert {
+  margin: 0;
+}
+
+.legal-consent-fields {
+  display: grid;
+  gap: 16px;
+}
+
+.legal-consent-fields .field em {
+  margin-left: 6px;
+  color: var(--enterprise-text-muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.legal-consent-hint {
+  color: var(--enterprise-text-muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.legal-consent-check {
+  align-items: flex-start;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.legal-consent-check input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin-top: 2px;
+}
+
+.legal-consent-check a {
+  color: var(--enterprise-primary-hover);
+  text-underline-offset: 3px;
+}
+
+.legal-consent-check a:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--enterprise-focus);
+  outline-offset: 2px;
+}
+
+.legal-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 639px) {
+  .legal-consent-form {
+    padding: 20px 16px;
+  }
+
+  .legal-consent-actions {
+    flex-direction: column-reverse;
+  }
+
+  .legal-consent-actions > * {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+/* Business legal identity (/admin/legal). */
+.legal-profile-form {
+  display: grid;
+  max-width: 640px;
+  gap: 16px;
+}
+
+.legal-profile-form .field em {
+  margin-left: 6px;
+  color: var(--enterprise-text-muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.legal-profile-form .legal-consent-actions {
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+
+.legal-profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }

@@ -1,5 +1,16 @@
 # Project Status
 
+## Tenant legal identity and terms acceptance — 2026-11-18
+
+- Tenants record legal name, domicile and privacy contact (migration `0080`,
+  DEC-0072). Customer terms and privacy notices are generated per business and
+  linked from registration and the web card.
+- Tenant staff accept the platform terms and privacy notice in a blocking
+  modal; the Admin general completes the legal identity first. Acceptances are
+  append-only and audited; PIN operators accept individually.
+- Validation: lint, typecheck, 465 tests across 102 files, webpack compile and
+  the `0080` SQL test on PGlite. Build exits on Next.js's security advisory.
+
 ## Stripe self-service signup — 2026-11-12
 
 - Public `/signup` for Inicial and Crecimiento creates a Stripe Checkout

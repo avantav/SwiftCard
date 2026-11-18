@@ -7,8 +7,13 @@ function env(name: string) {
   return value ? value : null;
 }
 
-export const LEGAL_VERSION = "1.0";
-export const LEGAL_EFFECTIVE_DATE = "12 de noviembre de 2026";
+/**
+ * Version of the platform legal documents. Tenant staff must accept the
+ * current value before using /admin or /app (DEC-0072); bump it only for a
+ * change that requires new acceptance.
+ */
+export const LEGAL_VERSION = "1.1";
+export const LEGAL_EFFECTIVE_DATE = "18 de noviembre de 2026";
 
 export type LegalOperator = {
   brand: string;
@@ -40,4 +45,23 @@ export function legalContactText(operator: LegalOperator = legalOperator()) {
   return operator.privacyEmail
     ? `el correo ${operator.privacyEmail} o WhatsApp al ${operator.whatsapp}`
     : `WhatsApp al ${operator.whatsapp} (${operator.whatsappUrl})`;
+}
+
+/**
+ * Legal identity a business records for the documents shown to its loyalty
+ * customers (DEC-0072). `legalName`/`legalAddress` are null until the Admin
+ * general completes them.
+ */
+export type TenantLegalIdentity = {
+  tenantName: string;
+  legalName: string | null;
+  legalAddress: string | null;
+  contactEmail: string | null;
+};
+
+/** How customers can reach the business for program or privacy requests. */
+export function tenantContactText(business: TenantLegalIdentity) {
+  return business.contactEmail
+    ? `el correo ${business.contactEmail} o en cualquiera de sus sucursales`
+    : "cualquiera de sus sucursales participantes";
 }

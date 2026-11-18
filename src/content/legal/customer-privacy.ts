@@ -1,20 +1,30 @@
-import { LEGAL_EFFECTIVE_DATE, LEGAL_VERSION, legalContactText, type LegalOperator } from "@/lib/legal/company";
+import { LEGAL_EFFECTIVE_DATE, LEGAL_VERSION, legalContactText, tenantContactText, type LegalOperator, type TenantLegalIdentity } from "@/lib/legal/company";
 
 /**
  * Aviso de privacidad para clientes de programas de lealtad. Each business is
- * the data controller; morrow processes data on its behalf. Pending review.
+ * the data controller; morrow processes data on its behalf. With a business
+ * identity (DEC-0072) the notice names that business, its domicile and its
+ * contact channel; without one it is the generic notice. Pending review.
  */
-export function customerPrivacyMarkdown(op: LegalOperator) {
+export function customerPrivacyMarkdown(op: LegalOperator, business?: TenantLegalIdentity) {
   const contact = legalContactText(op);
-  return `# Aviso de Privacidad para Clientes de Programas de Lealtad
+  const identified = business?.legalName && business.legalAddress ? business : null;
+  const title = business ? `Aviso de Privacidad para Clientes de ${business.tenantName}` : "Aviso de Privacidad para Clientes de Programas de Lealtad";
+  const controller = identified
+    ? `**${identified.legalName}** (**«${identified.tenantName}»**, el **«Negocio»**), con domicilio en ${identified.legalAddress}, es el **responsable** del tratamiento de tus datos personales y de su protección, en términos de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (la **«Ley»**).`
+    : `**El negocio que emite tu Tarjeta** (su nombre y logotipo aparecen en la Tarjeta y en el formulario de registro) es el **responsable** del tratamiento de tus datos personales y de su protección, en términos de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (la **«Ley»**). Puedes pedirle directamente su domicilio y su aviso de privacidad.`;
+  const rightsChannel = identified
+    ? `Dirige tu solicitud a ${identified.tenantName} por ${tenantContactText(identified)} o, si lo prefieres, a ${op.brand} por ${contact}; la turnaremos al negocio y le daremos apoyo para atenderla.`
+    : `Dirige tu solicitud al negocio que emitió tu Tarjeta o, si lo prefieres, a ${op.brand} por ${contact}; la turnaremos al negocio y le daremos apoyo para atenderla.`;
+  return `# ${title}
 
 Versión ${LEGAL_VERSION} · Última actualización: ${LEGAL_EFFECTIVE_DATE}
 
-Este aviso aplica a las personas que se registran en el programa de lealtad de un negocio que usa la plataforma ${op.brand} y reciben una tarjeta digital (la **«Tarjeta»**).
+Este aviso aplica a las personas que se registran en el programa de lealtad de ${business ? business.tenantName : "un negocio"}, que usa la plataforma ${op.brand}, y reciben una tarjeta digital (la **«Tarjeta»**).
 
 ## 1. ¿Quién es responsable de tus datos?
 
-**El negocio que emite tu Tarjeta** (su nombre y logotipo aparecen en la Tarjeta y en el formulario de registro) es el **responsable** del tratamiento de tus datos personales y de su protección, en términos de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (la **«Ley»**). Puedes pedirle directamente su domicilio y su aviso de privacidad.
+${controller}
 
 **${op.operatorName}** (**«${op.brand}»**), con domicilio en ${op.address}, opera la plataforma y trata tus datos **únicamente como encargado, por cuenta del negocio**, para operar su programa de lealtad. ${op.brand} no usa tus datos para fines propios, no los vende y mantiene separada la información de cada negocio.
 
@@ -50,7 +60,7 @@ Tus datos **no se venden** ni se comparten con otros negocios. Solo se transferi
 
 ## 5. Tus derechos
 
-Puedes **acceder**, **rectificar** y **cancelar** tus datos, **oponerte** a su tratamiento, revocar tu consentimiento y limitar su uso o divulgación. Dirige tu solicitud al negocio que emitió tu Tarjeta o, si lo prefieres, a ${op.brand} por ${contact}; la turnaremos al negocio y le daremos apoyo para atenderla.
+Puedes **acceder**, **rectificar** y **cancelar** tus datos, **oponerte** a su tratamiento, revocar tu consentimiento y limitar su uso o divulgación. ${rightsChannel}
 
 Tu solicitud debe incluir tu nombre, un medio para responderte, un documento que acredite tu identidad o representación, el derecho que deseas ejercer y la descripción de los datos (por ejemplo, el teléfono con el que te registraste). La respuesta se dará en un máximo de **20 días** y, si procede, se hará efectiva dentro de los **15 días** siguientes; ambos plazos pueden ampliarse una vez por un periodo igual. El trámite es gratuito.
 
