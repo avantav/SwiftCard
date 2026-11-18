@@ -16,29 +16,16 @@
   - **Work that can continue:** Versioned domain/event design, entitlement
     model, RLS plan and non-PII link-out architecture.
 
-- **LANDING-001:** The product owner has not provided the destination for “Solicitar una demo”.
-  - **Affected area:** Public landing conversion.
-  - **Consequence:** The complete educational page can be reviewed locally, but its demo actions must not be published as a working lead channel yet.
-  - **Recommendation:** Provide an approved Calendly, WhatsApp, email or form URL and set it as `NEXT_PUBLIC_DEMO_REQUEST_URL` in the deployment environment.
-  - **Work that can continue:** Copy review, SEO refinement and all application functionality; no visitor data is collected by the placeholder.
-
 - **IMPORT-001:** The three Casa Garmendia `.xlsx` files currently present in `/home/advanta/Downloads` are empty (0 bytes); only the screenshot exposes the expected headers.
   - **Affected area:** Real-data preview and execution of the one-time Casa Garmendia import.
   - **Consequence:** Code, mapping and conversion can be validated with fixtures, but the actual customer rows cannot be inspected or imported yet.
   - **Recommendation:** Obtain the original non-empty workbook, keep the six expected headers, run the Admin preview and resolve every reported row before the irreversible confirmation.
-  - **Work that can continue:** Application deployment, migration validation and test-data smoke paths.
-  - **Work that can continue:** Application deployment and targeted, reviewed database fixes; do not run the bulk migration command meanwhile.
+  - **Work that can continue:** Application deployment, migration validation, test-data smoke paths and targeted, reviewed database fixes; do not run the bulk migration command meanwhile.
 
-- **MAPS-001:** The Google Maps branch picker is implemented, but neither `.env.local` nor the documented hosted configuration currently provides `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`.
-  - **Affected area:** Admin branch location search and map selection.
-  - **Consequence:** The UI preserves existing coordinates and explains the missing configuration, but cannot load Places suggestions or map tiles until a key is supplied.
-  - **Recommendation:** In Google Cloud enable Maps JavaScript API and Places API (New), attach billing, restrict a browser key to the exact local/production HTTP referrers, set the environment variable and redeploy.
-  - **Work that can continue:** Migration deployment, branch data review and all non-map functionality.
-
-- **WALLET-001:** Apple and Google Wallet issuance are implemented without secrets in the repository. Google still needs a configured issuer, a service account registered as a Wallet Console Developer, publishing access and a real Android save test. The restored Apple reward progress through `0057`, notification icon through `0058` and APNs retry cron also still require rollout validation.
+- **WALLET-001:** Apple and Google Wallet issuance are implemented without secrets in the repository. The Google issuer and service-account credentials are configured in the Hostinger production environment (owner confirmation, 2026-11-18). Google still needs publishing access and a real Android save test. The restored Apple reward progress through `0057`, notification icon through `0058` and APNs retry cron also still require rollout validation.
   - **Affected phase:** Phase 8 - Wallet.
-  - **Consequence:** Google actions remain hidden until both environment values exist, and new issuers in demo mode can save only with authorized Admin/Developer/test accounts. Until `0057` is deployed and processed, the current Apple pass can also omit its front reward count/progress; failed Apple pushes can remain queued without a scheduler.
-  - **Recommendation:** Complete `docs/GOOGLE_WALLET.md`, validate one test save, request publishing access and then test a normal customer account. Separately deploy/process the Apple refresh and schedule its retry endpoint.
+  - **Consequence:** New issuers in demo mode can save only with authorized Admin/Developer/test accounts until publishing access is granted. Until `0057` is deployed and processed, the current Apple pass can also omit its front reward count/progress; failed Apple pushes can remain queued without a scheduler.
+  - **Recommendation:** Validate one test save on Android, request publishing access and then test a normal customer account. Separately deploy/process the Apple refresh and schedule its retry endpoint.
   - **Work that can continue:** Deployment preparation and remaining administrative correction UI.
 
 - **PILOT-001:** No se han proporcionado tenant piloto, aviso de privacidad, propietario operativo, contacto de soporte ni aprobación de producción.
@@ -49,6 +36,15 @@
   - **Status:** Active.
 
 ## Historical Blockers
+
+- **LANDING-001 (resolved 2026-11-18):** `NEXT_PUBLIC_DEMO_REQUEST_URL` is
+  configured in the Hostinger production environment (owner confirmation).
+  `NEXT_PUBLIC_*` values are inlined at build time: confirm on production that
+  «Solicitar una demo» opens the real destination.
+- **MAPS-001 (resolved 2026-11-18):** `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is
+  configured in the Hostinger production environment (owner confirmation).
+  Confirm on production that the branch picker loads the map and Places
+  suggestions after the rebuild.
 
 - **AUTH-MW-001 (resolved 2026-11-13, DEC-0062):** the root `middleware.ts`
   was never compiled because the app lives in `src/app`; replaced by

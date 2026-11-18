@@ -294,12 +294,11 @@ still external release checks. Prior phase status below is historical context.
   cross-product automation are later units. The reviewed scope and safeguards
   are recorded in `docs/reviews_plan.md` and `docs/PRODUCT.md` section 31.
 - Stripe test-mode Product/Price synchronization, Checkout, Customer Portal, signature-verified webhooks, promotion reservation/cap consumption, affiliate attribution/commission accrual and membership-limit/grace enforcement.
-- Configure the real scheduling, WhatsApp, email or form URL in `NEXT_PUBLIC_DEMO_REQUEST_URL`; until then the landing scrolls to its transparent pre-publication contact placeholder and collects no lead data.
 - Generic imported-stamp conversion/milestone generation for lifetime-points programs; the Casa Garmendia one-time profile and configurable welcome-reward generation are complete.
 - Remaining generic correction-policy interfaces, including configurable redemption-reversal enforcement; lifetime purchase/reward cancellation and manual point adjustments are already disabled in the backend.
 - Admin/Manager UI for purchase cancellation, redemption reversal, stamp adjustments, reward cancellation, operational history, and audit logs.
 - Automated E2E happy path and seeded-role integration validation.
-- Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, configure/publish and validate Google Wallet on Android, and complete pilot sign-off.
+- Deploy the QR/scanner correction, refresh or reinstall a pass, validate real-device scan and production APNs end to end, connect an external retry cron, obtain Google Wallet publishing access and validate it on Android (credentials are already in Hostinger), and complete pilot sign-off.
 
 ## Active Blockers
 
@@ -311,7 +310,7 @@ still external release checks. Prior phase status below is historical context.
   credentials, approved package prices, tax handling and payment policies have
   not been provided. Local promotion, attribution and webhook implementation can
   continue without enabling production payments.
-- WALLET-001: Apple and Google issuance are implemented. The Google issuer/service account and publishing access, real Android save, locally corrected Apple QR, employee camera scan, pass refresh/reinstallation, APNs validation and external retry cron remain deployment or device-validation work.
+- WALLET-001: Apple and Google issuance are implemented and the Google issuer/service-account credentials are configured in Hostinger (2026-11-18). Google publishing access, real Android save, locally corrected Apple QR, employee camera scan, pass refresh/reinstallation, APNs validation and external retry cron remain deployment or device-validation work.
 - PILOT-001: Pilot tenant, privacy notice, support owner, and production approvals are not provided.
 
 ## Known Risks

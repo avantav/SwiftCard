@@ -350,7 +350,7 @@ request is being implemented independently and must not delay this UI release.
 
 - `/` is now a buyer-facing educational landing rather than an internal gateway. It preserves authenticated staff redirects and the secondary `/login` path.
 - The only primary conversion is “Solicitar una demo”; the page intentionally contains no prices, checkout, Stripe integration or payment collection.
-- Set `NEXT_PUBLIC_DEMO_REQUEST_URL` to the approved scheduling, WhatsApp, email or form destination before publication. Without it, all demo actions land on a transparent in-page placeholder and no personal data is collected.
+- `NEXT_PUBLIC_DEMO_REQUEST_URL` is configured in Hostinger (2026-11-18, LANDING-001 resolved). If it is ever missing, all demo actions land on a transparent in-page placeholder and no personal data is collected.
 - The landing follows `docs/design/design-system(1)`: editorial warm-white composition, navy/teal product previews, Inter with restrained Georgia emphasis, large benefit surfaces, a phone Wallet section and slow layered motion. Below-fold sections reveal once through `IntersectionObserver`; reduced-motion users receive the complete static page immediately.
 - The visible brand is lowercase morrow with the rounded navy `m` monogram across marketing, authenticated navigation, PWA, offline, exports and Wallet attribution. Do not rename stable SwiftWallet environment variables, cookies, provider IDs or database namespaces without a separate migration plan.
 - Final responsive review and validation for the reference-driven rebrand must be recorded after completion.
