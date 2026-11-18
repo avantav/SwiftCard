@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
+import { withNotice } from "@/lib/forms/notices";
 import { LEGAL_VERSION } from "@/lib/legal/company";
 import {
   legalConsentErrorMessage,
@@ -67,5 +68,5 @@ export async function updateTenantLegalProfile(_previous: LegalConsentFormState,
   if (error) {
     return { error: legalConsentErrorMessage(error.message), values: { ...validation.data, legalContactEmail: validation.data.legalContactEmail ?? "" } };
   }
-  redirect("/admin/legal?saved=1");
+  redirect(withNotice("/admin/legal", "legal_saved"));
 }

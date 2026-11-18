@@ -1,3 +1,4 @@
+import { AdminScrollRegion } from "@/components/admin/admin-workspace";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "@/components/submit-button";
@@ -79,7 +80,7 @@ export default async function AdminImportsPage({ searchParams }: AdminImportsPag
   const selectedCard = cards.find((card) => card.id === importRecord?.loyalty_card_id);
   const selectedBranch = branches.find((branch) => branch.id === importRecord?.source_branch_id);
 
-  return <main className="enterprise-page">
+  return <main className="enterprise-page admin-workspace">
     <header className="enterprise-page-header">
       <div>
         <p className="enterprise-breadcrumb">Datos · {tenantName}</p>
@@ -88,6 +89,7 @@ export default async function AdminImportsPage({ searchParams }: AdminImportsPag
       </div>
       <Link className="enterprise-secondary-action" href="/admin/customers">Ver clientes</Link>
     </header>
+    <AdminScrollRegion className="is-plain" label="Importar clientes">
 
     {query.confirmed ? <p className="enterprise-alert is-success" role="status">Importación completada: {query.imported ?? "0"} clientes, {query.duplicates ?? "0"} duplicados, {query.errors ?? "0"} errores y {query.rewards ?? "0"} premios asignados.</p> : null}
     {query.error ? <p className="enterprise-alert is-error" role="alert">{query.error}</p> : null}
@@ -134,5 +136,6 @@ export default async function AdminImportsPage({ searchParams }: AdminImportsPag
     </section> : null}
 
     {history.length ? <section className="enterprise-data-panel" aria-labelledby="history-title"><div className="enterprise-panel-header"><div><h2 id="history-title">Historial del perfil</h2><p>{history.length} {history.length === 1 ? "archivo" : "archivos"}</p></div></div><div className="enterprise-table-wrap"><table className="enterprise-table"><caption className="sr-only">Archivos cargados con el perfil Casa Garmendia</caption><thead><tr><th scope="col">Archivo</th><th scope="col">Estado</th><th scope="col">Filas</th><th scope="col">Importados</th><th scope="col">Duplicados</th><th scope="col">Errores</th></tr></thead><tbody>{history.map((item) => <tr key={item.id}><td data-label="Archivo">{item.file_name}</td><td data-label="Estado"><span className={`enterprise-badge ${item.status === "CONFIRMED" ? "is-active" : "is-suspended"}`}>{item.status === "CONFIRMED" ? "Confirmada" : "Previsualizada"}</span></td><td className="enterprise-number" data-label="Filas">{item.total_rows}</td><td className="enterprise-number" data-label="Importados">{item.imported_rows}</td><td className="enterprise-number" data-label="Duplicados">{item.duplicate_rows}</td><td className="enterprise-number" data-label="Errores">{item.error_rows}</td></tr>)}</tbody></table></div></section> : null}
-  </main>;
+    </AdminScrollRegion>
+    </main>;
 }

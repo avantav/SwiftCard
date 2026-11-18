@@ -1,3 +1,4 @@
+import { AdminScrollRegion } from "@/components/admin/admin-workspace";
 import { requireInternalArea } from "@/lib/auth/server";
 
 const exportsList = [
@@ -13,8 +14,9 @@ export default async function ExportsPage() {
   const context = await requireInternalArea("ADMIN");
   const { data: branches } = await context.supabase.from("branches").select("id,name").eq("tenant_id", context.tenantId ?? "").eq("status", "ACTIVE").order("name");
   return (
-    <main className="enterprise-page">
+    <main className="enterprise-page admin-workspace">
       <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Datos</p><h1 id="exports-title">Exportaciones</h1><p>Descarga únicamente la información autorizada para tu alcance.</p></div></header>
+    <AdminScrollRegion className="is-plain" label="Exportaciones">
       <section className="enterprise-content-card admin-export-card" aria-labelledby="export-form-title">
         <h2 className="admin-card-title" id="export-form-title">Preparar archivo</h2>
         <p className="admin-card-copy">Selecciona el conjunto de datos, periodo y formato.</p>
@@ -26,6 +28,7 @@ export default async function ExportsPage() {
           <button className="primary-button" type="submit">Descargar archivo</button>
         </form>
       </section>
+      </AdminScrollRegion>
     </main>
   );
 }

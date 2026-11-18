@@ -11471,3 +11471,15 @@ html.has-open-navigation {
 .insights-grid.is-single {
   grid-template-columns: minmax(0, 1fr);
 }
+
+/* Route loading skeleton for admin workspaces. */
+.workspace-skeleton-rows {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.workspace-skeleton-rows .enterprise-skeleton {
+  display: block;
+  height: 40px;
+}
