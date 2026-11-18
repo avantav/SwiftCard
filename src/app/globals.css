@@ -11459,3 +11459,10 @@ html.has-open-navigation {
     grid-column: 2;
   }
 }
+
+/* A data panel with a footer (pagination) under its scroll region. */
+@media (min-width: 640px) {
+  .admin-workspace-body > .enterprise-data-panel.has-footer {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+}

@@ -1,3 +1,5 @@
+import Form from "next/form";
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminCustomerQrDialog } from "@/components/admin-customer-qr-dialog";
@@ -209,23 +211,18 @@ export default async function CustomerDirectoryPage({
   const hasFilters = Boolean(filters.search || filters.status !== "ALL");
 
   return (
-    <main className="enterprise-page">
-      <header className="enterprise-page-header">
-        <div>
-          <p className="enterprise-breadcrumb">Datos</p>
-          <h1 id="customers-title">Clientes</h1>
-          <p>Consulta el estado, tarjeta y saldo de los clientes del tenant.</p>
-        </div>
-      </header>
-
-      {pageQuery.customerDeleted ? <p className="enterprise-alert is-success" role="status">Cliente eliminado permanentemente.</p> : null}
-      {pageQuery.customerUpdated === "active" ? <p className="enterprise-alert is-success" role="status">Cliente reactivado.</p> : null}
-      {pageQuery.customerUpdated === "inactive" ? <p className="enterprise-alert is-success" role="status">Cliente desactivado. Su historial se conserva.</p> : null}
+    <AdminWorkspace
+      breadcrumb="Datos"
+      className="admin-customers-workspace"
+      description="Consulta el estado, tarjeta y saldo de los clientes del negocio."
+      title="Clientes"
+      titleId="customers-title"
+      toolbar={<>
       {pageQuery.error === "history" ? <p className="enterprise-alert is-warning" role="alert">No se puede eliminar este cliente porque tiene saldo, compras, recompensas, Wallet o historial operativo. Puedes desactivarlo.</p> : null}
       {pageQuery.error && pageQuery.error !== "history" ? <p className="enterprise-alert is-error" role="alert">No se pudo completar la acción sobre el cliente.</p> : null}
 
       <section className="enterprise-filter-panel" aria-label="Filtros de clientes">
-        <form className="enterprise-filter-form admin-customer-filters" method="get">
+        <Form action="/admin/customers" className="enterprise-filter-form admin-customer-filters" scroll={false}>
           <label className="field">
             <span>Nombre o teléfono</span>
             <input
@@ -244,9 +241,9 @@ export default async function CustomerDirectoryPage({
               <option value="INACTIVE">Inactivos</option>
             </select>
           </label>
-          <button className="primary-button" type="submit">Aplicar filtros</button>
-          {hasFilters ? <Link className="enterprise-secondary-action" href="/admin/customers">Limpiar</Link> : null}
-        </form>
+          <button className="enterprise-primary-action" type="submit">Aplicar filtros</button>
+          {hasFilters ? <Link className="enterprise-secondary-action" href="/admin/customers" scroll={false}>Limpiar</Link> : null}
+        </Form>
       </section>
 
       {relatedFailed && !failed ? (
@@ -255,7 +252,9 @@ export default async function CustomerDirectoryPage({
         </p>
       ) : null}
 
-      <section className="enterprise-data-panel" aria-labelledby="customer-directory-title">
+      </>}
+    >
+      <section className={`enterprise-data-panel${totalPages > 1 ? " has-footer" : ""}`} aria-labelledby="customer-directory-title">
         <div className="enterprise-panel-header">
           <div>
             <h2 id="customer-directory-title">Directorio de clientes</h2>
@@ -274,7 +273,7 @@ export default async function CustomerDirectoryPage({
           </div>
         ) : customers.length ? (
           <>
-            <div className="enterprise-table-wrap">
+            <AdminScrollRegion className="enterprise-table-wrap" label="Directorio de clientes">
               <table className="enterprise-table admin-customer-table">
                 <caption className="sr-only">Clientes registrados en el tenant</caption>
                 <thead>
@@ -375,7 +374,7 @@ export default async function CustomerDirectoryPage({
                   })}
                 </tbody>
               </table>
-            </div>
+            </AdminScrollRegion>
             {totalPages > 1 ? (
               <nav className="admin-customer-pagination" aria-label="Paginación de clientes">
                 <p>Página {filters.page} de {totalPages}</p>
@@ -399,6 +398,6 @@ export default async function CustomerDirectoryPage({
           </div>
         )}
       </section>
-    </main>
+    </AdminWorkspace>
   );
 }

@@ -21,6 +21,9 @@ export const NOTICES = {
   card_deleted: "Tarjeta eliminada.",
   campaign_created: "Campaña creada.",
   customer_updated: "Cliente actualizado.",
+  customer_activated: "Cliente reactivado.",
+  customer_deactivated: "Cliente desactivado. Su historial se conserva.",
+  customer_deleted: "Cliente eliminado permanentemente.",
   correction_saved: "Corrección registrada.",
   legal_saved: "Datos legales guardados.",
 } as const;
