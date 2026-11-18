@@ -4,15 +4,11 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { requireInternalArea } from "@/lib/auth/server";
 import { deliverCampaign } from "@/lib/campaigns/delivery";
-import { validateCampaignForm } from "@/lib/campaigns/form";
+import { campaignFormValues, validateCampaignForm, type CampaignActionState, type CampaignField, type CampaignFormValues } from "@/lib/campaigns/form";
+import { errorState as baseErrorState, type FieldErrors } from "@/lib/forms/state";
 
-function back(segments: string[], branchId: string | null, error: string): never {
-  const params = new URLSearchParams();
-  for (const segment of segments) params.append("segments", segment);
-  if (branchId) params.set("branch", branchId);
-  params.set("error", error);
-  redirect(`/admin/campaigns/nueva?${params.toString()}`);
-}
+const errorState = (values: CampaignFormValues, fieldErrors: FieldErrors<CampaignField>, formError: string): CampaignActionState =>
+  baseErrorState<CampaignFormValues, CampaignField>(values, fieldErrors, formError);
 
 const ERRORS: Record<string, string> = {
   "55P03": "Espera un minuto antes de enviar otra campaña.",
@@ -21,16 +17,22 @@ const ERRORS: Record<string, string> = {
   "42501": "Las campañas están disponibles solo para el plan Empresarial."
 };
 
-export async function createCampaign(formData: FormData) {
+/**
+ * Sends a campaign. Errors come back as state, so the message, subject and
+ * notice the admin typed stay in the form, as do the audience and branch
+ * (DEC-0073; the old redirect dropped the branch on validation errors).
+ */
+export async function createCampaign(_previousState: CampaignActionState, formData: FormData): Promise<CampaignActionState> {
+  const values = campaignFormValues(formData);
   const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN") redirect("/admin");
   const validation = validateCampaignForm(formData);
   if (!validation.ok) {
-    back(formData.getAll("segments").map(String), null, validation.error);
+    return errorState(values, { [validation.field]: [validation.error] }, validation.error);
   }
   const input = validation.data;
   if (formData.get("confirmSend") !== "on") {
-    back(input.segments, input.branchId, "Confirma que deseas enviar la campaña.");
+    return errorState(values, { confirmSend: ["Confirma que deseas enviar la campaña."] }, "Confirma que deseas enviar la campaña.");
   }
 
   const { data, error } = await context.supabase.schema("app").rpc("create_marketing_campaign", {
@@ -44,7 +46,7 @@ export async function createCampaign(formData: FormData) {
     target_wallet_message: input.walletMessage
   });
   if (error || typeof data !== "string") {
-    back(input.segments, input.branchId, ERRORS[error?.code ?? ""] ?? "No se pudo crear la campaña. Intenta nuevamente.");
+    return errorState(values, {}, ERRORS[error?.code ?? ""] ?? "No se pudo crear la campaña. Intenta nuevamente.");
   }
 
   const campaignId = data;

@@ -17,7 +17,19 @@
      - Fix: `assignStaffBranch` now requires a writable context, so support
        mode is read-only there and pending legal acceptance blocks it.
      - Verify on production that the dialogs keep input after a server error.
-  3. Card editor and Campaigns.
+  3. Card editor and Campaigns — `feat/admin-workspace-editor-campaigns`
+     (stacked on phase 2). Done:
+     - The editor runs in `AdminWorkspace` (step rail as toolbar, stage in one
+       scroll region) and step 1 has jump links.
+     - Program, design and locations saves return `CardStepState`.
+       `PreservingForm` submits without resetting, so typed values survive
+       errors, and the upload guard still blocks the submit.
+     - New campaign shows audience and message side by side; `createCampaign`
+       returns state with per-field errors and keeps the branch.
+     - The campaign list and detail use the workspace.
+     - Pending: try `PreservingForm` in a real browser — a server error on
+       step 1 must keep tiers and the welcome reward, and an upload in progress
+       must block saving.
   4. Home setup checklist, Dashboard tabs, Customers, Security, Imports,
      Billing, missing `loading.tsx`.
   5. Customer correction (Admin general only, read RPC migration `0081`;

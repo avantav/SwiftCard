@@ -11273,3 +11273,95 @@ html.has-open-navigation {
   border: 0;
   border-radius: 0;
 }
+
+/* Card editor inside the workspace (DEC-0073): the stage card scrolls in
+   its region; jump links reach each part of step 1. */
+.card-wizard-scroll {
+  border: 0;
+  background: transparent;
+}
+
+.card-wizard-scroll > .card-wizard-stage {
+  margin: 0 auto;
+}
+
+.card-stage-jump {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  border-bottom: 1px solid var(--enterprise-border);
+  padding: 8px 0;
+  background: var(--enterprise-surface);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.card-stage-jump a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  color: var(--enterprise-text-muted);
+  text-decoration: none;
+}
+
+.card-stage-jump a:hover {
+  color: var(--enterprise-text);
+}
+
+.card-stage-anchor {
+  scroll-margin-top: 56px;
+}
+
+#card-program,
+#card-terms {
+  scroll-margin-top: 56px;
+}
+
+@media (max-width: 639px) {
+  .card-stage-jump {
+    position: static;
+  }
+
+  .card-stage-jump a {
+    min-height: 44px;
+  }
+}
+
+/* Data panels inside a master-detail split behave like the workspace body. */
+@media (min-width: 640px) {
+  .admin-master-detail {
+    grid-auto-rows: minmax(0, 1fr);
+  }
+
+  .admin-master-detail-list > .enterprise-data-panel,
+  .admin-master-detail-panel > .enterprise-data-panel {
+    display: grid;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+}
+
+.admin-scroll-region > .campaign-audience-form,
+.admin-scroll-region > .campaign-content-form {
+  padding: 16px;
+}
+
+@media (min-width: 1024px) {
+  .campaign-split {
+    grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  }
+}
+
+/* A scroll region that stacks panels without its own frame. */
+.admin-scroll-region.is-plain {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}

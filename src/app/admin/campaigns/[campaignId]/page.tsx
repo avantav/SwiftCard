@@ -1,3 +1,4 @@
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -62,22 +63,21 @@ export default async function CampaignDetailPage({ params, searchParams }: Detai
   const retry = retryCampaign.bind(null, campaign.id);
 
   return (
-    <main className="enterprise-page">
-      <header className="enterprise-page-header">
-        <div>
-          <p className="enterprise-breadcrumb"><Link href="/admin/campaigns">Campañas</Link> / Detalle</p>
-          <h1>{campaign.name}</h1>
-          <p>{campaign.segments.filter(isSegment).map((segment: string) => SEGMENT_COPY[segment as keyof typeof SEGMENT_COPY].label).join(", ")} · {campaign.recipient_count} envíos</p>
-        </div>
-        {retryable && access === "ALLOWED" ? (
-          <form action={retry}>
-            <SubmitButton className="enterprise-secondary-action">Reintentar pendientes</SubmitButton>
-          </form>
-        ) : null}
-      </header>
-
-      {query.created ? <p className="enterprise-alert is-success" role="status">Campaña creada. El envío continúa en segundo plano; actualiza la página para ver el avance.</p> : null}
-      {query.retried ? <p className="enterprise-alert is-success" role="status">Reintentando los envíos pendientes.</p> : null}
+    <AdminWorkspace
+      breadcrumb={<><Link href="/admin/campaigns">Campañas</Link> / Detalle</>}
+      description={`${campaign.segments.filter(isSegment).map((segment: string) => SEGMENT_COPY[segment as keyof typeof SEGMENT_COPY].label).join(", ")} · ${campaign.recipient_count} envíos`}
+      primaryAction={retryable && access === "ALLOWED" ? (
+        <form action={retry}>
+          <SubmitButton className="enterprise-secondary-action">Reintentar pendientes</SubmitButton>
+        </form>
+      ) : undefined}
+      title={campaign.name}
+      toolbar={query.created || query.retried ? <>
+        {query.created ? <p className="enterprise-alert is-success" role="status">Campaña creada. El envío continúa en segundo plano; actualiza la página para ver el avance.</p> : null}
+        {query.retried ? <p className="enterprise-alert is-success" role="status">Reintentando los envíos pendientes.</p> : null}
+      </> : undefined}
+    >
+      <AdminScrollRegion className="is-plain" label="Detalle de la campaña">
 
       <section className="enterprise-data-panel" aria-labelledby="delivery-title">
         <div className="enterprise-panel-header">
@@ -117,6 +117,7 @@ export default async function CampaignDetailPage({ params, searchParams }: Detai
           {campaign.send_wallet ? <div><dt>Aviso en Wallet</dt><dd>{campaign.wallet_message}</dd></div> : null}
         </dl>
       </section>
-    </main>
+      </AdminScrollRegion>
+    </AdminWorkspace>
   );
 }
