@@ -3679,10 +3679,6 @@ button .enterprise-spinner,
     height: calc(100dvh - var(--admin-offset, 64px));
     overflow: hidden;
   }
-
-  .staff-inventory-panel {
-    max-height: calc(100dvh - 230px);
-  }
 }
 
 @media (max-width: 900px) {
