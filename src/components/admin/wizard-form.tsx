@@ -16,8 +16,11 @@ export type WizardStep = {
   validate?: (formData: FormData) => FieldErrors;
 };
 
-export type WizardRenderContext<V extends object> = {
-  state: FormState<V>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFormState = FormState<any, string>;
+
+export type WizardRenderContext<S extends AnyFormState> = {
+  state: S;
   /** Server errors merged with the client errors of the current step. */
   errors: FieldErrors;
   step: number;
@@ -30,14 +33,14 @@ export type WizardRenderContext<V extends object> = {
  * focuses the first invalid field; a server error returns to the step that
  * owns the field. One primary action per step.
  */
-export function WizardForm<V extends object>({ steps, action, initialState, submitLabel, errorTitle, cancelHref, children, className = "" }: {
+export function WizardForm<S extends AnyFormState>({ steps, action, initialState, submitLabel, errorTitle, cancelHref, children, className = "" }: {
   steps: readonly WizardStep[];
-  action: (previous: FormState<V>, formData: FormData) => Promise<FormState<V>>;
-  initialState: FormState<V>;
+  action: (previous: S, formData: FormData) => Promise<S>;
+  initialState: S;
   submitLabel: string;
   errorTitle: string;
   cancelHref: string;
-  children: (context: WizardRenderContext<V>) => ReactNode[];
+  children: (context: WizardRenderContext<S>) => ReactNode[];
   className?: string;
 }) {
   const [step, setStep] = useState(0);
@@ -45,17 +48,17 @@ export function WizardForm<V extends object>({ steps, action, initialState, subm
   const formRef = useRef<HTMLFormElement>(null);
   const id = useId();
 
-  const [state, formAction] = useActionState(async (previous: FormState<V>, formData: FormData) => {
-    const next = await action(previous, formData);
+  const [state, formAction] = useActionState<S, FormData>(async (previous, formData) => {
+    const next = await action(previous as S, formData);
     if (next.status === "error") {
-      const target = firstStepWithError(next.fieldErrors, steps.map((item) => item.fields));
+      const target = firstStepWithError(next.fieldErrors as FieldErrors, steps.map((item) => item.fields));
       if (target >= 0) setStep(target);
       setClientErrors({});
     }
-    return next;
-  }, initialState);
+    return next as Awaited<S>;
+  }, initialState as Awaited<S>);
 
-  const errors: FieldErrors = { ...state.fieldErrors, ...clientErrors };
+  const errors: FieldErrors = { ...(state.fieldErrors as FieldErrors), ...clientErrors };
   const panels = children({ state, errors, step });
   const last = step === steps.length - 1;
 
@@ -111,7 +114,7 @@ export function WizardForm<V extends object>({ steps, action, initialState, subm
       </li>)}
     </ol>
 
-    <FormErrorSummary title={errorTitle} formError={state.formError} fieldErrors={state.fieldErrors} active={state.status === "error"} />
+    <FormErrorSummary title={errorTitle} formError={state.formError} fieldErrors={state.fieldErrors as FieldErrors} active={state.status === "error"} />
 
     {steps.map((item, index) => <section
       aria-labelledby={`${id}-step-${index}`}

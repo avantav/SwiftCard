@@ -11266,3 +11266,18 @@ html.has-open-navigation {
     min-height: 44px;
   }
 }
+
+/* A data panel that owns the workspace body: header + one scroll region. */
+@media (min-width: 640px) {
+  .admin-workspace-body > .enterprise-data-panel {
+    display: grid;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+}
+
+.enterprise-data-panel > .admin-scroll-region {
+  border: 0;
+  border-radius: 0;
+}

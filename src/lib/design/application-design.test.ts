@@ -34,7 +34,8 @@ describe("application-wide design contract", () => {
 
   it("moves every authenticated page into its standard hierarchy", () => {
     for (const page of adminPages) {
-      expect(page).toContain('className="enterprise-page');
+      // AdminWorkspace renders `enterprise-page admin-workspace` (DEC-0073).
+      expect(page.includes('className="enterprise-page') || page.includes("<AdminWorkspace")).toBe(true);
       expect(page).not.toContain('className="shell"');
     }
     for (const page of operationsPages) {
