@@ -11466,3 +11466,8 @@ html.has-open-navigation {
     grid-template-rows: auto minmax(0, 1fr) auto;
   }
 }
+
+/* Dashboard tabs show one panel of a two-column grid at a time. */
+.insights-grid.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
