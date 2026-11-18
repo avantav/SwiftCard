@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import { SEGMENT_COPY, isSegment } from "@/lib/admin/insights";
 import { requireInternalArea } from "@/lib/auth/server";
 import { ACCESS_COPY, campaignAccess, canReadCampaigns } from "@/lib/campaigns/access";
@@ -23,28 +24,23 @@ export default async function CampaignsPage() {
   const context = await requireInternalArea("ADMIN");
   const access = await campaignAccess(context);
 
-  const header = (allowed: boolean) => (
-    <header className="enterprise-page-header">
-      <div>
-        <p className="enterprise-breadcrumb">Operación</p>
-        <h1>Campañas</h1>
-        <p>Envía mensajes por correo y Wallet a segmentos de clientes que aceptaron recibir promociones.</p>
-      </div>
-      {allowed ? <Link className="primary-button" href="/admin/campaigns/nueva">Nueva campaña</Link> : null}
-    </header>
-  );
+  const workspace = (allowed: boolean) => ({
+    breadcrumb: "Operación",
+    description: "Envía mensajes por correo y Wallet a segmentos de clientes que aceptaron recibir promociones.",
+    primaryAction: allowed ? <Link className="enterprise-primary-action" href="/admin/campaigns/nueva">Nueva campaña</Link> : undefined,
+    title: "Campañas",
+  });
 
   if (!canReadCampaigns(access)) {
     const copy = ACCESS_COPY[access];
     return (
-      <main className="enterprise-page">
-        {header(false)}
+      <AdminWorkspace {...workspace(false)}>
         <div className="enterprise-empty-state" role="status">
           <span className="enterprise-empty-icon" aria-hidden="true">!</span>
           <h2>{copy.title}</h2>
           <p>{copy.body}</p>
         </div>
-      </main>
+      </AdminWorkspace>
     );
   }
 
@@ -61,9 +57,7 @@ export default async function CampaignsPage() {
   const date = new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short", timeZone: tenantResult.data?.timezone ?? "America/Mazatlan" });
 
   return (
-    <main className="enterprise-page">
-      {header(access === "ALLOWED")}
-      {access === "SUPPORT_READ" ? <p className="enterprise-alert is-info" role="status">{ACCESS_COPY.SUPPORT_READ.body}</p> : null}
+    <AdminWorkspace {...workspace(access === "ALLOWED")} toolbar={access === "SUPPORT_READ" ? <p className="enterprise-alert is-info" role="status">{ACCESS_COPY.SUPPORT_READ.body}</p> : undefined}>
       <section className="enterprise-data-panel" aria-labelledby="campaigns-title">
         <div className="enterprise-panel-header">
           <div>
@@ -78,7 +72,7 @@ export default async function CampaignsPage() {
             <p>Actualiza la página para volver a intentarlo.</p>
           </div>
         ) : campaigns.length ? (
-          <div className="enterprise-table-wrap">
+          <AdminScrollRegion className="enterprise-table-wrap" label="Historial de campañas">
             <table className="enterprise-table">
               <caption className="sr-only">Campañas enviadas</caption>
               <thead>
@@ -104,7 +98,7 @@ export default async function CampaignsPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </AdminScrollRegion>
         ) : (
           <div className="enterprise-empty-state" role="status">
             <span className="enterprise-empty-icon" aria-hidden="true">○</span>
@@ -114,6 +108,6 @@ export default async function CampaignsPage() {
           </div>
         )}
       </section>
-    </main>
+    </AdminWorkspace>
   );
 }
