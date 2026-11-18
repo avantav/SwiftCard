@@ -1,3 +1,6 @@
+import { activeTab } from "@/components/admin/admin-tabs";
+import { CUSTOMER_TABS, CustomerDrawer } from "@/components/admin/customer-drawer";
+import { loadCustomerActivity } from "@/lib/admin/customer-activity-server";
 import Form from "next/form";
 import { AdminScrollRegion, AdminWorkspace } from "@/components/admin/admin-workspace";
 import Link from "next/link";
@@ -104,6 +107,17 @@ export default async function CustomerDirectoryPage({
 
   const pageQuery = await searchParams;
   const filters = parseAdminCustomerDirectoryParams(pageQuery);
+  // Customer workspace (DEC-0074): history and corrections in a dialog.
+  const selectedCustomerId = pageQuery.customer && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageQuery.customer) ? pageQuery.customer : null;
+  const listParams = { q: filters.search || undefined, status: filters.status !== "ALL" ? filters.status : undefined, page: filters.page > 1 ? String(filters.page) : undefined };
+  const [selectedActivity, tenantCurrency] = selectedCustomerId
+    ? await Promise.all([
+        loadCustomerActivity(context.supabase, context.tenantId, selectedCustomerId),
+        context.supabase.from("tenants").select("currency_code").eq("id", context.tenantId).maybeSingle().then((result) => result.data?.currency_code ?? "MXN"),
+      ])
+    : [null, "MXN"];
+  const listQuery = new URLSearchParams(Object.entries(listParams).filter((entry): entry is [string, string] => Boolean(entry[1]))).toString();
+  const listHref = `/admin/customers${listQuery ? `?${listQuery}` : ""}`;
   const search = resolveAdminCustomerSearch(filters.search);
   const offset = (filters.page - 1) * ADMIN_CUSTOMER_PAGE_SIZE;
   let customersQuery = context.supabase
@@ -347,6 +361,7 @@ export default async function CustomerDirectoryPage({
                           <small className="admin-customer-method">{customer.registration_method === "SELF_SERVICE" ? "Autorregistro" : "Registrado por personal"}</small>
                         </td>
                         <td className="enterprise-row-actions" data-label="Acciones">
+                          <Link className="enterprise-secondary-action" href={`/admin/customers?${new URLSearchParams(Object.entries({ ...listParams, customer: customer.id }).filter((entry): entry is [string, string] => Boolean(entry[1])))}`} scroll={false}>Ver cliente</Link>
                           <details>
                             <summary>Acciones</summary>
                             <div className="enterprise-row-menu">
@@ -398,6 +413,15 @@ export default async function CustomerDirectoryPage({
           </div>
         )}
       </section>
+      {selectedActivity ? <CustomerDrawer
+        act={pageQuery.act}
+        activity={selectedActivity}
+        closeHref={listHref}
+        currency={tenantCurrency}
+        keep={listParams}
+        readOnly={Boolean(context.supportSession) || context.access.role !== "ADMIN"}
+        tab={activeTab(pageQuery.ctab, CUSTOMER_TABS.map((tab) => tab.id))}
+      /> : selectedCustomerId ? <p className="enterprise-alert is-error" role="alert">El cliente no existe o no pertenece a tu negocio.</p> : null}
     </AdminWorkspace>
   );
 }

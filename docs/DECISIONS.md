@@ -1153,3 +1153,30 @@
   is phase 5. Header, metric and content-card spacing were compacted (72→56,
   136→96, 28→20px).
 - Status: Accepted.
+
+## DEC-0074 - Customer Corrections For The Admin General
+
+- Date: 2026-11-18
+- Context: PRODUCT.md §15–17 requires auditable corrections (cancel purchase,
+  reverse redemption, cancel reward, manual stamp adjustment). The RPCs
+  existed since 0031/0044 but no admin screen used them, and only purchase
+  cancellations honored the per-program `allow_*` options.
+- Decision:
+  - `/admin/customers?customer=<id>` opens a customer workspace (Resumen,
+    Historial, Ajustar saldo, Editar). Each movement offers at most one
+    correction, only when its state and the program options allow it;
+    confirmation happens in the dialog, names the consequence and requires a
+    reason (5–300 characters) that the RPCs audit.
+  - History is read with the RLS-scoped session client (existing policies
+    already let the Admin general read purchases, redemptions, rewards and
+    adjustments of the tenant); no new read RPC was needed.
+  - Migration `0081` enforces the options in the database:
+    `app.cancel_reward` returns `DISABLED`, and a trigger refuses
+    COMPLETED → REVERSED redemptions when reversals are disabled. Rewards
+    cancelled by a purchase cancellation keep following
+    `allow_purchase_cancellations`.
+  - Admin general only; support sessions see Resumen and Historial read-only.
+    Lifetime-points programs only allow redemption reversal.
+- Consequences: Branch-manager corrections remain a separate task
+  (IMPLEMENTATION_PLAN Phase 5 marked partial). Apply `0081` with the code.
+- Status: Accepted.

@@ -11483,3 +11483,83 @@ html.has-open-navigation {
   display: block;
   height: 40px;
 }
+
+/* Customer workspace (DEC-0074). */
+.customer-drawer-body {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.customer-activity-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.customer-activity-list li {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--enterprise-border);
+  padding: 10px 0;
+}
+
+.customer-activity-list li.is-selected {
+  background: var(--enterprise-warning-soft);
+}
+
+.customer-activity-list li > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.customer-activity-list small {
+  color: var(--enterprise-text-muted);
+  font-size: 0.8rem;
+}
+
+.customer-activity-meta {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.customer-correction-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.customer-adjust-direction {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  border: 0;
+  padding: 0;
+}
+
+.field-optional {
+  margin-left: 6px;
+  color: var(--enterprise-text-muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+@media (max-width: 639px) {
+  .customer-activity-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .customer-correction-actions > * {
+    width: 100%;
+    min-height: 44px;
+  }
+}

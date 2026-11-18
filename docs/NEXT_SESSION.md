@@ -43,8 +43,18 @@
        billing.
      - Not done from the plan: an imports wizard (the upload/preview flow is
        unchanged, only contained) and billing tabs (its content is short).
-  5. Customer correction (Admin general only, read RPC migration `0081`;
-     manager access is a separate task, DEC-0074).
+  5. Customer corrections — `feat/admin-customer-corrections` (stacked on
+     phase 4, DEC-0074). Done:
+     - `/admin/customers?customer=<id>` has tabs Resumen, Historial, Ajustar
+       saldo and Editar. Corrections are confirmed in the dialog with a
+       reason.
+     - Migration `0081` enforces the reward-cancellation and
+       redemption-reversal options in the database.
+     - History is read through RLS; no read RPC was needed.
+     - Apply `0081` with the code.
+     - Pending: manager (branch-scoped) corrections.
+     - Verify on production: cancel a test purchase, then reverse a test
+       redemption.
 
 ## Tenant legal identity and terms acceptance — 2026-11-18
 
