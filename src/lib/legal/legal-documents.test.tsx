@@ -33,7 +33,7 @@ describe("legal markdown renderer", () => {
 
 describe("privacy notices (LFPDPPP 2025, art. 15)", () => {
   for (const [name, source] of [
-    ["morrow", privacyMarkdown(operator)],
+    ["plataforma", privacyMarkdown(operator)],
     ["clientes", customerPrivacyMarkdown(operator)],
   ] as const) {
     it(`${name}: identifies the controller, data, purposes, limits, ARCO and changes`, () => {
@@ -56,6 +56,15 @@ describe("privacy notices (LFPDPPP 2025, art. 15)", () => {
     expect(customerPrivacyMarkdown(operator)).toContain("No se recaba tu ubicación");
   });
 
+  it("only promises channels and rights the product supports", () => {
+    const customers = customerPrivacyMarkdown(operator);
+    expect(customers).not.toContain("WhatsApp o avisos");
+    expect(customers).toContain("opción «Promociones» de tu tarjeta web");
+    expect(customers).toContain("el historial de compras y premios se conserva sin datos que te identifiquen");
+    expect(read("../../components/public-wallet-card.tsx")).toContain("/promociones`}>Promociones</a>");
+    expect(read("../../components/public-registration-flow.tsx")).not.toContain("WhatsApp");
+  });
+
   it("falls back to WhatsApp when no privacy mailbox is configured", () => {
     expect(legalContactText({ ...operator, privacyEmail: null })).toBe("WhatsApp al +52 662 171 1274 (https://wa.me/526621711274)");
   });
@@ -73,6 +82,42 @@ describe("terms of service", () => {
     expect(terms).toContain("el Negocio es el responsable");
     expect(terms).toContain(`${operator.brand} actúa como encargado`);
     expect(terms).toContain("Ley aplicable y jurisdicción");
+  });
+
+  it("protects the operator: no guaranteed results, extra work quoted, service orders and conformity", () => {
+    expect(terms).toContain("no garantiza ningún resultado comercial");
+    expect(terms).toContain("cotización por escrito aceptada por el Negocio");
+    expect(terms).toContain("Orden de Servicio");
+    expect(terms).toContain("prevalece sobre los precios publicados");
+    expect(terms).toContain("Conformidad con el cobro");
+    expect(terms).toContain("15 días naturales");
+    expect(terms).toContain("Plataforma en desarrollo continuo");
+    expect(terms).toContain("bonificación proporcional");
+  });
+
+  it("discloses support access, anonymized statistics, imports, assignment and notices", () => {
+    expect(terms).toContain("sesiones de soporte temporales");
+    expect(terms).toContain("agregadas y anonimizadas");
+    expect(terms).toContain("que importe o capture directamente");
+    expect(terms).toContain("honrar o resolver directamente los sellos, puntos y premios pendientes");
+    expect(terms).toContain("## 18. Cesión");
+    expect(terms).toContain("## 17. Notificaciones");
+    expect(privacyMarkdown(operator)).toContain("sesiones de soporte temporales");
+    expect(privacyMarkdown(operator)).toContain("Hostinger");
+  });
+
+  it("only references sections that exist", () => {
+    const sections = new Set([...terms.matchAll(/^## (\d+)\./gm)].map((match) => match[1]));
+    for (const match of terms.matchAll(/secci[oó]n (\d+)/g)) expect(sections.has(match[1])).toBe(true);
+  });
+});
+
+describe("brand", () => {
+  it("uses SwiftyCards, not the former brand, in legal surfaces", () => {
+    expect(legalOperator().brand).toBe("SwiftyCards");
+    for (const path of ["../../components/signup-form.tsx", "../../components/legal-consent-gate.tsx", "../../components/public-registration-flow.tsx", "../../content/legal/terms.ts", "../../content/legal/privacy.ts", "../../content/legal/customer-privacy.ts", "../../content/legal/tenant-customer-terms.ts"]) {
+      expect(read(path).toLowerCase()).not.toContain("morrow");
+    }
   });
 });
 
@@ -121,6 +166,8 @@ describe("business documents for loyalty customers (DEC-0072)", () => {
     expect(terms).toContain(`operado por **${business.legalName}**, con domicilio en ${business.legalAddress}`);
     expect(terms).toContain("[Aviso de Privacidad](/register/abc/privacidad)");
     expect(terms).toContain("no son canjeables por dinero en efectivo");
+    expect(terms).toContain("se publican siempre en tu tarjeta web");
+    expect(terms).not.toContain("antes de seguir usándola");
     expect(terms).toContain("Procuraduría Federal del Consumidor");
     expect(terms).toContain(`la plataforma **${operator.brand}**`);
     const whiteLabel = tenantCustomerTermsMarkdown(operator, { ...business, contactEmail: null }, "/card/x/privacidad", true);

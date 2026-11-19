@@ -4,8 +4,8 @@ import { privacyMarkdown } from "@/content/legal/privacy";
 import { legalOperator } from "@/lib/legal/company";
 
 export const metadata: Metadata = {
-  title: "Aviso de privacidad · morrow",
-  description: "Aviso de privacidad integral de la plataforma morrow.",
+  title: "Aviso de privacidad · SwiftyCards",
+  description: "Aviso de privacidad integral de la plataforma SwiftyCards.",
   alternates: { canonical: "/privacidad", types: { "text/markdown": "/privacidad.md" } },
 };
 

@@ -12,8 +12,8 @@ function env(name: string) {
  * current value before using /admin or /app (DEC-0072); bump it only for a
  * change that requires new acceptance.
  */
-export const LEGAL_VERSION = "1.1";
-export const LEGAL_EFFECTIVE_DATE = "18 de noviembre de 2026";
+export const LEGAL_VERSION = "1.2";
+export const LEGAL_EFFECTIVE_DATE = "19 de noviembre de 2026";
 
 export type LegalOperator = {
   brand: string;
@@ -29,8 +29,8 @@ export type LegalOperator = {
 
 export function legalOperator(): LegalOperator {
   return {
-    brand: "morrow",
-    operatorName: env("NEXT_PUBLIC_LEGAL_OPERATOR_NAME") ?? "SwiftyCards, operador de la plataforma morrow",
+    brand: "SwiftyCards",
+    operatorName: env("NEXT_PUBLIC_LEGAL_OPERATOR_NAME") ?? "SwiftyCards",
     address: env("NEXT_PUBLIC_LEGAL_ADDRESS") ?? "Hermosillo, Sonora, México",
     privacyEmail: env("NEXT_PUBLIC_LEGAL_PRIVACY_EMAIL") ?? "support@avantav.dev",
     whatsapp: "+52 662 171 1274",

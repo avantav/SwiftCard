@@ -2,7 +2,8 @@ import { AdminScrollRegion } from "@/components/admin/admin-workspace";
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { getCurrencyFractionDigits } from "@/lib/admin/program";
-import { openBillingPortal } from "./actions";
+import { acceptServiceOrder, openBillingPortal } from "./actions";
+import { formatServiceOrderPrice, SERVICE_ORDER_COLUMNS, type ServiceOrder } from "@/lib/billing/service-orders";
 import { SubmitButton } from "@/components/submit-button";
 import { billingSubscriptionBadge, billingSubscriptionLabel, getBillingUsageState } from "@/lib/billing/summary";
 
@@ -38,20 +39,42 @@ function promotionDiscount(item: Redemption) {
   return money(item.amount_off_minor_snapshot ?? 0, item.currency_code_snapshot ?? "MXN");
 }
 
-export default async function AdminBillingPage({ searchParams }: { searchParams: Promise<{ portal?: string }> }) {
-  const { portal } = await searchParams;
+export default async function AdminBillingPage({ searchParams }: { searchParams: Promise<{ portal?: string; order?: string }> }) {
+  const { portal, order: orderNotice } = await searchParams;
   const context = await requireInternalArea("ADMIN");
   if (context.access.role !== "ADMIN" || !context.tenantId) redirect("/admin");
 
-  const [subscriptionResponse, branchCountResponse, cardCountResponse, referralResponse, billingCustomerResponse] = await Promise.all([
+  const [subscriptionResponse, branchCountResponse, cardCountResponse, referralResponse, billingCustomerResponse, serviceOrderResponse] = await Promise.all([
     context.supabase.from("tenant_subscriptions")
       .select("id,status,billing_interval,currency_code,amount_minor,package_name_snapshot,membership_limit_snapshot,branch_limit_snapshot,loyalty_card_limit_snapshot,current_period_start,current_period_end,trial_ends_at,cancel_at_period_end")
       .eq("tenant_id", context.tenantId).is("ended_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     context.supabase.from("branches").select("id", { count: "exact", head: true }).eq("tenant_id", context.tenantId).eq("status", "ACTIVE"),
     context.supabase.from("loyalty_cards").select("id", { count: "exact", head: true }).eq("tenant_id", context.tenantId).neq("status", "ARCHIVED"),
     context.supabase.from("billing_affiliate_referrals").select("attributed_code_snapshot,attributed_at,converted_at").eq("tenant_id", context.tenantId).maybeSingle(),
-    context.supabase.from("billing_customers").select("stripe_customer_id").eq("tenant_id", context.tenantId).maybeSingle()
+    context.supabase.from("billing_customers").select("stripe_customer_id").eq("tenant_id", context.tenantId).maybeSingle(),
+    context.supabase.from("tenant_service_orders").select(SERVICE_ORDER_COLUMNS).eq("tenant_id", context.tenantId).order("version", { ascending: false }).limit(1).maybeSingle()
   ]);
+  const serviceOrder = serviceOrderResponse.error ? null : serviceOrderResponse.data as ServiceOrder | null;
+  const orderAlert = orderNotice === "superseded"
+      ? <p className="enterprise-alert is-warning" role="alert">Esa Orden de Servicio fue sustituida por una versión más reciente. Revisa la vigente.</p>
+      : orderNotice === "invalid" || orderNotice === "error"
+        ? <p className="enterprise-alert is-error" role="alert">No se pudo aceptar la Orden de Servicio. Marca la casilla de conformidad e inténtalo de nuevo.</p>
+        : null;
+  const serviceOrderSection = serviceOrder ? <section className="enterprise-content-card" aria-labelledby="service-order-title">
+    <div className="billing-usage-heading"><div><h2 id="service-order-title">Orden de Servicio · versión {serviceOrder.version}</h2><p>Condiciones comerciales acordadas para tu negocio. Prevalecen sobre los precios publicados.</p></div><span className={`enterprise-badge ${serviceOrder.accepted_at ? "is-active" : "is-suspended"}`}>{serviceOrder.accepted_at ? `Aceptada ${date(serviceOrder.accepted_at)}` : "Pendiente de aceptación"}</span></div>
+    <dl className="summary-list">
+      <div><dt>Plan</dt><dd>{serviceOrder.plan_name}</dd></div>
+      <div><dt>Precio</dt><dd>{formatServiceOrderPrice(serviceOrder)}</dd></div>
+      <div><dt>Vigencia</dt><dd>{date(serviceOrder.starts_on)}{serviceOrder.ends_on ? ` – ${date(serviceOrder.ends_on)}` : " · sin fecha de fin"}</dd></div>
+      <div><dt>Incluye</dt><dd className="billing-service-order-scope">{serviceOrder.included_scope}</dd></div>
+      <div><dt>No incluye</dt><dd className="billing-service-order-scope">{serviceOrder.excluded_scope}</dd></div>
+    </dl>
+    <p className="enterprise-helper-text">Cualquier trabajo no incluido se cotiza por separado y solo se realiza con una cotización aceptada por escrito. Consulta los <a href="/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a>, sección 4.</p>
+    {serviceOrder.accepted_at ? null : <form className="auth-form" action={acceptServiceOrder.bind(null, serviceOrder.id)}>
+      <label className="check-field"><input name="conformity" type="checkbox" required /><span>Estoy conforme, en nombre del negocio, con el precio y el alcance de esta Orden de Servicio.</span></label>
+      <SubmitButton className="enterprise-primary-action">Aceptar Orden de Servicio</SubmitButton>
+    </form>}
+  </section> : null;
   const portalAvailable = Boolean(billingCustomerResponse.data?.stripe_customer_id);
   const portalAction = portalAvailable ? <form action={openBillingPortal}><SubmitButton className="enterprise-primary-action">Administrar pago y facturas</SubmitButton></form> : null;
   const portalAlert = portal === "unavailable" || portal === "error"
@@ -68,7 +91,7 @@ export default async function AdminBillingPage({ searchParams }: { searchParams:
   const failed = Boolean(subscriptionResponse.error || branchCountResponse.error || cardCountResponse.error || referralResponse.error || usageResponse.error || redemptionResponse.error);
 
   if (failed) return <main className="enterprise-page"><header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta el estado comercial de tu cuenta.</p></div></header><div className="enterprise-empty-state is-error" role="alert"><h3>No se pudo cargar la facturación</h3><p>Actualiza la página o contacta al equipo de soporte.</p></div></main>;
-  if (!subscription) return <main className="enterprise-page"><header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta el estado comercial de tu cuenta.</p></div></header><div className="enterprise-empty-state"><h3>Aún no hay una suscripción asignada</h3><p>Tu operación de fidelidad continúa disponible. Contacta al equipo comercial para asignar un paquete.</p></div></main>;
+  if (!subscription) return <main className="enterprise-page"><header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta el estado comercial de tu cuenta.</p></div></header>{orderAlert}{serviceOrderSection ?? <div className="enterprise-empty-state"><h3>Aún no hay una suscripción asignada</h3><p>Tu operación de fidelidad continúa disponible. Contacta al equipo comercial para asignar un paquete.</p></div>}</main>;
 
   const currentMemberships = usage?.current_memberships ?? 0;
   const peakMemberships = usage?.peak_memberships ?? currentMemberships;
@@ -85,6 +108,8 @@ export default async function AdminBillingPage({ searchParams }: { searchParams:
     <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta tu paquete, periodo y consumo de membresías.</p></div>{portalAction}</header>
     <AdminScrollRegion className="is-plain" label="Plan y uso">
     {portalAlert}
+    {orderAlert}
+    {serviceOrderSection}
     {subscription.status === "TRIALING" && subscription.trial_ends_at ? <p className="enterprise-alert is-info" role="status"><strong>Prueba gratuita.</strong> Tu prueba termina el {date(subscription.trial_ends_at)}; después se cobrará automáticamente con la tarjeta registrada. Puedes cancelar antes desde «Administrar pago y facturas».</p> : null}
     {alert ? <p className={`enterprise-alert ${usageState.level === "LIMIT" || usageState.level === "CRITICAL" ? "is-error" : "is-warning"}`} role="status"><strong>Atención de capacidad.</strong> {alert}</p> : null}
 

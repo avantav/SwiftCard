@@ -78,10 +78,10 @@ export function PublicRegistrationFlow({ branchToken, context }: { branchToken: 
             <span id="registration-consent-label"><label htmlFor="registration-consent">Acepto los </label><button className="registration-text-button" type="button" aria-expanded={termsOpen} aria-controls="registration-terms" onClick={() => setTermsOpen(!termsOpen)}>términos del programa</button><label htmlFor="registration-consent"> y el </label><button className="registration-text-button" type="button" aria-expanded={privacyOpen} aria-controls="registration-privacy" onClick={() => setPrivacyOpen(!privacyOpen)}>aviso de privacidad</button>.</span>
           </div>
           <section id="registration-terms" className="registration-disclosure" hidden={!termsOpen} aria-label="Términos del programa"><h2>Términos del programa</h2><p tabIndex={0}>{selected.terms}</p><p>Consulta los <a href={`${legalBase}/terminos`} target="_blank" rel="noopener noreferrer">términos y condiciones completos</a> del programa.</p></section>
-          <section id="registration-privacy" className="registration-disclosure" hidden={!privacyOpen} aria-label="Aviso de privacidad"><h2>Privacidad</h2><p><strong>{context.legalName ?? context.tenantName}</strong>{context.legalAddress ? <>, con domicilio en {context.legalAddress},</> : null} es responsable de tus datos: nombre, teléfono y correo y, si la compartes, fecha de nacimiento. Los usa para operar tu tarjeta de lealtad, registrar tus compras y premios y enviarte avisos sobre tu tarjeta. Solo te enviará promociones si marcas la casilla correspondiente, y puedes retirar ese permiso cuando quieras. La plataforma morrow los trata por cuenta del negocio. Consulta el <a href={`${legalBase}/privacidad`} target="_blank" rel="noopener noreferrer">aviso de privacidad integral</a> para conocer tus derechos y cómo ejercerlos.</p></section>
+          <section id="registration-privacy" className="registration-disclosure" hidden={!privacyOpen} aria-label="Aviso de privacidad"><h2>Privacidad</h2><p><strong>{context.legalName ?? context.tenantName}</strong>{context.legalAddress ? <>, con domicilio en {context.legalAddress},</> : null} es responsable de tus datos: nombre, teléfono y correo y, si la compartes, fecha de nacimiento. Los usa para operar tu tarjeta de lealtad, registrar tus compras y premios y enviarte avisos sobre tu tarjeta. Solo te enviará promociones si marcas la casilla correspondiente, y puedes retirar ese permiso cuando quieras. {context.brandingMode !== "WHITE_LABEL" ? "La plataforma SwiftyCards los trata por cuenta del negocio. " : "La plataforma tecnológica que usa el negocio los trata por su cuenta. "}Consulta el <a href={`${legalBase}/privacidad`} target="_blank" rel="noopener noreferrer">aviso de privacidad integral</a> para conocer tus derechos y cómo ejercerlos.</p></section>
           <label className="registration-consent">
             <input name="marketingConsent" type="checkbox" disabled={pending} />
-            <span>Quiero recibir promociones y novedades de {context.tenantName} por correo, WhatsApp o avisos en mi tarjeta (opcional).</span>
+            <span>Quiero recibir promociones y novedades de {context.tenantName} por correo o avisos en mi tarjeta (opcional).</span>
           </label>
           <input type="hidden" name="acceptTerms" value={consent ? "on" : ""} />
           <input type="hidden" name="programVersion" value={selected.programVersion} />
@@ -89,7 +89,7 @@ export function PublicRegistrationFlow({ branchToken, context }: { branchToken: 
           <p className="registration-fine-print">Disponible en Apple Wallet y Google Wallet</p>
         </form>}
       </section>
-      {context.brandingMode !== "WHITE_LABEL" ? <footer className="registration-footer">Powered by <strong>morrow</strong></footer> : null}
+      {context.brandingMode !== "WHITE_LABEL" ? <footer className="registration-footer">Powered by <strong>SwiftyCards</strong></footer> : null}
     </div>
   </main>;
 }

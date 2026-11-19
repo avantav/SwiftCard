@@ -79,6 +79,21 @@ describe("campaign channels", () => {
     expect(email.text).toContain("Dejar de recibir promociones: https://swiftycards.com/card/token/promociones");
   });
 
+  it("identifies the business as sender once it recorded its legal identity", () => {
+    const base = { brand, customerName: "Ana", subject: "Hola", body: "Promo", cardUrl: "https://swiftycards.com/card/t", unsubscribeUrl: "https://swiftycards.com/card/t/promociones" };
+    const identified = renderCampaignEmail({ ...base, sender: { legalName: "Café Ejemplo, S.A.", legalAddress: "Calle 1, Hermosillo" } });
+    expect(identified.text).toContain("Remitente: Café Ejemplo, S.A., Calle 1, Hermosillo.");
+    expect(identified.html).toContain("Remitente: Café Ejemplo, S.A., Calle 1, Hermosillo.");
+    expect(renderCampaignEmail({ ...base, sender: { legalName: "Café", legalAddress: null } }).text).not.toContain("Remitente:");
+  });
+
+  it("drops a Wallet promotion once the customer revokes marketing consent", () => {
+    const activity = readFileSync(new URL("../wallet/activity-source.ts", import.meta.url), "utf8");
+    expect(activity).toContain('.eq("customers.marketing_consent", true)');
+    const delivery = readFileSync(new URL("./delivery.ts", import.meta.url), "utf8");
+    expect(delivery).toMatch(/for \(const row of appleRows\) \{\s*\/\/[^\n]*\n[^\n]*\n\s*if \(!one\(row\.customers\)\?\.marketing_consent\)/);
+  });
+
   it("shows the campaign as the pass's latest activity with a stable key", () => {
     const message = composeWalletActivityMessage(
       { kind: "CAMPAIGN", id: "c1", occurredAt: "2026-11-13T00:00:00Z", message: "Te extrañamos esta semana" },

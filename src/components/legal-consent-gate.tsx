@@ -49,8 +49,8 @@ export function LegalConsentGate({ status, action, operatorName }: { status: Leg
         <p className="enterprise-breadcrumb">{business ? `Admin general · ${status.tenantName}` : status.tenantName}</p>
         <h2 id="legal-consent-title">{title}</h2>
         <p id="legal-consent-description">{business
-          ? "La razón social y el domicilio aparecen como responsable en los términos y el aviso de privacidad que ven tus clientes al registrarse. Después acepta, en nombre del negocio, los términos de morrow."
-          : `${operatorName ? `${operatorName}, para` : "Para"} usar morrow en ${status.tenantName} acepta los términos y condiciones de la app y revisa su aviso de privacidad.`}</p>
+          ? "La razón social y el domicilio aparecen como responsable en los términos y el aviso de privacidad que ven tus clientes al registrarse. Después acepta, en nombre del negocio, los términos de SwiftyCards."
+          : `${operatorName ? `${operatorName}, para` : "Para"} usar SwiftyCards en ${status.tenantName} acepta los términos y condiciones de la app y revisa su aviso de privacidad.`}</p>
       </header>
 
       {state.error ? <p className="enterprise-alert is-error" role="alert">{state.error}</p> : null}
@@ -72,7 +72,7 @@ export function LegalConsentGate({ status, action, operatorName }: { status: Leg
 
       <label className="check-field legal-consent-check">
         <input name="acceptLegal" type="checkbox" required aria-invalid={state.fieldErrors?.acceptLegal ? true : undefined} />
-        <span>{business ? `Acepto, en nombre de ${status.tenantName}, los ` : "Acepto los "}<a href="/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones del Servicio</a> y he leído el <a href="/privacidad" target="_blank" rel="noopener noreferrer">Aviso de Privacidad</a> de morrow.</span>
+        <span>{business ? `Acepto, en nombre de ${status.tenantName}, los ` : "Acepto los "}<a href="/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones del Servicio</a> y he leído el <a href="/privacidad" target="_blank" rel="noopener noreferrer">Aviso de Privacidad</a> de SwiftyCards.</span>
       </label>
       {state.fieldErrors?.acceptLegal ? <p className="field-error-message">{state.fieldErrors.acceptLegal}</p> : null}
 

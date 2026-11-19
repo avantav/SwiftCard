@@ -57,10 +57,12 @@ export async function loadLatestWalletActivity(
         .maybeSingle(),
       supabase
         .from("marketing_campaign_recipients")
-        .select("campaign_id,created_at,marketing_campaigns!inner(wallet_message),customer_cards!inner(loyalty_card_id)")
+        .select("campaign_id,created_at,marketing_campaigns!inner(wallet_message),customer_cards!inner(loyalty_card_id),customers!inner(marketing_consent)")
         .eq("tenant_id", lookup.tenantId)
         .eq("customer_id", lookup.customerId)
         .eq("customer_cards.loyalty_card_id", lookup.loyaltyCardId)
+        // A promotion is only shown while the customer keeps marketing consent.
+        .eq("customers.marketing_consent", true)
         .in("channel", ["APPLE", "GOOGLE"])
         .in("status", ["PENDING", "SENT"])
         .order("created_at", { ascending: false })

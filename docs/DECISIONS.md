@@ -1180,3 +1180,68 @@
 - Consequences: Branch-manager corrections remain a separate task
   (IMPLEMENTATION_PLAN Phase 5 marked partial). Apply `0081` with the code.
 - Status: Accepted.
+
+## DEC-0075 - Customer Anonymization For ARCO Cancellation
+
+- Date: 2026-11-19
+- Context: the customer privacy notice offers cancellation (ARCO), but
+  `app.delete_admin_customer` refuses any customer with history, so a
+  customer who bought could not be cancelled through the product.
+- Decision:
+  - Migration `0082` adds `customers.anonymized_at` and
+    `app.anonymize_admin_customer` (Admin general, atomic, audited as
+    `CUSTOMER_ANONYMIZED` without personal data). It replaces name, phone
+    (placeholder `+999…`, never assignable), email and birth date, removes
+    marketing consent, sets the customer INACTIVE, revokes cards and Wallet
+    passes, deletes Apple push registrations and skips pending campaign
+    deliveries. Purchases, rewards and ledger stay without identifying data.
+  - A trigger freezes anonymized rows (no reactivation, no new personal data).
+  - UI: «Eliminar datos personales» in the customer row menu, with a
+    confirmation that names the consequence.
+- Consequences: audit log metadata written before the anonymization is
+  immutable and may still contain names in older corrections; the lawyer
+  should confirm that blocking (not deleting) those records is enough.
+- Status: Accepted.
+
+## DEC-0076 - Service Orders For Per-Tenant Pricing
+
+- Date: 2026-11-19
+- Context: the owner wants each business to be able to pay a different price
+  and to have evidence that it agreed with what it pays and what it gets.
+- Decision:
+  - Terms §4 define the Service Order (plan, price before VAT, periodicity,
+    included and excluded scope, validity), state that it prevails over the
+    published prices, that extra work is only done with a written, accepted
+    quote, and that charges are accepted if not disputed within 15 days.
+  - Migration `0083` adds `tenant_service_orders`: append-only versions per
+    tenant, RLS read for the tenant's Admin general and the Superadmin,
+    `app.create_tenant_service_order` (Superadmin) and
+    `app.accept_my_service_order` (real Admin general, latest version only).
+    Both are audited; an accepted order is immutable.
+  - UI: `/superadmin/tenants/[id]/service-order` creates versions;
+    `/admin/billing` shows the latest one and records acceptance with a
+    conformity checkbox. Published plans keep their conformity at signup.
+- Consequences: the order is not wired to Stripe; the Superadmin still sets
+  the charged amount in Stripe (or invoices outside it) and must keep both
+  consistent.
+- Status: Accepted.
+
+## DEC-0077 - Legal Documents v1.2 And SwiftyCards Brand
+
+- Date: 2026-11-19
+- Context: final legal review against the code (owner request).
+- Decision:
+  - `LEGAL_VERSION` 1.2: no guaranteed results, platform in continuous
+    development with a limited remedy (proportional credit after 3 days of
+    imputable outage), support access disclosure, anonymized statistics,
+    imported customers, pending rewards on termination, notices and
+    assignment (needed for a future S.A.S.).
+  - Customer documents only promise what exists: no WhatsApp channel, opt-out
+    from «Promociones» on the web card, program changes published on the card
+    (re-acceptance only on claim/Wallet), anonymization on cancellation.
+  - Wallet campaign messages require current marketing consent at pass
+    generation; campaign emails name the business legal identity as sender.
+  - Legal surfaces use the brand «SwiftyCards» (swiftycards.com). The rest
+    of the app still says «morrow» until a separate rebrand.
+- Consequences: every tenant user accepts again in the modal after deploy.
+- Status: Accepted.

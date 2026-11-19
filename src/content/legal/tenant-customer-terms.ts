@@ -2,7 +2,7 @@ import { LEGAL_EFFECTIVE_DATE, LEGAL_VERSION, tenantContactText, type LegalOpera
 
 /**
  * Términos y Condiciones del programa de lealtad que cada negocio ofrece a sus
- * clientes (DEC-0072). The business is the program operator; morrow is only
+ * clientes (DEC-0072). The business is the program operator; SwiftyCards is only
  * the technology provider. The conditions of each card (written by the
  * business) are appended by the page as plain text, never as Markdown.
  * Pending legal review, like the rest of `src/content/legal/`.
@@ -41,7 +41,7 @@ Estos Términos regulan tu participación en el programa de lealtad (el **«Prog
 
 - Obtienes un premio al alcanzar la meta indicada en tu tarjeta. Los premios se canjean en las sucursales participantes presentando tu Tarjeta y dentro de la vigencia que se indique.
 - Los premios no son canjeables por dinero en efectivo, no son transferibles y no se combinan con otras promociones, salvo que el Negocio lo indique.
-- El Negocio es el único responsable de entregar los premios y de su disponibilidad. Si un premio se agota, el Negocio te ofrecerá uno de valor similar.
+- El Negocio es el único responsable de entregar los premios y de su disponibilidad. Si un premio se agota, el Negocio podrá ofrecerte uno de valor similar.
 
 ## 5. Uso indebido
 
@@ -49,13 +49,13 @@ Si detecta fraude, registros duplicados, uso de la Tarjeta de otra persona o man
 
 ## 6. Cambios y terminación del Programa
 
-- El Negocio puede modificar o terminar el Programa. Cuando cambien las condiciones de tu tarjeta, se te mostrará la nueva versión y se te pedirá aceptarla antes de seguir usándola.
+- El Negocio puede modificar o terminar el Programa. Las condiciones vigentes de tu tarjeta se publican siempre en tu tarjeta web y aplican desde su publicación; al reclamar tu tarjeta o agregarla a Apple Wallet o Google Wallet se te pedirá aceptar la versión vigente. Si no estás de acuerdo con un cambio, puedes darte de baja.
 - Los premios que ya obtuviste se respetan hasta su vencimiento, salvo uso indebido.
 - Puedes darte de baja en cualquier momento solicitándolo al Negocio. Al hacerlo se pierden los sellos, puntos y premios no canjeados.
 
 ## 7. Comunicaciones
 
-Recibirás avisos en tu Tarjeta sobre compras, premios y saldo y, si diste tu correo, un correo de bienvenida y avisos cuando ganes un premio. Solo recibirás promociones si lo autorizaste expresamente al registrarte, y puedes retirar esa autorización en cualquier momento.
+Recibirás avisos en tu Tarjeta sobre compras, premios y saldo y, si diste tu correo, un correo de bienvenida y avisos cuando ganes un premio. Solo recibirás promociones si lo autorizaste expresamente, y puedes retirar esa autorización en cualquier momento desde la opción «Promociones» de tu tarjeta web.
 
 ## 8. Privacidad
 

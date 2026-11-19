@@ -72,6 +72,7 @@ export async function confirmCustomerImport(formData: FormData) {
   const importId = String(formData.get("importId") ?? "");
   const branchId = String(formData.get("branchId") ?? "");
   const loyaltyCardId = String(formData.get("loyaltyCardId") ?? "");
+  if (formData.get("consentConfirmed") !== "on") redirectWithError("Confirma que el negocio informó su aviso de privacidad a las personas importadas.");
   const { data: record } = await superadmin.supabase.from("customer_imports").select("raw_rows,mapped_columns,preview_errors").eq("id", importId).maybeSingle();
   if (!record || !branchId || !loyaltyCardId) redirectWithError("La importación, la sucursal y la tarjeta son obligatorias.");
   const mapping = record.mapped_columns as ImportColumnMapping;
