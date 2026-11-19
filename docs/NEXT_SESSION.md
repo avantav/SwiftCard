@@ -1,5 +1,29 @@
 # Next Session
 
+## Legal final review (DEC-0075, DEC-0076, DEC-0077) — 2026-11-19
+
+- Branch `feat/legal-final-review`, stacked on `feat/admin-customer-corrections`
+  (PR #48). Merge after #43–#48.
+- Deploy with migrations `0082` (customer anonymization) and `0083` (service
+  orders). `LEGAL_VERSION` is now `1.2`: every tenant user accepts again.
+- Verify after deploy: «Eliminar datos personales» on a test customer with
+  history; create a Service Order in Superadmin and accept it in Plan y uso;
+  import confirmation checkbox; «Promociones» link on the web card; a campaign
+  email footer with the business legal identity.
+- Pending (owner): operator legal identity and domicile
+  (`NEXT_PUBLIC_LEGAL_OPERATOR_NAME`, `NEXT_PUBLIC_LEGAL_ADDRESS`); today the
+  documents name «SwiftyCards», which is not a legal person.
+- Pending (owner): full rebrand from «morrow» to «SwiftyCards» outside legal
+  surfaces (66 files: logo component, manifest, emails, Stripe, metadata).
+- Pending (lawyer): `docs/legal/README.md` §4, plus the new clauses (limited
+  remedy, 15-day dispute window, Service Order).
+- Not done: imported customers still use `registration_method = SELF_SERVICE`
+  (changing the enum touches many paths); no automatic purge after
+  cancellation (manual procedure in `docs/legal/README.md` §6); Service Orders
+  are not wired to Stripe.
+- SQL validated on PGlite (all migrations + `0082`, `0083` tests; the 21
+  pre-existing failures come from psql `\gset` the runner cannot execute).
+
 ## Admin workspace (DEC-0073) — 2026-11-18
 
 - Plan in five phases, one PR each (plan approved by the owner):

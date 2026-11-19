@@ -1,5 +1,17 @@
 # Project Status
 
+## Legal final review — 2026-11-19
+
+- Legal documents v1.2 (DEC-0077) with protective clauses requested by the
+  owner; brand «SwiftyCards» on legal surfaces.
+- Customer anonymization for ARCO cancellation (migration `0082`, DEC-0075).
+- Service Orders for per-tenant pricing with recorded conformity (migration
+  `0083`, DEC-0076).
+- Wallet promotions honor revoked consent; opt-out linked from the web card;
+  import confirmation of privacy notice; sender identity in campaign emails.
+- Validation: lint, typecheck, 513 tests across 110 files; `0082` and `0083`
+  SQL tests on PGlite.
+
 ## Tenant legal identity and terms acceptance — 2026-11-18
 
 - Tenants record legal name, domicile and privacy contact (migration `0080`,

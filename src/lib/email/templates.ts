@@ -307,6 +307,8 @@ export type CampaignEmailInput = {
   body: string;
   cardUrl: string;
   unsubscribeUrl: string;
+  /** Legal name and domicile of the business (DEC-0072), shown as sender identity. */
+  sender?: { legalName: string | null; legalAddress: string | null };
 };
 
 /** Empresarial campaign email (DEC-0068): business message, always with an opt-out link. */
@@ -316,7 +318,10 @@ export function renderCampaignEmail(input: CampaignEmailInput): RenderedEmail {
   const greeting = name ? `Hola ${name},` : "Hola,";
   const subject = clean(input.subject).slice(0, 120);
   const body = input.body.replace(/\r\n/g, "\n").trim().slice(0, 1500);
-  const footerText = `Recibes este correo porque aceptaste recibir promociones de ${tenantName}.`;
+  const senderName = clean(input.sender?.legalName ?? "");
+  const senderAddress = clean(input.sender?.legalAddress ?? "");
+  const senderLine = senderName && senderAddress ? ` Remitente: ${senderName}, ${senderAddress}.` : "";
+  const footerText = `Recibes este correo porque aceptaste recibir promociones de ${tenantName}.${senderLine}`;
 
   return {
     subject,

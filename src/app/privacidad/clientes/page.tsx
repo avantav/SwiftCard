@@ -4,8 +4,8 @@ import { customerPrivacyMarkdown } from "@/content/legal/customer-privacy";
 import { legalOperator } from "@/lib/legal/company";
 
 export const metadata: Metadata = {
-  title: "Privacidad para clientes · morrow",
-  description: "Aviso de privacidad para las personas registradas en programas de lealtad que usan morrow.",
+  title: "Privacidad para clientes · SwiftyCards",
+  description: "Aviso de privacidad para las personas registradas en programas de lealtad que usan SwiftyCards.",
   alternates: { canonical: "/privacidad/clientes", types: { "text/markdown": "/privacidad/clientes.md" } },
 };
 

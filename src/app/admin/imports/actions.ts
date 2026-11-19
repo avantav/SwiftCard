@@ -127,9 +127,13 @@ export async function uploadCasaGarmendiaImport(formData: FormData) {
   importRedirect({ importId: data.id, preview: "1" });
 }
 
-export async function confirmCasaGarmendiaImport(importId: string) {
+export async function confirmCasaGarmendiaImport(importId: string, formData: FormData) {
   const context = await requireTenantImportAdmin();
   if (!UUID.test(importId)) importRedirect({ error: "La importación no es válida." });
+  // Terms §9: the business answers for the notice and legal basis of imported customers.
+  if (formData.get("consentConfirmed") !== "on") {
+    importRedirect({ error: "Confirma que el negocio informó su aviso de privacidad a las personas importadas." });
+  }
   const { data, error } = await context.supabase.schema("app").rpc(
     "confirm_casa_garmendia_customer_import",
     { target_import_id: importId },

@@ -18,7 +18,7 @@ modifica la validación de ubicación ni las coordenadas guardadas por la compra
 | Admin general | Todas las sucursales del negocio |
 | Administrador de sucursal | Solo sus sucursales asignadas |
 | Empleado, cuenta compartida/PIN | Sin acceso |
-| Superadmin (incluido modo soporte) | Sin acceso; la vista muestra el aviso de restricción |
+| Superadmin en modo soporte | Lectura de todas las sucursales del negocio (DEC-0071); el aviso de privacidad lo informa |
 
 La autoridad es la función `app.get_purchase_location_review` (security
 definer): valida rol, estado del perfil y del negocio, aplica el alcance por

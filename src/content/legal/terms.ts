@@ -27,6 +27,10 @@ Las funciones disponibles dependen del Plan. Las funciones anunciadas como «Pr�
 
 El programa de lealtad, sus reglas, premios y promociones son ofrecidos por el Negocio a sus Clientes finales. ${op.brand} solo provee la tecnología: el Negocio es el único responsable de honrar los premios, de las condiciones de su programa y de la atención a sus Clientes finales.
 
+**Sin garantía de resultados.** La Plataforma es una herramienta. ${op.brand} **no garantiza ningún resultado comercial**, como aumentos de ventas, visitas, frecuencia, retención, registros de clientes o retorno de la inversión, ni que la Plataforma cumpla expectativas del Negocio distintas de las funciones descritas para su Plan. Los resultados dependen de la operación, las promociones y la clientela del Negocio.
+
+**Plataforma en desarrollo continuo.** La Plataforma se encuentra en desarrollo y mejora continua. Puede presentar errores, interrupciones, cambios en su funcionamiento o resultados inesperados, y las funciones identificadas como «Beta» se ofrecen tal como están, sin garantía. El Negocio debe revisar periódicamente las operaciones registradas (compras, sellos, puntos, premios y canjes) y reportar cualquier falla a la brevedad; ${op.brand} la atenderá y corregirá en un plazo razonable conforme a la sección 13.
+
 ## 3. Cuenta y acceso
 
 - El Negocio debe proporcionar información veraz, completa y actualizada, y mantener vigentes sus datos de contacto y facturación.
@@ -38,7 +42,10 @@ El programa de lealtad, sus reglas, premios y promociones son ofrecidos por el N
 ## 4. Planes, precios e impuestos
 
 - Los precios de los Planes se publican en pesos mexicanos y **no incluyen el IVA**, que se agrega al cobro conforme a la tasa vigente.
-- El Plan Empresarial y cualquier adaptación a la medida se rigen por la cotización o el contrato específico que acuerden las partes; en lo no previsto aplican estos Términos.
+- Cada Plan incluye **únicamente las funciones, límites y soporte publicados para ese Plan** al momento de la contratación, o los indicados en la Orden de Servicio del Negocio.
+- **Orden de Servicio.** Cuando el Negocio tenga un precio, Plan, periodicidad o alcance distinto del publicado (por ejemplo, el Plan Empresarial, un descuento o una adaptación a la medida), las condiciones se fijan en una Orden de Servicio que indica el Plan, el precio sin IVA, la periodicidad, lo incluido y lo excluido, la vigencia y la forma de pago. El administrador general la acepta en la Plataforma o por escrito. La Orden de Servicio aceptada prevalece sobre los precios publicados; en lo no previsto aplican estos Términos.
+- **Trabajos adicionales.** Personalizaciones, desarrollos o funciones a la medida, integraciones con otros sistemas, diseño gráfico, cargas, importaciones o migraciones de datos, capacitaciones adicionales y cualquier otro trabajo no incluido en el Plan o en la Orden de Servicio **no forman parte del servicio** y solo se realizan mediante una **cotización por escrito aceptada por el Negocio**, con un costo adicional al de su Plan. Sin cotización aceptada no existe obligación de realizarlos, aunque se hayan comentado o solicitado.
+- **Conformidad con el cobro.** Al aceptar el precio de su Plan o su Orden de Servicio y realizar el pago, el Negocio manifiesta su conformidad con el precio cobrado y con el alcance del servicio que recibe a cambio. Cualquier aclaración sobre un cargo debe presentarse por los medios de contacto de la sección 21 dentro de los **15 días naturales** siguientes a la fecha del cargo; transcurrido ese plazo sin aclaración, el cargo se tendrá por aceptado.
 - ${op.brand} puede modificar sus precios con al menos **30 días naturales** de aviso. El nuevo precio aplicará a partir de la siguiente renovación; si el Negocio no está de acuerdo, puede cancelar antes de esa fecha sin penalización.
 
 ## 5. Prueba gratuita
@@ -79,11 +86,13 @@ El Negocio y sus Personas usuarias no deben:
 - Registrar en la Plataforma su nombre o razón social y su domicilio completo, y mantenerlos actualizados. Con esos datos la Plataforma genera y muestra a sus Clientes finales los términos y condiciones de su programa de lealtad y su aviso de privacidad, basados en el [aviso para clientes de programas de lealtad](/privacidad/clientes); el Negocio los adopta como propios y es responsable de que su contenido corresponda a su operación.
 - Recabar los consentimientos necesarios, en particular el **consentimiento expreso para enviar promociones**, y respetar su revocación.
 - Atender las solicitudes de acceso, rectificación, cancelación y oposición (ARCO) de sus Clientes finales, con el apoyo de ${op.brand} cuando lo requiera.
+- Contar, respecto de los Clientes finales que importe o capture directamente en la Plataforma (por ejemplo, con un archivo de clientes existentes), con el aviso de privacidad y la base legal necesarios para su tratamiento, y responder por ello frente a sus Clientes finales y las autoridades.
 - No instruir a ${op.brand} tratamientos contrarios a la ley.
 
 **Obligaciones de ${op.brand} como encargado.** ${op.brand} se obliga a:
 
-- Tratar los datos solo conforme a las instrucciones del Negocio expresadas mediante la configuración y el uso de la Plataforma, y no utilizarlos para fines propios ni venderlos.
+- Tratar los datos solo conforme a las instrucciones del Negocio expresadas mediante la configuración y el uso de la Plataforma, y no utilizarlos para fines propios ni venderlos. Esto no impide elaborar estadísticas **agregadas y anonimizadas**, que no identifiquen al Negocio ni a ninguna persona, para operar, proteger y mejorar la Plataforma.
+- Limitar el acceso a los Datos del Negocio a su personal autorizado. Para dar soporte, investigar fallas o incidentes de seguridad o atender un mandato de autoridad, ese personal puede consultar la información del Negocio mediante **sesiones de soporte temporales**, iniciadas con un motivo y registradas en bitácora; durante ellas solo realiza los cambios necesarios para atender la solicitud o el incidente.
 - Mantener la confidencialidad de los datos, incluso después de terminada la relación, y exigirla a su personal.
 - Mantener medidas de seguridad administrativas, técnicas y físicas razonables, incluida la separación de la información de cada Negocio.
 - Recurrir solo a los proveedores (subencargados) indicados en el [Aviso de Privacidad](/privacidad) u otros que ofrezcan garantías equivalentes, informando los cambios relevantes.
@@ -109,7 +118,9 @@ La Plataforma se integra con servicios de terceros como Apple Wallet, Google Wal
 
 ## 13. Disponibilidad, soporte y limitación de responsabilidad
 
-- ${op.brand} hará esfuerzos comercialmente razonables para mantener la Plataforma disponible, pero no garantiza un servicio ininterrumpido o libre de errores. Podrán realizarse mantenimientos, procurando avisar con anticipación los programados. Los niveles de servicio específicos solo aplican si se pactan por escrito en el Plan Empresarial.
+- ${op.brand} hará esfuerzos comercialmente razonables para mantener la Plataforma disponible, pero, por tratarse de un servicio en desarrollo continuo (sección 2), **no garantiza un servicio ininterrumpido o libre de errores**. Podrán realizarse mantenimientos, procurando avisar con anticipación los programados. Los niveles de servicio específicos solo aplican si se pactan por escrito en una Orden de Servicio.
+- Si una falla imputable a ${op.brand} impide al Negocio usar las funciones esenciales de su Plan (registrar clientes, compras y canjes) durante más de **3 días naturales** consecutivos después de reportarla, el Negocio podrá solicitar una bonificación proporcional al tiempo sin servicio, aplicada a su siguiente cobro. Esa bonificación es el único remedio por fallas de disponibilidad, sin perjuicio de lo previsto en el último párrafo de esta sección.
+- El Negocio es responsable de verificar la información que registra y de conservar sus propios respaldos o exportaciones cuando los necesite para su operación, contabilidad o atención a sus Clientes finales.
 - En la máxima medida permitida por la ley, ${op.brand} no será responsable por daños indirectos, lucro cesante, pérdida de ventas o de oportunidades de negocio, ni por fallas de terceros, caso fortuito o fuerza mayor.
 - La responsabilidad total de ${op.brand} derivada de estos Términos no excederá el monto efectivamente pagado por el Negocio en los **12 meses** anteriores al hecho que la origine.
 - Estas limitaciones no aplican en caso de dolo o mala fe ni en los supuestos en que la ley no permita limitar la responsabilidad.
@@ -117,7 +128,7 @@ La Plataforma se integra con servicios de terceros como Apple Wallet, Google Wal
 ## 14. Suspensión, terminación y destino de los datos
 
 - ${op.brand} podrá suspender o terminar el acceso por falta de pago conforme a la sección 6, por incumplimiento grave de estos Términos, por uso que ponga en riesgo la seguridad de la Plataforma o de otros negocios, o por mandato de autoridad. Salvo urgencia, se avisará previamente al Negocio.
-- Al terminar la suscripción, las Tarjetas emitidas dejarán de actualizarse y podrán invalidarse.
+- Al terminar la suscripción, las Tarjetas emitidas dejarán de actualizarse y podrán invalidarse. El Negocio es responsable de avisar a sus Clientes finales y de honrar o resolver directamente los sellos, puntos y premios pendientes conforme a las condiciones de su programa.
 - Durante los **30 días naturales** siguientes a la terminación, el Negocio podrá solicitar la exportación de sus Datos del Negocio. Transcurrido ese plazo, ${op.brand} los suprimirá o anonimizará en un plazo razonable, salvo la información que deba conservar por disposición legal, fiscal o para la defensa de sus derechos, la cual se bloqueará y conservará solo por el tiempo necesario.
 
 ## 15. Indemnización
@@ -128,15 +139,22 @@ El Negocio sacará en paz y a salvo a ${op.brand} frente a reclamaciones de terc
 
 Cada parte mantendrá confidencial la información no pública de la otra a la que tenga acceso con motivo del servicio y solo la usará para cumplir estos Términos, salvo que deba revelarla por mandato de ley o de autoridad competente.
 
-## 17. Cambios a estos Términos
+## 17. Notificaciones
+- ${op.brand} enviará los avisos relacionados con estos Términos, los cobros y la cuenta al correo electrónico del administrador general registrado en la Plataforma o dentro de la propia Plataforma; esos avisos surten efecto desde su envío.
+- El Negocio enviará sus avisos a los medios de contacto de la sección 21.
+
+## 18. Cesión
+${op.brand} podrá ceder estos Términos y las Órdenes de Servicio a una sociedad que constituya su titular, a una empresa de su mismo grupo o a quien adquiera la Plataforma o el negocio que la opera, avisando al Negocio. El Negocio no podrá ceder sus derechos y obligaciones sin autorización escrita de ${op.brand}.
+
+## 19. Cambios a estos Términos
 
 ${op.brand} podrá actualizar estos Términos. Los cambios sustanciales se notificarán al Negocio por correo electrónico o dentro de la Plataforma con al menos **30 días naturales** de anticipación. Si el Negocio continúa usando la Plataforma después de la fecha de entrada en vigor, se entenderá que acepta la nueva versión; si no está de acuerdo, puede cancelar antes de esa fecha.
 
-## 18. Ley aplicable y jurisdicción
+## 20. Ley aplicable y jurisdicción
 
 Estos Términos se rigen por las leyes federales de los Estados Unidos Mexicanos. Para su interpretación y cumplimiento, las partes se someten a los tribunales competentes de ${op.jurisdiction}, renunciando a cualquier otro fuero que pudiera corresponderles por razón de su domicilio presente o futuro, salvo que la ley aplicable disponga otra cosa.
 
-## 19. Contacto
+## 21. Contacto
 
 Para dudas sobre estos Términos, escríbenos por ${contact}.
 `;

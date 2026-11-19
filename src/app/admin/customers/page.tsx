@@ -18,7 +18,7 @@ import { requireInternalArea } from "@/lib/auth/server";
 import { customerCardClaimPath } from "@/lib/customers/card-qr";
 import { resolveCustomerCardHandoffOrigin } from "@/lib/customers/card-handoff-origin";
 import { SubmitButton } from "@/components/submit-button";
-import { deleteAdminCustomer, setAdminCustomerStatus } from "./actions";
+import { anonymizeAdminCustomer, deleteAdminCustomer, setAdminCustomerStatus } from "./actions";
 
 type CustomerDirectoryPageProps = {
   searchParams: Promise<AdminCustomerDirectoryParams>;
@@ -33,6 +33,7 @@ type CustomerRow = {
   registration_method: "SELF_SERVICE" | "EMPLOYEE";
   source_branch_id: string;
   created_at: string;
+  anonymized_at: string | null;
 };
 
 type CustomerCardRow = {
@@ -123,7 +124,7 @@ export default async function CustomerDirectoryPage({
   let customersQuery = context.supabase
     .from("customers")
     .select(
-      "id,full_name,normalized_phone,email,status,registration_method,source_branch_id,created_at",
+      "id,full_name,normalized_phone,email,status,registration_method,source_branch_id,created_at,anonymized_at",
       { count: "exact" },
     )
     .eq("tenant_id", context.tenantId)
@@ -232,7 +233,7 @@ export default async function CustomerDirectoryPage({
       title="Clientes"
       titleId="customers-title"
       toolbar={<>
-      {pageQuery.error === "history" ? <p className="enterprise-alert is-warning" role="alert">No se puede eliminar este cliente porque tiene saldo, compras, recompensas, Wallet o historial operativo. Puedes desactivarlo.</p> : null}
+      {pageQuery.error === "history" ? <p className="enterprise-alert is-warning" role="alert">No se puede eliminar este cliente porque tiene saldo, compras, recompensas, Wallet o historial operativo. Puedes desactivarlo o, si pidió la cancelación de sus datos, usar «Eliminar datos personales».</p> : null}
       {pageQuery.error && pageQuery.error !== "history" ? <p className="enterprise-alert is-error" role="alert">No se pudo completar la acción sobre el cliente.</p> : null}
 
       <section className="enterprise-filter-panel" aria-label="Filtros de clientes">
@@ -333,7 +334,7 @@ export default async function CustomerDirectoryPage({
                         <td data-label="Sucursal de alta">{branchNames.get(customer.source_branch_id) ?? "No disponible"}</td>
                         <td data-label="Estado">
                           <span className={`enterprise-badge ${customer.status === "ACTIVE" ? "is-active" : "is-neutral"}`}>
-                            {customer.status === "ACTIVE" ? "Activo" : "Inactivo"}
+                            {customer.anonymized_at ? "Anonimizado" : customer.status === "ACTIVE" ? "Activo" : "Inactivo"}
                           </span>
                         </td>
                         <td data-label="Tarjeta">
@@ -362,7 +363,7 @@ export default async function CustomerDirectoryPage({
                         </td>
                         <td className="enterprise-row-actions" data-label="Acciones">
                           <Link className="enterprise-secondary-action" href={`/admin/customers?${new URLSearchParams(Object.entries({ ...listParams, customer: customer.id }).filter((entry): entry is [string, string] => Boolean(entry[1])))}`} scroll={false}>Ver cliente</Link>
-                          <details>
+                          {customer.anonymized_at ? null : <details>
                             <summary>Acciones</summary>
                             <div className="enterprise-row-menu">
                               <form action={setAdminCustomerStatus.bind(null, customer.id, customer.status === "ACTIVE" ? "INACTIVE" : "ACTIVE")}>
@@ -381,8 +382,16 @@ export default async function CustomerDirectoryPage({
                                   Eliminar cliente
                                 </SubmitButton>
                               </form>
+                              <form action={anonymizeAdminCustomer.bind(null, customer.id)}>
+                                <SubmitButton
+                                  className="enterprise-menu-action is-destructive"
+                                  confirmMessage={`¿Eliminar los datos personales de ${customer.full_name}? Se borran su nombre, teléfono, correo y fecha de nacimiento, se revocan su tarjeta y su Wallet, y se conserva su historial sin datos que lo identifiquen. Úsalo cuando el cliente pida la cancelación de sus datos. No se puede deshacer.`}
+                                >
+                                  Eliminar datos personales
+                                </SubmitButton>
+                              </form>
                             </div>
-                          </details>
+                          </details>}
                         </td>
                       </tr>
                     );

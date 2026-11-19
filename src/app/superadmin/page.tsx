@@ -162,6 +162,7 @@ export default async function SuperadminPage({ searchParams }: SuperadminPagePro
                         <div className="enterprise-row-menu">
                           <Link href={`/superadmin/tenants/${tenant.id}/administrator/new`}>Administrador</Link>
                           <Link href={`/superadmin/tenants/${tenant.id}/branding`}>Branding</Link>
+                          <Link href={`/superadmin/tenants/${tenant.id}/service-order`}>Orden de Servicio</Link>
                           {tenant.status === "ACTIVE" ? <Link href={`/superadmin/tenants/${tenant.id}/support`}>Entrar en modo soporte</Link> : null}
                           <form action={setTenantCampaigns}>
                             <input type="hidden" name="tenantId" value={tenant.id} />
