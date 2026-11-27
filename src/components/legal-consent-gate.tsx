@@ -30,7 +30,14 @@ export function LegalConsentGate({ status, action, operatorName }: { status: Leg
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (dialog && !dialog.open) dialog.showModal();
+    if (!dialog) return;
+
+    dialog.setAttribute("closedby", "none");
+    const preventDismissal = (event: Event) => event.preventDefault();
+    dialog.addEventListener("cancel", preventDismissal);
+    if (!dialog.open) dialog.showModal();
+
+    return () => dialog.removeEventListener("cancel", preventDismissal);
   }, []);
 
   const title = business
@@ -42,7 +49,6 @@ export function LegalConsentGate({ status, action, operatorName }: { status: Leg
     className="legal-consent-dialog"
     aria-labelledby="legal-consent-title"
     aria-describedby="legal-consent-description"
-    onCancel={(event) => event.preventDefault()}
   >
     <form action={formAction} className="legal-consent-form" noValidate>
       <header>
