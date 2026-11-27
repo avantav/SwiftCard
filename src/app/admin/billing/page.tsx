@@ -1,3 +1,4 @@
+import { AdminScrollRegion } from "@/components/admin/admin-workspace";
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { getCurrencyFractionDigits } from "@/lib/admin/program";
@@ -80,8 +81,9 @@ export default async function AdminBillingPage({ searchParams }: { searchParams:
         ? "El pico del periodo alcanzó al menos 80% del límite contratado."
         : null;
 
-  return <main className="enterprise-page">
+  return <main className="enterprise-page admin-workspace">
     <header className="enterprise-page-header"><div><p className="enterprise-breadcrumb">Configuración / Facturación</p><h1>Plan y uso</h1><p>Consulta tu paquete, periodo y consumo de membresías.</p></div>{portalAction}</header>
+    <AdminScrollRegion className="is-plain" label="Plan y uso">
     {portalAlert}
     {subscription.status === "TRIALING" && subscription.trial_ends_at ? <p className="enterprise-alert is-info" role="status"><strong>Prueba gratuita.</strong> Tu prueba termina el {date(subscription.trial_ends_at)}; después se cobrará automáticamente con la tarjeta registrada. Puedes cancelar antes desde «Administrar pago y facturas».</p> : null}
     {alert ? <p className={`enterprise-alert ${usageState.level === "LIMIT" || usageState.level === "CRITICAL" ? "is-error" : "is-warning"}`} role="status"><strong>Atención de capacidad.</strong> {alert}</p> : null}
@@ -102,5 +104,6 @@ export default async function AdminBillingPage({ searchParams }: { searchParams:
     <section className="enterprise-data-panel" aria-labelledby="commercial-limits-title"><div className="enterprise-panel-header"><div><h2 id="commercial-limits-title">Capacidad contratada</h2><p>Uso actual frente al snapshot de tu suscripción</p></div></div><div className="enterprise-table-wrap"><table className="enterprise-table"><caption className="sr-only">Límites comerciales del tenant</caption><thead><tr><th scope="col">Dimensión</th><th scope="col">Uso actual</th><th scope="col">Límite</th></tr></thead><tbody><tr><td data-label="Dimensión"><strong>Membresías</strong></td><td data-label="Uso actual">{currentMemberships} actuales · {peakMemberships} pico</td><td data-label="Límite">{limit(subscription.membership_limit_snapshot)}</td></tr><tr><td data-label="Dimensión"><strong>Sucursales activas</strong></td><td data-label="Uso actual">{branchCountResponse.count ?? 0}</td><td data-label="Límite">{limit(subscription.branch_limit_snapshot)}</td></tr><tr><td data-label="Dimensión"><strong>Tarjetas configuradas</strong></td><td data-label="Uso actual">{cardCountResponse.count ?? 0}</td><td data-label="Límite">{limit(subscription.loyalty_card_limit_snapshot)}</td></tr></tbody></table></div></section>
 
     <section className="enterprise-content-card" aria-labelledby="commercial-attribution-title"><h2 id="commercial-attribution-title">Promoción y atribución</h2><div className="billing-commercial-details"><div><span>Promoción aplicada</span>{redemption ? <><strong>{redemption.promotion_code_snapshot} · {promotionDiscount(redemption)}</strong><small>{redemption.covered_memberships} membresías cubiertas · aplicada {date(redemption.redeemed_at)}</small></> : <strong>Sin promoción aplicada</strong>}</div><div><span>Afiliado atribuido</span>{referral ? <><strong>{referral.attributed_code_snapshot}</strong><small>Atribuido {date(referral.attributed_at)}{referral.converted_at ? ` · convertido ${date(referral.converted_at)}` : " · conversión pendiente"}</small></> : <strong>Sin afiliado atribuido</strong>}</div></div></section>
-  </main>;
+    </AdminScrollRegion>
+    </main>;
 }

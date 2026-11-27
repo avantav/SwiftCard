@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { LocationReviewView, type LocationReviewBranch } from "@/components/location-review-view";
+import { activeTab } from "@/components/admin/admin-tabs";
+import { LOCATION_REVIEW_TABS, LocationReviewView, type LocationReviewBranch } from "@/components/location-review-view";
 import { parseLocationReviewFilters, type LocationReviewRow } from "@/lib/admin/location-review";
 import { requireInternalArea } from "@/lib/auth/server";
 import { supportReadParams } from "@/lib/auth/support-read";
@@ -13,6 +14,10 @@ export const metadata: Metadata = {
 type SecurityPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
+
+function single(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 export default async function LocationSecurityPage({ searchParams }: SecurityPageProps) {
   const context = await requireInternalArea("ADMIN");
@@ -43,6 +48,8 @@ export default async function LocationSecurityPage({ searchParams }: SecurityPag
       hasFilters={hasFilters}
       rows={(reviewResult.data ?? []) as LocationReviewRow[]}
       timeZone={tenantResult.data?.timezone ?? "America/Mazatlan"}
+      view={activeTab(params.view, LOCATION_REVIEW_TABS.map((tab) => tab.id))}
+      keep={{ from: single(params.from), to: single(params.to), branch: single(params.branch), operator: single(params.operator), result: single(params.result) }}
     />
   );
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { withNotice } from "@/lib/forms/notices";
 import { redirect } from "next/navigation";
 import { canViewTenantCustomers } from "@/lib/auth/permissions";
 import { requireInternalArea } from "@/lib/auth/server";
@@ -25,7 +26,7 @@ export async function setAdminCustomerStatus(
     { target_customer_id: customerId, target_status: targetStatus },
   );
   if (error || data !== "UPDATED") redirect("/admin/customers?error=status");
-  redirect(`/admin/customers?customerUpdated=${targetStatus.toLowerCase()}`);
+  redirect(withNotice("/admin/customers", targetStatus === "ACTIVE" ? "customer_activated" : "customer_deactivated"));
 }
 
 export async function deleteAdminCustomer(customerId: string) {
@@ -38,5 +39,5 @@ export async function deleteAdminCustomer(customerId: string) {
   if (error || data !== "DELETED") {
     redirect(`/admin/customers?error=${data === "HAS_HISTORY" ? "history" : "delete"}`);
   }
-  redirect("/admin/customers?customerDeleted=1");
+  redirect(withNotice("/admin/customers", "customer_deleted"));
 }
