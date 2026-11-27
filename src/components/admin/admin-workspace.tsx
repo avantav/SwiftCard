@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 export function AdminWorkspace({ title, titleId = "admin-workspace-title", breadcrumb, description, primaryAction, toolbar, children, className = "" }: {
   title: string;
   titleId?: string;
-  breadcrumb?: string;
+  breadcrumb?: ReactNode;
   description?: string;
   primaryAction?: ReactNode;
   toolbar?: ReactNode;
