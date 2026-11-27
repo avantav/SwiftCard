@@ -1077,3 +1077,53 @@
   the change is pending, like tenant staff. `app.is_superadmin()` still
   requires ACTIVE, so no Superadmin powers until the change completes.
 - Status: Accepted.
+
+## DEC-0071 - Support Mode Can See Everything Of The Tenant
+
+- Date: 2026-11-13
+- Context: Support sessions (DEC-0067 support context) could only read part of
+  the tenant: advanced statistics, segment lists, location security and
+  campaign history refused the Superadmin.
+- Decision: Migration `0079` lets those read RPCs accept the support session
+  token, so support mode sees what the tenant's Admin general sees. Campaign
+  creation stays blocked from support, and branch lists filter by tenant.
+- Status: Accepted (recorded 2026-11-18; implemented in commit `7c21340`).
+
+## DEC-0072 - Tenant Legal Identity And Platform Terms Acceptance
+
+- Date: 2026-11-18
+- Context: The owner asked for the business's own terms and privacy notice for
+  its loyalty customers, and a modal in which staff accept the terms before
+  using the app. The Admin general must add the company name and domicile
+  before reaching the admin panel; other users only accept the app's terms.
+- Decision:
+  - Migration `0080` adds `tenants.legal_name`, `legal_address` and
+    `legal_contact_email`, editable only by the Admin general through audited
+    RPCs (`update_tenant_legal_profile`, `complete_admin_legal_onboarding`).
+  - `staff_legal_acceptances` is append-only with forced RLS and no direct
+    grants. It stores who accepted (staff profile, and the PIN operator on
+    shared branch devices), the kind (`BUSINESS` for the Admin general,
+    `USER` for everyone else), the version and the date. The required version
+    is `LEGAL_VERSION` (now `1.1`); bumping it asks everyone again.
+  - `/admin` and `/app` layouts render a non-dismissable modal instead of the
+    page while acceptance is pending. Writable server actions redirect to the
+    area home until accepted (`allowPendingLegal` exempts the acceptance and
+    PIN unlock/switch actions). Support sessions and Superadmins are never
+    asked and cannot accept for a tenant. An Admin general opening `/app` with
+    pending data is sent to `/admin`.
+  - Customers see `/register/[branchToken]/terminos|privacidad` and
+    `/card/[cardToken]/terminos|privacidad`, generated from the tenant's legal
+    identity (controller, domicile, contact) plus each card's own conditions
+    rendered as plain text. Pages are `noindex`. Until the identity exists the
+    generic controller text is shown. Registration, the claim screen and the
+    web card link them; `/admin/legal` lets the Admin general edit the data.
+  - If the status RPC fails, the gate does not block (logged without user
+    data), so an outage never stops sales.
+- Reason: The LFPDPPP requires the controller's identity and domicile in the
+  notice (art. 15 fr. I, art. 16); the provisional B2B terms already apply to
+  authorized users and now record their acceptance.
+- Consequences: Deploy the code and migration `0080` together; every tenant
+  user sees the modal on next visit. Customer acceptance still uses the
+  versioned program terms (`customer_card_terms_acceptances`). Texts remain
+  provisional pending the lawyer's review (DEC-0059).
+- Status: Accepted (provisional legal texts).
