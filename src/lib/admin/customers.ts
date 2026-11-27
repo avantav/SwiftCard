@@ -5,6 +5,10 @@ export const ADMIN_CUSTOMER_PAGE_SIZE = 50;
 export type AdminCustomerDirectoryParams = {
   customerDeleted?: string;
   customerUpdated?: string;
+  /** Customer workspace (DEC-0074): customer id, tab and pending correction. */
+  customer?: string;
+  ctab?: string;
+  act?: string;
   error?: string;
   page?: string;
   q?: string;
