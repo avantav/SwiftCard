@@ -2,7 +2,7 @@ import { LEGAL_EFFECTIVE_DATE, LEGAL_VERSION, legalContactText, tenantContactTex
 
 /**
  * Aviso de privacidad para clientes de programas de lealtad. Each business is
- * the data controller; morrow processes data on its behalf. With a business
+ * the data controller; SwiftyCards processes data on its behalf. With a business
  * identity (DEC-0072) the notice names that business, its domicile and its
  * contact channel; without one it is the generic notice. Pending review.
  */
@@ -48,13 +48,13 @@ ${controller}
 
 **Finalidad secundaria**, que solo ocurre si la autorizas marcando la casilla correspondiente:
 
-- Enviarte promociones, novedades y beneficios del negocio por correo electrónico, WhatsApp o avisos en tu tarjeta de Apple Wallet o Google Wallet. Puedes dejar de recibirlos en cualquier momento con el enlace incluido en cada correo.
+- Enviarte promociones, novedades y beneficios del negocio por correo electrónico o avisos en tu tarjeta de Apple Wallet o Google Wallet. Puedes dejar de recibirlos en cualquier momento desde la opción «Promociones» de tu tarjeta web, con el enlace incluido en cada correo promocional o pidiéndolo al negocio.
 
 Puedes negarte o retirar esta autorización en cualquier momento sin afectar tu participación en el programa.
 
 ## 4. Proveedores y transferencias
 
-Para operar la plataforma, ${op.brand} se apoya en proveedores que actúan como encargados con obligaciones de confidencialidad, algunos fuera de México: Supabase (base de datos), el proveedor de alojamiento de la aplicación, Resend (correo), y Apple y Google (Apple Wallet y Google Wallet).
+Para operar la plataforma, ${op.brand} se apoya en proveedores que actúan como encargados con obligaciones de confidencialidad, algunos fuera de México: Supabase (base de datos), Hostinger (alojamiento de la aplicación), Resend (correo), y Apple y Google (Apple Wallet y Google Wallet). A Apple Wallet y Google Wallet solo se envían tu nombre, tu saldo, tus premios y los datos del programa; no se envían tu teléfono, tu correo ni tu fecha de nacimiento.
 
 Tus datos **no se venden** ni se comparten con otros negocios. Solo se transferirán sin tu consentimiento en los casos previstos en el artículo 36 de la Ley, como requerimientos de autoridad competente.
 
@@ -66,7 +66,7 @@ Tu solicitud debe incluir tu nombre, un medio para responderte, un documento que
 
 ## 6. Conservación y seguridad
 
-Tus datos se conservan mientras tu Tarjeta esté activa y, después, durante el tiempo necesario para atender aclaraciones y obligaciones legales; luego se suprimen o anonimizan. Si el negocio deja de usar ${op.brand}, tus datos se le entregan o se suprimen conforme a su contrato. Se aplican medidas como cifrado en tránsito, aislamiento de los datos de cada negocio y control de accesos. Si ocurre una vulneración que afecte de forma significativa tus derechos, se te informará de inmediato.
+Tus datos se conservan mientras tu Tarjeta esté activa y, después, durante el tiempo necesario para atender aclaraciones y obligaciones legales; luego se suprimen o anonimizan. Si solicitas la cancelación, el negocio elimina tu nombre, teléfono, correo y fecha de nacimiento y desactiva tu Tarjeta; el historial de compras y premios se conserva sin datos que te identifiquen. Si el negocio deja de usar ${op.brand}, tus datos se le entregan o se suprimen conforme a su contrato. Se aplican medidas como cifrado en tránsito, aislamiento de los datos de cada negocio y control de accesos. Si ocurre una vulneración que afecte de forma significativa tus derechos, se te informará de inmediato.
 
 ## 7. Menores de edad
 

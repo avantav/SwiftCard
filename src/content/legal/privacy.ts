@@ -1,7 +1,7 @@
 import { LEGAL_EFFECTIVE_DATE, LEGAL_VERSION, legalContactText, type LegalOperator } from "@/lib/legal/company";
 
 /**
- * Aviso de privacidad integral de morrow (LFPDPPP 2025, art. 15). Covers the
+ * Aviso de privacidad integral de SwiftyCards (LFPDPPP 2025, art. 15). Covers the
  * people who use the platform on behalf of a business. Pending legal review.
  */
 export function privacyMarkdown(op: LegalOperator) {
@@ -22,7 +22,7 @@ Este aviso aplica a las personas que visitan nuestro sitio y a quienes usan la p
 
 - **Identificación y contacto:** nombre, correo electrónico, teléfono y, en su caso, nombre del negocio y puesto o rol.
 - **Acceso y seguridad:** credenciales de acceso (la contraseña se almacena cifrada y nunca en texto legible), PIN de operador (almacenado como resumen criptográfico), sucursales asignadas, registros de actividad y auditoría, dirección IP y datos técnicos del dispositivo y del navegador.
-- **Ubicación al operar:** cuando el negocio activa la validación de ubicación, las coordenadas del dispositivo del empleado al confirmar una compra o un canje, para verificar que la operación ocurre en la sucursal. No rastreamos la ubicación de forma continua.
+- **Ubicación al operar:** cuando el negocio activa la validación de ubicación, las coordenadas del dispositivo del empleado al confirmar una compra o un canje, para verificar que la operación ocurre en la sucursal. Se guardan junto con la operación y pueden consultarlas el negocio y, en sesiones de soporte, nuestro personal. No rastreamos la ubicación de forma continua.
 - **Facturación y pago:** nombre o razón social, RFC, régimen fiscal, domicilio fiscal y correo de facturación. **Los datos de tarjeta los recaba y resguarda directamente Stripe**; ${op.brand} no almacena números completos de tarjeta. Al contratar, consientes expresamente el tratamiento de tus datos financieros por parte de ${op.brand} y de su procesador de pagos para efectuar los cobros.
 - **Comunicaciones:** mensajes que nos envías por correo o WhatsApp para soporte o ventas.
 
@@ -36,6 +36,7 @@ No tratamos datos personales sensibles de las Personas usuarias.
 - Prestar el servicio contratado y operar la plataforma.
 - Cobrar suscripciones, emitir comprobantes y cumplir obligaciones fiscales.
 - Prevenir fraudes y abusos, mantener registros de auditoría y atender incidentes de seguridad.
+- Dar soporte técnico: nuestro personal autorizado puede consultar la información del negocio en sesiones de soporte temporales, iniciadas con un motivo y registradas en bitácora.
 - Brindar soporte y enviarte comunicaciones sobre el servicio, tu cuenta, tu prueba gratuita y tus pagos.
 - Cumplir obligaciones legales y requerimientos de autoridad.
 
@@ -51,10 +52,10 @@ Si no deseas que tus datos se traten para las finalidades secundarias, puedes in
 Para prestar el servicio nos apoyamos en proveedores que tratan datos **por cuenta de ${op.brand} como encargados**, con obligaciones de confidencialidad y seguridad, algunos ubicados fuera de México:
 
 - **Supabase:** base de datos, autenticación y almacenamiento de archivos.
-- **Proveedor de alojamiento de la aplicación web.**
+- **Hostinger:** alojamiento de la aplicación web.
 - **Stripe:** procesamiento de pagos y suscripciones.
 - **Resend:** envío de correos transaccionales.
-- **Apple y Google:** emisión y actualización de tarjetas en Apple Wallet y Google Wallet, y mapas para ubicar sucursales.
+- **Apple y Google:** emisión y actualización de tarjetas en Apple Wallet y Google Wallet, y Google Maps para ubicar sucursales y revisar la ubicación de las operaciones.
 
 ${op.brand} **no vende ni renta** datos personales. Solo transferiremos datos a terceros sin tu consentimiento en los supuestos del artículo 36 de la Ley, por ejemplo cuando lo exija una ley o una autoridad competente, o cuando sea necesario para el reconocimiento, ejercicio o defensa de un derecho en un proceso judicial.
 
@@ -79,7 +80,7 @@ Usamos únicamente **cookies técnicas** necesarias para mantener tu sesión ini
 
 ## 7. Conservación y seguridad
 
-Conservamos los datos mientras exista la relación con el negocio y, después, durante los plazos necesarios para cumplir obligaciones legales, fiscales y para la defensa de nuestros derechos; al concluir, se suprimen o anonimizan. Aplicamos medidas de seguridad administrativas, técnicas y físicas, como cifrado en tránsito, aislamiento de la información de cada negocio, control de accesos por rol y registros de auditoría. Si ocurre una vulneración que afecte de forma significativa tus derechos, te informaremos de inmediato.
+Conservamos los datos mientras exista la relación con el negocio y, después, durante los plazos necesarios para cumplir obligaciones legales, fiscales y para la defensa de nuestros derechos; al concluir, se suprimen o anonimizan. Las estadísticas que elaboramos para operar y mejorar la plataforma son agregadas y anonimizadas, y no te identifican. Aplicamos medidas de seguridad administrativas, técnicas y físicas, como cifrado en tránsito, aislamiento de la información de cada negocio, control de accesos por rol y registros de auditoría. Si ocurre una vulneración que afecte de forma significativa tus derechos, te informaremos de inmediato.
 
 ## 8. Menores de edad
 

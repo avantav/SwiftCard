@@ -24,8 +24,10 @@ export const NOTICES = {
   customer_activated: "Cliente reactivado.",
   customer_deactivated: "Cliente desactivado. Su historial se conserva.",
   customer_deleted: "Cliente eliminado permanentemente.",
+  customer_anonymized: "Datos personales del cliente eliminados. Su historial se conserva sin datos que lo identifiquen.",
   correction_saved: "Corrección registrada.",
   legal_saved: "Datos legales guardados.",
+  service_order_accepted: "Orden de Servicio aceptada.",
 } as const;
 
 export type NoticeCode = keyof typeof NOTICES;

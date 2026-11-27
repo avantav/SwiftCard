@@ -1,7 +1,8 @@
-# Documentos legales de morrow — propuesta para revisión jurídica
+# Documentos legales de SwiftyCards — propuesta para revisión jurídica
 
-Estado: **versión 1.0 publicada provisionalmente** (12 de noviembre de 2026) mientras
-la revisa un abogado. No constituye asesoría legal.
+Estado: **versión 1.2 publicada provisionalmente** (19 de noviembre de 2026) mientras
+la revisa un abogado. No constituye asesoría legal. La marca en los documentos es
+**SwiftyCards** (swiftycards.com); el resto de la app aún dice «morrow» (DEC-0077).
 
 | Documento | Ruta pública | Fuente |
 |---|---|---|
@@ -78,6 +79,24 @@ Clientazo no publica términos del servicio.
   contratar.
 - Prueba de 30 días, renovación automática, IVA aparte, cancelación al final del
   periodo y CFDI a solicitud (precios y planes según DEC-0057/DEC-0058).
+- Versión 1.2 (DEC-0077), a petición del propietario:
+  - Sin garantía de resultados comerciales (§2).
+  - Plataforma en desarrollo continuo; fallas reportadas se corrigen en plazo
+    razonable; único remedio por indisponibilidad imputable de más de 3 días:
+    bonificación proporcional (§2 y §13). No se excluye toda responsabilidad
+    para no arriesgar la nulidad de la cláusula.
+  - Cada Plan incluye solo lo publicado o lo de su **Orden de Servicio**; todo
+    trabajo adicional requiere cotización por escrito aceptada (§4).
+  - Orden de Servicio por negocio con precio y alcance propios, aceptada por el
+    administrador general con casilla de conformidad (DEC-0076); aclaraciones de
+    cargos dentro de 15 días naturales (§4).
+  - Acceso de soporte en sesiones temporales y registradas (§9; aviso §3).
+  - Estadísticas agregadas y anonimizadas (§9; aviso §7).
+  - Clientes importados: el negocio responde por su aviso y base legal (§9).
+  - Al terminar, el negocio responde por sellos, puntos y premios pendientes (§14).
+  - Notificaciones por correo/plataforma (§17) y cesión a una sociedad (§18).
+- Cancelación ARCO de clientes con historial: se eliminan sus datos personales y
+  se conserva el historial sin datos identificables (DEC-0075).
 
 ## 4. Preguntas abiertas para el abogado
 
@@ -118,4 +137,24 @@ Clientazo no publica términos del servicio.
 - Revisar con el abogado los nuevos **Términos del programa de lealtad** de cada
   negocio (premios no canjeables por efectivo, baja, PROFECO, jurisdicción del
   domicilio del negocio).
-- Mostrar el aviso de cambios sustanciales dentro de la plataforma.
+- Mostrar el aviso de cambios sustanciales dentro de la plataforma (hoy el modal
+  pide aceptar cada versión nueva, pero no resume qué cambió).
+- Clientes importados marcados como `SELF_SERVICE` en `registration_method`.
+- Órdenes de Servicio sin conexión con Stripe: el monto cobrado se configura aparte.
+- Revisar con el abogado: remedio limitado por fallas, plazo de 15 días para
+  aclarar cargos, Orden de Servicio como anexo contractual y si los registros de
+  auditoría anteriores a una anonimización deben suprimirse o basta bloquearlos.
+
+## 6. Procedimiento de supresión tras la terminación
+
+No hay purga automática. Al terminar la suscripción de un negocio:
+
+1. Registrar la fecha de terminación y avisar al administrador general que tiene
+   30 días naturales para solicitar su exportación (Términos §14).
+2. Atender la exportación con `/api/admin/exports` o desde Superadmin.
+3. Pasados los 30 días, anonimizar a todos los clientes del negocio
+   (`app.anonymize_admin_customer` por cliente, o un script equivalente revisado)
+   y desactivar al personal. Conservar bloqueados solo los registros fiscales y de
+   auditoría necesarios.
+4. Coordenadas de compras y canjes: se conservan con la operación; definir con el
+   abogado un plazo máximo (propuesta: 12 meses) antes de automatizar su borrado.

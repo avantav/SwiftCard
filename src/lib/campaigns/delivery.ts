@@ -54,10 +54,10 @@ export async function deliverCampaign(campaignId: string): Promise<CampaignDeliv
     const db = createSupabaseAdminClient();
     const { data: campaign } = await db
       .from("marketing_campaigns")
-      .select("id,tenant_id,email_subject,email_body,wallet_message,tenants!inner(name,logo_url,branding_mode,status)")
+      .select("id,tenant_id,email_subject,email_body,wallet_message,tenants!inner(name,logo_url,branding_mode,status,legal_name,legal_address)")
       .eq("id", campaignId)
       .maybeSingle();
-    const tenant = one(campaign?.tenants as never) as { name: string; logo_url: string | null; branding_mode: string; status: string } | null;
+    const tenant = one(campaign?.tenants as never) as { name: string; logo_url: string | null; branding_mode: string; status: string; legal_name: string | null; legal_address: string | null } | null;
     if (!campaign || !tenant || tenant.status !== "ACTIVE") return result;
 
     const origin = resolvePublicOrigin(process.env.SWIFTWALLET_PUBLIC_URL);
@@ -101,7 +101,8 @@ export async function deliverCampaign(campaignId: string): Promise<CampaignDeliv
           subject: campaign.email_subject ?? "",
           body: campaign.email_body ?? "",
           cardUrl: `${origin}/card/${token}`,
-          unsubscribeUrl: `${origin}/card/${token}/promociones`
+          unsubscribeUrl: `${origin}/card/${token}/promociones`,
+          sender: { legalName: tenant.legal_name, legalAddress: tenant.legal_address }
         });
         const sent = await sendEmail({
           to: email,
@@ -171,6 +172,12 @@ export async function deliverCampaign(campaignId: string): Promise<CampaignDeliv
         for (const item of stillQueued ?? []) queued.add(item.wallet_pass_id);
       }
       for (const row of appleRows) {
+        // Consent revoked after creation: the refreshed pass no longer shows
+        // the promotion (see loadLatestWalletActivity), so it is not "sent".
+        if (!one(row.customers)?.marketing_consent) {
+          await mark(db, row.id, "SKIPPED", { error: "Sin consentimiento." });
+          continue;
+        }
         if (row.wallet_pass_id && queued.has(row.wallet_pass_id)) {
           result.pending += 1;
         } else {

@@ -41,3 +41,20 @@ export async function deleteAdminCustomer(customerId: string) {
   }
   redirect(withNotice("/admin/customers", "customer_deleted"));
 }
+
+/**
+ * ARCO cancellation (DEC-0075): removes the customer's personal data, revokes
+ * cards and Wallet passes and keeps the history without identifying data.
+ */
+export async function anonymizeAdminCustomer(customerId: string) {
+  const context = await requireGeneralAdmin();
+  if (!UUID.test(customerId)) redirect("/admin/customers?error=invalid");
+  const { data, error } = await context.supabase.schema("app").rpc(
+    "anonymize_admin_customer",
+    { target_customer_id: customerId },
+  );
+  if (error || (data !== "ANONYMIZED" && data !== "ALREADY_ANONYMIZED")) {
+    redirect("/admin/customers?error=anonymize");
+  }
+  redirect(withNotice("/admin/customers", "customer_anonymized"));
+}

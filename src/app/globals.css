@@ -1750,6 +1750,11 @@ textarea {
   overflow-wrap: anywhere;
 }
 
+/* Service Order scope keeps the line breaks written by the Superadmin. */
+.billing-service-order-scope {
+  white-space: pre-line;
+}
+
 .staff-row {
   display: grid;
   gap: 6px;
