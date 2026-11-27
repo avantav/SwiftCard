@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { validateStaffCreateForm } from "./staff";
+import { staffCreateStepErrors, staffFieldErrors, validatePinOperatorForm, validateStaffCreateForm } from "./staff";
 
 const actionSource = readFileSync(
   join(process.cwd(), "src/app/admin/staff/actions.ts"),
@@ -99,8 +99,12 @@ describe("validateStaffCreateForm", () => {
     expect(staffPageSource).toContain("Sucursales");
     expect(staffPageSource).toContain("Seguridad");
     expect(staffPageSource).toContain("StaffCreateWizard");
-    expect(staffCreateWizardSource).toContain("branch-wizard-progress");
-    expect(staffCreateWizardSource).toContain("setStep");
+    // Guided creation validates each step (DEC-0073).
+    expect(staffCreateWizardSource).toContain("<WizardForm");
+    expect(staffCreateWizardSource).toContain("staffCreateStepErrors(formData, 0)");
+    expect(staffCreateWizardSource).toContain("pinOperatorStepErrors(formData, 1)");
+    expect(staffPageSource).toContain("<AdminWorkspace");
+    expect(staffPageSource).toContain('name="returnSection" value="security"');
     expect(staffPageSource).not.toContain("admin-management-grid");
   });
 
@@ -117,5 +121,20 @@ describe("staff provisioning compensation contract", () => {
     const cleanup = vi.fn().mockResolvedValue(true);
     await cleanup("new-auth-user");
     expect(cleanup).toHaveBeenCalledWith("new-auth-user");
+  });
+});
+
+describe("guided staff creation (DEC-0073)", () => {
+  it("maps validator messages to fields and filters them per step", () => {
+    const data = form({ fullName: "", email: "bad", role: "EMPLOYEE", branchId: "", temporaryPassword: "short", passwordConfirmation: "x" });
+    expect(staffFieldErrors(["Nombre es obligatorio.", "El correo no es válido."])).toEqual({ fullName: ["Nombre es obligatorio."], email: ["El correo no es válido."] });
+    expect(Object.keys(staffCreateStepErrors(data, 0)).sort()).toEqual(["email", "fullName"]);
+    expect(Object.keys(staffCreateStepErrors(data, 1))).toEqual(["branchId"]);
+    expect(Object.keys(staffCreateStepErrors(data, 2)).sort()).toEqual(["passwordConfirmation", "temporaryPassword"]);
+  });
+
+  it("requires a name and exactly six PIN digits for PIN operators", () => {
+    expect(validatePinOperatorForm(form({ fullName: "Ana", pin: "123456" }))).toEqual({});
+    expect(Object.keys(validatePinOperatorForm(form({ fullName: " ", pin: "12a456" }))).sort()).toEqual(["fullName", "pin"]);
   });
 });

@@ -4,22 +4,22 @@ import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import {
   describeBranchPersistenceError,
+  type BranchAccessActionState,
   type BranchCreateActionState,
   type BranchCreateFieldErrors,
   type BranchCreateInput,
   type BranchUpdateActionState,
   type BranchUpdateInput,
+  type GeofencePolicyActionState,
   validateBranchCreateForm,
   validateBranchUpdateForm,
   validateSharedAccessCredentials,
 } from "@/lib/admin/branches";
 import { requireInternalArea } from "@/lib/auth/server";
+import { withNotice } from "@/lib/forms/notices";
+import { errorState } from "@/lib/forms/state";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { dispatchAppleWalletUpdatesBestEffort } from "@/lib/wallet/apple-apns";
-
-function redirectWithError(error: string): never {
-  redirect(`/admin/branches?error=${encodeURIComponent(error)}`);
-}
 
 function valuesFromInput(data: BranchCreateInput) {
   return {
@@ -251,7 +251,7 @@ export async function createBranch(
     limit: 25,
     tenantId: context.tenantId,
   });
-  redirect(`/admin/branches?created=1&branch=${branchId}&section=details`);
+  redirect(withNotice(`/admin/branches?branch=${branchId}&section=details`, "branch_created"));
 }
 
 export async function updateBranch(
@@ -317,15 +317,26 @@ export async function updateBranch(
     limit: 25,
     tenantId: context.tenantId,
   });
-  redirect(`/admin/branches?updated=1&branch=${validation.data.branchId}&section=details`);
+  redirect(withNotice(`/admin/branches?branch=${validation.data.branchId}&section=details`, "branch_updated"));
 }
 
-export async function configureBranchAccess(formData: FormData) {
+/**
+ * Changes how a branch's staff signs in. Returns state on error so the
+ * dialog stays open with the typed email (DEC-0073); passwords are never
+ * echoed back.
+ */
+export async function configureBranchAccess(
+  _previousState: BranchAccessActionState,
+  formData: FormData,
+): Promise<BranchAccessActionState> {
   const branchId = String(formData.get("branchId") ?? "").trim();
   const accessMode = String(formData.get("employeeAccessMode") ?? "");
+  const values = { employeeAccessMode: accessMode, sharedEmail: String(formData.get("sharedEmail") ?? "").trim() };
+  const fail = (formError: string, fieldErrors: BranchAccessActionState["fieldErrors"] = {}): BranchAccessActionState =>
+    ({ ...errorState(values, {}, formError), fieldErrors });
   const context = await requireInternalArea("ADMIN", { writable: true });
   if (context.access.role !== "ADMIN" || !branchId || !context.tenantId) {
-    redirectWithError("Solo el Administrador general puede cambiar este acceso.");
+    return fail("Solo el Administrador general puede cambiar este acceso.");
   }
 
   // SEC-002: prove tenant ownership with the RLS-scoped session client before
@@ -337,14 +348,23 @@ export async function configureBranchAccess(formData: FormData) {
     .eq("tenant_id", context.tenantId)
     .maybeSingle();
   if (ownershipError || !ownedBranch) {
-    redirectWithError("La sucursal no existe o no pertenece a tu negocio.");
+    return fail("La sucursal no existe o no pertenece a tu negocio.");
+  }
+
+  if (accessMode !== "INDIVIDUAL_CREDENTIALS" && accessMode !== "SHARED_ACCOUNT_PIN") {
+    return fail("El modo de acceso no es válido.", { employeeAccessMode: ["Elige un modo de acceso."] });
+  }
+
+  const credentials = accessMode === "SHARED_ACCOUNT_PIN" ? validateSharedAccessCredentials(formData) : null;
+  if (credentials && !credentials.ok) {
+    return fail("Revisa las credenciales de la cuenta compartida.", credentials.fieldErrors);
   }
 
   let adminClient;
   try {
     adminClient = createSupabaseAdminClient();
   } catch {
-    redirectWithError("La service role no está configurada.");
+    return fail("La service role no está configurada.");
   }
 
   const { data: existing } = await adminClient
@@ -354,47 +374,45 @@ export async function configureBranchAccess(formData: FormData) {
     .eq("tenant_id", context.tenantId)
     .maybeSingle();
 
+  const successHref = withNotice(`/admin/branches?branch=${encodeURIComponent(branchId)}&section=access`, "branch_access_saved");
+
   if (accessMode === "INDIVIDUAL_CREDENTIALS") {
     const { data, error } = await context.supabase
       .schema("app")
       .rpc("disable_branch_shared_access", { target_branch_id: branchId });
     if (error || data !== "DISABLED") {
-      redirectWithError("No se pudo cambiar el modo de acceso.");
+      return fail("No se pudo cambiar el modo de acceso.");
     }
     if (existing?.staff_profile_id) {
       await adminClient.auth.admin.updateUserById(existing.staff_profile_id, {
         ban_duration: "876000h"
       });
     }
-    redirect(`/admin/branches?accessUpdated=1&branch=${branchId}&section=access`);
+    redirect(successHref);
   }
 
-  if (accessMode !== "SHARED_ACCOUNT_PIN") {
-    redirectWithError("El modo de acceso no es válido.");
-  }
-
-  const credentials = validateSharedAccessCredentials(formData);
-  if (!credentials.ok) {
-    redirectWithError(credentials.errors[0] ?? "Credenciales compartidas inválidas.");
-  }
+  if (!credentials?.ok) return fail("Credenciales compartidas inválidas.");
+  const shared = credentials.data;
 
   let staffProfileId = existing?.staff_profile_id as string | undefined;
   let createdNewUser = false;
   if (staffProfileId) {
     const { error } = await adminClient.auth.admin.updateUserById(staffProfileId, {
-      email: credentials.data.email,
-      password: credentials.data.password,
+      email: shared.email,
+      password: shared.password,
       email_confirm: true,
       ban_duration: "none"
     });
-    if (error) redirectWithError("No se pudieron actualizar las credenciales compartidas.");
+    if (error) return fail("No se pudieron actualizar las credenciales compartidas.");
   } else {
     const { data, error } = await adminClient.auth.admin.createUser({
-      email: credentials.data.email,
-      password: credentials.data.password,
+      email: shared.email,
+      password: shared.password,
       email_confirm: true
     });
-    if (error || !data.user) redirectWithError("No se pudo crear la cuenta compartida.");
+    if (error || !data.user) {
+      return fail("No se pudo crear la cuenta compartida.", { sharedEmail: ["Revisa que el correo no pertenezca a otra cuenta."] });
+    }
     staffProfileId = data.user.id;
     createdNewUser = true;
   }
@@ -404,24 +422,29 @@ export async function configureBranchAccess(formData: FormData) {
     .rpc("configure_branch_shared_access", {
       target_branch_id: branchId,
       target_staff_profile_id: staffProfileId,
-      target_email: credentials.data.email
+      target_email: shared.email
     });
   if (error || data !== "CONFIGURED") {
     if (createdNewUser && staffProfileId) await adminClient.auth.admin.deleteUser(staffProfileId);
-    redirectWithError("No se pudo activar el acceso por PIN.");
+    return fail("No se pudo activar el acceso por PIN.");
   }
 
-  redirect(`/admin/branches?accessUpdated=1&branch=${branchId}&section=access`);
+  redirect(successHref);
 }
 
-export async function configureTenantGeofencing(formData: FormData) {
+/** Tenant-wide GPS policy; returns state on error (DEC-0073). */
+export async function configureTenantGeofencing(
+  _previousState: GeofencePolicyActionState,
+  formData: FormData,
+): Promise<GeofencePolicyActionState> {
   const targetMode = String(formData.get("locationValidationMode") ?? "");
+  const fail = (formError: string): GeofencePolicyActionState => errorState({ locationValidationMode: targetMode }, {}, formError);
   if (targetMode !== "STRICT" && targetMode !== "FLEXIBLE") {
-    redirectWithError("El modo de validación de ubicación no es válido.");
+    return fail("El modo de validación de ubicación no es válido.");
   }
   const context = await requireInternalArea("ADMIN", { writable: true, allowSupportWrites: true });
   if (context.access.role !== "ADMIN") {
-    redirectWithError("Solo el Administrador general puede cambiar el geofence.");
+    return fail("Solo el Administrador general puede cambiar el geofence.");
   }
   const { data, error } = await context.supabase
     .schema("app")
@@ -437,12 +460,12 @@ export async function configureTenantGeofencing(formData: FormData) {
           }
         : { target_mode: targetMode },
     );
-  if (error) redirectWithError("No se pudo actualizar la validación de ubicación.");
+  if (error) return fail("No se pudo actualizar la validación de ubicación.");
   if (data === "MISSING_COORDINATES") {
-    redirectWithError("Todas las sucursales activas deben tener una ubicación seleccionada antes de activar el geofence.");
+    return fail("Todas las sucursales activas deben tener una ubicación seleccionada antes de activar el geofence.");
   }
   if (data !== "UPDATED" && data !== "UNCHANGED") {
-    redirectWithError("No tienes permiso para cambiar la validación de ubicación.");
+    return fail("No tienes permiso para cambiar la validación de ubicación.");
   }
-  redirect("/admin/branches?geofenceUpdated=1");
+  redirect(withNotice("/admin/branches", "geofence_saved"));
 }

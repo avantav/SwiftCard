@@ -2,9 +2,20 @@
 
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
+import { withNotice } from "@/lib/forms/notices";
 
-function redirectWithError(error: string): never {
-  redirect(`/admin/staff?error=${encodeURIComponent(error)}`);
+/** Same branch, person and section as the dialog that submitted (DEC-0073). */
+function dialogUrl(formData: FormData, extra: Record<string, string> = {}) {
+  const values: Record<string, string> = {};
+  for (const key of ["returnBranch", "returnStaff", "returnSection"] as const) {
+    const value = String(formData.get(key) ?? "").trim();
+    if (value) values[key.replace("return", "").toLowerCase()] = value;
+  }
+  return `/admin/staff?${new URLSearchParams({ ...values, ...extra })}`;
+}
+
+function redirectWithError(formData: FormData, error: string): never {
+  redirect(dialogUrl(formData, { error }));
 }
 
 export async function assignStaffBranch(formData: FormData) {
@@ -12,11 +23,13 @@ export async function assignStaffBranch(formData: FormData) {
   const branchId = formData.get("branchId");
   const makePrimary = formData.get("makePrimary") === "on";
 
-  if (typeof staffProfileId !== "string" || typeof branchId !== "string") {
-    redirectWithError("El personal y la sucursal son obligatorios.");
+  if (typeof staffProfileId !== "string" || typeof branchId !== "string" || !branchId) {
+    redirectWithError(formData, "El personal y la sucursal son obligatorios.");
   }
 
-  const context = await requireInternalArea("ADMIN");
+  // Writable: support sessions are read-only here and pending legal
+  // acceptance blocks it, like every other write (DEC-0072, DEC-0073).
+  const context = await requireInternalArea("ADMIN", { writable: true });
 
   const { data, error } = context.access.role === "ADMIN"
     ? await context.supabase.schema("app").rpc("set_staff_branch_assignment", {
@@ -32,8 +45,8 @@ export async function assignStaffBranch(formData: FormData) {
     });
 
   if (error || (context.access.role === "MANAGER" && data !== "ASSIGNED")) {
-    redirectWithError("No se pudo asignar la sucursal.");
+    redirectWithError(formData, "No se pudo asignar la sucursal.");
   }
 
-  redirect(`/admin/staff?${new URLSearchParams({ branch: branchId, assigned: "1" })}`);
+  redirect(withNotice(dialogUrl(formData), "staff_updated"));
 }

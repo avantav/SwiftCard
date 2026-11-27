@@ -67,6 +67,9 @@ vi.mock("@/lib/supabase/admin", () => ({
 }));
 
 import { configureBranchAccess } from "@/app/admin/branches/actions";
+import { initialFormState } from "@/lib/forms/state";
+
+const idle = initialFormState({ employeeAccessMode: "", sharedEmail: "" });
 
 function form(branchId: string, mode = "SHARED_ACCOUNT_PIN") {
   const data = new FormData();
@@ -86,9 +89,11 @@ describe("configureBranchAccess tenant isolation (SEC-002)", () => {
   });
 
   it("rejects another tenant's branch before any service-role read or Auth change", async () => {
-    await expect(configureBranchAccess(form("branch-of-tenant-b"))).rejects.toThrow(
-      /REDIRECT:\/admin\/branches\?error=La%20sucursal%20no%20existe/,
-    );
+    await expect(configureBranchAccess(idle, form("branch-of-tenant-b"))).resolves.toMatchObject({
+      status: "error",
+      formError: "La sucursal no existe o no pertenece a tu negocio.",
+      values: { sharedEmail: "attacker@example.com" },
+    });
     expect(state.sharedAccountFilters).toEqual([]);
     expect(state.updateUserById).not.toHaveBeenCalled();
     expect(state.createUser).not.toHaveBeenCalled();
@@ -96,14 +101,23 @@ describe("configureBranchAccess tenant isolation (SEC-002)", () => {
   });
 
   it("does not ban another tenant's shared account when switching to individual access", async () => {
-    await expect(configureBranchAccess(form("branch-of-tenant-b", "INDIVIDUAL_CREDENTIALS"))).rejects.toThrow(/REDIRECT:.*error=/);
+    await expect(configureBranchAccess(idle, form("branch-of-tenant-b", "INDIVIDUAL_CREDENTIALS"))).resolves.toMatchObject({ status: "error" });
     expect(state.updateUserById).not.toHaveBeenCalled();
   });
 
   it("configures the admin's own branch with tenant-scoped service-role lookups", async () => {
-    await expect(configureBranchAccess(form("branch-of-tenant-a"))).rejects.toThrow(/REDIRECT:\/admin\/branches\?accessUpdated=1/);
+    await expect(configureBranchAccess(idle, form("branch-of-tenant-a"))).rejects.toThrow(/REDIRECT:\/admin\/branches\?branch=branch-of-tenant-a&section=access&notice=branch_access_saved/);
     expect(state.sharedAccountFilters).toEqual([{ branch_id: "branch-of-tenant-a", tenant_id: "tenant-a" }]);
     expect(state.createUser).toHaveBeenCalledOnce();
     expect(state.rpc).toHaveBeenCalledWith("configure_branch_shared_access", expect.objectContaining({ target_branch_id: "branch-of-tenant-a" }));
+  });
+
+  it("keeps the dialog open with field errors for invalid shared credentials, before any Auth call", async () => {
+    const data = form("branch-of-tenant-a");
+    data.set("sharedPasswordConfirmation", "otra-clave-distinta");
+    const result = await configureBranchAccess(idle, data);
+    expect(result).toMatchObject({ status: "error", fieldErrors: { sharedPasswordConfirmation: [expect.stringContaining("no coincide")] } });
+    expect(JSON.stringify(result)).not.toContain("una-clave-larga-1");
+    expect(state.createUser).not.toHaveBeenCalled();
   });
 });

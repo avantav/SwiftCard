@@ -3,38 +3,62 @@
 import { redirect } from "next/navigation";
 import { requireInternalArea } from "@/lib/auth/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { validateStaffCreateForm } from "@/lib/admin/staff";
+import {
+  staffCreateValues,
+  staffFieldErrors,
+  validateStaffCreateForm,
+  type StaffCreateActionState,
+} from "@/lib/admin/staff";
+import { withNotice, type NoticeCode } from "@/lib/forms/notices";
+import { errorState } from "@/lib/forms/state";
 
 function staffUrl(values: Record<string, string>) {
   return `/admin/staff?${new URLSearchParams(values)}`;
 }
 
-function redirectWithError(error: string, branchId = ""): never {
-  redirect(staffUrl({ ...(branchId ? { branch: branchId } : {}), error }));
+/**
+ * Where a dialog action returns: the same branch, person and section, so an
+ * error or a success keeps the admin in context (DEC-0073).
+ */
+function dialogUrl(formData: FormData, extra: Record<string, string> = {}) {
+  const values: Record<string, string> = {};
+  for (const key of ["returnBranch", "returnStaff", "returnPin", "returnSection"] as const) {
+    const value = String(formData.get(key) ?? "").trim();
+    if (value) values[key.replace("return", "").toLowerCase()] = value;
+  }
+  return staffUrl({ ...values, ...extra });
 }
 
-export async function createStaff(formData: FormData) {
-  const requestedBranchId = String(formData.get("branchId") ?? "").trim();
+function backWithError(formData: FormData, error: string): never {
+  redirect(dialogUrl(formData, { error }));
+}
+
+function backWithNotice(formData: FormData, notice: NoticeCode): never {
+  redirect(withNotice(dialogUrl(formData), notice));
+}
+
+export async function createStaff(_previousState: StaffCreateActionState, formData: FormData): Promise<StaffCreateActionState> {
+  const values = staffCreateValues(formData);
   const validation = validateStaffCreateForm(formData);
 
   if (!validation.ok) {
-    redirectWithError(validation.errors[0] ?? "Datos de personal inválidos.", requestedBranchId);
+    return errorState(values, staffFieldErrors(validation.errors), "Corrige los campos indicados antes de crear la cuenta.");
   }
 
   const context = await requireInternalArea("ADMIN", { writable: true });
 
   if (!context.tenantId || (context.access.role !== "ADMIN" && context.access.role !== "MANAGER")) {
-    redirectWithError("No tienes permiso para crear personal.", requestedBranchId);
+    return errorState(values, {}, "No tienes permiso para crear personal.");
   }
   if (context.access.role === "MANAGER" && validation.data.role !== "EMPLOYEE") {
-    redirectWithError("El Administrador de sucursal solo puede crear empleados.", requestedBranchId);
+    return errorState(values, { role: ["El Administrador de sucursal solo puede crear empleados."] }, "El Administrador de sucursal solo puede crear empleados.");
   }
 
   let adminClient;
   try {
     adminClient = createSupabaseAdminClient();
   } catch {
-    redirectWithError("La service role no está configurada.", requestedBranchId);
+    return errorState(values, {}, "La service role no está configurada.");
   }
 
   const { data: authData, error: authError } =
@@ -46,7 +70,12 @@ export async function createStaff(formData: FormData) {
     });
 
   if (authError || !authData.user) {
-    redirectWithError("No se pudo crear el usuario de acceso.", requestedBranchId);
+    const taken = /already|registered|exists/i.test(authError?.message ?? "");
+    return errorState(
+      values,
+      taken ? { email: ["Este correo ya pertenece a otra cuenta."] } : {},
+      "No se pudo crear el usuario de acceso.",
+    );
   }
 
   let profileError: { message: string } | null = null;
@@ -87,56 +116,55 @@ export async function createStaff(formData: FormData) {
       authData.user.id
     );
 
-    redirectWithError(
+    return errorState(
+      values,
+      {},
       cleanupError
         ? "No se pudo crear el perfil y una cuenta de Auth quedó pendiente de revisión."
         : "No se pudo crear el perfil del personal.",
-      requestedBranchId,
     );
   }
 
-  redirect(staffUrl({ branch: validation.data.branchId, created: "1" }));
+  redirect(withNotice(staffUrl({ branch: validation.data.branchId }), "staff_created"));
 }
 
 export async function setEmployeeStatus(formData: FormData) {
   const staffProfileId = String(formData.get("staffProfileId") ?? "").trim();
-  const returnBranch = String(formData.get("returnBranch") ?? "").trim();
   const status = formData.get("status") === "ACTIVE" ? "ACTIVE" : "INACTIVE";
   const context = await requireInternalArea("ADMIN", { writable: true });
   const { data, error } = await context.supabase.schema("app").rpc("set_scoped_employee_status", {
     target_staff_profile_id: staffProfileId,
     target_status: status
   });
-  if (error || data !== "UPDATED") redirectWithError("No puedes cambiar el estado de esa cuenta.", returnBranch);
-  redirect(staffUrl({ ...(returnBranch ? { branch: returnBranch } : {}), staffUpdated: "1" }));
+  if (error || data !== "UPDATED") backWithError(formData, "No puedes cambiar el estado de esa cuenta.");
+  backWithNotice(formData, "staff_updated");
 }
 
 export async function resetEmployeePassword(formData: FormData) {
   const staffProfileId = String(formData.get("staffProfileId") ?? "").trim();
-  const returnBranch = String(formData.get("returnBranch") ?? "").trim();
   const password = formData.get("temporaryPassword");
   const confirmation = formData.get("passwordConfirmation");
   if (typeof password !== "string" || password.length < 12 || password.length > 72 || password !== confirmation) {
-    redirectWithError("La contraseña temporal no es válida o no coincide.", returnBranch);
+    backWithError(formData, "La contraseña temporal no es válida o no coincide.");
   }
   const context = await requireInternalArea("ADMIN", { writable: true });
   const { data: allowed } = await context.supabase.schema("app").rpc("current_staff_can_manage_employee_account", {
     target_staff_profile_id: staffProfileId
   });
-  if (allowed !== true) redirectWithError("No puedes restablecer esa cuenta.", returnBranch);
+  if (allowed !== true) backWithError(formData, "No puedes restablecer esa cuenta.");
 
   let adminClient;
   try {
     adminClient = createSupabaseAdminClient();
   } catch {
-    redirectWithError("La service role no está configurada.", returnBranch);
+    backWithError(formData, "La service role no está configurada.");
   }
   const { error } = await adminClient.auth.admin.updateUserById(staffProfileId, { password });
-  if (error) redirectWithError("No se pudo actualizar la contraseña.", returnBranch);
+  if (error) backWithError(formData, "No se pudo actualizar la contraseña.");
 
   const { data, error: profileError } = await context.supabase.schema("app").rpc("mark_scoped_employee_password_reset", {
     target_staff_profile_id: staffProfileId
   });
-  if (profileError || data !== "UPDATED") redirectWithError("La contraseña cambió, pero el perfil requiere revisión.", returnBranch);
-  redirect(staffUrl({ ...(returnBranch ? { branch: returnBranch } : {}), passwordReset: "1" }));
+  if (profileError || data !== "UPDATED") backWithError(formData, "La contraseña cambió, pero el perfil requiere revisión.");
+  backWithNotice(formData, "staff_updated");
 }

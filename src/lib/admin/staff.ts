@@ -1,3 +1,5 @@
+import type { FieldErrors, FormState } from "@/lib/forms/state";
+
 export const creatableStaffRoles = ["MANAGER", "EMPLOYEE"] as const;
 export type CreatableStaffRole = (typeof creatableStaffRoles)[number];
 
@@ -75,4 +77,73 @@ export function validateStaffCreateForm(
       temporaryPassword: password
     }
   };
+}
+
+/* Guided staff creation (DEC-0073). */
+
+export type StaffField = "fullName" | "email" | "role" | "branchId" | "temporaryPassword" | "passwordConfirmation" | "pin";
+export type StaffCreateValues = { fullName: string; email: string; role: string; branchId: string };
+export type StaffCreateActionState = FormState<StaffCreateValues, StaffField>;
+
+export const STAFF_CREATE_STEP_FIELDS = [
+  ["fullName", "email"],
+  ["role", "branchId"],
+  ["temporaryPassword", "passwordConfirmation"],
+] as const satisfies readonly (readonly StaffField[])[];
+
+export const PIN_OPERATOR_STEP_FIELDS = [["fullName"], ["pin"]] as const satisfies readonly (readonly StaffField[])[];
+
+const STAFF_ERROR_FIELDS: Record<string, StaffField> = {
+  "Nombre es obligatorio.": "fullName",
+  "Sucursal es obligatoria.": "branchId",
+  "Correo es obligatorio.": "email",
+  "El correo no es válido.": "email",
+  "El rol seleccionado no es válido.": "role",
+  "La contraseña temporal debe tener al menos 12 caracteres.": "temporaryPassword",
+  "La contraseña temporal no puede exceder 72 caracteres.": "temporaryPassword",
+  "La confirmación de contraseña no coincide.": "passwordConfirmation",
+};
+
+/** Maps validator messages to their fields. */
+export function staffFieldErrors(errors: readonly string[]): FieldErrors<StaffField> {
+  const fieldErrors: FieldErrors<StaffField> = {};
+  for (const message of errors) {
+    const field = STAFF_ERROR_FIELDS[message];
+    if (field) fieldErrors[field] = [...(fieldErrors[field] ?? []), message];
+  }
+  return fieldErrors;
+}
+
+export function staffCreateValues(formData: FormData): StaffCreateValues {
+  return {
+    fullName: text(formData, "fullName"),
+    email: text(formData, "email"),
+    role: text(formData, "role") || "EMPLOYEE",
+    branchId: text(formData, "branchId"),
+  };
+}
+
+function onlyFields(errors: FieldErrors<StaffField>, fields: readonly StaffField[]): FieldErrors {
+  const picked: FieldErrors = {};
+  for (const field of fields) if (errors[field]?.length) picked[field] = errors[field];
+  return picked;
+}
+
+/** Client check for one step of the individual-account wizard. */
+export function staffCreateStepErrors(formData: FormData, step: number): FieldErrors {
+  const result = validateStaffCreateForm(formData);
+  return result.ok ? {} : onlyFields(staffFieldErrors(result.errors), STAFF_CREATE_STEP_FIELDS[step] ?? []);
+}
+
+export function validatePinOperatorForm(formData: FormData): FieldErrors<StaffField> {
+  const errors: FieldErrors<StaffField> = {};
+  if (!text(formData, "fullName")) errors.fullName = ["Nombre es obligatorio."];
+  const pin = formData.get("pin");
+  if (typeof pin !== "string" || !/^[0-9]{6}$/.test(pin)) errors.pin = ["El PIN debe tener exactamente seis dígitos."];
+  return errors;
+}
+
+/** Client check for one step of the PIN operator wizard. */
+export function pinOperatorStepErrors(formData: FormData, step: number): FieldErrors {
+  return onlyFields(validatePinOperatorForm(formData), PIN_OPERATOR_STEP_FIELDS[step] ?? []);
 }
