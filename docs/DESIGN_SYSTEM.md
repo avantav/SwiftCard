@@ -346,6 +346,10 @@ Todos los botones deben incluir estados hover, focus, active, disabled y pending
 - Acciones alineadas al final del formulario y separadas por `24px` del último campo.
 - Marcar campos opcionales; no llenar la pantalla de asteriscos.
 - Conservar valores capturados después de errores siempre que sea seguro.
+- En el área administrativa, las acciones devuelven el estado del formulario
+  (`FormState`, `src/lib/forms/state.ts`) en lugar de redirigir con `?error=`:
+  el diálogo sigue abierto, los valores se conservan y cada error aparece junto
+  a su campo y en `FormErrorSummary`.
 
 ## 13. Tablas y listas operativas
 
@@ -421,6 +425,9 @@ Reglas:
 - No ocultar funcionalidad crítica en móvil.
 - El orden visual y el orden del DOM deben coincidir.
 - Evitar media queries específicas para un solo dispositivo.
+- En el área administrativa, a partir de `640px` la página no hace scroll: se
+  usa `AdminWorkspace` con una sola región interna con scroll (§27). Por debajo
+  de `640px` el contenido fluye y la página hace scroll normal.
 
 ## 19. Accesibilidad
 
@@ -538,3 +545,43 @@ Antes de considerar terminada cualquier tarea de interfaz, verificar:
   con la primaria arriba.
 - Los enlaces a los documentos abren en una pestaña nueva; los errores aparecen
   junto al campo y en un resumen con `role="alert"`, conservando lo escrito.
+
+## 27. Espacio de trabajo administrativo
+
+- Las páginas de `/admin` usan `AdminWorkspace` (`src/components/admin/`):
+  encabezado, barra de herramientas opcional (pestañas o filtros) y un cuerpo
+  que ocupa el resto del alto. A partir de `640px` la página no hace scroll
+  (excepción registrada en DEC-0073).
+- El cuerpo cede su alto a **una sola** `AdminScrollRegion` (con encabezado de
+  tabla fijo) o a `AdminMasterDetail` (lista y detalle lado a lado desde
+  `1024px`). No se anidan regiones con scroll.
+- El alto se calcula con `--admin-offset`, que descuenta el encabezado móvil y
+  el banner del modo soporte; no se escriben alturas fijas como `100dvh - 64px`.
+- Las secciones se cambian con `AdminTabs`: cada pestaña es un enlace con el
+  estado en la URL (`?tab=`), navegación suave y `aria-current`. La primera
+  pestaña es la predeterminada.
+
+## 28. Diálogos y asistentes
+
+- Los diálogos de `/admin` usan `WorkspaceDialog`, abierto desde la URL
+  (`?view=`, `?branch=`) y con `WorkspaceDialogHeader`: título, descripción
+  opcional y una acción visible "Cerrar". Escape y el clic en el fondo también
+  cierran; si hay cambios sin guardar, se pide confirmación. El foco vuelve al
+  elemento que abrió el diálogo.
+- Tamaños: `md` (`640px`) para formularios cortos, `lg` (`980px`) para
+  espacios de trabajo, `full` (`1280px`) para editores.
+- Crear una instancia con más de un grupo de datos usa `WizardForm`: "Paso X
+  de Y", progreso numerado, todos los pasos montados para conservar valores,
+  "Continuar" valida el paso y enfoca el primer campo inválido, y un error del
+  servidor regresa al paso que lo contiene. Una sola acción primaria por paso;
+  en móvil las acciones ocupan el ancho completo.
+
+## 29. Avisos
+
+- Las confirmaciones de éxito se muestran como aviso breve (`ToastRegion`)
+  con `role="status"`, abajo a la derecha (ancho completo en móvil), durante
+  seis segundos y con botón "Cerrar". Respetan `prefers-reduced-motion`.
+- Las acciones terminan con `withNotice(href, código)` o `showToast(código)`.
+  La URL solo lleva códigos conocidos (`src/lib/forms/notices.ts`); nunca se
+  muestra texto libre de la URL.
+- Los errores no son avisos: se quedan junto al formulario hasta corregirse.

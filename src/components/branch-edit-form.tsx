@@ -9,6 +9,7 @@ import type {
   BranchStatus,
   BranchUpdateActionState,
 } from "@/lib/admin/branches";
+import { FieldError, describedBy } from "@/components/admin/form-field";
 
 type EditableBranch = {
   id: string;
@@ -21,19 +22,6 @@ type EditableBranch = {
   proximity_message: string | null;
   status: BranchStatus;
 };
-
-function FieldError({ id, messages }: { id: string; messages?: string[] }) {
-  if (!messages?.length) return null;
-  return (
-    <span className="field-error-message" id={id}>
-      {messages.join(" ")}
-    </span>
-  );
-}
-
-function describedBy(hintId: string | null, errorId: string, hasError: boolean) {
-  return [hintId, hasError ? errorId : null].filter(Boolean).join(" ") || undefined;
-}
 
 function initialState(branch: EditableBranch): BranchUpdateActionState {
   return {

@@ -5,15 +5,7 @@ import type {
   BranchCreateFieldErrors,
   BranchEmployeeAccessMode,
 } from "@/lib/admin/branches";
-
-function FieldError({ id, messages }: { id: string; messages?: string[] }) {
-  if (!messages?.length) return null;
-  return (
-    <span className="field-error-message" id={id}>
-      {messages.join(" ")}
-    </span>
-  );
-}
+import { FieldError } from "@/components/admin/form-field";
 
 export function BranchAccessFields({
   defaultMode = "INDIVIDUAL_CREDENTIALS",

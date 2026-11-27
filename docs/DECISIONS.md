@@ -1127,3 +1127,29 @@
   versioned program terms (`customer_card_terms_acceptances`). Texts remain
   provisional pending the lawyer's review (DEC-0059).
 - Status: Accepted (provisional legal texts).
+
+## DEC-0073 - Admin SPA-Like Workspace
+
+- Date: 2026-11-18
+- Context: The owner found the admin "muy aglomerado" and asked for panels
+  without scroll, guided modals to create instances and responsive
+  validation. Only Cards and Staff fit the viewport today; most create/edit
+  flows redirect with `?error=`, lose what was typed and close their modal.
+- Decision: Delivered in five phases. Phase 1 adds the shared foundation:
+  - Exception to the scrolling page: from 640px admin pages use
+    `AdminWorkspace` and do not scroll; one inner `AdminScrollRegion` (or a
+    master-detail split) scrolls instead. Below 640px pages flow normally.
+    Heights use `--admin-offset` (mobile header + support banner).
+  - Panel state stays in the URL (`AdminTabs`, `?tab=`, `?view=`) with soft
+    navigation, keeping back/forward and shared links.
+  - `WorkspaceDialog` (close button, Escape, backdrop, unsaved-changes guard,
+    focus return) replaces `BranchWorkspaceDialog`, which now delegates to it.
+  - `WizardForm` validates each step before continuing and returns to the step
+    of a server error; `FormState` is the single action-state contract and
+    `FieldError`/`FormErrorSummary` replace the duplicated helpers.
+  - `ToastRegion` shows known `?notice=` codes as brief success toasts.
+  - The mobile drawer closes with Escape, traps focus and locks the page.
+- Consequences: Pages adopt the workspace in phases 2-4; customer correction
+  is phase 5. Header, metric and content-card spacing were compacted (72→56,
+  136→96, 28→20px).
+- Status: Accepted.
